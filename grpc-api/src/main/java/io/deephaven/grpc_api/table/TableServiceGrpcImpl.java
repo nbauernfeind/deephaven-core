@@ -1,8 +1,9 @@
 package io.deephaven.grpc_api.table;
 
-import io.deephaven.io.logger.Logger;
+import com.google.flatbuffers.FlatBufferBuilder;
 import com.google.protobuf.ByteString;
 import com.google.rpc.Code;
+import io.deephaven.io.logger.Logger;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.v2.sources.ColumnSource;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
@@ -30,12 +31,11 @@ import io.deephaven.proto.backplane.grpc.SnapshotTableRequest;
 import io.deephaven.proto.backplane.grpc.SortTableRequest;
 import io.deephaven.proto.backplane.grpc.TableReference;
 import io.deephaven.proto.backplane.grpc.TableServiceGrpc;
-import io.deephaven.proto.backplane.grpc.Ticket;
 import io.deephaven.proto.backplane.grpc.TimeTableRequest;
 import io.deephaven.proto.backplane.grpc.UngroupRequest;
 import io.deephaven.proto.backplane.grpc.UnstructuredFilterTableRequest;
-import com.google.flatbuffers.FlatBufferBuilder;
 import io.grpc.stub.StreamObserver;
+import org.apache.arrow.flight.impl.Flight.Ticket;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -326,7 +326,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
             operation = getOp(op.getOpCase()); // get operation from op code
             request = operation.getRequestFromOperation(op);
             final Ticket resultId = operation.getResultTicket(request);
-            exportBuilder = resultId.getId().size() == 0 ? session.nonExport() : session.newExport(resultId);
+            exportBuilder = resultId.getTicket().size() == 0 ? session.nonExport() : session.newExport(resultId);
         }
 
         void resolveDependencies(final Function<TableReference, SessionState.ExportObject<Table>> resolveReference) {

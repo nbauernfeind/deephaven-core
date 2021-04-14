@@ -11,7 +11,6 @@ import io.deephaven.db.v2.utils.Index;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.proto.backplane.grpc.SubscriptionRequest;
-import io.deephaven.proto.backplane.grpc.Ticket;
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientCall;
@@ -19,6 +18,7 @@ import io.grpc.MethodDescriptor;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientCalls;
 import io.grpc.stub.ClientResponseObserver;
+import org.apache.arrow.flight.impl.Flight.Ticket;
 
 import java.lang.ref.WeakReference;
 import java.util.BitSet;

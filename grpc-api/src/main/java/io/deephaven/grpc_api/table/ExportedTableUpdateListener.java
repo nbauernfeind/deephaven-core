@@ -1,9 +1,9 @@
 package io.deephaven.grpc_api.table;
 
+import com.google.rpc.Code;
 import io.deephaven.hash.KeyedLongObjectHashMap;
 import io.deephaven.hash.KeyedLongObjectKey;
 import io.deephaven.io.logger.Logger;
-import com.google.rpc.Code;
 import io.deephaven.db.tables.live.LiveTableMonitor;
 import io.deephaven.db.util.liveness.LivenessArtifact;
 import io.deephaven.db.v2.BaseTable;
@@ -19,13 +19,15 @@ import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.util.GrpcUtil;
+import io.deephaven.hash.KeyedLongObjectHashMap;
+import io.deephaven.hash.KeyedLongObjectKey;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.proto.backplane.grpc.ExportNotification;
 import io.deephaven.proto.backplane.grpc.ExportedTableUpdateBatchMessage;
 import io.deephaven.proto.backplane.grpc.ExportedTableUpdateMessage;
-import io.deephaven.proto.backplane.grpc.Ticket;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
+import org.apache.arrow.flight.impl.Flight.Ticket;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.jetbrains.annotations.NotNull;
 

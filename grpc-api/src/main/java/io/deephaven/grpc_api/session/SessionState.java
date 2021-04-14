@@ -26,13 +26,13 @@ import io.deephaven.io.logger.Logger;
 import io.deephaven.db.tablelogger.QueryOperationPerformanceLogLogger;
 import io.deephaven.db.tablelogger.QueryPerformanceLogLogger;
 import io.deephaven.proto.backplane.grpc.ExportNotification;
-import io.deephaven.proto.backplane.grpc.Ticket;
 import io.deephaven.util.SafeCloseable;
 import io.deephaven.util.annotations.VisibleForTesting;
 import io.deephaven.util.auth.AuthContext;
 import io.grpc.StatusRuntimeException;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
+import org.apache.arrow.flight.impl.Flight;
 
 import javax.annotation.Nullable;
 import java.util.ArrayDeque;
@@ -178,7 +178,7 @@ public class SessionState extends LivenessArtifact {
      * @param ticket the export ticket
      * @return a future-like object that represents this export
      */
-    public <T> ExportObject<T> getExport(final Ticket ticket) {
+    public <T> ExportObject<T> getExport(final Flight.Ticket ticket) {
         return getExport(ticketToExportId(ticket));
     }
 
@@ -233,11 +233,11 @@ public class SessionState extends LivenessArtifact {
     /**
      * Create an ExportBuilder to create the export after dependencies are satisfied.
      *
-     * @param ticket the grpc {@link Ticket} for this export
+     * @param ticket the grpc {@link Flight.Ticket} for this export
      * @param <T> the export type that the callable will return
      * @return an export builder
      */
-    public <T> ExportBuilder<T> newExport(final Ticket ticket) {
+    public <T> ExportBuilder<T> newExport(final Flight.Ticket ticket) {
         return newExport(ticketToExportId(ticket));
     }
 
@@ -1106,26 +1106,26 @@ public class SessionState extends LivenessArtifact {
     }
 
     /**
-     * Convenience method to convert from export id to {@link Ticket}.
+     * Convenience method to convert from export id to {@link Flight.Ticket}.
      *
      * @param exportId the export id
      * @return a grpc Ticket wrapping the export id
      */
-    public static Ticket exportIdToTicket(final long exportId) {
-        return Ticket.newBuilder().setId(GrpcUtil.longToByteString(exportId)).build();
+    public static Flight.Ticket exportIdToTicket(final long exportId) {
+        return Flight.Ticket.newBuilder().setTicket(GrpcUtil.longToByteString(exportId)).build();
     }
 
     /**
-     * Convenience method to convert from {@link Ticket} to export id.
+     * Convenience method to convert from {@link Flight.Ticket} to export id.
      *
      * @param ticket the grpc Ticket
      * @return the export id that the Ticket wraps
      */
-    public static long ticketToExportId(final Ticket ticket) {
-        if (ticket == null || ticket.getId().size() != 8) {
+    public static long ticketToExportId(final Flight.Ticket ticket) {
+        if (ticket == null || ticket.getTicket().size() != 8) {
             throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "missing or incorrectly formatted ticket");
         }
-        return GrpcUtil.byteStringToLong(ticket.getId());
+        return GrpcUtil.byteStringToLong(ticket.getTicket());
     }
 
     // used to detect when the export object is ready for export

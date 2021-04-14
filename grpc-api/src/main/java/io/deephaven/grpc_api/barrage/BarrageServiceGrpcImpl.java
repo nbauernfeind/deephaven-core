@@ -217,7 +217,7 @@ public class BarrageServiceGrpcImpl<Options, View> extends BarrageServiceGrpc.Ba
                                 manage(bmp);
                             } else {
                                 listener.onError(GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION,
-                                        "Ticket (" + subscriptionRequest.getTicket().getId() + ") is not a subscribable table."));
+                                        "Ticket (" + subscriptionRequest.getTicket().getTicket() + ") is not a subscribable table."));
                                 return null;
                             }
 
