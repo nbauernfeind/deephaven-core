@@ -58,8 +58,6 @@ dependencies {
             project(':log-factory'),
             project(':Container'),
             "org.flywaydb:flyway-core:5.2.4",
-            'org.apache.arrow:arrow-vector:1.0.1',
-            'io.deephaven.barrage:barrage-format:0.1.1',
             'com.github.f4b6a3:uuid-creator:3.6.0'
 
     compileOnly 'javax.inject:javax.inject:1'

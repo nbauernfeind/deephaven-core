@@ -4,8 +4,8 @@ import io.deephaven.db.tables.Table;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.proto.backplane.grpc.BatchTableRequest;
 import io.deephaven.proto.backplane.grpc.TableReference;
-import io.deephaven.proto.backplane.grpc.Ticket;
 import io.grpc.StatusRuntimeException;
+import org.apache.arrow.flight.impl.Flight.Ticket;
 
 import java.util.Collections;
 import java.util.List;

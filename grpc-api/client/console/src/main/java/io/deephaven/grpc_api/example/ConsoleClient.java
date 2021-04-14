@@ -5,17 +5,18 @@ import io.deephaven.io.logger.Logger;
 import com.google.protobuf.ByteString;
 import io.deephaven.db.tables.live.LiveTableMonitor;
 import io.deephaven.db.tables.utils.DBTimeUtils;
+import io.deephaven.barrage.flatbuf.Field;
+import io.deephaven.barrage.flatbuf.KeyValue;
+import io.deephaven.barrage.flatbuf.Schema;
 import io.deephaven.grpc_api.runner.DeephavenApiServerModule;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.util.Scheduler;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.proto.backplane.grpc.*;
 import io.deephaven.proto.backplane.script.grpc.*;
-import io.deephaven.barrage.flatbuf.Field;
-import io.deephaven.barrage.flatbuf.KeyValue;
-import io.deephaven.barrage.flatbuf.Schema;
 import io.grpc.*;
 import io.grpc.stub.StreamObserver;
+import org.apache.arrow.flight.impl.Flight;
 
 import java.io.Console;
 import java.util.Optional;
@@ -25,7 +26,7 @@ import java.util.function.Consumer;
 
 public class ConsoleClient {
     private static final Logger log = LoggerFactory.getLogger(ConsoleClient.class);
-    private Ticket consoleTicket;
+    private Flight.Ticket consoleTicket;
 
     public static class RemoteStdout {
         private static final Logger log = LoggerFactory.getLogger(RemoteStdout.class);

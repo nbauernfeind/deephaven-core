@@ -1,6 +1,11 @@
 package io.deephaven.grpc_api.table;
 
 import com.google.rpc.Code;
+import io.deephaven.hash.KeyedLongObjectHashMap;
+import io.deephaven.hash.KeyedLongObjectKey;
+import io.deephaven.io.logger.Logger;
+import io.deephaven.db.tables.live.LiveTableMonitor;
+import io.deephaven.db.util.liveness.LivenessArtifact;
 import io.deephaven.db.v2.BaseTable;
 import io.deephaven.db.v2.InstrumentedShiftAwareListener;
 import io.deephaven.db.v2.NotificationStepReceiver;
@@ -19,6 +24,7 @@ import io.deephaven.proto.backplane.grpc.Ticket;
 import io.deephaven.util.annotations.ReferentialIntegrity;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
+import org.apache.arrow.flight.impl.Flight.Ticket;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.jetbrains.annotations.NotNull;
 
