@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @IncludeAll
  */
-class LivenessStateException extends IllegalStateException {
+public class LivenessStateException extends IllegalStateException {
 
     LivenessStateException(@NotNull final String message) {
         super(message);
