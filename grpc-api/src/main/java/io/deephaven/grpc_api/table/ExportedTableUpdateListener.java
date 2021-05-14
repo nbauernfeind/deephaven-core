@@ -27,7 +27,7 @@ import io.deephaven.proto.backplane.grpc.ExportedTableUpdateBatchMessage;
 import io.deephaven.proto.backplane.grpc.ExportedTableUpdateMessage;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
-import org.apache.arrow.flight.impl.Flight.Ticket;
+import org.apache.arrow.flight.impl.Flight;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.jetbrains.annotations.NotNull;
 
@@ -88,7 +88,7 @@ public class ExportedTableUpdateListener extends LivenessArtifact implements Str
             throw GrpcUtil.statusRuntimeException(Code.CANCELLED, "client cancelled the stream");
         }
 
-        final Ticket ticket = notification.getTicket();
+        final Flight.Ticket ticket = notification.getTicket();
         final long exportId = SessionState.ticketToExportId(ticket);
 
         if (exportId == 0) {
@@ -153,7 +153,7 @@ public class ExportedTableUpdateListener extends LivenessArtifact implements Str
      * @param exportId the export id of the table being exported
      * @param table the table that was just exported
      */
-    private synchronized void onNewTableExport(final Ticket ticket, final long exportId, final BaseTable table) {
+    private synchronized void onNewTableExport(final Flight.Ticket ticket, final long exportId, final BaseTable table) {
         if (!table.isLive()) {
             sendUpdateMessage(ticket, table.size(), null);
             return;
@@ -186,7 +186,7 @@ public class ExportedTableUpdateListener extends LivenessArtifact implements Str
      * @param size   the current size of the table
      * @param error  any propagated error of the table
      */
-    private synchronized void sendUpdateMessage(final Ticket ticket, final long size, final Throwable error) {
+    private synchronized void sendUpdateMessage(final Flight.Ticket ticket, final long size, final Throwable error) {
         if (isDestroyed) {
             return;
         }
