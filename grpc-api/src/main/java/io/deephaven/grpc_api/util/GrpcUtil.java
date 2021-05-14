@@ -12,6 +12,7 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -34,6 +35,26 @@ public class GrpcUtil {
         long result = 0;
         for (int i = 7; i >= 0; i--) {
             final byte bval = value.byteAt(i);
+            result = (result << 8) + (bval & 0xffL);
+        }
+        return result;
+    }
+
+    public static ByteBuffer longToByteBuffer(long value) {
+        // Note: Little-Endian
+        final byte[] result = new byte[8];
+        for (int i = 0; i < 8; i++) {
+            result[i] = (byte) (value & 0xffL);
+            value >>= 8;
+        }
+        return ByteBuffer.wrap(result);
+    }
+
+    public static long byteStringToLong(final ByteBuffer value) {
+        // Note: Little-Endian
+        long result = 0;
+        for (int i = 7; i >= 0; i--) {
+            final byte bval = value.get(i);
             result = (result << 8) + (bval & 0xffL);
         }
         return result;
@@ -70,6 +91,10 @@ public class GrpcUtil {
     }
 
     public static StatusRuntimeException securelyWrapError(final Logger log, final Throwable err, final Code statusCode) {
+        if (err instanceof StatusRuntimeException) {
+            return (StatusRuntimeException) err;
+        }
+
         final UUID errorId = UUID.randomUUID();
         log.error().append("Internal Error '").append(errorId.toString()).append("' ").append(err).endl();
         return statusRuntimeException(statusCode, "Details Logged w/ID '" + errorId + "'");
@@ -82,11 +107,25 @@ public class GrpcUtil {
                 .build());
     }
 
-    public static <T, V> StreamObserver<T> wrapOnNext(final StreamObserver<V> delegate, final Function<T, V> wrap) {
+    /**
+     * This helper allows one to propagate the onError/onComplete calls through to the delegate, while applying the
+     * provided mapping function to the original input objects. The mapper may return null to skip sending a message
+     * to the delegated stream observer.
+     *
+     * @param delegate  the stream observer to ultimately receive this message
+     * @param mapper    the function that maps from input objects to the objects the stream observer expects
+     * @param <T>       input type
+     * @param <V>       output type
+     * @return          a new stream observer that maps from T to V before delivering to {@code delegate::onNext}
+     */
+    public static <T, V> StreamObserver<T> mapOnNext(final StreamObserver<V> delegate, final Function<T, V> mapper) {
         return new StreamObserver<T>() {
             @Override
             public void onNext(final T value) {
-                delegate.onNext(wrap.apply(value));
+                final V mapped = mapper.apply(value);
+                if (mapped != null) {
+                    delegate.onNext(mapped);
+                }
             }
 
             @Override

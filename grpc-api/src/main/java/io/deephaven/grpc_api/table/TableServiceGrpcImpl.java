@@ -37,7 +37,7 @@ import io.deephaven.proto.backplane.grpc.UnstructuredFilterTableRequest;
 import com.google.flatbuffers.FlatBufferBuilder;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
-import org.apache.arrow.flight.impl.Flight.Ticket;
+import org.apache.arrow.flight.impl.Flight;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -295,7 +295,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
             final GrpcTableOperation<T> operation = getOp(op);
             operation.validateRequest(request);
 
-            final Ticket resultId = operation.getResultTicket(request);
+            final Flight.Ticket resultId = operation.getResultTicket(request);
             final TableReference resultRef = TableReference.newBuilder().setTicket(resultId).build();
 
             final List<SessionState.ExportObject<Table>> dependencies = operation.getTableReferences(request).stream()
@@ -327,7 +327,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
         BatchExportBuilder(final SessionState session, final BatchTableRequest.Operation op) {
             operation = getOp(op.getOpCase()); // get operation from op code
             request = operation.getRequestFromOperation(op);
-            final Ticket resultId = operation.getResultTicket(request);
+            final Flight.Ticket resultId = operation.getResultTicket(request);
             exportBuilder = resultId.getTicket().size() == 0 ? session.nonExport() : session.newExport(resultId);
         }
 

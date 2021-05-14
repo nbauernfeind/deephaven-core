@@ -10,6 +10,7 @@ configurations {
 dependencies {
     compile project(':DB'),
             project(':Util'),
+            project(':grpc-api-client'),
             project(':proto:proto-backplane-grpc'),
             project(':log-factory'),
             "com.google.flatbuffers:flatbuffers-java:1.12.0",
@@ -18,6 +19,7 @@ dependencies {
 
     compile 'com.google.dagger:dagger:2.31.1'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.31.1'
+    testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.31.1'
 
     //runtimeOnly project(':Plot')
 

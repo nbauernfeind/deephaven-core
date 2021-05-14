@@ -232,6 +232,20 @@ public class SessionState {
     }
 
     /**
+     * Grab the ExportObject for the provided id if it already exists, otherwise return null.
+     * @param exportId the export handle id
+     * @return a future-like object that represents this export
+     */
+    @SuppressWarnings("unchecked")
+    public <T> ExportObject<T> getExportIfExists(final long exportId) {
+        if (isExpired()) {
+            throw GrpcUtil.statusRuntimeException(Code.UNAUTHENTICATED, "session has expired");
+        }
+
+        return (ExportObject<T>) exportMap.get(exportId);
+    }
+
+    /**
      * Create and export a pre-computed element. This is typically used in scenarios where the number of exports is not
      * known in advance by the requesting client.
      *
@@ -497,7 +511,7 @@ public class SessionState {
 
             // Note: an export may be released while still being a dependency of queued work; so let's make sure we're still valid
             if (result == null) {
-                throw new IllegalStateException("Dependent export '" + exportId + "' is " + state.name() + " and not exported");
+                throw new IllegalStateException("Dependent export '" + exportId + "' is null and in state " + state.name());
             }
 
             return result;

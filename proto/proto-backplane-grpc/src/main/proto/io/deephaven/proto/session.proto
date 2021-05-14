@@ -11,6 +11,18 @@ import "arrow/flight/protocol/flight.proto";
 option java_multiple_files = true;
 option optimize_for = SPEED;
 
+/*
+ * Flight's Ticket is the id that represents a specific export.
+ * - Positive numbers are managed and allocated by the session client.
+ * - Negative numbers are allocated by the server when the number of exports for an operation is variable.
+ * - Zero is reserved to identify the default QueryScope.
+ *
+ * The client is responsible for releasing all exports including those allocated by the server. When a session ends,
+ * either explicitly or due to timeout, all exported objects in that session are released automatically.
+ *
+ * All Deephaven tickets are 8-byte signed longs.
+ */
+
 service SessionService {
   /*
    * Handshake between client and server to create a new session. The response includes a metadata header name and the

@@ -213,7 +213,6 @@ createMainExecTask('replicateDbArrayColumnWrappers', 'io.deephaven.db.v2.dbarray
 createMainExecTask('replicateCopyKernel', 'io.deephaven.db.v2.utils.copy.ReplicateCopyKernel')
 createMainExecTask('replicateOperators', 'io.deephaven.db.v2.by.ReplicateOperators')
 createMainExecTask('replicateFreezeBy', 'io.deephaven.db.v2.utils.freezeby.ReplicateFreezeBy')
-createMainExecTask('replicateBarrageUtils', 'io.deephaven.db.backplane.barrage.chunk.ReplicateBarrageUtils')
 
 task replicate {
     dependsOn 'replicateTuples'
@@ -240,7 +239,6 @@ task replicate {
     dependsOn 'replicateCopyKernel'
     dependsOn 'replicateOperators'
     dependsOn 'replicateFreezeBy'
-    dependsOn 'replicateBarrageUtils'
 }
 
 test {

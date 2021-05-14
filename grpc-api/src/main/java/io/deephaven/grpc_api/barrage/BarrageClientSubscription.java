@@ -2,10 +2,10 @@ package io.deephaven.grpc_api.barrage;
 
 import io.deephaven.base.log.LogOutput;
 import io.deephaven.base.log.LogOutputAppendable;
+import io.deephaven.grpc_api_client.barrage.chunk.ChunkInputStreamGenerator;
+import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
 import io.deephaven.io.logger.Logger;
-import io.deephaven.db.backplane.barrage.BarrageMessage;
-import io.deephaven.db.backplane.barrage.chunk.ChunkInputStreamGenerator;
-import io.deephaven.db.backplane.util.BarrageProtoUtil;
+import io.deephaven.db.v2.utils.BarrageMessage;
 import io.deephaven.db.v2.sources.chunk.ChunkType;
 import io.deephaven.db.v2.utils.Index;
 import io.deephaven.grpc_api.session.SessionState;
@@ -18,7 +18,7 @@ import io.grpc.MethodDescriptor;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientCalls;
 import io.grpc.stub.ClientResponseObserver;
-import org.apache.arrow.flight.impl.Flight.Ticket;
+import org.apache.arrow.flight.impl.Flight;
 
 import java.lang.ref.WeakReference;
 import java.util.BitSet;
@@ -35,7 +35,7 @@ public class BarrageClientSubscription implements LogOutputAppendable {
 //    private final String hostName;
 //    private final int hostPort;
 
-    private final Ticket handle;
+    private final Flight.Ticket handle;
     private final boolean isViewport;
 
     private final ClientCall<SubscriptionRequest, BarrageMessage> call;
@@ -46,7 +46,7 @@ public class BarrageClientSubscription implements LogOutputAppendable {
     public BarrageClientSubscription(
 //            final AuthSessionClientManager authClientManager,
             final Channel channel,
-            final Ticket handle,
+            final Flight.Ticket handle,
             final SubscriptionRequest initialRequest,
             final BarrageMessageConsumer.StreamReader<ChunkInputStreamGenerator.Options> streamReader,
             final ChunkType[] wireChunkTypes,

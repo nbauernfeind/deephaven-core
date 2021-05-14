@@ -2,7 +2,7 @@ package io.deephaven.grpc_api.util;
 
 import com.google.protobuf.ByteString;
 import io.deephaven.base.verify.Assert;
-import org.apache.arrow.flight.impl.Flight.Ticket;
+import org.apache.arrow.flight.impl.Flight;
 import org.junit.Test;
 
 import java.util.function.Consumer;
@@ -26,9 +26,9 @@ public class GrpcUtilTest {
       final Consumer<Long> testLong = (id) -> {
          final ByteString bsid = GrpcUtil.longToByteString(id);
          Assert.eq(8, "8", bsid.size(), "bsid.size()");
-         final Ticket ticket = Ticket.newBuilder().setTicket(bsid).build();
+         final Flight.Ticket ticket = Flight.Ticket.newBuilder().setTicket(bsid).build();
          Assert.eq(8, "8", ticket.getTicket().size(), "ticket.getId().size()");
-         Assert.eq((long) id, "id", GrpcUtil.byteStringToLong(ticket.getTicket()), "GrpcUtil.byteStringToLong(ticket.getId())");
+         Assert.eq((long) id, "id", GrpcUtil.byteStringToLong(ticket.getTicket()), "GrpcUtil.byteStringToLong(ticket.getTicket())");
       };
       testLong.accept(0L);
       testLong.accept(1024L);

@@ -1,26 +1,26 @@
 package io.deephaven.grpc_api.barrage;
 
-import io.deephaven.io.logger.Logger;
+import com.fasterxml.jackson.databind.util.ByteBufferBackedInputStream;
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.WireFormat;
-import io.deephaven.db.backplane.CommandMarshallingException;
-import io.deephaven.db.backplane.barrage.BarrageMessage;
-import io.deephaven.db.backplane.barrage.chunk.ChunkInputStreamGenerator;
-import io.deephaven.db.backplane.util.BarrageProtoUtil;
-import io.deephaven.db.util.LongSizedDataStructure;
-import io.deephaven.db.v2.sources.chunk.ChunkType;
-import io.deephaven.db.v2.utils.ExternalizableIndexUtils;
-import io.deephaven.db.v2.utils.Index;
-import io.deephaven.db.v2.utils.IndexShiftData;
-import io.deephaven.internal.log.LoggerFactory;
-import io.deephaven.proto.backplane.grpc.BarrageData;
-import com.fasterxml.jackson.databind.util.ByteBufferBackedInputStream;
 import io.deephaven.barrage.flatbuf.BarrageFieldNode;
 import io.deephaven.barrage.flatbuf.BarrageRecordBatch;
 import io.deephaven.barrage.flatbuf.Buffer;
 import io.deephaven.barrage.flatbuf.Message;
 import io.deephaven.barrage.flatbuf.MessageHeader;
+import io.deephaven.db.util.LongSizedDataStructure;
+import io.deephaven.db.v2.sources.chunk.ChunkType;
+import io.deephaven.db.v2.utils.BarrageMessage;
+import io.deephaven.db.v2.utils.ExternalizableIndexUtils;
+import io.deephaven.db.v2.utils.Index;
+import io.deephaven.db.v2.utils.IndexShiftData;
+import io.deephaven.grpc_api_client.barrage.chunk.ChunkInputStreamGenerator;
+import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
+import io.deephaven.grpc_api_client.util.GrpcMarshallingException;
+import io.deephaven.internal.log.LoggerFactory;
+import io.deephaven.io.logger.Logger;
+import io.deephaven.proto.backplane.grpc.BarrageData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +29,8 @@ import java.util.BitSet;
 import java.util.Iterator;
 
 public class BarrageStreamReader implements BarrageMessageConsumer.StreamReader<ChunkInputStreamGenerator.Options> {
+    public static final BarrageStreamReader INSTANCE = new BarrageStreamReader();
+
     private static final int BODY_TAG =
             makeTag(BarrageData.DATA_BODY_FIELD_NUMBER, WireFormat.WIRETYPE_LENGTH_DELIMITED);
     private static final int DATA_HEADER_TAG =
@@ -154,11 +156,11 @@ public class BarrageStreamReader implements BarrageMessageConsumer.StreamReader<
             return msg;
         } catch (final Exception e) {
             log.error().append("Unable to parse a received BarrageMessage: ").append(e).endl();
-            throw new CommandMarshallingException("Unable to parse BarrageMessage object", e);
+            throw new GrpcMarshallingException("Unable to parse BarrageMessage object", e);
         }
     }
 
-    private Index extractIndex(final ByteBuffer bb) throws IOException {
+    private static Index extractIndex(final ByteBuffer bb) throws IOException {
         if (bb == null) {
             throw new IllegalArgumentException();
         }
