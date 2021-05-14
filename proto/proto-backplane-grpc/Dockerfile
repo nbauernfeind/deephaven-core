@@ -20,6 +20,5 @@ RUN set -eux; \
     /dependencies/arrow/flight/protocol/flight.proto \
     /includes/io/deephaven/proto/barrage.proto \
     /includes/io/deephaven/proto/console.proto \
-    /includes/io/deephaven/proto/legacy_comm.proto \
     /includes/io/deephaven/proto/session.proto \
     /includes/io/deephaven/proto/table.proto

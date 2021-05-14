@@ -1,7 +1,10 @@
 package io.deephaven.grpc_api.barrage.util;
 
 import com.google.flatbuffers.FlatBufferBuilder;
+import io.deephaven.UncheckedDeephavenException;
+import io.deephaven.barrage.flatbuf.KeyValue;
 import io.deephaven.db.tables.Table;
+import io.deephaven.db.tables.TableDefinition;
 import io.deephaven.db.tables.select.MatchPair;
 import io.deephaven.db.tables.utils.DBDateTime;
 import io.deephaven.db.util.ColumnFormattingValues;
@@ -11,6 +14,8 @@ import io.deephaven.db.v2.RollupInfo;
 import io.deephaven.db.v2.sources.ColumnSource;
 
 import io.deephaven.db.v2.sources.chunk.ChunkType;
+import io.deephaven.web.shared.data.LocalDate;
+import io.deephaven.web.shared.data.LocalTime;
 import org.apache.arrow.util.Collections2;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -20,8 +25,6 @@ import org.apache.arrow.vector.types.pojo.Schema;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -124,6 +127,34 @@ public class BarrageSchemaUtil {
 
     private static void putMetadata(final Map<String, String> metadata, final String key, final String value) {
         metadata.put("deephaven:" + key, value);
+    }
+
+    public static TableDefinition schemaToTableDefinition(final io.deephaven.barrage.flatbuf.Schema schema) {
+        final Class<?>[] columnTypes = new Class[schema.fieldsLength()];
+        final String[] columnNames = new String[schema.fieldsLength()];
+
+        for (int i = 0; i < schema.fieldsLength(); ++i) {
+            final io.deephaven.barrage.flatbuf.Field field = schema.fields(i);
+
+            columnNames[i] = field.name();
+
+            for (int j = 0; j < field.customMetadataLength(); j++) {
+                final KeyValue keyValue = field.customMetadata(j);
+                if (keyValue.key().equals("deephaven:type")) {
+                    try {
+                        columnTypes[i] = getClassFor(keyValue.value());
+                    } catch (final ClassNotFoundException e) {
+                        throw new UncheckedDeephavenException("could not load class from schema", e);
+                    }
+                }
+            }
+
+            if (columnTypes[i] == null) {
+                throw new UncheckedDeephavenException(("schema did not include `deephaven:type` metadata"));
+            }
+        }
+
+        return new TableDefinition(Arrays.asList(columnTypes), Arrays.asList(columnNames));
     }
 
     private static Class<?> getClassFor(final String className) throws ClassNotFoundException {

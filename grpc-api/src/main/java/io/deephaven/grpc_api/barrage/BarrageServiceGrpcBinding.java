@@ -1,8 +1,9 @@
 package io.deephaven.grpc_api.barrage;
 
-import io.deephaven.db.backplane.barrage.BarrageMessage;
-import io.deephaven.db.backplane.util.GrpcServiceOverrideBuilder;
 import io.deephaven.db.v2.sources.chunk.ChunkType;
+import io.deephaven.db.v2.utils.BarrageMessage;
+import io.deephaven.grpc_api.util.PassthroughInputStreamMarshaller;
+import io.deephaven.grpc_api_client.util.GrpcServiceOverrideBuilder;
 import io.deephaven.proto.backplane.grpc.BarrageServiceGrpc;
 import io.deephaven.proto.backplane.grpc.SubscriptionRequest;
 import io.grpc.BindableService;
@@ -14,15 +15,16 @@ import io.grpc.stub.ServerCalls;
 import io.grpc.stub.StreamObserver;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.InputStream;
 
+@Singleton
 public class BarrageServiceGrpcBinding<Options, View> implements BindableService {
 
     private static final String SERVICE = BarrageServiceGrpc.SERVICE_NAME;
 
     private static final String DO_SUBSCRIBE = MethodDescriptor.generateFullMethodName(SERVICE, "DoSubscribe");
     private static final String DO_SUBSCRIBE_NO_CLIENT_STREAM = MethodDescriptor.generateFullMethodName(SERVICE, "DoSubscribeNoClientStream");
-    private static final PassthroughInputStreamMarshaller PASSTHROUGH_MARSHALLER = new PassthroughInputStreamMarshaller();
 
     private final BarrageServiceGrpcImpl<Options, View> delegate;
 
@@ -70,7 +72,7 @@ public class BarrageServiceGrpcBinding<Options, View> implements BindableService
                 .setFullMethodName(DO_SUBSCRIBE)
                 .setSampledToLocalTracing(false)
                 .setRequestMarshaller(ProtoUtils.marshaller(SubscriptionRequest.getDefaultInstance()))
-                .setResponseMarshaller(PASSTHROUGH_MARSHALLER)
+                .setResponseMarshaller(PassthroughInputStreamMarshaller.INSTANCE)
                 .setSchemaDescriptor(BarrageServiceGrpc.getDoSubscribeMethod().getSchemaDescriptor())
                 .build();
     }
@@ -81,7 +83,7 @@ public class BarrageServiceGrpcBinding<Options, View> implements BindableService
                 .setFullMethodName(DO_SUBSCRIBE_NO_CLIENT_STREAM)
                 .setSampledToLocalTracing(false)
                 .setRequestMarshaller(ProtoUtils.marshaller(SubscriptionRequest.getDefaultInstance()))
-                .setResponseMarshaller(PASSTHROUGH_MARSHALLER)
+                .setResponseMarshaller(PassthroughInputStreamMarshaller.INSTANCE)
                 .setSchemaDescriptor(BarrageServiceGrpc.getDoSubscribeNoClientStreamMethod().getSchemaDescriptor())
                 .build();
     }
@@ -120,19 +122,7 @@ public class BarrageServiceGrpcBinding<Options, View> implements BindableService
         }
     }
 
-    private static class PassthroughInputStreamMarshaller implements MethodDescriptor.Marshaller<InputStream> {
-        @Override
-        public InputStream stream(final InputStream inputStream) {
-            return inputStream;
-        }
-
-        @Override
-        public InputStream parse(final InputStream inputStream) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    private static class BarrageDataMarshaller<Options> implements MethodDescriptor.Marshaller<BarrageMessage> {
+    public static class BarrageDataMarshaller<Options> implements MethodDescriptor.Marshaller<BarrageMessage> {
         private final Options options;
         private final ChunkType[] columnChunkTypes;
         private final Class<?>[] columnTypes;

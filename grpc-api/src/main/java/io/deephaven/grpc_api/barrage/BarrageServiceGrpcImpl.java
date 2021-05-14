@@ -1,10 +1,8 @@
 package io.deephaven.grpc_api.barrage;
 
-import io.deephaven.configuration.Configuration;
-import io.deephaven.io.logger.Logger;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
-import io.deephaven.db.backplane.util.BarrageProtoUtil;
+import io.deephaven.configuration.Configuration;
 import io.deephaven.db.util.liveness.LivenessArtifact;
 import io.deephaven.db.util.liveness.SingletonLivenessManager;
 import io.deephaven.db.v2.QueryTable;
@@ -12,7 +10,9 @@ import io.deephaven.db.v2.utils.Index;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.util.GrpcUtil;
+import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
 import io.deephaven.internal.log.LoggerFactory;
+import io.deephaven.io.logger.Logger;
 import io.deephaven.proto.backplane.grpc.BarrageServiceGrpc;
 import io.deephaven.proto.backplane.grpc.OutOfBandSubscriptionResponse;
 import io.deephaven.proto.backplane.grpc.SubscriptionRequest;
@@ -119,6 +119,8 @@ public class BarrageServiceGrpcImpl<Options, View> extends BarrageServiceGrpc.Ba
         private BarrageMessageProducer<Options, View> bmp;
         private Queue<SubscriptionRequest> preExportSubscriptions;
 
+        private SessionState.ExportObject<?> myExportWork;
+
         private final StreamObserver<View> listener;
 
         public SubscriptionObserver(final SessionState session, final StreamObserver<InputStream> responseObserver) {
@@ -201,7 +203,7 @@ public class BarrageServiceGrpcImpl<Options, View> extends BarrageServiceGrpc.Ba
             }
 
             log.info().append(myPrefix).append("awaiting parent table").endl();
-            exportBuilder
+            this.manage(exportBuilder
                     .require(parent)
                     .onError(listener::onError)
                     .submit(() -> {
@@ -243,7 +245,7 @@ public class BarrageServiceGrpcImpl<Options, View> extends BarrageServiceGrpc.Ba
                             preExportSubscriptions = null;
                             return SubscriptionObserver.this;
                         }
-                    });
+                    }));
         }
 
         @Override

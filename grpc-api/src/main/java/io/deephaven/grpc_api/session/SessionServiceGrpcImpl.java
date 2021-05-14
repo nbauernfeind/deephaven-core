@@ -20,7 +20,7 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.stub.StreamObserver;
-import org.apache.arrow.flight.impl.Flight.Ticket;
+import org.apache.arrow.flight.impl.Flight;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -117,7 +117,7 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
     }
 
     @Override
-    public void release(final Ticket request, final StreamObserver<ReleaseResponse> responseObserver) {
+    public void release(final Flight.Ticket request, final StreamObserver<ReleaseResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState.ExportObject<?> export = service.getCurrentSession().getExport(request);
             final SessionState.ExportState currState = export.getState();
