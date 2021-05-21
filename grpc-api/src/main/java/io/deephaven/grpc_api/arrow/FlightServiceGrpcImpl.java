@@ -18,6 +18,7 @@ import io.deephaven.datastructures.util.CollectionUtil;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.tables.TableDefinition;
 import io.deephaven.db.util.LongSizedDataStructure;
+import io.deephaven.db.util.ScriptSession;
 import io.deephaven.db.util.liveness.LivenessArtifact;
 import io.deephaven.db.v2.BaseTable;
 import io.deephaven.db.v2.remote.ConstructSnapshot;
@@ -29,6 +30,7 @@ import io.deephaven.db.v2.utils.IndexShiftData;
 import io.deephaven.grpc_api.barrage.BarrageStreamGenerator;
 import io.deephaven.grpc_api.barrage.BarrageStreamReader;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
+import io.deephaven.grpc_api.console.ConsoleServiceGrpcImpl;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.util.GrpcUtil;
@@ -37,6 +39,7 @@ import io.deephaven.grpc_api_client.table.BarrageSourcedTable;
 import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
+import io.deephaven.proto.backplane.grpc.Barrage;
 import io.deephaven.proto.backplane.grpc.BarrageData;
 import io.grpc.stub.StreamObserver;
 import org.apache.arrow.flight.impl.Flight;
@@ -50,6 +53,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeMap;
 
 @Singleton
@@ -62,41 +66,29 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
     private static final Logger log = LoggerFactory.getLogger(FlightServiceGrpcImpl.class);
 
     private final SessionService sessionService;
+    private final ConsoleServiceGrpcImpl consoleService;
 
     @Inject()
-    public FlightServiceGrpcImpl(final SessionService sessionService) {
+    public FlightServiceGrpcImpl(final SessionService sessionService,
+                                 final ConsoleServiceGrpcImpl consoleService) {
         this.sessionService = sessionService;
+        this.consoleService = consoleService;
     }
 
     @Override
     public void listFlights(final Flight.Criteria request, final StreamObserver<Flight.FlightInfo> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-            final SessionState session = sessionService.getCurrentSession();
+            final ScriptSession script = consoleService.getGlobalSession();
 
-            session.addExportListener(GrpcUtil.mapOnNext(responseObserver, (notification) -> {
-                final Flight.Ticket ticket = notification.getTicket();
-                final long exportId = SessionState.ticketToExportId(ticket);
-
-                if (exportId == 0) {
-                    responseObserver.onCompleted();
-                    throw GrpcUtil.statusRuntimeException(Code.CANCELLED, "flight listing complete");
-                }
-
-                final SessionState.ExportObject<Table> export = session.getExport(exportId);
-                if (export == null || !export.tryIncrementReferenceCount()) {
-                    return null; // export already expired
-                }
-
-                try {
-                    if (export.getState() != SessionState.ExportState.EXPORTED) {
-                        return null; // export shouldn't be exposed if it cannot be read
+            if (script != null) {
+                script.getVariables().forEach((name, value) -> {
+                    if (value instanceof Table) {
+                        responseObserver.onNext(getFlightInfo(name, (Table) value));
                     }
+                });
+            }
 
-                    return getFlightInfo(export);
-                } finally {
-                    export.dropReference();
-                }
-            }));
+            responseObserver.onCompleted();
         });
     }
 
@@ -109,7 +101,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                     .require(export)
                     .onError(responseObserver::onError)
                     .submit(() -> {
-                        responseObserver.onNext(getFlightInfo(export));
+//                        responseObserver.onNext(getFlightInfo(export.get()));
                         responseObserver.onCompleted();
                     });
         });
@@ -289,16 +281,16 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
         return session.getExport(exportId);
     }
 
-    private Flight.FlightInfo getFlightInfo(final SessionState.ExportObject<Table> export) {
-        final Table table = export.get();
+    private Flight.FlightInfo getFlightInfo(final String name, final Table table) {
         return Flight.FlightInfo.newBuilder()
                 .setSchema(schemaBytesFromTable(table))
                 .setFlightDescriptor(Flight.FlightDescriptor.newBuilder()
-                        .addPath("ticket")
-                        .addPath(Long.toString(export.getExportId()))
+                        .setType(Flight.FlightDescriptor.DescriptorType.PATH)
+                        .addPath("scope")
+                        .addPath(name)
                         .build())
                 .addEndpoint(Flight.FlightEndpoint.newBuilder()
-                        .setTicket(SessionState.exportIdToTicket(export.getExportId()))
+                        .setTicket(Flight.Ticket.newBuilder().setTicket(ByteString.copyFromUtf8("s" + name)).build())
                         .build())
                 .setTotalRecords(table.isLive() ? -1 : table.size())
                 .setTotalBytes(-1)
