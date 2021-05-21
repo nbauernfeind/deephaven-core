@@ -27,12 +27,14 @@ import io.grpc.stub.StreamObserver;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import static io.deephaven.grpc_api.util.GrpcUtil.safelyExecute;
 import static io.deephaven.grpc_api.util.GrpcUtil.safelyExecuteLocked;
 
+@Singleton
 public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImplBase {
     private static final Logger log = LoggerFactory.getLogger(ConsoleServiceGrpcImpl.class);
 
@@ -70,6 +72,10 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                     .build());
             responseObserver.onCompleted();
         });
+    }
+
+    public ScriptSession getGlobalSession() {
+        return globalSession;
     }
 
     @Override
