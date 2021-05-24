@@ -1,16 +1,26 @@
 #include <iostream>
+#include <memory>
+#include <string>
+
+#include <grpcpp/grpcpp.h>
 
 #include <arrow/type.h>
 #include <arrow/flight/types.h>
 #include <arrow/flight/client.h>
 
+#include <proto/session.pb.h>
+#include <proto/session.grpc.pb.h>
+
 using arrow::Status;
+using grpc::Channel;
+using grpc::ClientContext;
+using io::deephaven::proto::backplane::grpc::SessionService;
+using io::deephaven::proto::backplane::grpc::HandshakeRequest;
+using io::deephaven::proto::backplane::grpc::HandshakeResponse;
 
 namespace {
 
-Status RunMain(int argc, char** argv) {
-  const char *dest = argc <= 1 ? "grpc://localhost:10000" : argv[1];
-
+Status FlightDemo(const char* dest) {
   arrow::flight::Location workerDest;
   ARROW_RETURN_NOT_OK(arrow::flight::Location::Parse(dest, &workerDest));
 
@@ -46,13 +56,50 @@ Status RunMain(int argc, char** argv) {
   return Status::OK();
 }
 
+class Client {
+  public:
+    Client(std::shared_ptr<Channel> channel)
+      : stub_(SessionService::NewStub(channel)) 
+    {}
+
+    void newSession() {
+      HandshakeRequest req;
+      req.set_auth_protocol(1);
+
+      HandshakeResponse res;
+
+      ClientContext ctxt;
+
+      grpc::Status status = stub_->newSession(&ctxt, req, &res);
+
+      if (status.ok()) {
+        std::cout << "New Session Established: " << res.session_token() << std::endl;
+      } else {
+        std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+      }
+    }
+  private:
+    std::unique_ptr<SessionService::Stub> stub_;
+};
+
+ Status RunMain(const char *dest) {
+   Client api(grpc::CreateChannel(dest, grpc::InsecureChannelCredentials()));
+   api.newSession();
+  return Status::OK();
+}
+
 }  // anonymous namespace
 
 int main(int argc, char** argv) {
-  Status st = RunMain(argc, argv);
-  if (!st.ok()) {
-    std::cerr << st << std::endl;
-    return 1;
+  try {
+    const char *dest = argc <= 1 ? "grpc://localhost:10000" : argv[1];
+    Status st = RunMain(dest);
+    if (!st.ok()) {
+      std::cerr << st << std::endl;
+      return 1;
+    }
+    return 0;
+  } catch (std::exception &e) {
+    std::cerr << e.what() << std::endl;
   }
-  return 0;
 }

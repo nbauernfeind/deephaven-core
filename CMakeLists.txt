@@ -1,16 +1,17 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5.1)
+
 message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 
-set(DH_VERSION "0.1.0-SNAPSHOT")
 string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" DH_BASE_VERSION "${DH_VERSION}")
 
 option(ARROW_LINK_SHARED "Link to the Arrow shared library" ON)
 
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
 
 project(deephaven_cpp VERSION "${DH_BASE_VERSION}")
 
+# load arrow
 find_package(Arrow REQUIRED)
 
 message(STATUS "Arrow version: ${ARROW_VERSION}")
@@ -20,7 +21,55 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_executable(example src/example.cc)
+# load protobuf
+set(protobuf_MODULE_COMPATIBLE TRUE)
+find_package(Protobuf CONFIG REQUIRED)
+message(STATUS "Protobuf version: ${Protobuf_VERSION}")
+
+set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
+set(_REFLECTION gRPC::grpc++_reflection)
+find_program(_PROTOBUF_PROTOC protoc)
+
+# load gRPC
+find_package(gRPC CONFIG REQUIRED)
+message(STATUS "gRPC version: ${gRPC_VERSION}")
+
+set(_GRPC_GRPCPP gRPC::grpc++)
+find_program(_GRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
+
+set(PROTO_INPUT_DIR "${PROJECT_SOURCE_DIR}/protos")
+file(GLOB PROTO_FILES "${PROTO_INPUT_DIR}/*.proto")
+set(PROTO_OUTPUT_DIR "${CMAKE_BINARY_DIR}/gen/proto")
+file(MAKE_DIRECTORY ${PROTO_OUTPUT_DIR})
+
+foreach(file ${PROTO_FILES})
+    execute_process(COMMAND ${_PROTOBUF_PROTOC} -I ${PROTO_INPUT_DIR} --proto_path=${PROTO_INPUT_DIR} --cpp_out=${PROTO_OUTPUT_DIR} --grpc_out=${PROTO_OUTPUT_DIR} --plugin=protoc-gen-grpc=${_GRPC_CPP_PLUGIN_EXECUTABLE} ${file}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/protos/
+        RESULT_VARIABLE PROTO_RESULT
+        OUTPUT_VARIABLE PROTO_OUTPUT)
+endforeach()
+
+file(GLOB PROTO_SRC "${PROTO_OUTPUT_DIR}/*.pb.cc")
+file(GLOB PROTO_INC "${PROTO_OUTPUT_DIR}/*.pb.h")
+
+# include generated headers
+include_directories("${CMAKE_BINARY_DIR}/gen")
+
+add_library(dh_grpc_proto
+    ${PROTO_SRC}
+    ${PROTO_INC})
+target_link_libraries(dh_grpc_proto
+    ${_REFLECTION}
+    ${_GRPC_GRPCPP}
+    ${_PROTOBUF_LIBPROTOBUF})
+
+ add_executable(example src/example.cc)
+ target_link_libraries(example PRIVATE
+    dh_grpc_proto
+    ${_REFLECTION}
+    ${_GRPC_GRPCPP}
+    ${_PROTOBUF_LIBPROTOBUF})
+
 if (ARROW_LINK_SHARED)
   target_link_libraries(example PRIVATE arrow_shared)
   target_link_libraries(example PRIVATE /usr/local/opt/apache-arrow/lib/libarrow_flight.dylib)

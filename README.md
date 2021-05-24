@@ -17,3 +17,7 @@ $ make
 # finally run the generated example:
 $ bin/example
 ```
+
+Installed gRPC from source as part of gRPC tutorial:
+http://grpc.io/docs/languages/cpp/quickstart
+
