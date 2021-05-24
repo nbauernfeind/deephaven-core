@@ -68,7 +68,8 @@ target_link_libraries(dh_grpc_proto
     dh_grpc_proto
     ${_REFLECTION}
     ${_GRPC_GRPCPP}
-    ${_PROTOBUF_LIBPROTOBUF})
+    ${_PROTOBUF_LIBPROTOBUF}
+    Threads::Threads)
 
 if (ARROW_LINK_SHARED)
   target_link_libraries(example PRIVATE arrow_shared)
@@ -76,6 +77,6 @@ if (ARROW_LINK_SHARED)
 else()
   set(THREADS_PREFER_PTHREAD_FLAG ON)
   find_package(Threads REQUIRED)
-  target_link_libraries(example PRIVATE arrow_static Threads::Threads)
-  target_link_libraries(example PRIVATE /usr/local/opt/apache-arrow/lib/libarrow_flight.dylib Threads::Threads)
+  target_link_libraries(example PRIVATE arrow_static)
+  target_link_libraries(example PRIVATE /usr/local/opt/apache-arrow/lib/libarrow_flight.dylib)
 endif()

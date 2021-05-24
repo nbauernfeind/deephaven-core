@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
       return 1;
     }
     return 0;
-  } catch (std::exception &e) {
-    std::cerr << e.what() << std::endl;
+  } catch (...) {
+    std::cerr << "Unknown Error" << std::endl;
   }
 }
