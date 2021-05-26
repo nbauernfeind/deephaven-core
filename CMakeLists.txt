@@ -13,7 +13,7 @@ project(deephaven_cpp VERSION "${DH_BASE_VERSION}")
 
 find_package(Threads REQUIRED)
 find_package(Arrow REQUIRED)
-find_package(CURL REQUIRED)
+find_package(zstd REQUIRED)
 
 message(STATUS "Arrow version: ${ARROW_VERSION}")
 message(STATUS "Arrow SO version: ${ARROW_FULL_SO_VERSION}")
@@ -74,6 +74,7 @@ foreach(_target example)
     ${_GRPC_GRPCPP}
     ${_PROTOBUF_LIBPROTOBUF}
     Threads::Threads
-    arrow_static CURL::libcurl
-    /usr/local/opt/apache-arrow/lib/libarrow_flight.a)
+    arrow_static
+    /usr/local/lib/libzstd.a
+    /usr/local/lib/libarrow_flight.a)
 endforeach()
