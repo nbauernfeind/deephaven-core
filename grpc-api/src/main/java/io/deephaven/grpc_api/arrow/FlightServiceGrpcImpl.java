@@ -83,15 +83,11 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 }
 
                 final SessionState.ExportObject<Table> export = session.getExport(exportId);
-                if (export == null || !export.tryIncrementReferenceCount()) {
-                    return null; // export already expired
+                if (export == null || export.getState() != SessionState.ExportState.EXPORTED || !export.tryRetainReference()) {
+                    return null; // export already expired or it cannot be read
                 }
 
                 try {
-                    if (export.getState() != SessionState.ExportState.EXPORTED) {
-                        return null; // export shouldn't be exposed if it cannot be read
-                    }
-
                     return getFlightInfo(export);
                 } finally {
                     export.dropReference();
