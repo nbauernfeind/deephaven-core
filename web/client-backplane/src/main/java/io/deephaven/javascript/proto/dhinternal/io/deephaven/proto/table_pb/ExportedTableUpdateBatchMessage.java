@@ -21,10 +21,10 @@ public class ExportedTableUpdateBatchMessage {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
       public interface ExportIdFieldType {
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-        public interface GetIdUnionType {
+        public interface GetTicketUnionType {
           @JsOverlay
           static ExportedTableUpdateBatchMessage.ToObjectReturnType.UpdatesListFieldType
-                  .ExportIdFieldType.GetIdUnionType
+                  .ExportIdFieldType.GetTicketUnionType
               of(Object o) {
             return Js.cast(o);
           }
@@ -59,31 +59,31 @@ public class ExportedTableUpdateBatchMessage {
 
         @JsProperty
         ExportedTableUpdateBatchMessage.ToObjectReturnType.UpdatesListFieldType.ExportIdFieldType
-                .GetIdUnionType
-            getId();
+                .GetTicketUnionType
+            getTicket();
 
         @JsProperty
-        void setId(
+        void setTicket(
             ExportedTableUpdateBatchMessage.ToObjectReturnType.UpdatesListFieldType
-                    .ExportIdFieldType.GetIdUnionType
-                id);
+                    .ExportIdFieldType.GetTicketUnionType
+                ticket);
 
         @JsOverlay
-        default void setId(String id) {
-          setId(
+        default void setTicket(String ticket) {
+          setTicket(
               Js
                   .<ExportedTableUpdateBatchMessage.ToObjectReturnType.UpdatesListFieldType
-                          .ExportIdFieldType.GetIdUnionType>
-                      uncheckedCast(id));
+                          .ExportIdFieldType.GetTicketUnionType>
+                      uncheckedCast(ticket));
         }
 
         @JsOverlay
-        default void setId(Uint8Array id) {
-          setId(
+        default void setTicket(Uint8Array ticket) {
+          setTicket(
               Js
                   .<ExportedTableUpdateBatchMessage.ToObjectReturnType.UpdatesListFieldType
-                          .ExportIdFieldType.GetIdUnionType>
-                      uncheckedCast(id));
+                          .ExportIdFieldType.GetTicketUnionType>
+                      uncheckedCast(ticket));
         }
       }
 
@@ -145,10 +145,10 @@ public class ExportedTableUpdateBatchMessage {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
       public interface ExportIdFieldType {
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-        public interface GetIdUnionType {
+        public interface GetTicketUnionType {
           @JsOverlay
           static ExportedTableUpdateBatchMessage.ToObjectReturnType0.UpdatesListFieldType
-                  .ExportIdFieldType.GetIdUnionType
+                  .ExportIdFieldType.GetTicketUnionType
               of(Object o) {
             return Js.cast(o);
           }
@@ -183,31 +183,31 @@ public class ExportedTableUpdateBatchMessage {
 
         @JsProperty
         ExportedTableUpdateBatchMessage.ToObjectReturnType0.UpdatesListFieldType.ExportIdFieldType
-                .GetIdUnionType
-            getId();
+                .GetTicketUnionType
+            getTicket();
 
         @JsProperty
-        void setId(
+        void setTicket(
             ExportedTableUpdateBatchMessage.ToObjectReturnType0.UpdatesListFieldType
-                    .ExportIdFieldType.GetIdUnionType
-                id);
+                    .ExportIdFieldType.GetTicketUnionType
+                ticket);
 
         @JsOverlay
-        default void setId(String id) {
-          setId(
+        default void setTicket(String ticket) {
+          setTicket(
               Js
                   .<ExportedTableUpdateBatchMessage.ToObjectReturnType0.UpdatesListFieldType
-                          .ExportIdFieldType.GetIdUnionType>
-                      uncheckedCast(id));
+                          .ExportIdFieldType.GetTicketUnionType>
+                      uncheckedCast(ticket));
         }
 
         @JsOverlay
-        default void setId(Uint8Array id) {
-          setId(
+        default void setTicket(Uint8Array ticket) {
+          setTicket(
               Js
                   .<ExportedTableUpdateBatchMessage.ToObjectReturnType0.UpdatesListFieldType
-                          .ExportIdFieldType.GetIdUnionType>
-                      uncheckedCast(id));
+                          .ExportIdFieldType.GetTicketUnionType>
+                      uncheckedCast(ticket));
         }
       }
 
