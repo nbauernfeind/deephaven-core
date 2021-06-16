@@ -1,15 +1,15 @@
 package io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf;
 
-import jsinterop.annotations.JsEnum;
 import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsType;
 
-@JsEnum(
+@JsType(
     isNative = true,
     name =
         "dhinternal.io.deephaven.barrage.flatbuf.Schema_generated.io.deephaven.barrage.flatbuf.Type",
     namespace = JsPackage.GLOBAL)
-public enum Type {
-  Binary,
+public class Type {
+  public static int Binary,
   Bool,
   Date,
   Decimal,

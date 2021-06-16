@@ -1,15 +1,15 @@
 package io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.sparsetensor_generated.io.deephaven.barrage.flatbuf;
 
-import jsinterop.annotations.JsEnum;
 import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsType;
 
-@JsEnum(
+@JsType(
     isNative = true,
     name =
         "dhinternal.io.deephaven.barrage.flatbuf.SparseTensor_generated.io.deephaven.barrage.flatbuf.SparseTensorIndex",
     namespace = JsPackage.GLOBAL)
-public enum SparseTensorIndex {
-  NONE,
+public class SparseTensorIndex {
+  public static int NONE,
   SparseMatrixIndexCSX,
   SparseTensorIndexCOO,
   SparseTensorIndexCSF;

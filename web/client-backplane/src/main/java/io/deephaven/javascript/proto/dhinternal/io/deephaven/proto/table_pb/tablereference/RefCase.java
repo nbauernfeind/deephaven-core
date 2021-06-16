@@ -1,14 +1,14 @@
 package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.tablereference;
 
-import jsinterop.annotations.JsEnum;
 import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsType;
 
-@JsEnum(
+@JsType(
     isNative = true,
     name = "dhinternal.io.deephaven.proto.table_pb.TableReference.RefCase",
     namespace = JsPackage.GLOBAL)
-public enum RefCase {
-  BATCH_OFFSET,
+public class RefCase {
+  public static int BATCH_OFFSET,
   REF_NOT_SET,
   TICKET;
 }

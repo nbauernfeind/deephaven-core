@@ -11,9 +11,9 @@ import jsinterop.annotations.JsType;
         "dhinternal.io.deephaven.barrage.flatbuf.Schema_generated.io.deephaven.barrage.flatbuf.FloatingPoint",
     namespace = JsPackage.GLOBAL)
 public class FloatingPoint {
-  public static native void addPrecision(Builder builder, Precision precision);
+  public static native void addPrecision(Builder builder, int precision);
 
-  public static native double createFloatingPoint(Builder builder, Precision precision);
+  public static native double createFloatingPoint(Builder builder, int precision);
 
   public static native double endFloatingPoint(Builder builder);
 
@@ -33,5 +33,5 @@ public class FloatingPoint {
 
   public native FloatingPoint __init(double i, ByteBuffer bb);
 
-  public native Precision precision();
+  public native int precision();
 }

@@ -3,7 +3,6 @@ package io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.sc
 import elemental2.core.Uint8Array;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.Builder;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.ByteBuffer;
-import io.deephaven.javascript.proto.dhinternal.flatbuffers.Encoding;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
@@ -96,9 +95,9 @@ public class KeyValue {
 
   public native KeyValue.KeyUnionType key();
 
-  public native KeyValue.KeyUnionType key(Encoding optionalEncoding);
+  public native KeyValue.KeyUnionType key(int optionalEncoding);
 
   public native KeyValue.ValueUnionType value();
 
-  public native KeyValue.ValueUnionType value(Encoding optionalEncoding);
+  public native KeyValue.ValueUnionType value(int optionalEncoding);
 }

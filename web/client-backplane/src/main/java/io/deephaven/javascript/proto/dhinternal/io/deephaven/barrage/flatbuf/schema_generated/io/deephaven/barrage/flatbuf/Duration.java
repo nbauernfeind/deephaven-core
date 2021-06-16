@@ -11,9 +11,9 @@ import jsinterop.annotations.JsType;
         "dhinternal.io.deephaven.barrage.flatbuf.Schema_generated.io.deephaven.barrage.flatbuf.Duration",
     namespace = JsPackage.GLOBAL)
 public class Duration {
-  public static native void addUnit(Builder builder, TimeUnit unit);
+  public static native void addUnit(Builder builder, int unit);
 
-  public static native double createDuration(Builder builder, TimeUnit unit);
+  public static native double createDuration(Builder builder, int unit);
 
   public static native double endDuration(Builder builder);
 
@@ -32,5 +32,5 @@ public class Duration {
 
   public native Duration __init(double i, ByteBuffer bb);
 
-  public native TimeUnit unit();
+  public native int unit();
 }

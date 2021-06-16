@@ -14,7 +14,7 @@ import jsinterop.annotations.JsType;
     namespace = JsPackage.GLOBAL)
 public class SparseMatrixIndexCSX {
   public static native void addCompressedAxis(
-      Builder builder, SparseMatrixCompressedAxis compressedAxis);
+      Builder builder, int compressedAxis);
 
   public static native void addIndicesBuffer(Builder builder, double indicesBufferOffset);
 
@@ -44,7 +44,7 @@ public class SparseMatrixIndexCSX {
 
   public native SparseMatrixIndexCSX __init(double i, ByteBuffer bb);
 
-  public native SparseMatrixCompressedAxis compressedAxis();
+  public native int compressedAxis();
 
   public native Buffer indicesBuffer();
 

@@ -1,14 +1,14 @@
 package io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.message_generated.io.deephaven.barrage.flatbuf;
 
-import jsinterop.annotations.JsEnum;
 import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsType;
 
-@JsEnum(
+@JsType(
     isNative = true,
     name =
         "dhinternal.io.deephaven.barrage.flatbuf.Message_generated.io.deephaven.barrage.flatbuf.CompressionType",
     namespace = JsPackage.GLOBAL)
-public enum CompressionType {
-  LZ4_FRAME,
+public class CompressionType {
+  public static int LZ4_FRAME,
   ZSTD;
 }

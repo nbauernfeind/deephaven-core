@@ -3,7 +3,6 @@ package io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.te
 import elemental2.core.Uint8Array;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.Builder;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.ByteBuffer;
-import io.deephaven.javascript.proto.dhinternal.flatbuffers.Encoding;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.Long;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
@@ -69,7 +68,7 @@ public class TensorDim {
 
   public native TensorDim.NameUnionType name();
 
-  public native TensorDim.NameUnionType name(Encoding optionalEncoding);
+  public native TensorDim.NameUnionType name(int optionalEncoding);
 
   public native Long size();
 }

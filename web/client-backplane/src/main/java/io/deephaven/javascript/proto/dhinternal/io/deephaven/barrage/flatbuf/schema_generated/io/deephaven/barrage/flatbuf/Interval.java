@@ -11,9 +11,9 @@ import jsinterop.annotations.JsType;
         "dhinternal.io.deephaven.barrage.flatbuf.Schema_generated.io.deephaven.barrage.flatbuf.Interval",
     namespace = JsPackage.GLOBAL)
 public class Interval {
-  public static native void addUnit(Builder builder, IntervalUnit unit);
+  public static native void addUnit(Builder builder, int unit);
 
-  public static native double createInterval(Builder builder, IntervalUnit unit);
+  public static native double createInterval(Builder builder, int unit);
 
   public static native double endInterval(Builder builder);
 
@@ -32,5 +32,5 @@ public class Interval {
 
   public native Interval __init(double i, ByteBuffer bb);
 
-  public native IntervalUnit unit();
+  public native int unit();
 }

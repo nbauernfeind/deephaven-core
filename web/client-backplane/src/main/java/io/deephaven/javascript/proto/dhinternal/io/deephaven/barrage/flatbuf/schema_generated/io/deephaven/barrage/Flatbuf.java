@@ -19,7 +19,6 @@ import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.sch
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.Struct_;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.Time;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.Timestamp;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.Type;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.Union;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.Utf8;
 import jsinterop.annotations.JsFunction;
@@ -1563,8 +1562,8 @@ public class Flatbuf {
   }
 
   public static native Flatbuf.UnionListToTypeUnionType unionListToType(
-      Type type, Flatbuf.UnionListToTypeAccessorFn accessor, double index);
+      int type, Flatbuf.UnionListToTypeAccessorFn accessor, double index);
 
   public static native Flatbuf.UnionToTypeUnionType unionToType(
-      Type type, Flatbuf.UnionToTypeAccessorFn accessor);
+      int type, Flatbuf.UnionToTypeAccessorFn accessor);
 }

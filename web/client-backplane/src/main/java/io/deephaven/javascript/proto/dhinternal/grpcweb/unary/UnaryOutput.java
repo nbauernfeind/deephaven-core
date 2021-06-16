@@ -1,7 +1,6 @@
 package io.deephaven.javascript.proto.dhinternal.grpcweb.unary;
 
 import io.deephaven.javascript.proto.dhinternal.browserheaders.BrowserHeaders;
-import io.deephaven.javascript.proto.dhinternal.grpcweb.grpc.Code;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -26,7 +25,7 @@ public interface UnaryOutput<TResponse> {
   TResponse getMessage();
 
   @JsProperty
-  Code getStatus();
+  int getStatus();
 
   @JsProperty
   String getStatusMessage();
@@ -41,7 +40,7 @@ public interface UnaryOutput<TResponse> {
   void setMessage(TResponse message);
 
   @JsProperty
-  void setStatus(Code status);
+  void setStatus(int status);
 
   @JsProperty
   void setStatusMessage(String statusMessage);

@@ -2,7 +2,6 @@ package io.deephaven.javascript.proto.dhinternal.grpcweb;
 
 import io.deephaven.javascript.proto.dhinternal.grpcweb.grpc.Client;
 import io.deephaven.javascript.proto.dhinternal.grpcweb.grpc.ClientRpcOptions;
-import io.deephaven.javascript.proto.dhinternal.grpcweb.grpc.Code;
 import io.deephaven.javascript.proto.dhinternal.grpcweb.invoke.InvokeRpcOptions;
 import io.deephaven.javascript.proto.dhinternal.grpcweb.invoke.Request;
 import io.deephaven.javascript.proto.dhinternal.grpcweb.transports.http.http.CrossBrowserHttpTransportInit;
@@ -61,5 +60,5 @@ public class Grpc {
   public static native <TRequest, TResponse, M> Client<TRequest, TResponse> client(
       M methodDescriptor, ClientRpcOptions props);
 
-  public static native Code httpStatusToCode(double httpStatus);
+  public static native int httpStatusToCode(double httpStatus);
 }

@@ -2,7 +2,6 @@ package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb;
 
 import elemental2.core.Uint8Array;
 import io.deephaven.javascript.proto.dhinternal.arrow.flight.protocol.flight_pb.Ticket;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.tablereference.RefCase;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -183,7 +182,7 @@ public class TableReference {
 
   public native int getBatchOffset();
 
-  public native RefCase getRefCase();
+  public native int getRefCase();
 
   public native Ticket getTicket();
 

@@ -54,7 +54,7 @@ public class Union {
     }
   }
 
-  public static native void addMode(Builder builder, UnionMode mode);
+  public static native void addMode(Builder builder, int mode);
 
   public static native void addTypeIds(Builder builder, double typeIdsOffset);
 
@@ -89,7 +89,7 @@ public class Union {
     return createTypeIdsVector(builder, Js.<JsArray<Double>>uncheckedCast(data));
   }
 
-  public static native double createUnion(Builder builder, UnionMode mode, double typeIdsOffset);
+  public static native double createUnion(Builder builder, int mode, double typeIdsOffset);
 
   public static native double endUnion(Builder builder);
 
@@ -110,7 +110,7 @@ public class Union {
 
   public native Union __init(double i, ByteBuffer bb);
 
-  public native UnionMode mode();
+  public native int mode();
 
   public native double typeIds(double index);
 

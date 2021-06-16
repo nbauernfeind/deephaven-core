@@ -1,7 +1,6 @@
 package io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.sparsetensor_generated.io.deephaven.barrage;
 
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.sparsetensor_generated.io.deephaven.barrage.flatbuf.SparseMatrixIndexCSX;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.sparsetensor_generated.io.deephaven.barrage.flatbuf.SparseTensorIndex;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.sparsetensor_generated.io.deephaven.barrage.flatbuf.SparseTensorIndexCOO;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.sparsetensor_generated.io.deephaven.barrage.flatbuf.SparseTensorIndexCSF;
 import jsinterop.annotations.JsFunction;
@@ -293,10 +292,10 @@ public class Flatbuf {
   }
 
   public static native Flatbuf.UnionListToSparseTensorIndexUnionType unionListToSparseTensorIndex(
-      SparseTensorIndex type,
+      int type,
       Flatbuf.UnionListToSparseTensorIndexAccessorFn accessor,
       double index);
 
   public static native Flatbuf.UnionToSparseTensorIndexUnionType unionToSparseTensorIndex(
-      SparseTensorIndex type, Flatbuf.UnionToSparseTensorIndexAccessorFn accessor);
+      int type, Flatbuf.UnionToSparseTensorIndexAccessorFn accessor);
 }

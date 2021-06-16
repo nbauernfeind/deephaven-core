@@ -2,7 +2,6 @@ package io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.me
 
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.barrage_generated.io.deephaven.barrage.flatbuf.BarrageRecordBatch;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.message_generated.io.deephaven.barrage.flatbuf.DictionaryBatch;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.message_generated.io.deephaven.barrage.flatbuf.MessageHeader;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.message_generated.io.deephaven.barrage.flatbuf.RecordBatch;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.Schema;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.sparsetensor_generated.io.deephaven.barrage.flatbuf.SparseTensor;
@@ -509,8 +508,8 @@ public class Flatbuf {
   }
 
   public static native Flatbuf.UnionListToMessageHeaderUnionType unionListToMessageHeader(
-      MessageHeader type, Flatbuf.UnionListToMessageHeaderAccessorFn accessor, double index);
+      int type, Flatbuf.UnionListToMessageHeaderAccessorFn accessor, double index);
 
   public static native Flatbuf.UnionToMessageHeaderUnionType unionToMessageHeader(
-      MessageHeader type, Flatbuf.UnionToMessageHeaderAccessorFn accessor);
+      int type, Flatbuf.UnionToMessageHeaderAccessorFn accessor);
 }

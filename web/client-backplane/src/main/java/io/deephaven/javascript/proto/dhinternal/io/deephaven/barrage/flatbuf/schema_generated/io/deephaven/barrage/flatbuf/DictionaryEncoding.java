@@ -12,7 +12,7 @@ import jsinterop.annotations.JsType;
         "dhinternal.io.deephaven.barrage.flatbuf.Schema_generated.io.deephaven.barrage.flatbuf.DictionaryEncoding",
     namespace = JsPackage.GLOBAL)
 public class DictionaryEncoding {
-  public static native void addDictionaryKind(Builder builder, DictionaryKind dictionaryKind);
+  public static native void addDictionaryKind(Builder builder, int dictionaryKind);
 
   public static native void addId(Builder builder, Long id);
 
@@ -39,7 +39,7 @@ public class DictionaryEncoding {
 
   public native DictionaryEncoding __init(double i, ByteBuffer bb);
 
-  public native DictionaryKind dictionaryKind();
+  public native int dictionaryKind();
 
   public native Long id();
 

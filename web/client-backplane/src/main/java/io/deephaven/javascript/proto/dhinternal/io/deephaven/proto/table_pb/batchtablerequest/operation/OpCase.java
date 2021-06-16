@@ -1,14 +1,14 @@
 package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.batchtablerequest.operation;
 
-import jsinterop.annotations.JsEnum;
 import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsType;
 
-@JsEnum(
+@JsType(
     isNative = true,
     name = "dhinternal.io.deephaven.proto.table_pb.BatchTableRequest.Operation.OpCase",
     namespace = JsPackage.GLOBAL)
-public enum OpCase {
-  COMBO_AGGREGATE,
+public class OpCase {
+  public static int COMBO_AGGREGATE,
   DROP_COLUMNS,
   EMPTY_TABLE,
   FILTER,

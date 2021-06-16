@@ -5,7 +5,6 @@ import io.deephaven.javascript.proto.dhinternal.flatbuffers.Builder;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.ByteBuffer;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.Long;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.KeyValue;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.MetadataVersion;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
@@ -23,9 +22,9 @@ public class Message {
 
   public static native void addHeader(Builder builder, double headerOffset);
 
-  public static native void addHeaderType(Builder builder, MessageHeader headerType);
+  public static native void addHeaderType(Builder builder, int headerType);
 
-  public static native void addVersion(Builder builder, MetadataVersion version);
+  public static native void addVersion(Builder builder, int version);
 
   public static native double createCustomMetadataVector(Builder builder, JsArray<Double> data);
 
@@ -36,8 +35,8 @@ public class Message {
 
   public static native double createMessage(
       Builder builder,
-      MetadataVersion version,
-      MessageHeader headerType,
+      int version,
+      int headerType,
       double headerOffset,
       Long bodyLength,
       double customMetadataOffset);
@@ -75,7 +74,7 @@ public class Message {
 
   public native <T> T header(T obj);
 
-  public native MessageHeader headerType();
+  public native int headerType();
 
-  public native MetadataVersion version();
+  public native int version();
 }

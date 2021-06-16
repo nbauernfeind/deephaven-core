@@ -3,7 +3,6 @@ package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb;
 import elemental2.core.JsArray;
 import elemental2.core.Uint8Array;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.filterdescription.OperationMap;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.filterdescription.ValueCase;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -170,7 +169,7 @@ public class FilterDescription {
 
   public native String getStringValue();
 
-  public native ValueCase getValueCase();
+  public native int getValueCase();
 
   public native boolean hasBoolValue();
 

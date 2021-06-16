@@ -2,7 +2,6 @@ package io.deephaven.javascript.proto.dhinternal.grpcweb.client;
 
 import elemental2.core.JsArray;
 import io.deephaven.javascript.proto.dhinternal.browserheaders.BrowserHeaders;
-import io.deephaven.javascript.proto.dhinternal.grpcweb.grpc.Code;
 import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
@@ -14,7 +13,7 @@ import jsinterop.base.JsPropertyMap;
 public interface Client<TRequest, TResponse> {
   @JsFunction
   public interface OnEndCallbackFn {
-    void onInvoke(Code p0, String p1, BrowserHeaders p2);
+    void onInvoke(int p0, String p1, BrowserHeaders p2);
   }
 
   @JsFunction

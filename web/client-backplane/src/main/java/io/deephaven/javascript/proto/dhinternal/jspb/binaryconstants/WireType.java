@@ -1,14 +1,14 @@
 package io.deephaven.javascript.proto.dhinternal.jspb.binaryconstants;
 
-import jsinterop.annotations.JsEnum;
 import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsType;
 
-@JsEnum(
+@JsType(
     isNative = true,
     name = "dhinternal.jspb.BinaryConstants.WireType",
     namespace = JsPackage.GLOBAL)
-public enum WireType {
-  DELIMITED,
+public class WireType {
+  public static int DELIMITED,
   END_GROUP,
   FIXED32,
   FIXED64,

@@ -13,9 +13,9 @@ import jsinterop.annotations.JsType;
 public class Time {
   public static native void addBitWidth(Builder builder, double bitWidth);
 
-  public static native void addUnit(Builder builder, TimeUnit unit);
+  public static native void addUnit(Builder builder, int unit);
 
-  public static native double createTime(Builder builder, TimeUnit unit, double bitWidth);
+  public static native double createTime(Builder builder, int unit, double bitWidth);
 
   public static native double endTime(Builder builder);
 
@@ -36,5 +36,5 @@ public class Time {
 
   public native double bitWidth();
 
-  public native TimeUnit unit();
+  public native int unit();
 }
