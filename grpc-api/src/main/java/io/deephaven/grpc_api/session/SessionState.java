@@ -527,7 +527,7 @@ public class SessionState {
         /**
          * @return the export id or NON_EXPORT_ID if it does not have one
          */
-        public Ticket getExportId() {
+        public Flight.Ticket getExportId() {
             return exportIdToTicket(exportId);
         }
 

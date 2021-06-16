@@ -1,11 +1,6 @@
 package io.deephaven.grpc_api.table;
 
 import com.google.rpc.Code;
-import io.deephaven.hash.KeyedLongObjectHashMap;
-import io.deephaven.hash.KeyedLongObjectKey;
-import io.deephaven.io.logger.Logger;
-import io.deephaven.db.tables.live.LiveTableMonitor;
-import io.deephaven.db.util.liveness.LivenessArtifact;
 import io.deephaven.db.v2.BaseTable;
 import io.deephaven.db.v2.InstrumentedShiftAwareListener;
 import io.deephaven.db.v2.NotificationStepReceiver;
@@ -20,7 +15,6 @@ import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.proto.backplane.grpc.ExportNotification;
 import io.deephaven.proto.backplane.grpc.ExportedTableUpdateMessage;
-import io.deephaven.proto.backplane.grpc.Ticket;
 import io.deephaven.util.annotations.ReferentialIntegrity;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;

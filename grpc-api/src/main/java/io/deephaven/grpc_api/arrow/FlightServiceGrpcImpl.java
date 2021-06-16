@@ -19,6 +19,7 @@ import io.deephaven.db.tables.Table;
 import io.deephaven.db.tables.TableDefinition;
 import io.deephaven.db.util.LongSizedDataStructure;
 import io.deephaven.db.util.liveness.LivenessArtifact;
+import io.deephaven.db.util.liveness.SingletonLivenessManager;
 import io.deephaven.db.v2.BaseTable;
 import io.deephaven.db.v2.remote.ConstructSnapshot;
 import io.deephaven.db.v2.sources.ColumnSource;
@@ -38,6 +39,8 @@ import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.proto.backplane.grpc.BarrageData;
+import io.deephaven.proto.backplane.grpc.ExportNotification;
+import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import org.apache.arrow.flight.impl.Flight;
 import org.apache.arrow.flight.impl.FlightServiceGrpc;
@@ -45,6 +48,7 @@ import org.apache.arrow.flight.impl.FlightServiceGrpc;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -83,7 +87,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 }
 
                 final SessionState.ExportObject<Table> export = session.getExport(exportId);
-                if (export == null || export.getState() != SessionState.ExportState.EXPORTED || !export.tryRetainReference()) {
+                if (export == null || export.getState() != ExportNotification.State.EXPORTED || !export.tryRetainReference()) {
                     return null; // export already expired or it cannot be read
                 }
 
@@ -176,9 +180,6 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
 
             return new StreamObserver<InputStream>() {
                 private final PutMarshaller marshaller = new PutMarshaller(session, responseObserver);
-                {
-                    session.manage(marshaller);
-                }
 
                 @Override
                 public void onNext(final InputStream request) {
@@ -199,7 +200,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
 
                 @Override
                 public void onCompleted() {
-                    session.unmanageNonExport(marshaller);
+                    marshaller.tryClose();
                 }
             };
         });
@@ -382,7 +383,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
     /**
      * This is a stateful marshaller; a PUT stream begins with its schema.
      */
-    private static class PutMarshaller extends LivenessArtifact {
+    private static class PutMarshaller extends SingletonLivenessManager implements Closeable {
         private long nextSeq = 0;
         private BarrageSourcedTable resultTable;
         private SessionState.ExportBuilder<Table> resultExport;
@@ -395,6 +396,10 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 final StreamObserver<Flight.PutResult> observer) {
             this.session = session;
             this.observer = observer;
+            this.session.addOnCloseCallback(this);
+            if (observer instanceof ServerCallStreamObserver) {
+                ((ServerCallStreamObserver<Flight.PutResult>) observer).setOnCancelHandler(this::tryClose);
+            }
         }
 
         private ChunkType[] columnChunkTypes;
@@ -509,12 +514,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
         }
 
         @Override
-        protected void destroy() {
-            // the rpc ticket has been released
-            finishPut();
-        }
-
-        private synchronized void finishPut() {
+        public void close() {
             GrpcUtil.rpcWrapper(log, observer, () -> {
                 if (nextSeq == -1) {
                     return; // allow onComplete after isFinal app_metadata
@@ -536,6 +536,12 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 }
                 observer.onCompleted();
             });
+        }
+
+        private void tryClose() {
+            if (session.removeOnCloseCallback(this) != null) {
+                close();
+            }
         }
 
         private void parseSchema(final Schema header) {
