@@ -88,7 +88,7 @@ message BindTableToVariableRequest {
     arrow.flight.protocol.Ticket console_id = 1;
     reserved 2;
     string variable_name = 3;
-    io.deephaven.proto.backplane.grpc.Ticket table_id = 4;
+    arrow.flight.protocol.Ticket table_id = 4;
 }
 message BindTableToVariableResponse {
 }
