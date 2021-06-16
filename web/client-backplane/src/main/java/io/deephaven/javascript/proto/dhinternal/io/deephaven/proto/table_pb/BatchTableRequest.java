@@ -191,10 +191,10 @@ public class BatchTableRequest {
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
         public interface ResultIdFieldType {
           @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-          public interface GetIdUnionType {
+          public interface GetTicketUnionType {
             @JsOverlay
             static BatchTableRequest.ToObjectReturnType.OpsListFieldType.EmptyTableFieldType
-                    .ResultIdFieldType.GetIdUnionType
+                    .ResultIdFieldType.GetTicketUnionType
                 of(Object o) {
               return Js.cast(o);
             }
@@ -229,31 +229,31 @@ public class BatchTableRequest {
 
           @JsProperty
           BatchTableRequest.ToObjectReturnType.OpsListFieldType.EmptyTableFieldType
-                  .ResultIdFieldType.GetIdUnionType
-              getId();
+                  .ResultIdFieldType.GetTicketUnionType
+              getTicket();
 
           @JsProperty
-          void setId(
+          void setTicket(
               BatchTableRequest.ToObjectReturnType.OpsListFieldType.EmptyTableFieldType
-                      .ResultIdFieldType.GetIdUnionType
-                  id);
+                      .ResultIdFieldType.GetTicketUnionType
+                  ticket);
 
           @JsOverlay
-          default void setId(String id) {
-            setId(
+          default void setTicket(String ticket) {
+            setTicket(
                 Js
                     .<BatchTableRequest.ToObjectReturnType.OpsListFieldType.EmptyTableFieldType
-                            .ResultIdFieldType.GetIdUnionType>
-                        uncheckedCast(id));
+                            .ResultIdFieldType.GetTicketUnionType>
+                        uncheckedCast(ticket));
           }
 
           @JsOverlay
-          default void setId(Uint8Array id) {
-            setId(
+          default void setTicket(Uint8Array ticket) {
+            setTicket(
                 Js
                     .<BatchTableRequest.ToObjectReturnType.OpsListFieldType.EmptyTableFieldType
-                            .ResultIdFieldType.GetIdUnionType>
-                        uncheckedCast(id));
+                            .ResultIdFieldType.GetTicketUnionType>
+                        uncheckedCast(ticket));
           }
         }
 
@@ -1197,10 +1197,10 @@ public class BatchTableRequest {
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
         public interface ResultIdFieldType {
           @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-          public interface GetIdUnionType {
+          public interface GetTicketUnionType {
             @JsOverlay
             static BatchTableRequest.ToObjectReturnType0.OpsListFieldType.EmptyTableFieldType
-                    .ResultIdFieldType.GetIdUnionType
+                    .ResultIdFieldType.GetTicketUnionType
                 of(Object o) {
               return Js.cast(o);
             }
@@ -1235,31 +1235,31 @@ public class BatchTableRequest {
 
           @JsProperty
           BatchTableRequest.ToObjectReturnType0.OpsListFieldType.EmptyTableFieldType
-                  .ResultIdFieldType.GetIdUnionType
-              getId();
+                  .ResultIdFieldType.GetTicketUnionType
+              getTicket();
 
           @JsProperty
-          void setId(
+          void setTicket(
               BatchTableRequest.ToObjectReturnType0.OpsListFieldType.EmptyTableFieldType
-                      .ResultIdFieldType.GetIdUnionType
-                  id);
+                      .ResultIdFieldType.GetTicketUnionType
+                  ticket);
 
           @JsOverlay
-          default void setId(String id) {
-            setId(
+          default void setTicket(String ticket) {
+            setTicket(
                 Js
                     .<BatchTableRequest.ToObjectReturnType0.OpsListFieldType.EmptyTableFieldType
-                            .ResultIdFieldType.GetIdUnionType>
-                        uncheckedCast(id));
+                            .ResultIdFieldType.GetTicketUnionType>
+                        uncheckedCast(ticket));
           }
 
           @JsOverlay
-          default void setId(Uint8Array id) {
-            setId(
+          default void setTicket(Uint8Array ticket) {
+            setTicket(
                 Js
                     .<BatchTableRequest.ToObjectReturnType0.OpsListFieldType.EmptyTableFieldType
-                            .ResultIdFieldType.GetIdUnionType>
-                        uncheckedCast(id));
+                            .ResultIdFieldType.GetTicketUnionType>
+                        uncheckedCast(ticket));
           }
         }
 

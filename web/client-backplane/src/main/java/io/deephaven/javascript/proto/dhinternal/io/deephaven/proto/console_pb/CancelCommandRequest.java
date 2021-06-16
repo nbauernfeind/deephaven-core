@@ -19,9 +19,9 @@ public class CancelCommandRequest {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
     public interface ConsoleIdFieldType {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-      public interface GetIdUnionType {
+      public interface GetTicketUnionType {
         @JsOverlay
-        static CancelCommandRequest.ToObjectReturnType.ConsoleIdFieldType.GetIdUnionType of(
+        static CancelCommandRequest.ToObjectReturnType.ConsoleIdFieldType.GetTicketUnionType of(
             Object o) {
           return Js.cast(o);
         }
@@ -53,25 +53,26 @@ public class CancelCommandRequest {
       }
 
       @JsProperty
-      CancelCommandRequest.ToObjectReturnType.ConsoleIdFieldType.GetIdUnionType getId();
+      CancelCommandRequest.ToObjectReturnType.ConsoleIdFieldType.GetTicketUnionType getTicket();
 
       @JsProperty
-      void setId(CancelCommandRequest.ToObjectReturnType.ConsoleIdFieldType.GetIdUnionType id);
+      void setTicket(
+          CancelCommandRequest.ToObjectReturnType.ConsoleIdFieldType.GetTicketUnionType ticket);
 
       @JsOverlay
-      default void setId(String id) {
-        setId(
+      default void setTicket(String ticket) {
+        setTicket(
             Js
-                .<CancelCommandRequest.ToObjectReturnType.ConsoleIdFieldType.GetIdUnionType>
-                    uncheckedCast(id));
+                .<CancelCommandRequest.ToObjectReturnType.ConsoleIdFieldType.GetTicketUnionType>
+                    uncheckedCast(ticket));
       }
 
       @JsOverlay
-      default void setId(Uint8Array id) {
-        setId(
+      default void setTicket(Uint8Array ticket) {
+        setTicket(
             Js
-                .<CancelCommandRequest.ToObjectReturnType.ConsoleIdFieldType.GetIdUnionType>
-                    uncheckedCast(id));
+                .<CancelCommandRequest.ToObjectReturnType.ConsoleIdFieldType.GetTicketUnionType>
+                    uncheckedCast(ticket));
       }
     }
 
@@ -98,9 +99,9 @@ public class CancelCommandRequest {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
     public interface ConsoleIdFieldType {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-      public interface GetIdUnionType {
+      public interface GetTicketUnionType {
         @JsOverlay
-        static CancelCommandRequest.ToObjectReturnType0.ConsoleIdFieldType.GetIdUnionType of(
+        static CancelCommandRequest.ToObjectReturnType0.ConsoleIdFieldType.GetTicketUnionType of(
             Object o) {
           return Js.cast(o);
         }
@@ -132,25 +133,26 @@ public class CancelCommandRequest {
       }
 
       @JsProperty
-      CancelCommandRequest.ToObjectReturnType0.ConsoleIdFieldType.GetIdUnionType getId();
+      CancelCommandRequest.ToObjectReturnType0.ConsoleIdFieldType.GetTicketUnionType getTicket();
 
       @JsProperty
-      void setId(CancelCommandRequest.ToObjectReturnType0.ConsoleIdFieldType.GetIdUnionType id);
+      void setTicket(
+          CancelCommandRequest.ToObjectReturnType0.ConsoleIdFieldType.GetTicketUnionType ticket);
 
       @JsOverlay
-      default void setId(String id) {
-        setId(
+      default void setTicket(String ticket) {
+        setTicket(
             Js
-                .<CancelCommandRequest.ToObjectReturnType0.ConsoleIdFieldType.GetIdUnionType>
-                    uncheckedCast(id));
+                .<CancelCommandRequest.ToObjectReturnType0.ConsoleIdFieldType.GetTicketUnionType>
+                    uncheckedCast(ticket));
       }
 
       @JsOverlay
-      default void setId(Uint8Array id) {
-        setId(
+      default void setTicket(Uint8Array ticket) {
+        setTicket(
             Js
-                .<CancelCommandRequest.ToObjectReturnType0.ConsoleIdFieldType.GetIdUnionType>
-                    uncheckedCast(id));
+                .<CancelCommandRequest.ToObjectReturnType0.ConsoleIdFieldType.GetTicketUnionType>
+                    uncheckedCast(ticket));
       }
     }
 

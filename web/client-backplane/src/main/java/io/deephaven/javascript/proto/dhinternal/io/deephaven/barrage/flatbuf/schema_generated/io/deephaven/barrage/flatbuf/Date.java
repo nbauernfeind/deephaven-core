@@ -11,9 +11,9 @@ import jsinterop.annotations.JsType;
         "dhinternal.io.deephaven.barrage.flatbuf.Schema_generated.io.deephaven.barrage.flatbuf.Date",
     namespace = JsPackage.GLOBAL)
 public class Date {
-  public static native void addUnit(Builder builder, int unit);
+  public static native void addUnit(Builder builder, DateUnit unit);
 
-  public static native double createDate(Builder builder, int unit);
+  public static native double createDate(Builder builder, DateUnit unit);
 
   public static native double endDate(Builder builder);
 
@@ -32,5 +32,5 @@ public class Date {
 
   public native Date __init(double i, ByteBuffer bb);
 
-  public native int unit();
+  public native DateUnit unit();
 }

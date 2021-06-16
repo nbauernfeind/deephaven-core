@@ -19,10 +19,10 @@ public class GetCompletionItemsRequest {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
     public interface ConsoleIdFieldType {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-      public interface GetIdUnionType {
+      public interface GetTicketUnionType {
         @JsOverlay
-        static GetCompletionItemsRequest.ToObjectReturnType.ConsoleIdFieldType.GetIdUnionType of(
-            Object o) {
+        static GetCompletionItemsRequest.ToObjectReturnType.ConsoleIdFieldType.GetTicketUnionType
+            of(Object o) {
           return Js.cast(o);
         }
 
@@ -53,25 +53,30 @@ public class GetCompletionItemsRequest {
       }
 
       @JsProperty
-      GetCompletionItemsRequest.ToObjectReturnType.ConsoleIdFieldType.GetIdUnionType getId();
+      GetCompletionItemsRequest.ToObjectReturnType.ConsoleIdFieldType.GetTicketUnionType
+          getTicket();
 
       @JsProperty
-      void setId(GetCompletionItemsRequest.ToObjectReturnType.ConsoleIdFieldType.GetIdUnionType id);
+      void setTicket(
+          GetCompletionItemsRequest.ToObjectReturnType.ConsoleIdFieldType.GetTicketUnionType
+              ticket);
 
       @JsOverlay
-      default void setId(String id) {
-        setId(
+      default void setTicket(String ticket) {
+        setTicket(
             Js
-                .<GetCompletionItemsRequest.ToObjectReturnType.ConsoleIdFieldType.GetIdUnionType>
-                    uncheckedCast(id));
+                .<GetCompletionItemsRequest.ToObjectReturnType.ConsoleIdFieldType
+                        .GetTicketUnionType>
+                    uncheckedCast(ticket));
       }
 
       @JsOverlay
-      default void setId(Uint8Array id) {
-        setId(
+      default void setTicket(Uint8Array ticket) {
+        setTicket(
             Js
-                .<GetCompletionItemsRequest.ToObjectReturnType.ConsoleIdFieldType.GetIdUnionType>
-                    uncheckedCast(id));
+                .<GetCompletionItemsRequest.ToObjectReturnType.ConsoleIdFieldType
+                        .GetTicketUnionType>
+                    uncheckedCast(ticket));
       }
     }
 
@@ -171,10 +176,10 @@ public class GetCompletionItemsRequest {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
     public interface ConsoleIdFieldType {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-      public interface GetIdUnionType {
+      public interface GetTicketUnionType {
         @JsOverlay
-        static GetCompletionItemsRequest.ToObjectReturnType0.ConsoleIdFieldType.GetIdUnionType of(
-            Object o) {
+        static GetCompletionItemsRequest.ToObjectReturnType0.ConsoleIdFieldType.GetTicketUnionType
+            of(Object o) {
           return Js.cast(o);
         }
 
@@ -205,26 +210,30 @@ public class GetCompletionItemsRequest {
       }
 
       @JsProperty
-      GetCompletionItemsRequest.ToObjectReturnType0.ConsoleIdFieldType.GetIdUnionType getId();
+      GetCompletionItemsRequest.ToObjectReturnType0.ConsoleIdFieldType.GetTicketUnionType
+          getTicket();
 
       @JsProperty
-      void setId(
-          GetCompletionItemsRequest.ToObjectReturnType0.ConsoleIdFieldType.GetIdUnionType id);
+      void setTicket(
+          GetCompletionItemsRequest.ToObjectReturnType0.ConsoleIdFieldType.GetTicketUnionType
+              ticket);
 
       @JsOverlay
-      default void setId(String id) {
-        setId(
+      default void setTicket(String ticket) {
+        setTicket(
             Js
-                .<GetCompletionItemsRequest.ToObjectReturnType0.ConsoleIdFieldType.GetIdUnionType>
-                    uncheckedCast(id));
+                .<GetCompletionItemsRequest.ToObjectReturnType0.ConsoleIdFieldType
+                        .GetTicketUnionType>
+                    uncheckedCast(ticket));
       }
 
       @JsOverlay
-      default void setId(Uint8Array id) {
-        setId(
+      default void setTicket(Uint8Array ticket) {
+        setTicket(
             Js
-                .<GetCompletionItemsRequest.ToObjectReturnType0.ConsoleIdFieldType.GetIdUnionType>
-                    uncheckedCast(id));
+                .<GetCompletionItemsRequest.ToObjectReturnType0.ConsoleIdFieldType
+                        .GetTicketUnionType>
+                    uncheckedCast(ticket));
       }
     }
 

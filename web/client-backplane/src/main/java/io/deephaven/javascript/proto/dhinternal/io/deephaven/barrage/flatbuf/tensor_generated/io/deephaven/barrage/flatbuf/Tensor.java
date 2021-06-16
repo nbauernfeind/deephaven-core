@@ -5,6 +5,7 @@ import io.deephaven.javascript.proto.dhinternal.flatbuffers.Builder;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.ByteBuffer;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.Long;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.Buffer;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.schema_generated.io.deephaven.barrage.flatbuf.Type;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
@@ -24,7 +25,7 @@ public class Tensor {
 
   public static native void addType(Builder builder, double typeOffset);
 
-  public static native void addTypeType(Builder builder, int typeType);
+  public static native void addTypeType(Builder builder, Type typeType);
 
   public static native double createShapeVector(Builder builder, JsArray<Double> data);
 
@@ -81,5 +82,5 @@ public class Tensor {
 
   public native <T> T type(T obj);
 
-  public native int typeType();
+  public native Type typeType();
 }

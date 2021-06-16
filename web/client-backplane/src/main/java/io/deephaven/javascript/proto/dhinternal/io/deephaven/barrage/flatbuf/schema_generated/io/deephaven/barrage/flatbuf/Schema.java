@@ -17,7 +17,7 @@ import jsinterop.base.Js;
 public class Schema {
   public static native void addCustomMetadata(Builder builder, double customMetadataOffset);
 
-  public static native void addEndianness(Builder builder, int endianness);
+  public static native void addEndianness(Builder builder, Endianness endianness);
 
   public static native void addFeatures(Builder builder, double featuresOffset);
 
@@ -46,7 +46,7 @@ public class Schema {
 
   public static native double createSchema(
       Builder builder,
-      int endianness,
+      Endianness endianness,
       double fieldsOffset,
       double customMetadataOffset,
       double featuresOffset);
@@ -84,7 +84,7 @@ public class Schema {
 
   public native double customMetadataLength();
 
-  public native int endianness();
+  public native Endianness endianness();
 
   public native Long features(double index);
 

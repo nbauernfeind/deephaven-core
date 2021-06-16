@@ -1,14 +1,14 @@
 package io.deephaven.javascript.proto.dhinternal.jspb.binaryconstants;
 
+import jsinterop.annotations.JsEnum;
 import jsinterop.annotations.JsPackage;
-import jsinterop.annotations.JsType;
 
-@JsType(
+@JsEnum(
     isNative = true,
     name = "dhinternal.jspb.BinaryConstants.FieldType",
     namespace = JsPackage.GLOBAL)
-public class FieldType {
-  public static int BOOL,
+public enum FieldType {
+  BOOL,
   BYTES,
   DOUBLE,
   ENUM,

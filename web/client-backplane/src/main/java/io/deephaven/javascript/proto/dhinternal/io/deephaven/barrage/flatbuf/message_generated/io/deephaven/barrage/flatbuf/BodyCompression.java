@@ -11,12 +11,12 @@ import jsinterop.annotations.JsType;
         "dhinternal.io.deephaven.barrage.flatbuf.Message_generated.io.deephaven.barrage.flatbuf.BodyCompression",
     namespace = JsPackage.GLOBAL)
 public class BodyCompression {
-  public static native void addCodec(Builder builder, int codec);
+  public static native void addCodec(Builder builder, CompressionType codec);
 
-  public static native void addMethod(Builder builder, int method);
+  public static native void addMethod(Builder builder, BodyCompressionMethod method);
 
   public static native double createBodyCompression(
-      Builder builder, int codec, int method);
+      Builder builder, CompressionType codec, BodyCompressionMethod method);
 
   public static native double endBodyCompression(Builder builder);
 
@@ -36,7 +36,7 @@ public class BodyCompression {
 
   public native BodyCompression __init(double i, ByteBuffer bb);
 
-  public native int codec();
+  public native CompressionType codec();
 
-  public native int method();
+  public native BodyCompressionMethod method();
 }

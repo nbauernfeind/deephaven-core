@@ -46,7 +46,7 @@ public class ByteBuffer {
 
   public native double __offset(double bb_pos, double vtable_offset);
 
-  public native ByteBuffer.__stringUnionType __string(double offset, int optionalEncoding);
+  public native ByteBuffer.__stringUnionType __string(double offset, Encoding optionalEncoding);
 
   public native ByteBuffer.__stringUnionType __string(double offset);
 

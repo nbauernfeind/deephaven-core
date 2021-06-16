@@ -23,7 +23,7 @@ public class ChunkParser {
     }
 
     @JsProperty
-    int getChunkType();
+    ChunkType getChunkType();
 
     @JsProperty
     Uint8Array getData();
@@ -32,7 +32,7 @@ public class ChunkParser {
     BrowserHeaders getTrailers();
 
     @JsProperty
-    void setChunkType(int chunkType);
+    void setChunkType(ChunkType chunkType);
 
     @JsProperty
     void setData(Uint8Array data);

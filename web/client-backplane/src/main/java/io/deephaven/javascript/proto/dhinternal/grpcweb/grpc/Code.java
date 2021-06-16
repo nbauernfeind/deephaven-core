@@ -1,11 +1,11 @@
 package io.deephaven.javascript.proto.dhinternal.grpcweb.grpc;
 
+import jsinterop.annotations.JsEnum;
 import jsinterop.annotations.JsPackage;
-import jsinterop.annotations.JsType;
 
-@JsType(isNative = true, name = "dhinternal.grpcWeb.grpc.Code", namespace = JsPackage.GLOBAL)
-public class Code {
-  public static int Aborted,
+@JsEnum(isNative = true, name = "dhinternal.grpcWeb.grpc.Code", namespace = JsPackage.GLOBAL)
+public enum Code {
+  Aborted,
   AlreadyExists,
   Canceled,
   DataLoss,

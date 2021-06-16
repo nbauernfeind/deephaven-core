@@ -18,6 +18,7 @@ import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.Sort
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.TimeTableRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.UngroupRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.UnstructuredFilterTableRequest;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.batchtablerequest.operation.OpCase;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -191,9 +192,10 @@ public class Operation {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
       public interface ResultIdFieldType {
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-        public interface GetIdUnionType {
+        public interface GetTicketUnionType {
           @JsOverlay
-          static Operation.ToObjectReturnType.EmptyTableFieldType.ResultIdFieldType.GetIdUnionType
+          static Operation.ToObjectReturnType.EmptyTableFieldType.ResultIdFieldType
+                  .GetTicketUnionType
               of(Object o) {
             return Js.cast(o);
           }
@@ -225,28 +227,30 @@ public class Operation {
         }
 
         @JsProperty
-        Operation.ToObjectReturnType.EmptyTableFieldType.ResultIdFieldType.GetIdUnionType getId();
+        Operation.ToObjectReturnType.EmptyTableFieldType.ResultIdFieldType.GetTicketUnionType
+            getTicket();
 
         @JsProperty
-        void setId(
-            Operation.ToObjectReturnType.EmptyTableFieldType.ResultIdFieldType.GetIdUnionType id);
+        void setTicket(
+            Operation.ToObjectReturnType.EmptyTableFieldType.ResultIdFieldType.GetTicketUnionType
+                ticket);
 
         @JsOverlay
-        default void setId(String id) {
-          setId(
+        default void setTicket(String ticket) {
+          setTicket(
               Js
                   .<Operation.ToObjectReturnType.EmptyTableFieldType.ResultIdFieldType
-                          .GetIdUnionType>
-                      uncheckedCast(id));
+                          .GetTicketUnionType>
+                      uncheckedCast(ticket));
         }
 
         @JsOverlay
-        default void setId(Uint8Array id) {
-          setId(
+        default void setTicket(Uint8Array ticket) {
+          setTicket(
               Js
                   .<Operation.ToObjectReturnType.EmptyTableFieldType.ResultIdFieldType
-                          .GetIdUnionType>
-                      uncheckedCast(id));
+                          .GetTicketUnionType>
+                      uncheckedCast(ticket));
         }
       }
 
@@ -1110,9 +1114,10 @@ public class Operation {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
       public interface ResultIdFieldType {
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-        public interface GetIdUnionType {
+        public interface GetTicketUnionType {
           @JsOverlay
-          static Operation.ToObjectReturnType0.EmptyTableFieldType.ResultIdFieldType.GetIdUnionType
+          static Operation.ToObjectReturnType0.EmptyTableFieldType.ResultIdFieldType
+                  .GetTicketUnionType
               of(Object o) {
             return Js.cast(o);
           }
@@ -1144,28 +1149,30 @@ public class Operation {
         }
 
         @JsProperty
-        Operation.ToObjectReturnType0.EmptyTableFieldType.ResultIdFieldType.GetIdUnionType getId();
+        Operation.ToObjectReturnType0.EmptyTableFieldType.ResultIdFieldType.GetTicketUnionType
+            getTicket();
 
         @JsProperty
-        void setId(
-            Operation.ToObjectReturnType0.EmptyTableFieldType.ResultIdFieldType.GetIdUnionType id);
+        void setTicket(
+            Operation.ToObjectReturnType0.EmptyTableFieldType.ResultIdFieldType.GetTicketUnionType
+                ticket);
 
         @JsOverlay
-        default void setId(String id) {
-          setId(
+        default void setTicket(String ticket) {
+          setTicket(
               Js
                   .<Operation.ToObjectReturnType0.EmptyTableFieldType.ResultIdFieldType
-                          .GetIdUnionType>
-                      uncheckedCast(id));
+                          .GetTicketUnionType>
+                      uncheckedCast(ticket));
         }
 
         @JsOverlay
-        default void setId(Uint8Array id) {
-          setId(
+        default void setTicket(Uint8Array ticket) {
+          setTicket(
               Js
                   .<Operation.ToObjectReturnType0.EmptyTableFieldType.ResultIdFieldType
-                          .GetIdUnionType>
-                      uncheckedCast(id));
+                          .GetTicketUnionType>
+                      uncheckedCast(ticket));
         }
       }
 
@@ -1942,7 +1949,7 @@ public class Operation {
 
   public native MergeTablesRequest getMerge();
 
-  public native int getOpCase();
+  public native OpCase getOpCase();
 
   public native SelectOrUpdateRequest getSelect();
 

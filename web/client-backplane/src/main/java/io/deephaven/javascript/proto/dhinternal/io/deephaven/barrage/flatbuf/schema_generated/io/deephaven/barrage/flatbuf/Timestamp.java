@@ -3,6 +3,7 @@ package io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.sc
 import elemental2.core.Uint8Array;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.Builder;
 import io.deephaven.javascript.proto.dhinternal.flatbuffers.ByteBuffer;
+import io.deephaven.javascript.proto.dhinternal.flatbuffers.Encoding;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
@@ -44,10 +45,10 @@ public class Timestamp {
 
   public static native void addTimezone(Builder builder, double timezoneOffset);
 
-  public static native void addUnit(Builder builder, int unit);
+  public static native void addUnit(Builder builder, TimeUnit unit);
 
   public static native double createTimestamp(
-      Builder builder, int unit, double timezoneOffset);
+      Builder builder, TimeUnit unit, double timezoneOffset);
 
   public static native double endTimestamp(Builder builder);
 
@@ -68,7 +69,7 @@ public class Timestamp {
 
   public native Timestamp.TimezoneUnionType timezone();
 
-  public native Timestamp.TimezoneUnionType timezone(int optionalEncoding);
+  public native Timestamp.TimezoneUnionType timezone(Encoding optionalEncoding);
 
-  public native int unit();
+  public native TimeUnit unit();
 }
