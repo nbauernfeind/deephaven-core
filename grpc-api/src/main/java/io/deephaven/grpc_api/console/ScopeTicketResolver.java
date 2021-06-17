@@ -17,12 +17,12 @@ import java.util.function.Consumer;
 public class ScopeTicketResolver extends TicketResolverBase {
     private static final char TICKET_PREFIX = 's';
 
-    private final ConsoleServiceGrpcImpl consoleService;
+    private final GlobalSessionProvider globalSessionProvider;
 
     @Inject
-    public ScopeTicketResolver(final ConsoleServiceGrpcImpl consoleService) {
+    public ScopeTicketResolver(final GlobalSessionProvider globalSessionProvider) {
         super((byte)TICKET_PREFIX, "scope");
-        this.consoleService = consoleService;
+        this.globalSessionProvider = globalSessionProvider;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
             throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "could not compute flight info: no variable name provided");
         }
         final String varName = descriptor.getPath(1);
-        final Object varObj = consoleService.getGlobalSession().getVariable(varName);
+        final Object varObj = globalSessionProvider.getGlobalSession().getVariable(varName);
         if (varObj instanceof Table) {
             return getFlightInfo((Table) varObj, descriptor, ticketForName(varName));
         } else {
@@ -41,7 +41,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
 
     @Override
     public void forAllFlightInfo(final Consumer<Flight.FlightInfo> visitor) {
-        consoleService.getGlobalSession().getVariables().forEach((varName, varObj) -> {
+        globalSessionProvider.getGlobalSession().getVariables().forEach((varName, varObj) -> {
             if (varObj instanceof Table) {
                 visitor.accept(getFlightInfo((Table) varObj, descriptorForName(varName), ticketForName(varName)));
             }
@@ -56,7 +56,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
         // Skip the second byte which is a '/' separating route from varName
         final String varName = ticket.getTicket().toStringUtf8().substring(2);
         //noinspection unchecked
-        final T result = (T)consoleService.getGlobalSession().getVariable(varName);
+        final T result = (T)globalSessionProvider.getGlobalSession().getVariable(varName);
 
         if (result == null) {
             throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "could not resolve ticket: no variable exists with name '" + varName + "'");

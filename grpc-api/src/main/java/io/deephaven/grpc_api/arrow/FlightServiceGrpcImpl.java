@@ -195,7 +195,10 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "no rpc ticket provided");
             }
 
-            final SessionState.ExportBuilder<PutMarshaller> putExport = session.newExport(GrpcUtil.byteStringToLong(ticketBuf));
+            final Flight.Ticket ticket = Flight.Ticket.newBuilder()
+                    .setTicket(ByteString.copyFrom(ticketBuf))
+                    .build();
+            final SessionState.ExportBuilder<PutMarshaller> putExport = session.newExport(ticket);
 
             putExport.submit(() -> {
                 final PutMarshaller put = new PutMarshaller(session, responseObserver);
@@ -225,7 +228,10 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "no rpc ticket provided");
             }
 
-            final SessionState.ExportObject<PutMarshaller> putExport = session.getExport(GrpcUtil.byteStringToLong(ticketBuf));
+            final SessionState.ExportObject<PutMarshaller> putExport = ticketRouter.resolve(session,
+                    Flight.Ticket.newBuilder()
+                            .setTicket(ByteString.copyFrom(ticketBuf))
+                            .build());
 
             session.nonExport()
                     .require(putExport)

@@ -35,11 +35,15 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
 
     private static final Logger log = LoggerFactory.getLogger(SessionServiceGrpcImpl.class);
 
+    private final TicketRouter ticketRouter;
     private final SessionService service;
     private final AuthContextProvider authProvider;
 
     @Inject()
-    public SessionServiceGrpcImpl(final SessionService service, final AuthContextProvider authProvider) {
+    public SessionServiceGrpcImpl(final TicketRouter ticketRouter,
+                                  final SessionService service,
+                                  final AuthContextProvider authProvider) {
+        this.ticketRouter = ticketRouter;
         this.service = service;
         this.authProvider = authProvider;
     }
@@ -120,9 +124,11 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
     @Override
     public void release(final Flight.Ticket request, final StreamObserver<ReleaseResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-            final SessionState.ExportObject<?> export = service.getCurrentSession().getExport(request);
-            final ExportNotification.State currState = export.getState();
-            export.release();
+            final SessionState.ExportObject<?> export = service.getCurrentSession().getExportIfExists(request);
+            final ExportNotification.State currState = export != null ? export.getState() : ExportNotification.State.UNKNOWN;
+            if (export != null) {
+                export.release();
+            }
             responseObserver.onNext(ReleaseResponse.newBuilder().setSuccess(currState != ExportNotification.State.UNKNOWN).build());
             responseObserver.onCompleted();
         });

@@ -1,6 +1,7 @@
 package io.deephaven.grpc_api.session;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.google.protobuf.ByteString;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 import dagger.assisted.Assisted;
@@ -243,6 +244,16 @@ public class SessionState {
         }
 
         return (ExportObject<T>) exportMap.get(exportId);
+    }
+
+    /**
+     * Grab the ExportObject for the provided id if it already exists, otherwise return null.
+     * @param ticket the export ticket
+     * @return a future-like object that represents this export
+     */
+    @SuppressWarnings("unchecked")
+    public <T> ExportObject<T> getExportIfExists(final Flight.Ticket ticket) {
+        return getExportIfExists(ticketToExportId(ticket));
     }
 
     /**
@@ -1111,21 +1122,47 @@ public class SessionState {
      * @param exportId the export id
      * @return a grpc Ticket wrapping the export id
      */
-    public static Flight.Ticket exportIdToTicket(final long exportId) {
-        return Flight.Ticket.newBuilder().setTicket(GrpcUtil.longToByteString(exportId)).build();
+    public static Flight.Ticket exportIdToTicket(long exportId) {
+        final boolean isServerSideExport = exportId < 0;
+        if (isServerSideExport) {
+            exportId *= -1;
+        }
+
+        byte[] ticket = GrpcUtil.longToByteArray(exportId);
+        for (int i = 0; i < 4; ++i) {
+            ticket[i + 4] = ticket[i];
+            ticket[i] = 0;
+        }
+        if (isServerSideExport) {
+            ticket[3] = 0x1;
+        }
+        return Flight.Ticket.newBuilder().setTicket(ByteString.copyFrom(ticket)).build();
     }
 
     /**
      * Convenience method to convert from {@link Flight.Ticket} to export id.
      *
+     * Ticket's byte[0] must be zero, bytes[1-3] are reserved and must be zero for client created tickets. bytes[4-7] are
+     * an unsigned integer in little-endian. Call it the inner_id. Note that an inner_id of zero is invalid.
+     *
+     * If byte[3] & 0x1 == 0x1, then this is a server-side export. The return value is the inner_id casted to a long and
+     * then multiplied by -1.
+     *
      * @param ticket the grpc Ticket
      * @return the export id that the Ticket wraps
      */
     public static long ticketToExportId(final Flight.Ticket ticket) {
-        if (ticket == null || ticket.getTicket().size() != 8) {
-            throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "missing or incorrectly formatted ticket");
+        final ByteString bs = ticket != null ? ticket.getTicket() : null;
+        if (ticket == null || bs.size() != 8 || bs.byteAt(0) != 0) {
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "ticket is not an export id");
         }
-        return GrpcUtil.byteStringToLong(ticket.getTicket());
+
+        final boolean isServerSideExport = (bs.byteAt(3) & 0x1) == 0x1;
+        long id = GrpcUtil.byteStringToLong(bs.substring(4));
+        if (isServerSideExport) {
+            id *= -1;
+        }
+        return id;
     }
 
     private static final KeyedLongObjectKey<ExportObject<?>> EXPORT_OBJECT_ID_KEY = new KeyedLongObjectKey.BasicStrict<ExportObject<?>>() {

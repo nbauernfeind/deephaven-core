@@ -19,13 +19,11 @@ public class ClientConfiguration {
     }
 
     public Uint8Array newTicket() {
-        // THe current implementation takes the simplest approach of assuming that we can't have more than
-        // Integer.MAX_VALUE tickets in a session.
         if (next == Integer.MAX_VALUE) {
             throw new IllegalStateException("Ran out of tickets!");
         }
         Int32Array ints = new Int32Array(2);
-        ints.set(new double[] {next++, 0});
+        ints.set(new double[] {0, next++});
         return new Uint8Array(ints.buffer);
     }
 }

@@ -3,6 +3,7 @@ package io.deephaven.grpc_api.table;
 import com.google.flatbuffers.FlatBufferBuilder;
 import com.google.protobuf.ByteString;
 import com.google.rpc.Code;
+import io.deephaven.grpc_api.session.TicketRouter;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.v2.sources.ColumnSource;
@@ -34,7 +35,6 @@ import io.deephaven.proto.backplane.grpc.TableServiceGrpc;
 import io.deephaven.proto.backplane.grpc.TimeTableRequest;
 import io.deephaven.proto.backplane.grpc.UngroupRequest;
 import io.deephaven.proto.backplane.grpc.UnstructuredFilterTableRequest;
-import com.google.flatbuffers.FlatBufferBuilder;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import org.apache.arrow.flight.impl.Flight;
@@ -53,12 +53,15 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
 
     private static final Logger log = LoggerFactory.getLogger(TableServiceGrpcImpl.class);
 
+    private final TicketRouter ticketRouter;
     private final SessionService sessionService;
     private final Map<BatchTableRequest.Operation.OpCase, GrpcTableOperation<?>> operationMap;
 
     @Inject
-    public TableServiceGrpcImpl(final SessionService sessionService,
+    public TableServiceGrpcImpl(final TicketRouter ticketRouter,
+                                final SessionService sessionService,
                                 final Map<BatchTableRequest.Operation.OpCase, GrpcTableOperation<?>> operationMap) {
+        this.ticketRouter = ticketRouter;
         this.sessionService = sessionService;
         this.operationMap = operationMap;
     }
@@ -201,7 +204,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
 
                 switch (ref.getRefCase()) {
                     case TICKET:
-                        return session.getExport(ref.getTicket());
+                        return ticketRouter.resolve(session, ref.getTicket());
                     case BATCH_OFFSET:
                         final int offset = ref.getBatchOffset();
                         if (offset < 0 || offset >= exportBuilders.size()) {
@@ -300,7 +303,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
 
             final List<SessionState.ExportObject<Table>> dependencies = operation.getTableReferences(request).stream()
                     .map(TableReference::getTicket)
-                    .map(session::<Table>getExport)
+                    .map((ticket) -> ticketRouter.<Table>resolve(session, ticket))
                     .collect(Collectors.toList());
 
             session.newExport(resultId)
