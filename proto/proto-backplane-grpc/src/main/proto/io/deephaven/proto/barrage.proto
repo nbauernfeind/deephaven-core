@@ -89,7 +89,7 @@ message SubscriptionRequest {
   /*
    * Export this subscription so that it can be referenced for out of band updates.
    */
-  arrow.flight.protocol.Ticket exportId = 21;
+  arrow.flight.protocol.Ticket export_id = 21;
 
   /*
    * Subscription request processing may incur some for of coalescing. Additionally, out of band updates may
