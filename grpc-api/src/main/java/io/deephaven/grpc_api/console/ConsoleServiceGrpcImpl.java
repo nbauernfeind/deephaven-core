@@ -46,7 +46,10 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     private final LiveTableMonitor liveTableMonitor;
 
     @Inject
-    public ConsoleServiceGrpcImpl(final Map<String, Provider<ScriptSession>> scriptTypes, final SessionService sessionService, final LogBuffer logBuffer, final LiveTableMonitor liveTableMonitor) {
+    public ConsoleServiceGrpcImpl(final Map<String, Provider<ScriptSession>> scriptTypes,
+                                  final SessionService sessionService,
+                                  final LogBuffer logBuffer,
+                                  final LiveTableMonitor liveTableMonitor) {
         this.scriptTypes = scriptTypes;
         this.sessionService = sessionService;
         this.logBuffer = logBuffer;
@@ -74,6 +77,10 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                     .build());
             responseObserver.onCompleted();
         });
+    }
+
+    public ScriptSession getGlobalSession() {
+        return globalSession;
     }
 
     @Override

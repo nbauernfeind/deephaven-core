@@ -12,15 +12,18 @@ option java_multiple_files = true;
 option optimize_for = SPEED;
 
 /*
- * Flight's Ticket is the id that represents a specific export.
- * - Positive numbers are managed and allocated by the session client.
- * - Negative numbers are allocated by the server when the number of exports for an operation is variable.
- * - Zero is reserved to identify the default QueryScope.
+ * User supplied Flight.Ticket(s) should begin with four zero bytes followed by an unsigned little-endian int. There are
+ * no restrictions on the domain of the integer used by the user. However, the client is encouraged to use a packed
+ * ranges of ids as this yields the smallest footprint server side for long running sessions.
  *
- * The client is responsible for releasing all exports including those allocated by the server. When a session ends,
- * either explicitly or due to timeout, all exported objects in that session are released automatically.
+ * The client is responsible for releasing all exports where the first byte is a zero; including those tickets
+ * occasionally allocated by the server. An API that creates exports that are the client's responsibility will be
+ * documented as such. When a session ends, either explicitly or due to timeout, all exported objects
+ * in that session are released automatically.
  *
- * All Deephaven tickets are 8-byte signed longs.
+ * Some parts of the API return a Flight.Ticket that do not need to be released. These will not begin with a zero byte
+ * and will not show up in an export notification stream. They should otherwise be treated as opaque and not be expected
+ * to conform to an 8-byte length.
  */
 
 service SessionService {

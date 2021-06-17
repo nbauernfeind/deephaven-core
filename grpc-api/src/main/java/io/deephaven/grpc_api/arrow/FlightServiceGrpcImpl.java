@@ -18,7 +18,6 @@ import io.deephaven.datastructures.util.CollectionUtil;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.tables.TableDefinition;
 import io.deephaven.db.util.LongSizedDataStructure;
-import io.deephaven.db.util.liveness.LivenessArtifact;
 import io.deephaven.db.util.liveness.SingletonLivenessManager;
 import io.deephaven.db.v2.BaseTable;
 import io.deephaven.db.v2.remote.ConstructSnapshot;
@@ -30,6 +29,7 @@ import io.deephaven.db.v2.utils.IndexShiftData;
 import io.deephaven.grpc_api.barrage.BarrageStreamGenerator;
 import io.deephaven.grpc_api.barrage.BarrageStreamReader;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
+import io.deephaven.grpc_api.session.TicketRouter;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.util.GrpcUtil;
@@ -39,7 +39,6 @@ import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.proto.backplane.grpc.BarrageData;
-import io.deephaven.proto.backplane.grpc.ExportNotification;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import org.apache.arrow.flight.impl.Flight;
@@ -66,76 +65,46 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
     private static final Logger log = LoggerFactory.getLogger(FlightServiceGrpcImpl.class);
 
     private final SessionService sessionService;
+    private final TicketRouter ticketRouter;
 
     @Inject()
-    public FlightServiceGrpcImpl(final SessionService sessionService) {
+    public FlightServiceGrpcImpl(final SessionService sessionService,
+                                 final TicketRouter ticketRouter) {
         this.sessionService = sessionService;
+        this.ticketRouter = ticketRouter;
     }
 
     @Override
     public void listFlights(final Flight.Criteria request, final StreamObserver<Flight.FlightInfo> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-            final SessionState session = sessionService.getCurrentSession();
-
-            session.addExportListener(GrpcUtil.mapOnNext(responseObserver, (notification) -> {
-                final Flight.Ticket ticket = notification.getTicket();
-                final long exportId = SessionState.ticketToExportId(ticket);
-
-                if (exportId == 0) {
-                    responseObserver.onCompleted();
-                    throw GrpcUtil.statusRuntimeException(Code.CANCELLED, "flight listing complete");
-                }
-
-                final SessionState.ExportObject<Table> export = session.getExport(exportId);
-                if (export == null || export.getState() != ExportNotification.State.EXPORTED || !export.tryRetainReference()) {
-                    return null; // export already expired or it cannot be read
-                }
-
-                try {
-                    return getFlightInfo(export);
-                } finally {
-                    export.dropReference();
-                }
-            }));
+            ticketRouter.visitFlightInfo(responseObserver::onNext);
+            responseObserver.onCompleted();
         });
     }
 
     @Override
     public void getFlightInfo(final Flight.FlightDescriptor request, final StreamObserver<Flight.FlightInfo> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-            final SessionState session = sessionService.getCurrentSession();
-            final SessionState.ExportObject<Table> export = getExportFromDescriptor(session, request);
-            session.nonExport()
-                    .require(export)
-                    .onError(responseObserver::onError)
-                    .submit(() -> {
-                        responseObserver.onNext(getFlightInfo(export));
-                        responseObserver.onCompleted();
-                    });
+            responseObserver.onNext(ticketRouter.flightInfoFor(request));
+            responseObserver.onCompleted();
         });
     }
 
     @Override
     public void getSchema(final Flight.FlightDescriptor request, final StreamObserver<Flight.SchemaResult> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-            final SessionState session = sessionService.getCurrentSession();
-            final SessionState.ExportObject<Table> export = getExportFromDescriptor(session, request);
-            session.nonExport()
-                    .require(export)
-                    .onError(responseObserver::onError)
-                    .submit(() -> {
-                        responseObserver.onNext(Flight.SchemaResult.newBuilder()
-                                .setSchema(schemaBytesFromTable(export.get()))
-                                .build());
-                        responseObserver.onCompleted();
-                    });
+            final ByteString schema = ticketRouter.flightInfoFor(request).getSchema();
+            responseObserver.onNext(Flight.SchemaResult.newBuilder()
+                    .setSchema(schema)
+                    .build());
+            responseObserver.onCompleted();
         });
     }
 
     public void doGetCustom(final Flight.Ticket request, final StreamObserver<InputStream> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState session = sessionService.getCurrentSession();
-            final SessionState.ExportObject<BaseTable> export = session.getExport(request);
+            final SessionState.ExportObject<BaseTable> export = ticketRouter.resolve(session, request);
             session.nonExport()
                     .require(export)
                     .submit(() -> {
@@ -267,47 +236,6 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                         responseObserver.onCompleted();
                     });
         });
-    }
-
-    private static SessionState.ExportObject<Table> getExportFromDescriptor(final SessionState session, final Flight.FlightDescriptor request) {
-        if (request.getType() != Flight.FlightDescriptor.DescriptorType.PATH
-                || request.getPathCount() != 2
-                || !request.getPath(0).equals("ticket")) {
-            throw GrpcUtil.statusRuntimeException(Code.NOT_FOUND, "no flight found");
-        }
-
-        final long exportId;
-        try {
-            exportId = Long.parseLong(request.getPath(1));
-        } catch (final NumberFormatException error) {
-            throw GrpcUtil.statusRuntimeException(Code.NOT_FOUND, "no flight found");
-        }
-
-        return session.getExport(exportId);
-    }
-
-    private Flight.FlightInfo getFlightInfo(final SessionState.ExportObject<Table> export) {
-        final Table table = export.get();
-        return Flight.FlightInfo.newBuilder()
-                .setSchema(schemaBytesFromTable(table))
-                .setFlightDescriptor(Flight.FlightDescriptor.newBuilder()
-                        .addPath("ticket")
-                        .addPath(Long.toString(export.getExportId()))
-                        .build())
-                .addEndpoint(Flight.FlightEndpoint.newBuilder()
-                        .setTicket(SessionState.exportIdToTicket(export.getExportId()))
-                        .build())
-                .setTotalRecords(table.isLive() ? -1 : table.size())
-                .setTotalBytes(-1)
-                .build();
-    }
-
-    private static ByteString schemaBytesFromTable(final Table table) {
-        final String[] columnNames = table.getDefinition().getColumnNamesArray();
-        final ColumnSource<?>[] columnSources = table.getColumnSources().toArray(ColumnSource.ZERO_LENGTH_COLUMN_SOURCE_ARRAY);
-        final FlatBufferBuilder builder = new FlatBufferBuilder();
-        builder.finish(BarrageSchemaUtil.makeSchemaPayload(builder, columnNames, columnSources, table.getAttributes()));
-        return ByteString.copyFrom(builder.dataBuffer());
     }
 
     private static final int BODY_TAG =

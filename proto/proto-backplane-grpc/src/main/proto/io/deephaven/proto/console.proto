@@ -46,7 +46,7 @@ message GetConsoleTypesResponse {
 }
 
 message StartConsoleRequest {
-    arrow.flight.protocol.Ticket resuklt_id = 1;
+    arrow.flight.protocol.Ticket result_id = 1;
     string session_type = 2;
 }
 message StartConsoleResponse {
