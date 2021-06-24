@@ -179,6 +179,8 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                     .require(exportedConsole, exportedTable)
                     .submit(() -> {
                         exportedConsole.get().setVariable(request.getVariableName(), exportedTable.get());
+                        responseObserver.onNext(BindTableToVariableResponse.newBuilder().build());
+                        responseObserver.onCompleted();
                     });
         });
     }
