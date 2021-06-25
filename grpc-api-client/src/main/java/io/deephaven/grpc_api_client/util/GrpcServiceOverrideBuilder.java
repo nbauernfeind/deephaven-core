@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api_client.util;
 
 import io.grpc.MethodDescriptor;
@@ -95,10 +99,26 @@ public class GrpcServiceOverrideBuilder {
         return serviceBuilder.build();
     }
 
+    public static <ReqT, RespT> MethodDescriptor<ReqT, RespT> descriptorFor(
+            final MethodDescriptor.MethodType methodType,
+            final String fullMethodName,
+            final MethodDescriptor.Marshaller<ReqT> requestMarshaller,
+            final MethodDescriptor.Marshaller<RespT> responseMarshaller,
+            final MethodDescriptor<?, ?> descriptor) {
+
+        return MethodDescriptor.<ReqT, RespT>newBuilder()
+                .setType(methodType)
+                .setFullMethodName(fullMethodName)
+                .setSampledToLocalTracing(false)
+                .setRequestMarshaller(requestMarshaller)
+                .setResponseMarshaller(responseMarshaller)
+                .setSchemaDescriptor(descriptor.getSchemaDescriptor())
+                .build();
+    }
+
     private static void validateMethodType(MethodDescriptor.MethodType methodType, MethodDescriptor.MethodType handlerType) {
         if (methodType != handlerType) {
             throw new IllegalArgumentException("Provided method's type (" + methodType.name() + ") does not match handler's type of " + handlerType.name());
         }
     }
-
 }

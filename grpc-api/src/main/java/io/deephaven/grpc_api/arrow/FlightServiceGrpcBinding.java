@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.arrow;
 
 import io.deephaven.grpc_api_client.util.GrpcServiceOverrideBuilder;
@@ -27,10 +31,6 @@ public class FlightServiceGrpcBinding implements BindableService {
     private static final String DO_PUT_OOB_CLIENT_STREAM = MethodDescriptor.generateFullMethodName(SERVICE, "DoPutOOBClientStream");
     private static final String DO_PUT_OOB_CLIENT_STREAM_UPDATE = MethodDescriptor.generateFullMethodName(SERVICE, "DoPutOOBClientStreamUpdate");
 
-    private static final String DO_EXCHANGE = MethodDescriptor.generateFullMethodName(SERVICE, "DoExchange");
-    private static final String DO_EXCHANGE_OOB_CLIENT_STREAM = MethodDescriptor.generateFullMethodName(SERVICE, "DoExchangeOOBClientStream");
-    private static final String DO_EXCHANGE_OOB_CLIENT_STREAM_UPDATE = MethodDescriptor.generateFullMethodName(SERVICE, "DoExchangeOOBClientStreamUpdate");
-
     private final FlightServiceGrpcImpl delegate;
 
     @Inject
@@ -41,54 +41,26 @@ public class FlightServiceGrpcBinding implements BindableService {
     @Override
     public ServerServiceDefinition bindService() {
         return GrpcServiceOverrideBuilder.newBuilder(delegate.bindService())
-                .override(getServerDoGetDescriptor(), new DoGet(delegate))
-                .override(getServerDoPutDescriptor(), new DoPut(delegate))
-                .override(getServerDoPutOOBDescriptor(), new DoPutOOB(delegate))
-                .override(getServerDoPutOOBUpdateDescriptor(), new DoPutOOBUpdate(delegate))
-                .build();
-    }
-
-    private static MethodDescriptor<Flight.Ticket, InputStream> getServerDoGetDescriptor() {
-        return MethodDescriptor.<Flight.Ticket, InputStream>newBuilder()
-                .setType(MethodDescriptor.MethodType.SERVER_STREAMING)
-                .setFullMethodName(DO_GET)
-                .setSampledToLocalTracing(false)
-                .setRequestMarshaller(ProtoUtils.marshaller(Flight.Ticket.getDefaultInstance()))
-                .setResponseMarshaller(PassthroughInputStreamMarshaller.INSTANCE)
-                .setSchemaDescriptor(FlightServiceGrpc.getDoPutMethod().getSchemaDescriptor())
-                .build();
-    }
-
-    private static MethodDescriptor<InputStream, Flight.PutResult> getServerDoPutDescriptor() {
-        return MethodDescriptor.<InputStream, Flight.PutResult>newBuilder()
-                .setType(MethodDescriptor.MethodType.BIDI_STREAMING)
-                .setFullMethodName(DO_PUT)
-                .setSampledToLocalTracing(false)
-                .setRequestMarshaller(PassthroughInputStreamMarshaller.INSTANCE)
-                .setResponseMarshaller(ProtoUtils.marshaller(Flight.PutResult.getDefaultInstance()))
-                .setSchemaDescriptor(FlightServiceGrpc.getDoPutMethod().getSchemaDescriptor())
-                .build();
-    }
-
-    private static MethodDescriptor<InputStream, Flight.PutResult> getServerDoPutOOBDescriptor() {
-        return MethodDescriptor.<InputStream, Flight.PutResult>newBuilder()
-                .setType(MethodDescriptor.MethodType.SERVER_STREAMING)
-                .setFullMethodName(DO_PUT_OOB_CLIENT_STREAM)
-                .setSampledToLocalTracing(false)
-                .setRequestMarshaller(PassthroughInputStreamMarshaller.INSTANCE)
-                .setResponseMarshaller(ProtoUtils.marshaller(Flight.PutResult.getDefaultInstance()))
-                .setSchemaDescriptor(BarrageServiceGrpc.getDoSubscribeNoClientStreamMethod().getSchemaDescriptor())
-                .build();
-    }
-
-    private static MethodDescriptor<InputStream, Flight.OOBPutResult> getServerDoPutOOBUpdateDescriptor() {
-        return MethodDescriptor.<InputStream, Flight.OOBPutResult>newBuilder()
-                .setType(MethodDescriptor.MethodType.UNARY)
-                .setFullMethodName(DO_PUT_OOB_CLIENT_STREAM_UPDATE)
-                .setSampledToLocalTracing(false)
-                .setRequestMarshaller(PassthroughInputStreamMarshaller.INSTANCE)
-                .setResponseMarshaller(ProtoUtils.marshaller(Flight.OOBPutResult.getDefaultInstance()))
-                .setSchemaDescriptor(BarrageServiceGrpc.getDoSubscribeNoClientStreamMethod().getSchemaDescriptor())
+                .override(GrpcServiceOverrideBuilder.descriptorFor(
+                        MethodDescriptor.MethodType.SERVER_STREAMING, DO_GET,
+                        ProtoUtils.marshaller(Flight.Ticket.getDefaultInstance()),
+                        PassthroughInputStreamMarshaller.INSTANCE,
+                        FlightServiceGrpc.getDoGetMethod()), new DoGet(delegate))
+                .override(GrpcServiceOverrideBuilder.descriptorFor(
+                        MethodDescriptor.MethodType.BIDI_STREAMING, DO_PUT,
+                        PassthroughInputStreamMarshaller.INSTANCE,
+                        ProtoUtils.marshaller(Flight.PutResult.getDefaultInstance()),
+                        FlightServiceGrpc.getDoPutMethod()), new DoPut(delegate))
+                .override(GrpcServiceOverrideBuilder.descriptorFor(
+                        MethodDescriptor.MethodType.SERVER_STREAMING, DO_PUT_OOB_CLIENT_STREAM,
+                        PassthroughInputStreamMarshaller.INSTANCE,
+                        ProtoUtils.marshaller(Flight.PutResult.getDefaultInstance()),
+                        BarrageServiceGrpc.getDoSubscribeNoClientStreamMethod()), new DoPutOOB(delegate))
+                .override(GrpcServiceOverrideBuilder.descriptorFor(
+                        MethodDescriptor.MethodType.UNARY, DO_PUT_OOB_CLIENT_STREAM_UPDATE,
+                        PassthroughInputStreamMarshaller.INSTANCE,
+                        ProtoUtils.marshaller(Flight.OOBPutResult.getDefaultInstance()),
+                        FlightServiceGrpc.getDoPutOOBClientStreamUpdateMethod()), new DoPutOOBUpdate(delegate))
                 .build();
     }
 

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.barrage;
 
 import io.deephaven.db.v2.sources.chunk.ChunkType;
@@ -36,8 +40,16 @@ public class BarrageServiceGrpcBinding<Options, View> implements BindableService
     @Override
     public ServerServiceDefinition bindService() {
         return GrpcServiceOverrideBuilder.newBuilder(delegate.bindService())
-                .override(getServerDoSubscribeDescriptor(), new DoSubscribe<>(delegate))
-                .override(getServerDoSubscribeNoClientStreamDescriptor(), new DoSubscribeNoClientStream<>(delegate))
+                .override(GrpcServiceOverrideBuilder.descriptorFor(
+                        MethodDescriptor.MethodType.BIDI_STREAMING, DO_SUBSCRIBE,
+                        ProtoUtils.marshaller(SubscriptionRequest.getDefaultInstance()),
+                        PassthroughInputStreamMarshaller.INSTANCE,
+                        BarrageServiceGrpc.getDoSubscribeMethod()), new DoSubscribe<>(delegate))
+                .override(GrpcServiceOverrideBuilder.descriptorFor(
+                        MethodDescriptor.MethodType.SERVER_STREAMING, DO_SUBSCRIBE_NO_CLIENT_STREAM,
+                        ProtoUtils.marshaller(SubscriptionRequest.getDefaultInstance()),
+                        PassthroughInputStreamMarshaller.INSTANCE,
+                        BarrageServiceGrpc.getDoSubscribeNoClientStreamMethod()), new DoSubscribeNoClientStream<>(delegate))
                 .build();
     }
 
@@ -47,6 +59,7 @@ public class BarrageServiceGrpcBinding<Options, View> implements BindableService
      * @param options           the set of options that last across the entire life of the subscription
      * @param columnChunkTypes  the chunk types per column
      * @param columnTypes       the class type per column
+     * @param componentTypes    the component class type per column
      * @param streamReader      the stream reader - intended to be thread safe and re-usable
      * @param <Options>         the options related to deserialization
      * @return the client side method descriptor
@@ -55,38 +68,16 @@ public class BarrageServiceGrpcBinding<Options, View> implements BindableService
             final Options options,
             final ChunkType[] columnChunkTypes,
             final Class<?>[] columnTypes,
+            final Class<?>[] componentTypes,
             final BarrageMessageConsumer.StreamReader<Options> streamReader) {
-        return MethodDescriptor.<SubscriptionRequest, BarrageMessage>newBuilder()
-                .setType(MethodDescriptor.MethodType.BIDI_STREAMING)
-                .setFullMethodName(DO_SUBSCRIBE)
-                .setSampledToLocalTracing(false)
-                .setRequestMarshaller(ProtoUtils.marshaller(SubscriptionRequest.getDefaultInstance()))
-                .setResponseMarshaller(new BarrageDataMarshaller<>(options, columnChunkTypes, columnTypes, streamReader))
-                .setSchemaDescriptor(BarrageServiceGrpc.getDoSubscribeMethod().getSchemaDescriptor())
-                .build();
+        return GrpcServiceOverrideBuilder.descriptorFor(
+                MethodDescriptor.MethodType.BIDI_STREAMING, DO_SUBSCRIBE,
+                ProtoUtils.marshaller(SubscriptionRequest.getDefaultInstance()),
+                new BarrageDataMarshaller<>(options, columnChunkTypes, columnTypes, componentTypes, streamReader),
+                BarrageServiceGrpc.getDoSubscribeMethod());
     }
 
-    private static MethodDescriptor<SubscriptionRequest, InputStream> getServerDoSubscribeDescriptor() {
-        return MethodDescriptor.<SubscriptionRequest, InputStream>newBuilder()
-                .setType(MethodDescriptor.MethodType.BIDI_STREAMING)
-                .setFullMethodName(DO_SUBSCRIBE)
-                .setSampledToLocalTracing(false)
-                .setRequestMarshaller(ProtoUtils.marshaller(SubscriptionRequest.getDefaultInstance()))
-                .setResponseMarshaller(PassthroughInputStreamMarshaller.INSTANCE)
-                .setSchemaDescriptor(BarrageServiceGrpc.getDoSubscribeMethod().getSchemaDescriptor())
-                .build();
-    }
 
-    private static MethodDescriptor<SubscriptionRequest, InputStream> getServerDoSubscribeNoClientStreamDescriptor() {
-        return MethodDescriptor.<SubscriptionRequest, InputStream>newBuilder()
-                .setType(MethodDescriptor.MethodType.SERVER_STREAMING)
-                .setFullMethodName(DO_SUBSCRIBE_NO_CLIENT_STREAM)
-                .setSampledToLocalTracing(false)
-                .setRequestMarshaller(ProtoUtils.marshaller(SubscriptionRequest.getDefaultInstance()))
-                .setResponseMarshaller(PassthroughInputStreamMarshaller.INSTANCE)
-                .setSchemaDescriptor(BarrageServiceGrpc.getDoSubscribeNoClientStreamMethod().getSchemaDescriptor())
-                .build();
-    }
 
     private static class DoSubscribe<Options, View> implements ServerCalls.BidiStreamingMethod<SubscriptionRequest, InputStream> {
 
@@ -126,16 +117,19 @@ public class BarrageServiceGrpcBinding<Options, View> implements BindableService
         private final Options options;
         private final ChunkType[] columnChunkTypes;
         private final Class<?>[] columnTypes;
+        private final Class<?>[] componentTypes;
         private final BarrageMessageConsumer.StreamReader<Options> streamReader;
 
         public BarrageDataMarshaller(
                 final Options options,
                 final ChunkType[] columnChunkTypes,
                 final Class<?>[] columnTypes,
+                final Class<?>[] componentTypes,
                 final BarrageMessageConsumer.StreamReader<Options> streamReader) {
             this.options = options;
             this.columnChunkTypes = columnChunkTypes;
             this.columnTypes = columnTypes;
+            this.componentTypes = componentTypes;
             this.streamReader = streamReader;
         }
 
@@ -146,7 +140,7 @@ public class BarrageServiceGrpcBinding<Options, View> implements BindableService
 
         @Override
         public BarrageMessage parse(final InputStream stream) {
-            return streamReader.safelyParseFrom(options, columnChunkTypes, columnTypes, stream);
+            return streamReader.safelyParseFrom(options, columnChunkTypes, columnTypes, componentTypes, stream);
         }
     }
 }

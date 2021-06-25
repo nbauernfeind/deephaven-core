@@ -20,30 +20,6 @@ import java.util.function.Function;
 public class GrpcUtil {
     private static Logger log = LoggerFactory.getLogger(GrpcUtil.class);
 
-    public static byte[] longToByteArray(long value) {
-        // Note: Little-Endian
-        final byte[] result = new byte[8];
-        for (int i = 0; i < 8; i++) {
-            result[i] = (byte) (value & 0xffL);
-            value >>= 8;
-        }
-        return result;
-    }
-
-    public static ByteString longToByteString(long value) {
-        return ByteString.copyFrom(longToByteArray(value));
-    }
-
-    public static long byteStringToLong(final ByteString value) {
-        // Note: Little-Endian
-        long result = 0;
-        for (int i = 7; i >= 0; i--) {
-            final byte bval = value.size() <= i ? 0 : value.byteAt(i);
-            result = (result << 8) + (bval & 0xffL);
-        }
-        return result;
-    }
-
     public static void rpcWrapper(final Logger log, final StreamObserver<?> response, final Runnable lambda) {
         try (final SafeCloseable ignored = LivenessScopeStack.open()) {
             lambda.run();

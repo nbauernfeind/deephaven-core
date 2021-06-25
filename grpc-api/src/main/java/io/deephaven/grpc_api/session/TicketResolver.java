@@ -1,16 +1,24 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.session;
 
 import org.apache.arrow.flight.impl.Flight;
 
+import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
 public interface TicketResolver {
     /**
      * @return the single byte prefix used as a route on the ticket
      */
-    byte ticketPrefix();
+    byte ticketRoute();
 
     /**
+     * The first path entry on a route indicates which resolver to use. The remaining path elements are used to resolve
+     * the descriptor.
+     *
      * @return the string that will route from flight descriptor to this resolver
      */
     String flightDescriptorRoute();
@@ -23,7 +31,41 @@ public interface TicketResolver {
      * @param <T> the expected return type of the ticket; this is not validated
      * @return an export object that can be used as a dependency; it is not guaranteed to be readily available
      */
-    <T> SessionState.ExportObject<T> resolve(SessionState session, Flight.Ticket ticket);
+    default <T> SessionState.ExportObject<T> resolve(SessionState session, Flight.Ticket ticket) {
+        return resolve(session, ticket.getTicket().asReadOnlyByteBuffer());
+    }
+
+    /**
+     * Resolve a flight ticket to an export object future.
+     *
+     * @param session the user session context
+     * @param ticket (as ByteByffer) the ticket to resolve
+     * @param <T> the expected return type of the ticket; this is not validated
+     * @return an export object that can be used as a dependency; it is not guaranteed to be readily available
+     */
+    <T> SessionState.ExportObject<T> resolve(SessionState session, ByteBuffer ticket);
+
+    /**
+     * Resolve a flight descriptor to an export object future.
+     *
+     * @param session the user session context
+     * @param descriptor the descriptor to resolve
+     * @param <T> the expected return type of the ticket; this is not validated
+     * @return an export object that can be used as a dependency; it is not guaranteed to be readily available
+     */
+    <T> SessionState.ExportObject<T> resolve(SessionState session, Flight.FlightDescriptor descriptor);
+
+    /**
+     * Publish a new result as a flight ticket to an export object future.
+     *
+     * The user must call {@link SessionState.ExportBuilder#submit} to publish the result value.
+     *
+     * @param session the user session context
+     * @param ticket (as ByteByffer) the ticket to publish to
+     * @param <T> the type of the result the export will publish
+     * @return an export object that can be used as a dependency; it is not guaranteed to be readily available
+     */
+    <T> SessionState.ExportBuilder<T> publish(SessionState session, ByteBuffer ticket);
 
     /**
      * Retrieve a FlightInfo for a given FlightDescriptor.

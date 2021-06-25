@@ -439,21 +439,21 @@ public class ConstructSnapshot {
      *
      * @param logIdentityObject An object used to prepend to log rows.
      * @param table the table to snapshot.
-     * @param columnsToSerialize a bitset of columns to include in the snapshot
-     * @param keysToSnapshot an Index of keys to include in the snapshot
+     * @param columnsToSerialize  A {@link BitSet} of columns to include, null for all
+     * @param keysToSnapshot An Index of keys within the table to include, null for all
      * @return a snapshot of the entire base table.
      */
     public static InitialSnapshot constructInitialSnapshot(final Object logIdentityObject,
                                                            @NotNull final BaseTable table,
-                                                           final BitSet columnsToSerialize,
-                                                           final Index keysToSnapshot) {
+                                                           @Nullable final BitSet columnsToSerialize,
+                                                           @Nullable final Index keysToSnapshot) {
         return constructInitialSnapshot(logIdentityObject, table, columnsToSerialize, keysToSnapshot, makeSnapshotControl(false, table));
     }
 
     static InitialSnapshot constructInitialSnapshot(final Object logIdentityObject,
                                                     @NotNull final BaseTable table,
-                                                    final BitSet columnsToSerialize,
-                                                    final Index keysToSnapshot,
+                                                    @Nullable final BitSet columnsToSerialize,
+                                                    @Nullable final Index keysToSnapshot,
                                                     @NotNull final SnapshotControl control) {
         final InitialSnapshot snapshot = new InitialSnapshot();
 
@@ -471,21 +471,21 @@ public class ConstructSnapshot {
      *
      * @param logIdentityObject An object used to prepend to log rows.
      * @param table the table to snapshot.
-     * @param columnsToSerialize a bitset of columns to include in the snapshot
-     * @param positionsToSnapshot an Index of keys to include in the snapshot
+     * @param columnsToSerialize  A {@link BitSet} of columns to include, null for all
+     * @param positionsToSnapshot An Index of positions within the table to include, null for all
      * @return a snapshot of the entire base table.
      */
     public static InitialSnapshot constructInitialSnapshotInPositionSpace(final Object logIdentityObject,
                                                                           @NotNull final BaseTable table,
-                                                                          final BitSet columnsToSerialize,
-                                                                          final Index positionsToSnapshot) {
+                                                                          @Nullable final BitSet columnsToSerialize,
+                                                                          @Nullable final Index positionsToSnapshot) {
         return constructInitialSnapshotInPositionSpace(logIdentityObject, table,  columnsToSerialize, positionsToSnapshot, makeSnapshotControl(false, table));
     }
 
     static InitialSnapshot constructInitialSnapshotInPositionSpace(final Object logIdentityObject,
                                                                    @NotNull final BaseTable table,
-                                                                   final BitSet columnsToSerialize,
-                                                                   final Index positionsToSnapshot,
+                                                                   @Nullable final BitSet columnsToSerialize,
+                                                                   @Nullable final Index positionsToSnapshot,
                                                                    @NotNull final SnapshotControl control) {
         final InitialSnapshot snapshot = new InitialSnapshot();
 
@@ -507,24 +507,59 @@ public class ConstructSnapshot {
         return snapshot;
     }
 
+    /**
+     * Create a {@link BarrageMessage snapshot} of the specified table using a set of requested columns and positions.
+     * Note that this method uses an index that is in Position space, and that it is notification-oblivious, i.e. it
+     * makes no attempt to ensure that notifications are not missed.
+     *
+     * @param logIdentityObject An object used to prepend to log rows.
+     * @param table the table to snapshot.
+     * @return a snapshot of the entire base table.
+     */
+    public static BarrageMessage constructBackplaneSnapshotInPositionSpace(final Object logIdentityObject,
+                                                                           final BaseTable table) {
+        return constructBackplaneSnapshotInPositionSpace(logIdentityObject, table, null, null, makeSnapshotControl(false, table));
+    }
+
+    /**
+     * Create a {@link BarrageMessage snapshot} of the specified table using a set of requested columns and positions.
+     * Note that this method uses an index that is in Position space, and that it is notification-oblivious, i.e. it
+     * makes no attempt to ensure that notifications are not missed.
+     *
+     * @param logIdentityObject An object used to prepend to log rows.
+     * @param table the table to snapshot.
+     * @param columnsToSerialize  A {@link BitSet} of columns to include, null for all
+     * @param positionsToSnapshot An Index of positions within the table to include, null for all
+     * @return a snapshot of the entire base table.
+     */
     public static BarrageMessage constructBackplaneSnapshotInPositionSpace(final Object logIdentityObject,
                                                                            final BaseTable table,
-                                                                           final BitSet columnsToSerialize,
-                                                                           final Index positionsToSnapshot) {
+                                                                           @Nullable final BitSet columnsToSerialize,
+                                                                           @Nullable final Index positionsToSnapshot) {
         return constructBackplaneSnapshotInPositionSpace(logIdentityObject, table, columnsToSerialize, positionsToSnapshot, makeSnapshotControl(false, table));
     }
 
+    /**
+     * Create a {@link BarrageMessage snapshot} of the specified table using a set of requested columns and positions.
+     * Note that this method uses an index that is in Position space, and that it is notification-oblivious, i.e. it
+     * makes no attempt to ensure that notifications are not missed.
+     *
+     * @param logIdentityObject An object used to prepend to log rows.
+     * @param table the table to snapshot.
+     * @param columnsToSerialize  A {@link BitSet} of columns to include, null for all
+     * @param positionsToSnapshot An Index of positions within the table to include, null for all
+     * @return a snapshot of the entire base table.
+     */
     public static BarrageMessage constructBackplaneSnapshotInPositionSpace(final Object logIdentityObject,
                                                                            @NotNull final BaseTable table,
-                                                                           final BitSet columnsToSerialize,
-                                                                           final Index positionsToSnapshot,
+                                                                           @Nullable final BitSet columnsToSerialize,
+                                                                           @Nullable final Index positionsToSnapshot,
                                                                            @NotNull final SnapshotControl control) {
 
         final BarrageMessage snapshot = new BarrageMessage();
         snapshot.isSnapshot = true;
         snapshot.shifted = IndexShiftData.EMPTY;
         snapshot.modColumnData = new BarrageMessage.ModColumnData[0];
-        snapshot.modColumns = new BitSet();
 
         final SnapshotFunction doSnapshot = (usePrev, beforeClockValue) -> {
             final Index keysToSnapshot;
@@ -1212,11 +1247,11 @@ public class ConstructSnapshot {
                                             final Object logIdentityObject,
                                             final BitSet columnsToSerialize,
                                             final Index positionsToSnapshot) {
+        final BitSet addColumns = columnsToSerialize == null ? new BitSet() : (BitSet) columnsToSerialize.clone();
+
         snapshot.rowsAdded = (usePrev ? table.getIndex().getPrevIndex() : table.getIndex()).clone();
         snapshot.rowsRemoved = Index.CURRENT_FACTORY.getEmptyIndex();
-        snapshot.modColumns = new BitSet();
-        snapshot.addColumns = columnsToSerialize == null ? new BitSet() : (BitSet) columnsToSerialize.clone();
-        snapshot.addColumnData = new BarrageMessage.AddColumnData[snapshot.addColumns.cardinality()];
+        snapshot.addColumnData = new BarrageMessage.AddColumnData[addColumns.cardinality()];
 
         if (positionsToSnapshot != null) {
             snapshot.rowsIncluded = snapshot.rowsAdded.intersect(positionsToSnapshot);
@@ -1230,7 +1265,13 @@ public class ConstructSnapshot {
         final String[] columnSources = sourceMap.keySet().toArray(CollectionUtil.ZERO_LENGTH_STRING_ARRAY);
 
         try (final SharedContext sharedContext = (columnSources.length > 1) ? SharedContext.makeSharedContext() : null) {
-            for (int ii = snapshot.addColumns.nextSetBit(0), jj = 0; ii != -1; ii = snapshot.addColumns.nextSetBit(ii + 1), jj++) {
+            for (int ii = 0; ii >= 0 && ii < columnSources.length; ++ii) {
+                if (columnsToSerialize != null) {
+                    ii = columnsToSerialize.nextSetBit(ii);
+                    if (ii < 0) {
+                        break;
+                    }
+                }
 
                 if (concurrentAttemptInconsistent()) {
                     final LogEntry logEntry = log.info().append(System.identityHashCode(logIdentityObject))
@@ -1241,18 +1282,19 @@ public class ConstructSnapshot {
                 }
 
                 final BarrageMessage.AddColumnData acd = new BarrageMessage.AddColumnData();
-                snapshot.addColumnData[jj] = acd;
+                snapshot.addColumnData[ii] = acd;
 
                 final ColumnSource<?> columnSource = table.getColumnSource(columnSources[ii]);
                 acd.data = getSnapshotDataAsChunk(columnSource, sharedContext, snapshot.rowsIncluded, usePrev);
                 acd.type = columnSource.getType();
+                acd.componentType = columnSource.getComponentType();
             }
         }
 
         log.info().append(System.identityHashCode(logIdentityObject))
                 .append(": Snapshot candidate step=").append((usePrev ? -1 : 0) + LogicalClock.getStep(getConcurrentAttemptClockValue()))
                 .append(", rows=").append(snapshot.rowsIncluded).append("/").append(positionsToSnapshot)
-                .append(", cols=").append(FormatBitSet.formatBitSet(snapshot.addColumns))
+                .append(", cols=").append(FormatBitSet.formatBitSet(columnsToSerialize))
                 .append(", usePrev=").append(usePrev).endl();
         return true;
     }

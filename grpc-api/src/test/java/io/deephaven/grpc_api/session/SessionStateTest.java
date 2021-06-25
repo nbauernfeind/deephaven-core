@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.session;
 
 import io.deephaven.base.verify.Assert;
@@ -29,6 +33,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static io.deephaven.grpc_api.session.SessionTicketResolver.exportIdToTicket;
+import static io.deephaven.grpc_api.session.SessionTicketResolver.ticketToExportId;
 import static io.deephaven.proto.backplane.grpc.ExportNotification.State.CANCELLED;
 import static io.deephaven.proto.backplane.grpc.ExportNotification.State.DEPENDENCY_FAILED;
 import static io.deephaven.proto.backplane.grpc.ExportNotification.State.EXPORTED;
@@ -45,7 +51,7 @@ public class SessionStateTest {
     private LivenessScope livenessScope;
     private TestControlledScheduler scheduler;
     private SessionState session;
-    private long nextExportId;
+    private int nextExportId;
 
     @Before
     public void setup() {
@@ -83,7 +89,7 @@ public class SessionStateTest {
 
         // assert lookup is same object
         Assert.eq(session.getExport(nextExportId - 1), "session.getExport(nextExport - 1)", exportObj, "exportObj");
-        Assert.equals(exportObj.getExportId(), "exportObj.getExportId()", SessionState.exportIdToTicket(nextExportId - 1), "nextExportId - 1");
+        Assert.equals(exportObj.getExportId(), "exportObj.getExportId()", exportIdToTicket(nextExportId - 1), "nextExportId - 1");
 
         // release
         exportObj.release();
@@ -126,7 +132,7 @@ public class SessionStateTest {
 
         // assert lookup is same object
         Assert.eq(session.getExport(nextExportId - 1), "session.getExport(nextExport - 1)", exportObj, "exportObj");
-        Assert.equals(exportObj.getExportId(), "exportObj.getExportId()", SessionState.exportIdToTicket(nextExportId - 1), "nextExportId - 1");
+        Assert.equals(exportObj.getExportId(), "exportObj.getExportId()", exportIdToTicket(nextExportId - 1), "nextExportId - 1");
 
         // release
         session.onExpired();
@@ -713,7 +719,7 @@ public class SessionStateTest {
         session.addExportListener(listener);
         Assert.eq(listener.notifications.size(), "notifications.size()", 1);
         final ExportNotification refreshComplete = listener.notifications.get(listener.notifications.size() - 1);
-        Assert.eq(SessionState.ticketToExportId(refreshComplete.getTicket()), "refreshComplete.getTicket()", SessionState.NON_EXPORT_ID, "SessionState.NON_EXPORT_ID");
+        Assert.eq(ticketToExportId(refreshComplete.getTicket()), "refreshComplete.getTicket()", SessionState.NON_EXPORT_ID, "SessionState.NON_EXPORT_ID");
     }
 
     @Test
@@ -727,7 +733,7 @@ public class SessionStateTest {
         // ensure export was from refresh
         Assert.eq(listener.notifications.size(), "notifications.size()", 2);
         final ExportNotification refreshComplete = listener.notifications.get(1);
-        Assert.eq(SessionState.ticketToExportId(refreshComplete.getTicket()), "lastNotification.getTicket()", SessionState.NON_EXPORT_ID, "SessionState.NON_EXPORT_ID");
+        Assert.eq(ticketToExportId(refreshComplete.getTicket()), "lastNotification.getTicket()", SessionState.NON_EXPORT_ID, "SessionState.NON_EXPORT_ID");
     }
 
     @Test
@@ -736,7 +742,7 @@ public class SessionStateTest {
         final QueueingExportListener listener = new QueueingExportListener() {
             @Override
             public void onNext(final ExportNotification n) {
-                if (SessionState.ticketToExportId(n.getTicket()) != SessionState.NON_EXPORT_ID) {
+                if (ticketToExportId(n.getTicket()) != SessionState.NON_EXPORT_ID) {
                     notifications.add(n);
                     return;
                 }
@@ -1166,7 +1172,7 @@ public class SessionStateTest {
     }
 
     private static long getExportId(final ExportNotification notification) {
-        return SessionState.ticketToExportId(notification.getTicket());
+        return ticketToExportId(notification.getTicket());
     }
 
     private static class QueueingExportListener implements StreamObserver<ExportNotification> {

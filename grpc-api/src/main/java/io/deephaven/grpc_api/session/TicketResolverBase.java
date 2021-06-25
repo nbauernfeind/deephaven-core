@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.session;
 
 public abstract class TicketResolverBase implements TicketResolver {
@@ -10,7 +14,7 @@ public abstract class TicketResolverBase implements TicketResolver {
     }
 
     @Override
-    public byte ticketPrefix() {
+    public byte ticketRoute() {
         return ticketPrefix;
     }
 

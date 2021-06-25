@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.session;
 
 import com.google.rpc.Code;
@@ -10,6 +14,7 @@ import org.apache.arrow.flight.impl.Flight;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.nio.ByteBuffer;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -28,6 +33,26 @@ public class TicketRouter {
     }
 
     /**
+     * Resolve a flight ticket (as ByteBuffer) to an export object future.
+     *
+     * @param session the user session context
+     * @param ticket the ticket to resolve
+     * @param <T> the expected return type of the ticket; this is not validated
+     * @return an export object that can be used as a dependency; it is not guaranteed to be readily available
+     */
+    public <T> SessionState.ExportObject<T> resolve(
+            final SessionState session,
+            final ByteBuffer ticket) {
+        final byte route = ticket.get(0);
+        final TicketResolver resolver = byteResolverMap.get(route);
+        if (resolver == null) {
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION,
+                    "cannot resolve ticket: no router for '" + route + "' (byte)");
+        }
+        return resolver.resolve(session, ticket);
+    }
+
+    /**
      * Resolve a flight ticket to an export object future.
      *
      * @param session the user session context
@@ -38,15 +63,40 @@ public class TicketRouter {
     public <T> SessionState.ExportObject<T> resolve(
             final SessionState session,
             final Flight.Ticket ticket) {
-        final byte route = ticket.getTicket().byteAt(0);
+        return resolve(session, ticket.getTicket().asReadOnlyByteBuffer());
+    }
+
+    /**
+     * Resolve a flight descriptor to an export object future.
+     *
+     * @param session the user session context
+     * @param descriptor the descriptor to resolve
+     * @param <T> the expected return type of the ticket; this is not validated
+     * @return an export object that can be used as a dependency; it is not guaranteed to be readily available
+     */
+    public <T> SessionState.ExportObject<T> resolve(
+            final SessionState session,
+            final Flight.FlightDescriptor descriptor) {
+        return getResolver(descriptor).resolve(session, descriptor);
+    }
+
+    public <T> SessionState.ExportBuilder<T> publish(
+            final SessionState session,
+            final ByteBuffer ticket) {
+        final byte route = ticket.get(0);
         final TicketResolver resolver = byteResolverMap.get(route);
         if (resolver == null) {
             throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION,
                     "cannot resolve ticket: no router for '" + route + "' (byte)");
         }
-        return resolver.resolve(session, ticket);
+        return resolver.publish(session, ticket);
     }
 
+    public <T> SessionState.ExportBuilder<T> publish(
+            final SessionState session,
+            final Flight.Ticket ticket) {
+        return publish(session, ticket.getTicket().asReadOnlyByteBuffer());
+    }
     public Flight.FlightInfo flightInfoFor(final Flight.FlightDescriptor descriptor) {
         return getResolver(descriptor).flightInfoFor(descriptor);
     }
@@ -80,7 +130,7 @@ public class TicketRouter {
     private static final KeyedIntObjectKey<TicketResolver> RESOLVER_OBJECT_TICKET_ID = new KeyedIntObjectKey.BasicStrict<TicketResolver>() {
         @Override
         public int getIntKey(final TicketResolver ticketResolver) {
-            return ticketResolver.ticketPrefix();
+            return ticketResolver.ticketRoute();
         }
     };
 

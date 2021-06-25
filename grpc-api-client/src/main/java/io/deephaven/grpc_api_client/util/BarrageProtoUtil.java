@@ -1,8 +1,13 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api_client.util;
 
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.ByteStringAccess;
 import com.google.protobuf.CodedInputStream;
 import io.deephaven.UncheckedDeephavenException;
 import io.deephaven.db.v2.utils.ExternalizableIndexUtils;
@@ -17,7 +22,7 @@ import java.util.BitSet;
 
 public class BarrageProtoUtil {
     public static ByteString toByteString(final BitSet bitset) {
-        return ByteString.copyFrom(bitset.toByteArray());
+        return ByteStringAccess.wrap(bitset.toByteArray());
     }
 
     public static BitSet toBitSet(final ByteString string) {
@@ -25,17 +30,19 @@ public class BarrageProtoUtil {
     }
 
     public static ByteString toByteString(final Index index) {
+        //noinspection UnstableApiUsage
         try (final ExposedByteArrayOutputStream baos = new ExposedByteArrayOutputStream();
              final LittleEndianDataOutputStream oos = new LittleEndianDataOutputStream(baos)) {
             ExternalizableIndexUtils.writeExternalCompressedDeltas(oos, index);
             oos.flush();
-            return ByteString.copyFrom(baos.peekBuffer(), 0, baos.size());
+            return ByteStringAccess.wrap(baos.peekBuffer(), 0, baos.size());
         } catch (final IOException e) {
             throw new UncheckedDeephavenException("Unexpected exception during serialization: ", e);
         }
     }
 
     public static Index toIndex(final ByteString string) {
+        //noinspection UnstableApiUsage
         try (final ByteArrayInputStream bais = new ByteArrayInputStream(string.toByteArray());
              final LittleEndianDataInputStream ois = new LittleEndianDataInputStream(bais)) {
             return ExternalizableIndexUtils.readExternalCompressedDelta(ois);

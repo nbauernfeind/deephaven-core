@@ -16,26 +16,28 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
  * This is a structured object that represents the barrage update record batch.
  */
 public class BarrageMessage implements SafeCloseable {
-    @FunctionalInterface
     public interface Listener {
         void handleBarrageMessage(BarrageMessage message);
+        void handleBarrageError(Throwable t);
     }
 
     public static class ModColumnData {
         public Index rowsModified;
         public Index rowsIncluded;
         public Class<?> type;
+        public Class<?> componentType;
         public Chunk<Attributes.Values> data;
     }
 
     public static class AddColumnData {
         public Class<?> type;
+        public Class<?> componentType;
         public Chunk<Attributes.Values> data;
     }
 
-    public long firstSeq;
-    public long lastSeq;
-    public long step;
+    public long firstSeq = -1;
+    public long lastSeq = -1;
+    public long step = -1;
 
     public boolean isSnapshot;
     public Index snapshotIndex;
@@ -46,9 +48,7 @@ public class BarrageMessage implements SafeCloseable {
     public Index rowsRemoved;
     public IndexShiftData shifted;
 
-    public BitSet addColumns;
     public AddColumnData[] addColumnData;
-    public BitSet modColumns;
     public ModColumnData[] modColumnData;
 
     // Ensure that we clean up only after all copies of the update are released.

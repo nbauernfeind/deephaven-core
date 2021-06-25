@@ -1,8 +1,13 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.table;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-import com.google.protobuf.ByteString;
+import com.google.protobuf.ByteStringAccess;
 import com.google.rpc.Code;
+import io.deephaven.grpc_api.session.SessionTicketResolver;
 import io.deephaven.grpc_api.session.TicketRouter;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.db.tables.Table;
@@ -225,13 +230,13 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
 
             for (int i = 0; i < exportBuilders.size(); ++i) {
                 final BatchExportBuilder exportBuilder = exportBuilders.get(i);
-                final long exportId = exportBuilder.exportBuilder.getExportId();
+                final int exportId = exportBuilder.exportBuilder.getExportId();
 
                 final TableReference resultId;
                 if (exportId == SessionState.NON_EXPORT_ID) {
                     resultId = TableReference.newBuilder().setBatchOffset(i).build();
                 } else {
-                    resultId = TableReference.newBuilder().setTicket(SessionState.exportIdToTicket(exportId)).build();
+                    resultId = TableReference.newBuilder().setTicket(SessionTicketResolver.exportIdToTicket(exportId)).build();
                 }
 
                 exportBuilder.exportBuilder.onError((result, errorContext, dependentId) -> {
@@ -274,14 +279,14 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
         final String[] columnNames = table.getDefinition().getColumnNamesArray();
         final ColumnSource<?>[] columnSources = table.getColumnSources().toArray(ColumnSource.ZERO_LENGTH_COLUMN_SOURCE_ARRAY);
         final FlatBufferBuilder builder = new FlatBufferBuilder();
-        builder.finish(BarrageSchemaUtil.makeSchemaPayload(builder, columnNames, columnSources, table.getAttributes()));
+        builder.finish(BarrageSchemaUtil.makeSchemaPayload(builder, table.getDefinition(), table.getAttributes()));
 
         return ExportedTableCreationResponse.newBuilder()
                 .setSuccess(true)
                 .setResultId(tableRef)
                 .setIsStatic(!table.isLive())
                 .setSize(table.size())
-                .setSchemaHeader(ByteString.copyFrom(builder.dataBuffer()))
+                .setSchemaHeader(ByteStringAccess.wrap(builder.dataBuffer()))
                 .build();
     }
 

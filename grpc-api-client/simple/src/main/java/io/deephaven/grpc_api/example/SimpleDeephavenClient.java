@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.example;
 
 import com.google.protobuf.ByteString;
@@ -8,14 +12,13 @@ import io.deephaven.base.formatters.FormatBitSet;
 import io.deephaven.db.tables.TableDefinition;
 import io.deephaven.db.tables.live.LiveTableMonitor;
 import io.deephaven.db.tables.utils.DBTimeUtils;
-import io.deephaven.db.tables.utils.TableTools;
 import io.deephaven.db.v2.InstrumentedShiftAwareListener;
 import io.deephaven.db.v2.utils.UpdatePerformanceTracker;
 import io.deephaven.grpc_api.barrage.BarrageClientSubscription;
 import io.deephaven.grpc_api.barrage.BarrageStreamReader;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
 import io.deephaven.grpc_api.runner.DeephavenApiServerModule;
-import io.deephaven.grpc_api.session.SessionState;
+import io.deephaven.grpc_api.session.SessionTicketResolver;
 import io.deephaven.grpc_api.util.Scheduler;
 import io.deephaven.grpc_api_client.table.BarrageSourcedTable;
 import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
@@ -24,7 +27,6 @@ import io.deephaven.io.log.LogEntry;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.proto.backplane.grpc.BarrageServiceGrpc;
 import io.deephaven.proto.backplane.grpc.BatchTableRequest;
-import io.deephaven.proto.backplane.grpc.EmptyTableRequest;
 import io.deephaven.proto.backplane.grpc.ExportNotification;
 import io.deephaven.proto.backplane.grpc.ExportNotificationRequest;
 import io.deephaven.proto.backplane.grpc.ExportedTableCreationResponse;
@@ -53,7 +55,6 @@ import io.grpc.stub.StreamObserver;
 import org.apache.arrow.flight.impl.Flight;
 import org.apache.arrow.flight.impl.FlightServiceGrpc;
 
-import java.lang.ref.WeakReference;
 import java.util.BitSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -122,13 +123,13 @@ public class SimpleDeephavenClient {
         shutdownRequested.await();
     }
 
-    private long nextTableId = 0;
-    private long nextExportId() {
+    private int nextTableId = 0;
+    private int nextExportId() {
         return ++nextTableId;
     }
 
-    final Flight.Ticket exportTable = SessionState.exportIdToTicket(nextExportId());
-    final Flight.Ticket putResultTicket = SessionState.exportIdToTicket(nextExportId());
+    final Flight.Ticket exportTable = SessionTicketResolver.exportIdToTicket(nextExportId());
+    final Flight.Ticket putResultTicket = SessionTicketResolver.exportIdToTicket(nextExportId());
 
     BarrageSourcedTable resultTable;
     BarrageClientSubscription resultSub;
@@ -157,6 +158,9 @@ public class SimpleDeephavenClient {
                 .addOps(BatchTableRequest.Operation.newBuilder().setTimeTable(TimeTableRequest.newBuilder()
                         .setPeriodNanos(12_000_000)))
                 .addOps(BatchTableRequest.Operation.newBuilder().setUpdate(SelectOrUpdateRequest.newBuilder()
+                        .addColumnSpecs("I = i")
+                        .addColumnSpecs("II = ii")
+                        .addColumnSpecs("S = `` + i")
                         .setResultId(exportTable)
                         .setSourceId(TableReference.newBuilder().setBatchOffset(1).build())
                         .build()))
@@ -166,12 +170,9 @@ public class SimpleDeephavenClient {
                 .onComplete(() -> log.info().append("Batch Complete"))
                 .build());
 
+
         flightService.getSchema(
-                Flight.FlightDescriptor.newBuilder()
-                        .setType(Flight.FlightDescriptor.DescriptorType.PATH)
-                        .addPath("ticket")
-                        .addPath(Long.toString(SessionState.ticketToExportId(exportTable)))
-                        .build(),
+                SessionTicketResolver.exportIdToDescriptor(SessionTicketResolver.ticketToExportId(exportTable)),
                 new ResponseBuilder<Flight.SchemaResult>()
                         .onError(this::onError)
                         .onNext(this::onSchemaResult)
@@ -181,12 +182,10 @@ public class SimpleDeephavenClient {
     private void onSchemaResult(final Flight.SchemaResult schemaResult) {
         final Schema schema = Schema.getRootAsSchema(schemaResult.getSchema().asReadOnlyByteBuffer());
         final TableDefinition definition = BarrageSchemaUtil.schemaToTableDefinition(schema);
-        final int numColumns = definition.getColumns().length;
-        final BitSet columns = new BitSet();
 
-        for (int i = 0; i < numColumns; ++i) {
-            columns.set(i);
-        }
+        // Note: until subscriptions move to flatbuffer, we cannot distinguish between the all-inclusive non-existing-bitset and an empty bitset.
+        final BitSet columns = new BitSet();
+        columns.set(0, definition.getColumns().length);
 
         resultTable = BarrageSourcedTable.make(definition, columns, false);
         final InstrumentedShiftAwareListener listener = new InstrumentedShiftAwareListener("test") {
@@ -197,10 +196,7 @@ public class SimpleDeephavenClient {
 
             @Override
             public void onUpdate(final Update update) {
-                log.info().append("received update: ").append(update.toString()).endl();
-                if (!update.added.isEmpty()) {
-                    TableTools.showWithIndex(resultTable, update.added.firstKey(), update.added.lastKey() + 1);
-                }
+                log.info().append("received update: ").append(update).endl();
             }
         };
         resultTable.listenForUpdates(listener);
@@ -210,7 +206,7 @@ public class SimpleDeephavenClient {
                 .setTicket(exportTable)
                 .setColumns(BarrageProtoUtil.toByteString(columns))
                 .setUseDeephavenNulls(true)
-                .build(), reader, resultTable.getWireChunkTypes(), resultTable.getWireTypes(), new WeakReference<>(resultTable));
+                .build(), reader, resultTable);
     }
 
     private void onScriptComplete() {
@@ -228,7 +224,7 @@ public class SimpleDeephavenClient {
         final LogEntry entry = log.info().append("Received ExportedTableCreationResponse for {");
 
         if (result.getResultId().hasTicket()) {
-            entry.append("exportId: ").append(SessionState.ticketToExportId(result.getResultId().getTicket()));
+            entry.append("exportId: ").append(SessionTicketResolver.ticketToExportId(result.getResultId().getTicket()));
         } else {
             entry.append("batchOffset: ").append(result.getResultId().getBatchOffset());
         }
@@ -260,7 +256,7 @@ public class SimpleDeephavenClient {
 
     private void onExportNotificationMessage(final String prefix, final ExportNotification notification) {
         final LogEntry entry = log.info().append(prefix).append("Received ExportNotification: {id: ")
-                .append(SessionState.ticketToExportId(notification.getTicket()))
+                .append(SessionTicketResolver.ticketToExportId(notification.getTicket()))
                 .append(", state: ").append(notification.getExportState().toString());
 
         if (!notification.getContext().isEmpty()) {
@@ -272,19 +268,11 @@ public class SimpleDeephavenClient {
         entry.append("}").endl();
     }
 
-    private void onExportNotificationMessage2(final String prefix, final ExportNotification notification) {
-        onExportNotificationMessage(prefix, notification);
-        if (SessionState.ticketToExportId(notification.getTicket()) == SessionState.NON_EXPORT_ID) {
-            log.info().append("Export refresh complete; unsubscribing.").endl();
-            throw new RuntimeException("unsubscribe to notifications");
-        }
-    }
-
     private void onTableUpdate(final ExportedTableUpdateMessage msg) {
         log.info().append("Received ExportedTableUpdatedMessage:").endl();
 
         final LogEntry entry = log.info().append("\tid=")
-                .append(SessionState.ticketToExportId(msg.getExportId()))
+                .append(SessionTicketResolver.ticketToExportId(msg.getExportId()))
                 .append(" size=").append(msg.getSize());
 
         if (!msg.getUpdateFailureMessage().isEmpty()) {

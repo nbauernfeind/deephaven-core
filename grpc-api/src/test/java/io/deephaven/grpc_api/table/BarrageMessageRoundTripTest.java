@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.table;
 
 import dagger.BindsInstance;
@@ -155,7 +159,6 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
         private BitSet subscribedColumns;
 
         private final String name;
-        private final int viewportClientId;
 
         private final BarrageSourcedTable barrageTable;
         @ReferentialIntegrity
@@ -193,7 +196,8 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
                     .setUseDeephavenNulls(useDeephavenNulls)
                     .build();
             final BarrageMarshaller marshaller = new BarrageMarshaller(
-                    options, barrageTable.getWireChunkTypes(), barrageTable.getWireTypes(), BarrageStreamReader.INSTANCE);
+                    options, barrageTable.getWireChunkTypes(), barrageTable.getWireTypes(),
+                    barrageTable.getWireComponentTypes(), BarrageStreamReader.INSTANCE);
             this.dummyObserver = new DummyObserver(marshaller, commandQueue);
 
             if (viewport == null) {
@@ -205,12 +209,6 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
                 // instead we rely on the validation of the content in the viewport between the RT and expected table.
                 replicatedTUV = null;
                 replicatedTUVListener = null;
-            }
-            if (viewport != null) {
-                viewportClientId = this.barrageTable.getViewportClientId();
-                barrageTable.setViewportAndColumns(viewportClientId, viewport, subscribedColumns);
-            } else {
-                viewportClientId = -1;
             }
 
             if (!deferSubscription) {
@@ -310,7 +308,6 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
         public void setViewport(final Index newViewport) {
             viewport = newViewport;
             barrageMessageProducer.updateViewport(dummyObserver, viewport);
-            barrageTable.setViewPort(viewportClientId, viewport);
         }
 
         public void setSubscribedColumns(final BitSet newColumns) {
@@ -321,7 +318,6 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
             viewport = newViewport;
             subscribedColumns = newColumns;
             barrageMessageProducer.updateViewportAndColumns(dummyObserver, viewport, subscribedColumns);
-            barrageTable.setViewportAndColumns(viewportClientId, viewport, subscribedColumns);
         }
     }
 
@@ -580,7 +576,6 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
             }
         }
     }
-
 
     public void testAppendIncrementalSharedPUT() {
         final int MAX_STEPS = 100;
@@ -1170,8 +1165,9 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
         public BarrageMarshaller(final ChunkInputStreamGenerator.Options options,
                                  final ChunkType[] columnChunkTypes,
                                  final Class<?>[] columnTypes,
+                                 final Class<?>[] componentTypes,
                                  final BarrageMessageConsumer.StreamReader<ChunkInputStreamGenerator.Options> streamReader) {
-            super(options, columnChunkTypes, columnTypes, streamReader);
+            super(options, columnChunkTypes, columnTypes, componentTypes, streamReader);
         }
     }
 }

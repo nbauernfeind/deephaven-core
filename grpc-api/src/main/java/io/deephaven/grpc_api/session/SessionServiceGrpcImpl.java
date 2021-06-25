@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.session;
 
 import io.deephaven.io.logger.Logger;
@@ -35,15 +39,12 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
 
     private static final Logger log = LoggerFactory.getLogger(SessionServiceGrpcImpl.class);
 
-    private final TicketRouter ticketRouter;
     private final SessionService service;
     private final AuthContextProvider authProvider;
 
     @Inject()
-    public SessionServiceGrpcImpl(final TicketRouter ticketRouter,
-                                  final SessionService service,
+    public SessionServiceGrpcImpl(final SessionService service,
                                   final AuthContextProvider authProvider) {
-        this.ticketRouter = ticketRouter;
         this.service = service;
         this.authProvider = authProvider;
     }

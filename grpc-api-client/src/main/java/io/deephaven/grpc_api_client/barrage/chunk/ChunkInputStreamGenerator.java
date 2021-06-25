@@ -5,6 +5,10 @@
 package io.deephaven.grpc_api_client.barrage.chunk;
 
 import com.google.common.base.Charsets;
+import io.deephaven.barrage.flatbuf.BarrageFieldNode;
+import io.deephaven.barrage.flatbuf.Buffer;
+import io.deephaven.barrage.flatbuf.FieldNode;
+import io.deephaven.db.util.LongSizedDataStructure;
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.Chunk;
 import io.deephaven.db.v2.sources.chunk.ChunkType;
@@ -17,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.DataInput;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 
 public interface ChunkInputStreamGenerator extends SafeCloseable {
@@ -137,6 +142,16 @@ public interface ChunkInputStreamGenerator extends SafeCloseable {
             this.numElements = numElements;
             this.nullCount = nullCount;
         }
+
+        public FieldNodeInfo(final FieldNode node) {
+            this.numElements = LongSizedDataStructure.intSize("FieldNodeInfo", node.length());
+            this.nullCount = LongSizedDataStructure.intSize("FieldNodeInfo", node.nullCount());
+        }
+
+        public FieldNodeInfo(final BarrageFieldNode node) {
+            this.numElements = LongSizedDataStructure.intSize("FieldNodeInfo", node.length());
+            this.nullCount = LongSizedDataStructure.intSize("FieldNodeInfo", node.nullCount());
+        }
     }
 
     final class BufferInfo {
@@ -146,6 +161,11 @@ public interface ChunkInputStreamGenerator extends SafeCloseable {
         public BufferInfo(final long offset, final long length) {
             this.offset = offset;
             this.length = length;
+        }
+
+        public BufferInfo(final Buffer node) {
+            this.offset = LongSizedDataStructure.intSize("BufferInfo", node.offset());
+            this.length = LongSizedDataStructure.intSize("BufferInfo", node.length());
         }
     }
 
@@ -160,6 +180,33 @@ public interface ChunkInputStreamGenerator extends SafeCloseable {
     }
 
     abstract class DrainableColumn extends InputStream implements Drainable {
+        public static final DrainableColumn EMPTY = new DrainableColumn() {
+            @Override
+            public void visitFieldNodes(final FieldNodeListener listener) {
+                listener.noteLogicalFieldNode(0, 0);
+            }
+
+            @Override
+            public void visitBuffers(final BufferListener listener) {
+                listener.noteLogicalBuffer(0, 0);
+            }
+
+            @Override
+            public int nullCount() {
+                return 0;
+            }
+
+            @Override
+            public int drainTo(OutputStream target) {
+                return 0;
+            }
+
+            @Override
+            public int read() {
+                return 0;
+            }
+        };
+
         /**
          * Append the field nde to the flatbuffer payload via the supplied listener.
          * @param listener the listener to notify for each logical field node in this payload

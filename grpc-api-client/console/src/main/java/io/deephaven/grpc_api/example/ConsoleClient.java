@@ -1,5 +1,10 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
 package io.deephaven.grpc_api.example;
 
+import io.deephaven.grpc_api.session.SessionTicketResolver;
 import io.deephaven.io.log.LogEntry;
 import io.deephaven.io.logger.Logger;
 import com.google.protobuf.ByteString;
@@ -9,7 +14,6 @@ import io.deephaven.barrage.flatbuf.Field;
 import io.deephaven.barrage.flatbuf.KeyValue;
 import io.deephaven.barrage.flatbuf.Schema;
 import io.deephaven.grpc_api.runner.DeephavenApiServerModule;
-import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.util.Scheduler;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.proto.backplane.grpc.*;
@@ -104,10 +108,10 @@ public class ConsoleClient {
         shutdownRequested.await();
     }
 
-    private long nextId = 1;
+    private int nextId = 1;
 
     private void startConsole() {
-        consoleTicket = SessionState.exportIdToTicket(nextId++);
+        consoleTicket = SessionTicketResolver.exportIdToTicket(nextId++);
         consoleServiceGrpc.startConsole(StartConsoleRequest.newBuilder()
                 .setResultId(consoleTicket)
                 .setSessionType(sessionType)
@@ -180,7 +184,7 @@ public class ConsoleClient {
                                 log.debug().append("A table was created: ").append(table.toString()).endl();
                                  consoleServiceGrpc.fetchTable(FetchTableRequest.newBuilder()
                                          .setConsoleId(consoleTicket)
-                                         .setTableId(SessionState.exportIdToTicket(nextId++))
+                                         .setTableId(SessionTicketResolver.exportIdToTicket(nextId++))
                                          .setTableName(table.getName())
                                          .build(),
                                          new ResponseBuilder<ExportedTableCreationResponse>()
@@ -242,7 +246,7 @@ public class ConsoleClient {
         final LogEntry entry = log.info().append("Received ExportedTableCreationResponse for {");
 
         if (result.getResultId().hasTicket()) {
-            entry.append("exportId: ").append(SessionState.ticketToExportId(result.getResultId().getTicket()));
+            entry.append("exportId: ").append(SessionTicketResolver.ticketToExportId(result.getResultId().getTicket()));
         } else {
             entry.append("batchOffset: ").append(result.getResultId().getBatchOffset());
         }
