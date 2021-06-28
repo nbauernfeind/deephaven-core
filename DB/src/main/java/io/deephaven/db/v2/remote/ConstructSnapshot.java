@@ -508,17 +508,16 @@ public class ConstructSnapshot {
     }
 
     /**
-     * Create a {@link BarrageMessage snapshot} of the specified table using a set of requested columns and positions.
-     * Note that this method uses an index that is in Position space, and that it is notification-oblivious, i.e. it
-     * makes no attempt to ensure that notifications are not missed.
+     * Create a {@link BarrageMessage snapshot} of the specified table including all columns and rows.
+     * Note that this method is notification-oblivious, i.e. it makes no attempt to ensure that notifications are not missed.
      *
      * @param logIdentityObject An object used to prepend to log rows.
      * @param table the table to snapshot.
      * @return a snapshot of the entire base table.
      */
-    public static BarrageMessage constructBackplaneSnapshotInPositionSpace(final Object logIdentityObject,
-                                                                           final BaseTable table) {
-        return constructBackplaneSnapshotInPositionSpace(logIdentityObject, table, null, null, makeSnapshotControl(false, table));
+    public static BarrageMessage constructBackplaneSnapshot(final Object logIdentityObject,
+                                                            final BaseTable table) {
+        return constructBackplaneSnapshotInPositionSpace(logIdentityObject, table, null, null);
     }
 
     /**
@@ -541,13 +540,13 @@ public class ConstructSnapshot {
 
     /**
      * Create a {@link BarrageMessage snapshot} of the specified table using a set of requested columns and positions.
-     * Note that this method uses an index that is in Position space, and that it is notification-oblivious, i.e. it
-     * makes no attempt to ensure that notifications are not missed.
+     * Note that this method uses an index that is in Position space.
      *
      * @param logIdentityObject An object used to prepend to log rows.
      * @param table the table to snapshot.
      * @param columnsToSerialize  A {@link BitSet} of columns to include, null for all
      * @param positionsToSnapshot An Index of positions within the table to include, null for all
+     * @param control A {@link SnapshotControl} to define the parameters and consistency for this snapshot
      * @return a snapshot of the entire base table.
      */
     public static BarrageMessage constructBackplaneSnapshotInPositionSpace(final Object logIdentityObject,
@@ -559,7 +558,6 @@ public class ConstructSnapshot {
         final BarrageMessage snapshot = new BarrageMessage();
         snapshot.isSnapshot = true;
         snapshot.shifted = IndexShiftData.EMPTY;
-        snapshot.modColumnData = new BarrageMessage.ModColumnData[0];
 
         final SnapshotFunction doSnapshot = (usePrev, beforeClockValue) -> {
             final Index keysToSnapshot;
@@ -1230,7 +1228,7 @@ public class ConstructSnapshot {
      * <p>Populate a BarrageMessage with the specified positions to snapshot and columns.
      * <p>>Note that care must be taken while using this method to ensure the underlying table is locked or does not
      * change, otherwise the resulting snapshot may be inconsistent. In general users should instead use
-     * {@link #constructBackplaneSnapshotInPositionSpace} for simple use cases or {@link #callDataSnapshotFunction} for
+     * {@link #constructBackplaneSnapshot} for simple use cases or {@link #callDataSnapshotFunction} for
      * more advanced uses.
      *
      * @param usePrev             Use previous values?
@@ -1247,11 +1245,10 @@ public class ConstructSnapshot {
                                             final Object logIdentityObject,
                                             final BitSet columnsToSerialize,
                                             final Index positionsToSnapshot) {
-        final BitSet addColumns = columnsToSerialize == null ? new BitSet() : (BitSet) columnsToSerialize.clone();
-
         snapshot.rowsAdded = (usePrev ? table.getIndex().getPrevIndex() : table.getIndex()).clone();
         snapshot.rowsRemoved = Index.CURRENT_FACTORY.getEmptyIndex();
-        snapshot.addColumnData = new BarrageMessage.AddColumnData[addColumns.cardinality()];
+        snapshot.addColumnData = new BarrageMessage.AddColumnData[table.getColumnSources().size()];
+        snapshot.modColumnData = new BarrageMessage.ModColumnData[table.getColumnSources().size()];
 
         if (positionsToSnapshot != null) {
             snapshot.rowsIncluded = snapshot.rowsAdded.intersect(positionsToSnapshot);
@@ -1265,14 +1262,7 @@ public class ConstructSnapshot {
         final String[] columnSources = sourceMap.keySet().toArray(CollectionUtil.ZERO_LENGTH_STRING_ARRAY);
 
         try (final SharedContext sharedContext = (columnSources.length > 1) ? SharedContext.makeSharedContext() : null) {
-            for (int ii = 0; ii >= 0 && ii < columnSources.length; ++ii) {
-                if (columnsToSerialize != null) {
-                    ii = columnsToSerialize.nextSetBit(ii);
-                    if (ii < 0) {
-                        break;
-                    }
-                }
-
+            for (int ii = 0; ii < columnSources.length; ++ii) {
                 if (concurrentAttemptInconsistent()) {
                     final LogEntry logEntry = log.info().append(System.identityHashCode(logIdentityObject))
                             .append(" Bad snapshot before column ").append(ii);
@@ -1281,21 +1271,39 @@ public class ConstructSnapshot {
                     return false;
                 }
 
+                final ColumnSource<?> columnSource = table.getColumnSource(columnSources[ii]);
+
                 final BarrageMessage.AddColumnData acd = new BarrageMessage.AddColumnData();
                 snapshot.addColumnData[ii] = acd;
-
-                final ColumnSource<?> columnSource = table.getColumnSource(columnSources[ii]);
-                acd.data = getSnapshotDataAsChunk(columnSource, sharedContext, snapshot.rowsIncluded, usePrev);
+                if (columnsToSerialize == null || columnsToSerialize.get(ii)) {
+                    acd.data = getSnapshotDataAsChunk(columnSource, sharedContext, snapshot.rowsIncluded, usePrev);
+                } else {
+                    acd.data = columnSource.getChunkType().makeWritableChunk(0);
+                }
                 acd.type = columnSource.getType();
                 acd.componentType = columnSource.getComponentType();
+
+                final BarrageMessage.ModColumnData mcd = new BarrageMessage.ModColumnData();
+                snapshot.modColumnData[ii] = mcd;
+                mcd.rowsModified = Index.CURRENT_FACTORY.getEmptyIndex();
+                mcd.rowsIncluded = Index.CURRENT_FACTORY.getEmptyIndex();
+                mcd.data = columnSource.getChunkType().makeWritableChunk(0);
+                mcd.type = acd.type;
+                mcd.componentType = acd.componentType;
             }
         }
 
-        log.info().append(System.identityHashCode(logIdentityObject))
+        LogEntry infoEntry = log.info().append(System.identityHashCode(logIdentityObject))
                 .append(": Snapshot candidate step=").append((usePrev ? -1 : 0) + LogicalClock.getStep(getConcurrentAttemptClockValue()))
                 .append(", rows=").append(snapshot.rowsIncluded).append("/").append(positionsToSnapshot)
-                .append(", cols=").append(FormatBitSet.formatBitSet(columnsToSerialize))
-                .append(", usePrev=").append(usePrev).endl();
+                .append(", cols=");
+        if (columnsToSerialize == null) {
+            infoEntry = infoEntry.append("ALL");
+        } else {
+            infoEntry = infoEntry.append(FormatBitSet.formatBitSet(columnsToSerialize));
+        }
+        infoEntry.append(", usePrev=").append(usePrev).endl();
+
         return true;
     }
 

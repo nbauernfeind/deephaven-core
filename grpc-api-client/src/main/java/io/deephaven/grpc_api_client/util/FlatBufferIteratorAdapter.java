@@ -5,6 +5,7 @@
 package io.deephaven.grpc_api_client.util;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.IntFunction;
 
 public class FlatBufferIteratorAdapter<T> implements Iterator<T> {
@@ -24,6 +25,9 @@ public class FlatBufferIteratorAdapter<T> implements Iterator<T> {
 
     @Override
     public T next() {
+        if (offset >= length) {
+            throw new NoSuchElementException();
+        }
         return getNext.apply(offset++);
     }
 }

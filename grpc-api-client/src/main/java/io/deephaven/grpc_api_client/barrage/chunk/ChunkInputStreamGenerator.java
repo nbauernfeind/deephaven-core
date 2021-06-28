@@ -144,13 +144,13 @@ public interface ChunkInputStreamGenerator extends SafeCloseable {
         }
 
         public FieldNodeInfo(final FieldNode node) {
-            this.numElements = LongSizedDataStructure.intSize("FieldNodeInfo", node.length());
-            this.nullCount = LongSizedDataStructure.intSize("FieldNodeInfo", node.nullCount());
+            this(LongSizedDataStructure.intSize("FieldNodeInfo", node.length()),
+                    LongSizedDataStructure.intSize("FieldNodeInfo", node.nullCount()));
         }
 
         public FieldNodeInfo(final BarrageFieldNode node) {
-            this.numElements = LongSizedDataStructure.intSize("FieldNodeInfo", node.length());
-            this.nullCount = LongSizedDataStructure.intSize("FieldNodeInfo", node.nullCount());
+            this(LongSizedDataStructure.intSize("FieldNodeInfo", node.length()),
+                    LongSizedDataStructure.intSize("FieldNodeInfo", node.nullCount()));
         }
     }
 
@@ -164,8 +164,8 @@ public interface ChunkInputStreamGenerator extends SafeCloseable {
         }
 
         public BufferInfo(final Buffer node) {
-            this.offset = LongSizedDataStructure.intSize("BufferInfo", node.offset());
-            this.length = LongSizedDataStructure.intSize("BufferInfo", node.length());
+            this(LongSizedDataStructure.intSize("BufferInfo", node.offset()),
+                    LongSizedDataStructure.intSize("BufferInfo", node.length()));
         }
     }
 

@@ -1146,34 +1146,47 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
             downstream.addColumnData = new BarrageMessage.AddColumnData[sourceColumns.length];
             downstream.modColumnData = new BarrageMessage.ModColumnData[sourceColumns.length];
 
-            for (int i = addColumnSet.nextSetBit(0); i >= 0; i = addColumnSet.nextSetBit(i + 1)) {
+            for (int i = 0; i < downstream.addColumnData.length; ++i) {
+                final ColumnSource<?> sourceColumn = deltaColumns[i];
                 final BarrageMessage.AddColumnData adds = new BarrageMessage.AddColumnData();
                 downstream.addColumnData[i] = adds;
 
-                final ColumnSource<?> sourceColumn = deltaColumns[i];
-                final int chunkCapacity = localAdded.intSize("serializeItems");
-                final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(chunkCapacity);
-                try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(chunkCapacity)) {
-                    sourceColumn.fillChunk(fc, chunk, localAdded);
+                if (addColumnSet.get(i)) {
+                    final int chunkCapacity = localAdded.intSize("serializeItems");
+                    final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(chunkCapacity);
+                    try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(chunkCapacity)) {
+                        sourceColumn.fillChunk(fc, chunk, localAdded);
+                    }
+                    adds.data = chunk;
+                } else {
+                    adds.data = sourceColumn.getChunkType().makeWritableChunk(0);
                 }
-                adds.data = chunk;
+
                 adds.type = sourceColumn.getType();
                 adds.componentType = sourceColumn.getComponentType();
             }
 
-            for (int i = modColumnSet.nextSetBit(0); i >= 0; i = modColumnSet.nextSetBit(i + 1)) {
+            for (int i = 0; i < downstream.modColumnData.length; ++i) {
+                final ColumnSource<?> sourceColumn = deltaColumns[i];
                 final BarrageMessage.ModColumnData modifications = new BarrageMessage.ModColumnData();
                 downstream.modColumnData[i] = modifications;
-                modifications.rowsModified = firstDelta.update.modified.clone();
-                modifications.rowsIncluded = firstDelta.recordedMods.clone();
 
-                final int chunkCapacity = localModified.intSize("serializeItems");
-                final ColumnSource<?> sourceColumn = deltaColumns[i];
-                final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(chunkCapacity);
-                try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(chunkCapacity)) {
-                    sourceColumn.fillChunk(fc, chunk, localModified);
+                if (modColumnSet.get(i)) {
+                    modifications.rowsModified = firstDelta.update.modified.clone();
+                    modifications.rowsIncluded = firstDelta.recordedMods.clone();
+
+                    final int chunkCapacity = localModified.intSize("serializeItems");
+                    final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(chunkCapacity);
+                    try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(chunkCapacity)) {
+                        sourceColumn.fillChunk(fc, chunk, localModified);
+                    }
+                    modifications.data = chunk;
+                } else {
+                    modifications.rowsModified = Index.CURRENT_FACTORY.getEmptyIndex();
+                    modifications.rowsIncluded = Index.CURRENT_FACTORY.getEmptyIndex();
+                    modifications.data = sourceColumn.getChunkType().makeWritableChunk(0);
                 }
-                modifications.data = chunk;
+
                 modifications.type = sourceColumn.getType();
                 modifications.componentType = sourceColumn.getComponentType();
             }
@@ -1330,41 +1343,51 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
             downstream.addColumnData = new BarrageMessage.AddColumnData[sourceColumns.length];
             downstream.modColumnData = new BarrageMessage.ModColumnData[sourceColumns.length];
 
-            for (int i = addColumnSet.nextSetBit(0); i >= 0; i = addColumnSet.nextSetBit(i + 1)) {
+            for (int i = 0; i < downstream.addColumnData.length; ++i) {
+                final ColumnSource<?> sourceColumn = deltaColumns[i];
                 final BarrageMessage.AddColumnData adds = new BarrageMessage.AddColumnData();
                 downstream.addColumnData[i] = adds;
-                final ColumnInfo info = getColumnInfo.apply(i);
 
-                final ColumnSource<?> sourceColumn = deltaColumns[i];
-                final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(info.addedMapping.length);
-                try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(info.addedMapping.length)) {
-                    ((FillUnordered) sourceColumn).fillChunkUnordered(fc, chunk, LongChunk.chunkWrap(info.addedMapping));
+                if (addColumnSet.get(i)) {
+                    final ColumnInfo info = getColumnInfo.apply(i);
+                    final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(info.addedMapping.length);
+                    try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(info.addedMapping.length)) {
+                        ((FillUnordered) sourceColumn).fillChunkUnordered(fc, chunk, LongChunk.chunkWrap(info.addedMapping));
+                    }
+                    adds.data = chunk;
+                } else {
+                    adds.data = sourceColumn.getChunkType().makeWritableChunk(0);
                 }
-                adds.data = chunk;
+
                 adds.type = sourceColumn.getType();
+                adds.componentType = sourceColumn.getComponentType();
             }
 
             int numActualModCols = 0;
-            for (int i = modColumnSet.nextSetBit(0); i >= 0; i = modColumnSet.nextSetBit(i + 1)) {
-                final ColumnInfo info = getColumnInfo.apply(i);
-                if (info.modified.isEmpty()) {
-                    modColumnSet.set(i, false);
-                    continue;
-                }
-
+            for (int i = 0; i < downstream.modColumnData.length; ++i) {
+                final ColumnSource<?> sourceColumn = deltaColumns[i];
                 final BarrageMessage.ModColumnData modifications = new BarrageMessage.ModColumnData();
                 downstream.modColumnData[numActualModCols++] = modifications;
 
-                modifications.rowsModified = info.modified.clone();
-                modifications.rowsIncluded = info.recordedMods.clone();
+                if (modColumnSet.get(i)) {
+                    final ColumnInfo info = getColumnInfo.apply(i);
+                    modifications.rowsModified = info.modified.clone();
+                    modifications.rowsIncluded = info.recordedMods.clone();
 
-                final ColumnSource<?> sourceColumn = deltaColumns[i];
-                final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(info.modifiedMapping.length);
-                try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(info.modifiedMapping.length)) {
-                    ((FillUnordered) sourceColumn).fillChunkUnordered(fc, chunk, LongChunk.chunkWrap(info.modifiedMapping));
+                    final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(info.modifiedMapping.length);
+                    try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(info.modifiedMapping.length)) {
+                        ((FillUnordered) sourceColumn).fillChunkUnordered(fc, chunk, LongChunk.chunkWrap(info.modifiedMapping));
+                    }
+
+                    modifications.data = chunk;
+                } else {
+                    modifications.rowsModified = Index.CURRENT_FACTORY.getEmptyIndex();
+                    modifications.rowsIncluded = Index.CURRENT_FACTORY.getEmptyIndex();
+                    modifications.data = sourceColumn.getChunkType().makeWritableChunk(0);
                 }
-                modifications.data = chunk;
+
                 modifications.type = sourceColumn.getType();
+                modifications.componentType = sourceColumns.getClass();
             }
         }
 

@@ -37,7 +37,6 @@ public class SnapshotInternalListener extends BaseTable.ShiftAwareListenerImpl {
         this.resultLeftColumns = resultLeftColumns;
         this.resultRightColumns = resultRightColumns;
         this.resultIndex = resultIndex;
-        manage(snapshotTable);
     }
 
     @Override

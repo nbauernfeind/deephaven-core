@@ -90,7 +90,7 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
             rowsModified = new IndexGenerator(col.rowsModified);
             rowsIncluded = new IndexGenerator(col.rowsIncluded);
             data = ChunkInputStreamGenerator.makeInputStreamGenerator(col.data.getChunkType(),
-                    col.type, (WritableChunk<Attributes.Values>)col.data);
+                    col.type, (WritableChunk<Attributes.Values>) col.data);
         }
     }
 
@@ -237,9 +237,14 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
         final MutableInt size = new MutableInt();
 
         final Consumer<InputStream> addStream = (final InputStream is) -> {
-            streams.add(is);
             try {
-                size.add(is.available());
+                final int sz = is.available();
+                if (sz == 0) {
+                    return;
+                }
+
+                streams.add(is);
+                size.add(sz);
             } catch (final IOException e) {
                 throw new UncheckedDeephavenException("Unexpected IOException", e);
             }

@@ -123,7 +123,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                         responseObserver.onNext(new BarrageStreamGenerator.DrainableByteArrayInputStream(msgBytes, 0, msgBytes.length));
 
                         // get ourselves some data!
-                        final BarrageMessage msg = ConstructSnapshot.constructBackplaneSnapshotInPositionSpace(this, table);
+                        final BarrageMessage msg = ConstructSnapshot.constructBackplaneSnapshot(this, table);
 
                         try (final BarrageStreamGenerator bsg = new BarrageStreamGenerator(msg)) {
                             responseObserver.onNext(bsg.getDoGetInputStream(bsg.getSubView(DEFAULT_DESER_OPTIONS, false, null, null, null)));

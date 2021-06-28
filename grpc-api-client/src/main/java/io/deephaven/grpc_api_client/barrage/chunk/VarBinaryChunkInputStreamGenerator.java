@@ -186,7 +186,7 @@ public class VarBinaryChunkInputStreamGenerator<T> extends BaseChunkInputStreamG
                 }
 
                 // there are n+1 offsets; it is not assumed first offset is zero
-                if (subset.size() == myOffsets.size() - 1) {
+                if (!subset.isEmpty() && subset.size() == myOffsets.size() - 1) {
                     cachedSize += myOffsets.size() * Integer.BYTES;
                     cachedSize += myOffsets.get(subset.intSize(DEBUG_NAME)) - myOffsets.get(0);
                 } else  {

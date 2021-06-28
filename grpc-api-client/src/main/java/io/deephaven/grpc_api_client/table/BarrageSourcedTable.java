@@ -17,6 +17,7 @@ import io.deephaven.db.tables.live.LiveTableMonitor;
 import io.deephaven.db.tables.live.LiveTableRegistrar;
 import io.deephaven.db.tables.live.NotificationQueue;
 import io.deephaven.db.tables.utils.DBDateTime;
+import io.deephaven.db.tables.utils.TableTools;
 import io.deephaven.db.v2.QueryTable;
 import io.deephaven.db.v2.ShiftAwareListener;
 import io.deephaven.db.v2.sources.ArrayBackedColumnSource;
@@ -216,8 +217,9 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
                     .append(update.firstSeq).append("-").append(update.lastSeq).endl();
         }
 
-        if (update.isSnapshot && update.snapshotIndex != null) {
-            serverViewport = update.snapshotIndex.clone();
+        if (update.isSnapshot) {
+            serverViewport = update.snapshotIndex == null ? null : update.snapshotIndex.clone();
+            serverColumns = update.snapshotColumns == null ? null : (BitSet) update.snapshotColumns.clone();
         }
 
         // make sure that these index updates make some sense compared with each other, and our current view of the table
@@ -308,7 +310,7 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
 
                     // Update data chunk-wise:
                     for (int ii = 0; ii < update.addColumnData.length; ++ii) {
-                        if (update.addColumnData[ii] != null && isSubscribedColumn(ii)) {
+                        if (isSubscribedColumn(ii)) {
                             final Chunk<? extends Attributes.Values> data = update.addColumnData[ii].data;
                             Assert.eq(data.size(), "delta.includedAdditions.size()", destinationIndex.size(), "destinationIndex.size()");
                             try (final WritableChunkSink.FillFromContext ctxt = destSources[ii].makeFillFromContext(destinationIndex.intSize())) {
@@ -322,15 +324,15 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
             modifiedColumnSet.clear();
             for (int ii = 0; ii < update.modColumnData.length; ++ii) {
                 final BarrageMessage.ModColumnData column = update.modColumnData[ii];
-                if (column == null || !isSubscribedColumn(ii)) {
+                if (!isSubscribedColumn(ii)) {
                     continue;
                 }
-
-                modifiedColumnSet.setColumnWithIndex(ii);
 
                 if (column.rowsIncluded.empty()) {
                     continue;
                 }
+
+                modifiedColumnSet.setColumnWithIndex(ii);
 
                 try (final Index.Iterator outerIter = column.rowsIncluded.iterator();
                      final WritableLongChunk<Attributes.KeyIndices> keys = WritableLongChunk.makeWritableChunk(column.rowsIncluded.intSize())) {
@@ -359,7 +361,7 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
     }
 
     private boolean isSubscribedColumn(int i) {
-        return serverColumns.get(i);
+        return serverColumns == null || serverColumns.get(i);
     }
 
     private Index getFreeRows(long size) {

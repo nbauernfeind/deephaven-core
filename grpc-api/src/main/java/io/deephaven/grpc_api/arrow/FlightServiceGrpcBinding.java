@@ -55,7 +55,7 @@ public class FlightServiceGrpcBinding implements BindableService {
                         MethodDescriptor.MethodType.SERVER_STREAMING, DO_PUT_OOB_CLIENT_STREAM,
                         PassthroughInputStreamMarshaller.INSTANCE,
                         ProtoUtils.marshaller(Flight.PutResult.getDefaultInstance()),
-                        BarrageServiceGrpc.getDoSubscribeNoClientStreamMethod()), new DoPutOOB(delegate))
+                        FlightServiceGrpc.getDoPutOOBClientStreamMethod()), new DoPutOOB(delegate))
                 .override(GrpcServiceOverrideBuilder.descriptorFor(
                         MethodDescriptor.MethodType.UNARY, DO_PUT_OOB_CLIENT_STREAM_UPDATE,
                         PassthroughInputStreamMarshaller.INSTANCE,
