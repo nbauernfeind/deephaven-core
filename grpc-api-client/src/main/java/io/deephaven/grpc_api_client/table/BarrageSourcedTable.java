@@ -196,8 +196,23 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
     private Index.IndexUpdateCoalescer processUpdate(final BarrageMessage update, final Index.IndexUpdateCoalescer coalescer) {
         if (REPLICATED_TABLE_DEBUG) {
             saveForDebugging(update);
+
+            modifiedColumnSet.clear();
+            final Index mods = Index.CURRENT_FACTORY.getEmptyIndex();
+            for (int ci = 0; ci < update.modColumnData.length; ++ci) {
+                final Index rowsModified = update.modColumnData[ci].rowsModified;
+                if (rowsModified.nonempty()) {
+                    mods.insert(rowsModified);
+                    modifiedColumnSet.setColumnWithIndex(ci);
+                }
+            }
+            final ShiftAwareListener.Update up = new ShiftAwareListener.Update(
+                    update.rowsAdded, update.rowsRemoved, mods, update.shifted, modifiedColumnSet);
+
             beginLog(LogLevel.INFO).append(": Processing delta updates ")
-                    .append(update.firstSeq).append("-").append(update.lastSeq).endl();
+                    .append(update.firstSeq).append("-").append(update.lastSeq)
+                    .append(" update=").append(up).endl();
+            mods.close();
         }
 
         if (update.isSnapshot) {
@@ -208,7 +223,6 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
         // make sure that these index updates make some sense compared with each other, and our current view of the table
         final Index currentIndex = getIndex();
         final boolean mightBeInitialSnapshot = currentIndex.empty() && update.isSnapshot;
-        currentIndex.remove(update.rowsRemoved);
 
         try (final Index currRowsFromPrev = currentIndex.clone();
              final Index populatedRows = (serverViewport != null ? currentIndex.subindexByPos(serverViewport) : null)) {
@@ -222,6 +236,7 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
             }
 
             // removes
+            currentIndex.remove(update.rowsRemoved);
             try (final Index removed = serverViewport != null ? populatedRows.extract(update.rowsRemoved) : null) {
                 freeRows(removed != null ? removed : update.rowsRemoved);
             }
@@ -287,8 +302,9 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
 
             // remove all data outside of our viewport
             if (serverViewport != null) {
-                try (final Index toFree = populatedRows.extract(currentIndex.subindexByPos(serverViewport))) {
-                    freeRows(toFree);
+                try (final Index newPopulated = currentIndex.subindexByPos(serverViewport)) {
+                    populatedRows.remove(newPopulated);
+                    freeRows(populatedRows);
                 }
             }
 

@@ -1,6 +1,5 @@
 package io.deephaven.web.client.api;
 
-import elemental2.core.Int32Array;
 import elemental2.core.Uint8Array;
 
 /**
@@ -22,8 +21,17 @@ public class ClientConfiguration {
         if (next == Integer.MAX_VALUE) {
             throw new IllegalStateException("Ran out of tickets!");
         }
-        Int32Array ints = new Int32Array(2);
-        ints.set(new double[] {0, next++});
-        return new Uint8Array(ints.buffer);
+
+        final int exportId = next++;
+        final double[] dest = new double[5];
+        dest[0] = 'e';
+        dest[1] = (byte) exportId;
+        dest[2] = (byte) (exportId >>> 8);
+        dest[3] = (byte) (exportId >>> 16);
+        dest[4] = (byte) (exportId >>> 24);
+
+        final Uint8Array bytes = new Uint8Array(5);
+        bytes.set(dest);
+        return bytes;
     }
 }

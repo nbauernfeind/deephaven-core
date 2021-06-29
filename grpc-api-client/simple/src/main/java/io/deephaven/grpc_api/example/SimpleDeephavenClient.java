@@ -13,6 +13,10 @@ import io.deephaven.db.tables.TableDefinition;
 import io.deephaven.db.tables.live.LiveTableMonitor;
 import io.deephaven.db.tables.utils.DBTimeUtils;
 import io.deephaven.db.v2.InstrumentedShiftAwareListener;
+import io.deephaven.db.v2.ModifiedColumnSet;
+import io.deephaven.db.v2.ShiftAwareListener;
+import io.deephaven.db.v2.utils.BarrageMessage;
+import io.deephaven.db.v2.utils.Index;
 import io.deephaven.db.v2.utils.UpdatePerformanceTracker;
 import io.deephaven.grpc_api.barrage.BarrageClientSubscription;
 import io.deephaven.grpc_api.barrage.BarrageStreamReader;
@@ -55,6 +59,7 @@ import io.grpc.stub.StreamObserver;
 import org.apache.arrow.flight.impl.Flight;
 import org.apache.arrow.flight.impl.FlightServiceGrpc;
 
+import java.lang.ref.WeakReference;
 import java.util.BitSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -220,6 +225,46 @@ public class SimpleDeephavenClient {
                 .setColumns(BarrageProtoUtil.toByteString(columns))
                 .setUseDeephavenNulls(true)
                 .build(), reader, resultTable);
+    }
+
+    private void onSchemaResultNoLocalLTM(final Flight.SchemaResult schemaResult) {
+        final Schema schema = Schema.getRootAsSchema(schemaResult.getSchema().asReadOnlyByteBuffer());
+        final TableDefinition definition = BarrageSchemaUtil.schemaToTableDefinition(schema);
+
+        // Note: until subscriptions move to flatbuffer, we cannot distinguish between the all-inclusive non-existing-bitset and an empty bitset.
+        final BitSet columns = new BitSet();
+        columns.set(0, definition.getColumns().length);
+
+        BarrageSourcedTable dummy = BarrageSourcedTable.make(definition, false);
+
+        resultSub = new BarrageClientSubscription(
+                ExportTicketResolver.toReadableString(exportTable),
+                serverChannel, exportTable, SubscriptionRequest.newBuilder()
+                .setTicket(exportTable)
+                .setColumns(BarrageProtoUtil.toByteString(columns))
+                .setUseDeephavenNulls(true)
+                .build(), reader,
+                dummy.getWireChunkTypes(),
+                dummy.getWireTypes(),
+                dummy.getWireComponentTypes(),
+                new WeakReference<>(new BarrageMessage.Listener() {
+                    @Override
+                    public void handleBarrageMessage(final BarrageMessage update) {
+                        final Index mods = Index.CURRENT_FACTORY.getEmptyIndex();
+                        for (int ci = 0; ci < update.modColumnData.length; ++ci) {
+                            mods.insert(update.modColumnData[ci].rowsModified);
+                        }
+                        final ShiftAwareListener.Update up = new ShiftAwareListener.Update(
+                                update.rowsAdded, update.rowsRemoved, mods, update.shifted, ModifiedColumnSet.ALL);
+
+                        log.info().append("recv update: ").append(up).endl();
+                    }
+
+                    @Override
+                    public void handleBarrageError(Throwable t) {
+                        log.error().append("upstream client failed: " + t.getMessage());
+                    }
+                }));
     }
 
     private void onScriptComplete() {

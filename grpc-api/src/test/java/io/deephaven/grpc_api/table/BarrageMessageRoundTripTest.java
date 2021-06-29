@@ -250,7 +250,7 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
                 toCheck = (QueryTable) toCheck.view(columns);
             }
 
-            // Data should be identical an in-order.
+            // Data should be identical and in-order.
             TstUtils.assertTableEquals(expected, toCheck);
             // Since key-space needs to be kept the same, the indexes should also be identical between PUT and RT (not expected and RT).
             Assert.equals(barrageMessageProducer.getIndex(), "barrageMessageProducer.getIndex()", barrageTable.getIndex(), ".getIndex()");
