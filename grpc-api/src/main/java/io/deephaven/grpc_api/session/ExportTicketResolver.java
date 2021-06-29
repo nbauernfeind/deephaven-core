@@ -17,17 +17,18 @@ import java.nio.ByteOrder;
 import java.util.function.Consumer;
 
 @Singleton
-public class SessionTicketResolver extends TicketResolverBase {
+public class ExportTicketResolver extends TicketResolverBase {
+    public static final byte TICKET_PREFIX = 'e';
     public static final String FLIGHT_DESCRIPTOR_ROUTE = "export";
 
     @Inject
-    public SessionTicketResolver() {
-        super((byte) 'e', FLIGHT_DESCRIPTOR_ROUTE);
+    public ExportTicketResolver() {
+        super(TICKET_PREFIX, FLIGHT_DESCRIPTOR_ROUTE);
     }
 
     @Override
     public String getLogNameFor(ByteBuffer ticket) {
-        return FLIGHT_DESCRIPTOR_ROUTE + "/" + ticketToExportId(ticket);
+        return toReadableString(ticket);
     }
 
     @Override
@@ -81,7 +82,7 @@ public class SessionTicketResolver extends TicketResolverBase {
     public static Flight.FlightDescriptor exportIdToDescriptor(int exportId) {
         return Flight.FlightDescriptor.newBuilder()
                 .setType(Flight.FlightDescriptor.DescriptorType.PATH)
-                .addPath(SessionTicketResolver.FLIGHT_DESCRIPTOR_ROUTE)
+                .addPath(ExportTicketResolver.FLIGHT_DESCRIPTOR_ROUTE)
                 .addPath(Integer.toString(exportId))
                 .build();
     }
@@ -89,7 +90,7 @@ public class SessionTicketResolver extends TicketResolverBase {
     /**
      * Convenience method to convert from {@link Flight.Ticket} to export id.
      *
-     * Ticket's byte[0] must be 'e', bytes[1-4] are a signed int export id in little-endian.
+     * Ticket's byte[0] must be {@link ExportTicketResolver#TICKET_PREFIX}, bytes[1-4] are a signed int export id in little-endian.
      *
      * @param ticket the grpc Ticket
      * @return the export id that the Ticket wraps
@@ -101,7 +102,7 @@ public class SessionTicketResolver extends TicketResolverBase {
     /**
      * Convenience method to convert from {@link ByteBuffer} to export id.
      *
-     * Ticket's byte[0] must be 'e', bytes[1-4] are a signed int export id in little-endian.
+     * Ticket's byte[0] must be {@link ExportTicketResolver#TICKET_PREFIX}, bytes[1-4] are a signed int export id in little-endian.
      *
      * @param ticket the grpc Ticket
      * @return the export id that the Ticket wraps
@@ -111,7 +112,7 @@ public class SessionTicketResolver extends TicketResolverBase {
             throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Ticket not supplied");
         }
         ticket.order(ByteOrder.LITTLE_ENDIAN);
-        if (ticket.remaining() != 5 || ticket.get() != 'e') {
+        if (ticket.remaining() != 5 || ticket.get() != TICKET_PREFIX) {
             throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse ticket: found 0x" + Hex.encodeHexString(ticket) + " (hex)");
         }
 
@@ -187,7 +188,7 @@ public class SessionTicketResolver extends TicketResolverBase {
 
     private static byte[] exportIdToBytes(int exportId) {
         final byte[] dest = new byte[5];
-        dest[0] = 'e';
+        dest[0] = TICKET_PREFIX;
         dest[1] = (byte) exportId;
         dest[2] = (byte) (exportId >>> 8);
         dest[3] = (byte) (exportId >>> 16);

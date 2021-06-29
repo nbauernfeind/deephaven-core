@@ -28,18 +28,6 @@ public interface TicketResolver {
      * Resolve a flight ticket to an export object future.
      *
      * @param session the user session context
-     * @param ticket the ticket to resolve
-     * @param <T> the expected return type of the ticket; this is not validated
-     * @return an export object; see {@link SessionState} for lifecycle propagation details
-     */
-    default <T> SessionState.ExportObject<T> resolve(SessionState session, Flight.Ticket ticket) {
-        return resolve(session, ticket.getTicket().asReadOnlyByteBuffer());
-    }
-
-    /**
-     * Resolve a flight ticket to an export object future.
-     *
-     * @param session the user session context
      * @param ticket (as ByteByffer) the ticket to resolve
      * @param <T> the expected return type of the ticket; this is not validated
      * @return an export object; see {@link SessionState} for lifecycle propagation details

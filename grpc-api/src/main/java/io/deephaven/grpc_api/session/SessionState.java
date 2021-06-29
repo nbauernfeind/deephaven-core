@@ -204,7 +204,7 @@ public class SessionState {
      * @return a future-like object that represents this export
      */
     public <T> ExportObject<T> getExport(final Flight.Ticket ticket) {
-        return getExport(SessionTicketResolver.ticketToExportId(ticket));
+        return getExport(ExportTicketResolver.ticketToExportId(ticket));
     }
 
     /**
@@ -255,7 +255,7 @@ public class SessionState {
      */
     @SuppressWarnings("unchecked")
     public <T> ExportObject<T> getExportIfExists(final Flight.Ticket ticket) {
-        return getExportIfExists(SessionTicketResolver.ticketToExportId(ticket));
+        return getExportIfExists(ExportTicketResolver.ticketToExportId(ticket));
     }
 
     /**
@@ -287,7 +287,7 @@ public class SessionState {
      * @return an export builder
      */
     public <T> ExportBuilder<T> newExport(final Flight.Ticket ticket) {
-        return newExport(SessionTicketResolver.ticketToExportId(ticket));
+        return newExport(ExportTicketResolver.ticketToExportId(ticket));
     }
 
     /**
@@ -544,7 +544,7 @@ public class SessionState {
          * @return the export id or NON_EXPORT_ID if it does not have one
          */
         public Flight.Ticket getExportId() {
-            return SessionTicketResolver.exportIdToTicket(exportId);
+            return ExportTicketResolver.exportIdToTicket(exportId);
         }
 
         /**
@@ -819,7 +819,7 @@ public class SessionState {
          */
         private synchronized ExportNotification makeExportNotification() {
             final ExportNotification.Builder builder = ExportNotification.newBuilder()
-                    .setTicket(SessionTicketResolver.exportIdToTicket(exportId))
+                    .setTicket(ExportTicketResolver.exportIdToTicket(exportId))
                     .setExportState(state);
 
             if (errorId != null) {
@@ -949,7 +949,7 @@ public class SessionState {
 
             // notify that the refresh has completed
             notify(ExportNotification.newBuilder()
-                    .setTicket(SessionTicketResolver.exportIdToTicket(NON_EXPORT_ID))
+                    .setTicket(ExportTicketResolver.exportIdToTicket(NON_EXPORT_ID))
                     .setExportState(ExportNotification.State.EXPORTED)
                     .setContext("refresh is complete")
                     .build());

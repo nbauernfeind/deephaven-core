@@ -14,5 +14,5 @@ public interface SessionModule {
     ServerInterceptor bindSessionServiceInterceptor(SessionServiceGrpcImpl.AuthServerInterceptor sessionServiceInterceptor);
 
     @Binds @IntoSet
-    TicketResolver bindSessionTicketResolverServerSideExports(SessionTicketResolver resolver);
+    TicketResolver bindSessionTicketResolverServerSideExports(ExportTicketResolver resolver);
 }

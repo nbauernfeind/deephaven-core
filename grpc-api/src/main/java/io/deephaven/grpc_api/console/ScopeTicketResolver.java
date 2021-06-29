@@ -17,6 +17,7 @@ import io.deephaven.grpc_api.session.TicketResolverBase;
 import io.deephaven.grpc_api.session.TicketRouter;
 import io.deephaven.grpc_api.util.GrpcUtil;
 import org.apache.arrow.flight.impl.Flight;
+import org.apache.commons.codec.binary.Hex;
 
 import javax.inject.Inject;
 import java.nio.ByteBuffer;
@@ -80,7 +81,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
                     //noinspection unchecked
                     T scopeVar = (T) gss.getVariable(scopeName);
                     if (scopeVar == null) {
-                        throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Could not resolve ticket: no variable exists with name '" + scopeVar + "'");
+                        throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Could not resolve: no variable exists with name '" + scopeVar + "'");
                     }
                     return scopeVar;
                 });
@@ -142,29 +143,31 @@ public class ScopeTicketResolver extends TicketResolverBase {
     }
 
     /**
-     * Convenience method to convert from a Flight.Ticket (as ByteBuffer) to scoped Variable Name
+     * Convenience method to convert from a Flight.Ticket (as ByteBuffer) to scope variable name
      *
      * @param ticket the ticket to convert
      * @return the query scope name this ticket represents
      */
     public static String nameForTicket(final ByteBuffer ticket) {
-        if (ticket== null) {
+        if (ticket == null) {
             throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Ticket not supplied");
         }
-        final int initialLimit = ticket.limit();
-        final CharsetDecoder decoder = EncodingInfo.UTF_8.getDecoder().reset();
-        final String strTicket;
-        try {
-            strTicket = decoder.decode(ticket).toString();
-        } catch (CharacterCodingException e) {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse ticket: unexpectedly failed to decode input bytes: " + e.getMessage());
+        if (ticket.remaining() < 3 || ticket.get(0) != TICKET_PREFIX || ticket.get(1) != '/') {
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse ticket: found 0x" + Hex.encodeHexString(ticket) + "' (hex)");
         }
-        ticket.limit(initialLimit);
 
-        if (strTicket.length() < 3 || strTicket.charAt(0) != TICKET_PREFIX || strTicket.charAt(1) != '/') {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse ticket: found '" + strTicket + "' (string)");
+        final int initialLimit = ticket.limit();
+        final int initialPosition = ticket.position();
+        final CharsetDecoder decoder = EncodingInfo.UTF_8.getDecoder().reset();
+        try {
+            ticket.position(initialPosition + 2);
+            return decoder.decode(ticket).toString();
+        } catch (CharacterCodingException e) {
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse ticket: failed to decode: " + e.getMessage());
+        } finally {
+            ticket.position(initialPosition);
+            ticket.limit(initialLimit);
         }
-        return strTicket.substring(2);
     }
 
     /**

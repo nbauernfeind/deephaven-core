@@ -163,7 +163,7 @@ public class TicketRouter {
      */
     public static String getLogNameFor(final Flight.FlightDescriptor descriptor) {
         if (descriptor.getType() != Flight.FlightDescriptor.DescriptorType.PATH) {
-            throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "flight descriptor is not a path");
+            throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "Flight descriptor is not a path");
         }
 
         final LogOutput logOutput = new LogOutputStringImpl();

@@ -17,7 +17,6 @@ import io.deephaven.barrage.flatbuf.Message;
 import io.deephaven.barrage.flatbuf.MessageHeader;
 import io.deephaven.barrage.flatbuf.RecordBatch;
 import io.deephaven.barrage.flatbuf.Schema;
-import io.deephaven.base.Function;
 import io.deephaven.base.RAPriQueue;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.datastructures.util.CollectionUtil;
@@ -32,7 +31,6 @@ import io.deephaven.db.v2.utils.IndexShiftData;
 import io.deephaven.grpc_api.barrage.BarrageStreamGenerator;
 import io.deephaven.grpc_api.barrage.BarrageStreamReader;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
-import io.deephaven.grpc_api.session.SessionTicketResolver;
 import io.deephaven.grpc_api.session.TicketRouter;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.grpc_api.session.SessionState;
@@ -56,7 +54,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Iterator;
 
 @Singleton

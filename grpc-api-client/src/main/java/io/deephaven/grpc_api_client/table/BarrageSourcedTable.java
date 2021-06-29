@@ -27,9 +27,7 @@ import io.deephaven.db.v2.sources.WritableChunkSink;
 import io.deephaven.db.v2.sources.WritableSource;
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.Chunk;
-import io.deephaven.db.v2.sources.chunk.ChunkBase;
 import io.deephaven.db.v2.sources.chunk.ChunkType;
-import io.deephaven.db.v2.sources.chunk.LongChunk;
 import io.deephaven.db.v2.sources.chunk.WritableLongChunk;
 import io.deephaven.db.v2.utils.BarrageMessage;
 import io.deephaven.db.v2.utils.Index;
@@ -418,7 +416,7 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
         localPendingUpdates.clear();
 
         if (coalescer != null) {
-            enablePrevTracking();
+            maybeEnablePrevTracking();
             notifyListeners(coalescer.coalesce());
         }
     }
@@ -511,7 +509,7 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
         return finalColumns;
     }
 
-    private void enablePrevTracking() {
+    private void maybeEnablePrevTracking() {
         if (!PREV_TRACKING_UPDATER.compareAndSet(this, 0, 1)) {
             return;
         }
