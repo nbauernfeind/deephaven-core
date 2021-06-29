@@ -19,13 +19,13 @@ public class ObjectArrayExpansionKernel implements ArrayExpansionKernel {
     public final static ObjectArrayExpansionKernel INSTANCE = new ObjectArrayExpansionKernel();
 
     @Override
-    public <T, A extends Attributes.Any> WritableChunk<A> expand(final WritableObjectChunk<T, A> source, final WritableIntChunk<Attributes.ChunkPositions> perElementLengthDest) {
+    public <T, A extends Attributes.Any> WritableChunk<A> expand(final ObjectChunk<T, A> source, final WritableIntChunk<Attributes.ChunkPositions> perElementLengthDest) {
         if (source.size() == 0) {
             perElementLengthDest.setSize(0);
             return WritableObjectChunk.makeWritableChunk(0);
         }
 
-        final WritableObjectChunk<T[], A> typedSource = source.asWritableObjectChunk();
+        final ObjectChunk<T[], A> typedSource = source.asObjectChunk();
         final SizedChunk<A> resultWrapper = new SizedChunk<>(ChunkType.Object);
 
         int lenWritten = 0;

@@ -8,6 +8,7 @@ import com.google.protobuf.ByteStringAccess;
 import com.google.rpc.Code;
 import io.deephaven.grpc_api.util.GrpcUtil;
 import org.apache.arrow.flight.impl.Flight;
+import org.apache.commons.codec.binary.Hex;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -25,13 +26,18 @@ public class SessionTicketResolver extends TicketResolverBase {
     }
 
     @Override
-    public Flight.FlightInfo flightInfoFor(final Flight.FlightDescriptor descriptor) {
-        // sessions do not participate in resolving flight descriptors
-        throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "no such flight exists");
+    public String getLogNameFor(ByteBuffer ticket) {
+        return FLIGHT_DESCRIPTOR_ROUTE + "/" + ticketToExportId(ticket);
     }
 
     @Override
-    public void forAllFlightInfo(final Consumer<Flight.FlightInfo> visitor) {
+    public Flight.FlightInfo flightInfoFor(final Flight.FlightDescriptor descriptor) {
+        // sessions do not participate in resolving flight descriptors
+        throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "No such flight exists");
+    }
+
+    @Override
+    public void forAllFlightInfo(final SessionState session, final Consumer<Flight.FlightInfo> visitor) {
         // sessions do not expose tickets via list flights
     }
 
@@ -48,6 +54,11 @@ public class SessionTicketResolver extends TicketResolverBase {
     @Override
     public <T> SessionState.ExportBuilder<T> publish(final SessionState session, final ByteBuffer ticket) {
         return session.newExport(ticketToExportId(ticket));
+    }
+
+    @Override
+    public <T> SessionState.ExportBuilder<T> publish(final SessionState session, final Flight.FlightDescriptor descriptor) {
+        return session.newExport(descriptorToExportId(descriptor));
     }
 
     /**
@@ -97,11 +108,11 @@ public class SessionTicketResolver extends TicketResolverBase {
      */
     public static int ticketToExportId(final ByteBuffer ticket) {
         if (ticket == null) {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "ticket not supplied");
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Ticket not supplied");
         }
         ticket.order(ByteOrder.LITTLE_ENDIAN);
         if (ticket.remaining() != 5 || ticket.get() != 'e') {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "ticket is not an export id");
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse ticket: found 0x" + Hex.encodeHexString(ticket) + " (hex)");
         }
 
         return ticket.getInt();
@@ -117,19 +128,20 @@ public class SessionTicketResolver extends TicketResolverBase {
      */
     public static int descriptorToExportId(final Flight.FlightDescriptor descriptor) {
         if (descriptor == null) {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "ticket not supplied");
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Descriptor not supplied");
         }
         if (descriptor.getType() != Flight.FlightDescriptor.DescriptorType.PATH) {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "do not support CMD Flight Descriptors");
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse descriptor: not a path");
         }
         if (descriptor.getPathCount() != 2) {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "flight not found");
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION,
+                    "Cannot parse descriptor: unexpected path length (found: " + TicketRouter.getLogNameFor(descriptor) + ", expected: 2)");
         }
 
         try {
             return Integer.parseInt(descriptor.getPath(1));
         } catch (final NumberFormatException nfe) {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "flight not found: " + nfe.getMessage());
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse descriptor: export id not numeric (found: " + TicketRouter.getLogNameFor(descriptor) + ")");
         }
     }
 
@@ -151,6 +163,26 @@ public class SessionTicketResolver extends TicketResolverBase {
      */
     public static Flight.Ticket descriptorToTicket(final Flight.FlightDescriptor descriptor) {
         return exportIdToTicket(descriptorToExportId(descriptor));
+    }
+
+    /**
+     * Convenience method to create a human readable string from the flight ticket.
+     *
+     * @param ticket the ticket to convert
+     * @return a log-friendly string
+     */
+    public static String toReadableString(final Flight.Ticket ticket) {
+        return toReadableString(ticket.getTicket().asReadOnlyByteBuffer());
+    }
+
+    /**
+     * Convenience method to create a human readable string from the flight ticket (as ByteBuffer).
+     *
+     * @param ticket the ticket to convert
+     * @return a log-friendly string
+     */
+    public static String toReadableString(final ByteBuffer ticket) {
+        return FLIGHT_DESCRIPTOR_ROUTE + "/" + ticketToExportId(ticket);
     }
 
     private static byte[] exportIdToBytes(int exportId) {

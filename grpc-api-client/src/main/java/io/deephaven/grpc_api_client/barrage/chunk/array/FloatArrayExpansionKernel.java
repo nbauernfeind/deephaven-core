@@ -11,6 +11,7 @@ import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.FloatChunk;
 import io.deephaven.db.v2.sources.chunk.Chunk;
 import io.deephaven.db.v2.sources.chunk.IntChunk;
+import io.deephaven.db.v2.sources.chunk.ObjectChunk;
 import io.deephaven.db.v2.sources.chunk.WritableFloatChunk;
 import io.deephaven.db.v2.sources.chunk.WritableChunk;
 import io.deephaven.db.v2.sources.chunk.WritableIntChunk;
@@ -22,13 +23,13 @@ public class FloatArrayExpansionKernel implements ArrayExpansionKernel {
     public final static FloatArrayExpansionKernel INSTANCE = new FloatArrayExpansionKernel();
 
     @Override
-    public <T, A extends Attributes.Any> WritableChunk<A> expand(final WritableObjectChunk<T, A> source, final WritableIntChunk<Attributes.ChunkPositions> perElementLengthDest) {
+    public <T, A extends Attributes.Any> WritableChunk<A> expand(final ObjectChunk<T, A> source, final WritableIntChunk<Attributes.ChunkPositions> perElementLengthDest) {
         if (source.size() == 0) {
             perElementLengthDest.setSize(0);
             return WritableFloatChunk.makeWritableChunk(0);
         }
 
-        final WritableObjectChunk<float[], A> typedSource = source.asWritableObjectChunk();
+        final ObjectChunk<float[], A> typedSource = source.asObjectChunk();
         final SizedFloatChunk<A> resultWrapper = new SizedFloatChunk<>();
 
         int lenWritten = 0;

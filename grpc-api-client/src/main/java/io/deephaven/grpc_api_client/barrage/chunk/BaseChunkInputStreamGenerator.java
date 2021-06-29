@@ -7,14 +7,15 @@ package io.deephaven.grpc_api_client.barrage.chunk;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.db.util.LongSizedDataStructure;
 import io.deephaven.db.v2.sources.chunk.Attributes;
-import io.deephaven.db.v2.sources.chunk.WritableChunk;
+import io.deephaven.db.v2.sources.chunk.Chunk;
+import io.deephaven.db.v2.sources.chunk.util.pools.PoolableChunk;
 import io.deephaven.db.v2.utils.Index;
 import io.deephaven.db.v2.utils.OrderedKeys;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
-public abstract class BaseChunkInputStreamGenerator<T extends WritableChunk<Attributes.Values>> implements ChunkInputStreamGenerator {
+public abstract class BaseChunkInputStreamGenerator<T extends Chunk<Attributes.Values>> implements ChunkInputStreamGenerator {
     public static final byte[] PADDING_BUFFER = new byte[8];
     public static final int REMAINDER_MOD_8_MASK = 0x7;
 
@@ -38,7 +39,9 @@ public abstract class BaseChunkInputStreamGenerator<T extends WritableChunk<Attr
     @Override
     public void close() {
         if (REFERENCE_COUNT_UPDATER.decrementAndGet(this) == 0) {
-            chunk.close();
+            if (chunk instanceof PoolableChunk) {
+                ((PoolableChunk) chunk).close();
+            }
         }
     }
 
@@ -59,7 +62,7 @@ public abstract class BaseChunkInputStreamGenerator<T extends WritableChunk<Attr
 
         BaseChunkInputStream(final T chunk, final Options options, final Index subset) {
             this.options = options;
-            this.subset = subset != null ? subset.clone() : chunk.size() == 0 ? OrderedKeys.EMPTY : OrderedKeys.forRange(0, chunk.size() - 1);
+            this.subset = chunk.size() == 0 ? OrderedKeys.EMPTY : subset != null ? subset.clone() : OrderedKeys.forRange(0, chunk.size() - 1);
             REFERENCE_COUNT_UPDATER.incrementAndGet(BaseChunkInputStreamGenerator.this);
             Assert.leq(this.subset.lastKey(), "this.subset.lastKey()", Integer.MAX_VALUE, "Integer.MAX_VALUE");
         }

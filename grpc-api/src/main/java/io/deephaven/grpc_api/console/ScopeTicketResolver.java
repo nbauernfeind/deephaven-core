@@ -8,46 +8,53 @@ import com.google.flatbuffers.FlatBufferBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.ByteStringAccess;
 import com.google.rpc.Code;
+import io.deephaven.base.string.EncodingInfo;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.util.ScriptSession;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.session.TicketResolverBase;
+import io.deephaven.grpc_api.session.TicketRouter;
 import io.deephaven.grpc_api.util.GrpcUtil;
 import org.apache.arrow.flight.impl.Flight;
 
 import javax.inject.Inject;
 import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class ScopeTicketResolver extends TicketResolverBase {
     private static final char TICKET_PREFIX = 's';
-    private static final String FLIGHT_ROUTE = "scope";
+    private static final String FLIGHT_DESCRIPTOR_ROUTE = "scope";
 
     private final GlobalSessionProvider globalSessionProvider;
 
     @Inject
     public ScopeTicketResolver(final GlobalSessionProvider globalSessionProvider) {
-        super((byte)TICKET_PREFIX, FLIGHT_ROUTE);
+        super((byte)TICKET_PREFIX, FLIGHT_DESCRIPTOR_ROUTE);
         this.globalSessionProvider = globalSessionProvider;
     }
 
     @Override
+    public String getLogNameFor(ByteBuffer ticket) {
+        return FLIGHT_DESCRIPTOR_ROUTE + "/" + nameForTicket(ticket);
+    }
+
+    @Override
     public Flight.FlightInfo flightInfoFor(final Flight.FlightDescriptor descriptor) {
-        if (descriptor.getPathCount() < 2) {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "could not compute flight info: no variable name provided");
-        }
-        final String varName = descriptor.getPath(1);
+        final String varName = nameForDescriptor(descriptor);
         final Object varObj = globalSessionProvider.getGlobalSession().getVariable(varName);
         if (varObj instanceof Table) {
             return getFlightInfo((Table) varObj, descriptor, ticketForName(varName));
         } else {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "could not compute flight info: variable '" + varName + "' is not a flight");
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Could not compute flight info: variable '" + varName + "' is not a flight");
         }
     }
 
     @Override
-    public void forAllFlightInfo(final Consumer<Flight.FlightInfo> visitor) {
+    public void forAllFlightInfo(final SessionState session, final Consumer<Flight.FlightInfo> visitor) {
         globalSessionProvider.getGlobalSession().getVariables().forEach((varName, varObj) -> {
             if (varObj instanceof Table) {
                 visitor.accept(getFlightInfo((Table) varObj, descriptorForName(varName), ticketForName(varName)));
@@ -56,36 +63,46 @@ public class ScopeTicketResolver extends TicketResolverBase {
     }
 
     @Override
-    public <T> SessionState.ExportObject<T> resolve(final SessionState session,
-                                                    final ByteBuffer ticket) {
-        final String varName = nameForTicket(ticket);
-        //noinspection unchecked
-        final T result = (T)globalSessionProvider.getGlobalSession().getVariable(varName);
-
-        if (result == null) {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "could not resolve ticket: no variable exists with name '" + varName + "'");
-        }
-        return session.<T>nonExport().submit(() -> result);
+    public <T> SessionState.ExportObject<T> resolve(final SessionState session, final ByteBuffer ticket) {
+        return resolve(session, nameForTicket(ticket));
     }
 
     @Override
-    public <T> SessionState.ExportObject<T> resolve(final SessionState session,
-                                                    final Flight.FlightDescriptor descriptor) {
-        final String scopeName = nameForDescriptor(descriptor);
-        final ScriptSession gss = globalSessionProvider.getGlobalSession();
-        return session.<T>nonExport().submit(() -> gss.getVariable(scopeName));
+    public <T> SessionState.ExportObject<T> resolve(final SessionState session, final Flight.FlightDescriptor descriptor) {
+        return resolve(session, nameForDescriptor(descriptor));
+    }
+
+    private <T> SessionState.ExportObject<T> resolve(final SessionState session, final String scopeName) {
+        return session.<T>nonExport()
+                .requiresSerialQueue()
+                .submit(() -> {
+                    final ScriptSession gss = globalSessionProvider.getGlobalSession();
+                    //noinspection unchecked
+                    T scopeVar = (T) gss.getVariable(scopeName);
+                    if (scopeVar == null) {
+                        throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Could not resolve ticket: no variable exists with name '" + scopeVar + "'");
+                    }
+                    return scopeVar;
+                });
     }
 
     @Override
-    public <T> SessionState.ExportBuilder<T> publish(final SessionState session,
-                                                     final ByteBuffer ticket) {
+    public <T> SessionState.ExportBuilder<T> publish(final SessionState session, final ByteBuffer ticket) {
+        return publish(session, nameForTicket(ticket));
+    }
+
+    @Override
+    public <T> SessionState.ExportBuilder<T> publish(final SessionState session, final Flight.FlightDescriptor descriptor) {
+        return publish(session, nameForDescriptor(descriptor));
+    }
+
+    private <T> SessionState.ExportBuilder<T> publish(final SessionState session, final String varName) {
         // We publish to the query scope after the client finishes publishing their result. We accomplish this by
         // directly depending on the result of this export builder.
         final SessionState.ExportBuilder<T> resultBuilder = session.nonExport();
         final SessionState.ExportObject<T> resultExport = resultBuilder.getExport();
         final SessionState.ExportBuilder<T> publishTask = session.nonExport();
 
-        final String varName = nameForTicket(ticket);
         publishTask
                 .requiresSerialQueue()
                 .require(resultExport)
@@ -97,19 +114,95 @@ public class ScopeTicketResolver extends TicketResolverBase {
         return resultBuilder;
     }
 
+    /**
+     * Convenience method to convert from a scoped variable name to Flight.ticket
+     *
+     * @param name the scoped variable name to convert
+     * @return the flight ticket this descriptor represents
+     */
     public static Flight.Ticket ticketForName(final String name) {
-        final byte[] ticket = (TICKET_PREFIX + '/' + name).getBytes();
+        final byte[] ticket = (TICKET_PREFIX + '/' + name).getBytes(StandardCharsets.UTF_8);
         return Flight.Ticket.newBuilder()
                 .setTicket(ByteStringAccess.wrap(ticket))
                 .build();
     }
 
+    /**
+     * Convenience method to convert from a scoped variable name to Flight.FlightDescriptor
+     *
+     * @param name the scoped variable name to convert
+     * @return the flight descriptor this descriptor represents
+     */
     public static Flight.FlightDescriptor descriptorForName(final String name) {
         return Flight.FlightDescriptor.newBuilder()
                 .setType(Flight.FlightDescriptor.DescriptorType.PATH)
-                .addPath(FLIGHT_ROUTE)
+                .addPath(FLIGHT_DESCRIPTOR_ROUTE)
                 .addPath(name)
                 .build();
+    }
+
+    /**
+     * Convenience method to convert from a Flight.Ticket (as ByteBuffer) to scoped Variable Name
+     *
+     * @param ticket the ticket to convert
+     * @return the query scope name this ticket represents
+     */
+    public static String nameForTicket(final ByteBuffer ticket) {
+        if (ticket== null) {
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Ticket not supplied");
+        }
+        final int initialLimit = ticket.limit();
+        final CharsetDecoder decoder = EncodingInfo.UTF_8.getDecoder().reset();
+        final String strTicket;
+        try {
+            strTicket = decoder.decode(ticket).toString();
+        } catch (CharacterCodingException e) {
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse ticket: unexpectedly failed to decode input bytes: " + e.getMessage());
+        }
+        ticket.limit(initialLimit);
+
+        if (strTicket.length() < 3 || strTicket.charAt(0) != TICKET_PREFIX || strTicket.charAt(1) != '/') {
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse ticket: found '" + strTicket + "' (string)");
+        }
+        return strTicket.substring(2);
+    }
+
+    /**
+     * Convenience method to convert from a Flight.FlightDescriptor to scoped Variable Name
+     *
+     * @param descriptor the descriptor to convert
+     * @return the query scope name this descriptor represents
+     */
+    public static String nameForDescriptor(final Flight.FlightDescriptor descriptor) {
+        if (descriptor.getType() != Flight.FlightDescriptor.DescriptorType.PATH) {
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Cannot parse descriptor: not a path");
+        }
+        if (descriptor.getPathCount() != 2) {
+            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION,
+                    "Cannot parse descriptor: unexpected path length (found: " + TicketRouter.getLogNameFor(descriptor) + ", expected: 2)");
+        }
+
+        return descriptor.getPath(1);
+    }
+
+    /**
+     * Convenience method to convert from a Flight.Ticket to a Flight.FlightDescriptor.
+     *
+     * @param ticket the ticket to convert
+     * @return a flight descriptor that represents the ticket
+     */
+    public static Flight.FlightDescriptor ticketToDescriptor(final Flight.Ticket ticket) {
+        return descriptorForName(nameForTicket(ticket.getTicket().asReadOnlyByteBuffer()));
+    }
+
+    /**
+     * Convenience method to convert from a Flight.Descriptor to a Flight.Ticket.
+     *
+     * @param descriptor the descriptor to convert
+     * @return a flight ticket that represents the descriptor
+     */
+    public static Flight.Ticket descriptorToTicket(final Flight.FlightDescriptor descriptor) {
+        return ticketForName(nameForDescriptor(descriptor));
     }
 
     private static Flight.FlightInfo getFlightInfo(final Table table,
@@ -130,29 +223,5 @@ public class ScopeTicketResolver extends TicketResolverBase {
         final FlatBufferBuilder builder = new FlatBufferBuilder();
         builder.finish(BarrageSchemaUtil.makeSchemaPayload(builder, table.getDefinition(), table.getAttributes()));
         return ByteStringAccess.wrap(builder.dataBuffer());
-    }
-
-    private static String nameForTicket(final Flight.Ticket ticket) {
-        return nameForTicket(ticket.getTicket().asReadOnlyByteBuffer());
-    }
-
-    private static String nameForTicket(final ByteBuffer ticket) {
-        if (ticket.remaining() < 3 || ticket.get(0) != TICKET_PREFIX || ticket.get(1) != '/') {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "ticket is not a ScopeTicketResolver ticket");
-        }
-        return ticket.toString().substring(2);
-    }
-
-    private static String nameForDescriptor(final Flight.FlightDescriptor descriptor) {
-        if (descriptor.getType() != Flight.FlightDescriptor.DescriptorType.PATH) {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION,
-                    "cannot resolve descriptor: not a path");
-        }
-        if (descriptor.getPathCount() != 2) {
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION,
-                    "cannot resolve descriptor: unexpected path length (found: " + descriptor.getPathCount() + ", expected: 2)");
-        }
-
-        return descriptor.getPath(1);
     }
 }

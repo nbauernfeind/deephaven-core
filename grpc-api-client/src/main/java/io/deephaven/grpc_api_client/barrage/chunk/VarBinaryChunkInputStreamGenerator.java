@@ -6,7 +6,7 @@ package io.deephaven.grpc_api_client.barrage.chunk;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.LittleEndianDataOutputStream;
-import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
+import io.deephaven.UncheckedDeephavenException;
 import io.deephaven.db.util.LongSizedDataStructure;
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.IntChunk;
@@ -14,8 +14,9 @@ import io.deephaven.db.v2.sources.chunk.ObjectChunk;
 import io.deephaven.db.v2.sources.chunk.WritableIntChunk;
 import io.deephaven.db.v2.sources.chunk.WritableLongChunk;
 import io.deephaven.db.v2.sources.chunk.WritableObjectChunk;
+import io.deephaven.db.v2.sources.chunk.util.pools.PoolableChunk;
 import io.deephaven.db.v2.utils.Index;
-import io.deephaven.UncheckedDeephavenException;
+import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 
-public class VarBinaryChunkInputStreamGenerator<T> extends BaseChunkInputStreamGenerator<WritableObjectChunk<T, Attributes.Values>> {
+public class VarBinaryChunkInputStreamGenerator<T> extends BaseChunkInputStreamGenerator<ObjectChunk<T, Attributes.Values>> {
     private static final String DEBUG_NAME = "ObjectChunkInputStream Serialization";
 
     private final Class<T> type;
@@ -44,7 +45,7 @@ public class VarBinaryChunkInputStreamGenerator<T> extends BaseChunkInputStreamG
         T constructFrom(final byte[] buf, int offset, int length) throws IOException;
     }
 
-    VarBinaryChunkInputStreamGenerator(final Class<T> type, final WritableObjectChunk<T, Attributes.Values> chunk,
+    VarBinaryChunkInputStreamGenerator(final Class<T> type, final ObjectChunk<T, Attributes.Values> chunk,
                                        final Appender<T> appendItem) {
         super(chunk, 0);
         this.type = type;
@@ -94,7 +95,9 @@ public class VarBinaryChunkInputStreamGenerator<T> extends BaseChunkInputStreamG
     @Override
     public void close() {
         if (REFERENCE_COUNT_UPDATER.decrementAndGet(this) == 0) {
-            chunk.close();
+            if (chunk instanceof PoolableChunk) {
+                ((PoolableChunk) chunk).close();
+            }
             if (offsets != null) {
                 offsets.close();
             }

@@ -12,7 +12,6 @@ import io.deephaven.base.formatters.FormatBitSet;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.configuration.Configuration;
 import io.deephaven.db.tables.TableDefinition;
-import io.deephaven.db.tables.utils.DBDateTime;
 import io.deephaven.db.tables.utils.DBTimeUtils;
 import io.deephaven.db.util.LongSizedDataStructure;
 import io.deephaven.db.util.liveness.LivenessArtifact;
@@ -258,8 +257,8 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
      */
     private long lastIndexClockStep = 0;
 
+    private Throwable pendingError = null;
     private final List<Delta> pendingDeltas = new ArrayList<>();
-    private final List<Throwable> pendingErrors = new ArrayList<>();
 
     private static final class Delta implements SafeCloseable {
         private final long step;
@@ -320,7 +319,7 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
         this.scheduler = scheduler;
         this.streamGeneratorFactory = streamGeneratorFactory;
 
-        this.propagationIndex = parent.getIndex().clone();
+        this.propagationIndex = Index.CURRENT_FACTORY.getEmptyIndex();
 
         this.parent = parent;
         this.updateIntervalMs = updateIntervalMs;
@@ -340,13 +339,7 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
 
         for (int i = 0; i < sourceColumns.length; ++i) {
             // If the source column is a DBDate time we'll just always use longs to avoid silly reinterpretations during serialization/deserialization
-            final Class<?> columnType = sourceColumns[i].getType();
-            if (columnType == DBDateTime.class) {
-                sourceColumns[i] = ReinterpretUtilities.dateTimeToLongSource(sourceColumns[i]);
-            } else if (columnType == boolean.class || columnType == Boolean.class) {
-                sourceColumns[i] = ReinterpretUtilities.booleanToByteSource(sourceColumns[i]);
-            }
-
+            sourceColumns[i] = ReinterpretUtilities.maybeConvertToPrimitive(sourceColumns[i]);
             deltaColumns[i] = ArrayBackedColumnSource.getMemoryColumnSource(capacity, sourceColumns[i].getType());
 
             if (deltaColumns[i] instanceof ObjectArraySource) {
@@ -560,10 +553,12 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
                 // mark when the last indices are from, so that terminal notifications can make use of them if required
                 lastIndexClockStep = LogicalClock.DEFAULT.currentStep();
                 if (DEBUG) {
-                    log.info().append(logPrefix)
-                            .append("lastIndexClockStep=").append(lastIndexClockStep)
-                            .append(", upstream=").append(upstream).append(", shouldEnqueueDelta=").append(shouldEnqueueDelta)
-                            .append(", index=").append(parent.getIndex()).append(", prevIndex=").append(parent.getIndex().getPrevIndex()).endl();
+                    try (final Index prevIndex = parent.getIndex().getPrevIndex()) {
+                        log.info().append(logPrefix)
+                                .append("lastIndexClockStep=").append(lastIndexClockStep)
+                                .append(", upstream=").append(upstream).append(", shouldEnqueueDelta=").append(shouldEnqueueDelta)
+                                .append(", index=").append(parent.getIndex()).append(", prevIndex=").append(prevIndex).endl();
+                    }
                 }
             }
         }
@@ -571,8 +566,10 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
         @Override
         protected void onFailureInternal(final Throwable originalException, final UpdatePerformanceTracker.Entry sourceEntry) {
             synchronized (BarrageMessageProducer.this) {
-                pendingErrors.add(originalException);
-                schedulePropagation();
+                if (pendingError != null) {
+                    pendingError = originalException;
+                    schedulePropagation();
+                }
             }
         }
     }
@@ -931,7 +928,7 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
         }
 
         synchronized (this) {
-            if (!needsSnapshot && pendingDeltas.isEmpty() && pendingErrors.isEmpty()) {
+            if (!needsSnapshot && pendingDeltas.isEmpty() && pendingError == null) {
                 return;
             }
 
@@ -950,15 +947,17 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
                 flipSnapshotStateForSubscriptions(updatedSubscriptions);
             }
 
-            if (deltaSplitIdx > 0) {
+            if (!firstSubscription && deltaSplitIdx > 0) {
                 preSnapshot = aggregateUpdatesInRange(0, deltaSplitIdx);
                 preSnapIndex = propagationIndex.clone();
             }
 
-            if (firstSubscription && snapshot != null) {
+            if (firstSubscription) {
+                Assert.neqNull(snapshot, "snapshot");
+
                 // propagationIndex is only updated when we have listeners; let's "refresh" it if needed
                 propagationIndex.clear();
-                propagationIndex.insert(snapshot.snapshotIndex);
+                propagationIndex.insert(snapshot.rowsAdded);
             }
 
             // flip back for the LTM thread's processing before releasing the lock
@@ -1007,11 +1006,11 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
             propagateToSubscribers(postSnapshot, propagationIndex);
         }
 
-        // propagate errors notifying listeners there are no more updates incoming
-        if (!pendingErrors.isEmpty()) {
-            final Throwable err = pendingErrors.get(0);
+        // propagate any error notifying listeners there are no more updates incoming
+        if (pendingError != null) {
             for (final Subscription subscription : activeSubscriptions) {
-                GrpcUtil.safelyExecute(() -> subscription.listener.onError(err));
+                // TODO (core#801): effective error reporting to api clients
+                GrpcUtil.safelyExecute(() -> subscription.listener.onError(pendingError));
             }
         }
 
@@ -1146,49 +1145,49 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
             downstream.addColumnData = new BarrageMessage.AddColumnData[sourceColumns.length];
             downstream.modColumnData = new BarrageMessage.ModColumnData[sourceColumns.length];
 
-            for (int i = 0; i < downstream.addColumnData.length; ++i) {
-                final ColumnSource<?> sourceColumn = deltaColumns[i];
+            for (int ci = 0; ci < downstream.addColumnData.length; ++ci) {
+                final ColumnSource<?> deltaColumn = deltaColumns[ci];
                 final BarrageMessage.AddColumnData adds = new BarrageMessage.AddColumnData();
-                downstream.addColumnData[i] = adds;
+                downstream.addColumnData[ci] = adds;
 
-                if (addColumnSet.get(i)) {
+                if (addColumnSet.get(ci)) {
                     final int chunkCapacity = localAdded.intSize("serializeItems");
-                    final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(chunkCapacity);
-                    try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(chunkCapacity)) {
-                        sourceColumn.fillChunk(fc, chunk, localAdded);
+                    final WritableChunk<Attributes.Values> chunk = deltaColumn.getChunkType().makeWritableChunk(chunkCapacity);
+                    try (final ChunkSource.FillContext fc = deltaColumn.makeFillContext(chunkCapacity)) {
+                        deltaColumn.fillChunk(fc, chunk, localAdded);
                     }
                     adds.data = chunk;
                 } else {
-                    adds.data = sourceColumn.getChunkType().makeWritableChunk(0);
+                    adds.data = deltaColumn.getChunkType().getEmptyChunk();
                 }
 
-                adds.type = sourceColumn.getType();
-                adds.componentType = sourceColumn.getComponentType();
+                adds.type = deltaColumn.getType();
+                adds.componentType = deltaColumn.getComponentType();
             }
 
-            for (int i = 0; i < downstream.modColumnData.length; ++i) {
-                final ColumnSource<?> sourceColumn = deltaColumns[i];
+            for (int ci = 0; ci < downstream.modColumnData.length; ++ci) {
+                final ColumnSource<?> deltaColumn = deltaColumns[ci];
                 final BarrageMessage.ModColumnData modifications = new BarrageMessage.ModColumnData();
-                downstream.modColumnData[i] = modifications;
+                downstream.modColumnData[ci] = modifications;
 
-                if (modColumnSet.get(i)) {
+                if (modColumnSet.get(ci)) {
                     modifications.rowsModified = firstDelta.update.modified.clone();
                     modifications.rowsIncluded = firstDelta.recordedMods.clone();
 
                     final int chunkCapacity = localModified.intSize("serializeItems");
-                    final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(chunkCapacity);
-                    try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(chunkCapacity)) {
-                        sourceColumn.fillChunk(fc, chunk, localModified);
+                    final WritableChunk<Attributes.Values> chunk = deltaColumn.getChunkType().makeWritableChunk(chunkCapacity);
+                    try (final ChunkSource.FillContext fc = deltaColumn.makeFillContext(chunkCapacity)) {
+                        deltaColumn.fillChunk(fc, chunk, localModified);
                     }
                     modifications.data = chunk;
                 } else {
                     modifications.rowsModified = Index.CURRENT_FACTORY.getEmptyIndex();
                     modifications.rowsIncluded = Index.CURRENT_FACTORY.getEmptyIndex();
-                    modifications.data = sourceColumn.getChunkType().makeWritableChunk(0);
+                    modifications.data = deltaColumn.getChunkType().getEmptyChunk();
                 }
 
-                modifications.type = sourceColumn.getType();
-                modifications.componentType = sourceColumn.getComponentType();
+                modifications.type = deltaColumn.getType();
+                modifications.componentType = deltaColumn.getComponentType();
             }
         } else {
             // We must coalesce these updates.
@@ -1343,24 +1342,24 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
             downstream.addColumnData = new BarrageMessage.AddColumnData[sourceColumns.length];
             downstream.modColumnData = new BarrageMessage.ModColumnData[sourceColumns.length];
 
-            for (int i = 0; i < downstream.addColumnData.length; ++i) {
-                final ColumnSource<?> sourceColumn = deltaColumns[i];
+            for (int ci = 0; ci < downstream.addColumnData.length; ++ci) {
+                final ColumnSource<?> deltaColumn = deltaColumns[ci];
                 final BarrageMessage.AddColumnData adds = new BarrageMessage.AddColumnData();
-                downstream.addColumnData[i] = adds;
+                downstream.addColumnData[ci] = adds;
 
-                if (addColumnSet.get(i)) {
-                    final ColumnInfo info = getColumnInfo.apply(i);
-                    final WritableChunk<Attributes.Values> chunk = sourceColumn.getChunkType().makeWritableChunk(info.addedMapping.length);
-                    try (final ChunkSource.FillContext fc = sourceColumn.makeFillContext(info.addedMapping.length)) {
-                        ((FillUnordered) sourceColumn).fillChunkUnordered(fc, chunk, LongChunk.chunkWrap(info.addedMapping));
+                if (addColumnSet.get(ci)) {
+                    final ColumnInfo info = getColumnInfo.apply(ci);
+                    final WritableChunk<Attributes.Values> chunk = deltaColumn.getChunkType().makeWritableChunk(info.addedMapping.length);
+                    try (final ChunkSource.FillContext fc = deltaColumn.makeFillContext(info.addedMapping.length)) {
+                        ((FillUnordered) deltaColumn).fillChunkUnordered(fc, chunk, LongChunk.chunkWrap(info.addedMapping));
                     }
                     adds.data = chunk;
                 } else {
-                    adds.data = sourceColumn.getChunkType().makeWritableChunk(0);
+                    adds.data = deltaColumn.getChunkType().getEmptyChunk();
                 }
 
-                adds.type = sourceColumn.getType();
-                adds.componentType = sourceColumn.getComponentType();
+                adds.type = deltaColumn.getType();
+                adds.componentType = deltaColumn.getComponentType();
             }
 
             int numActualModCols = 0;
@@ -1383,7 +1382,7 @@ public class BarrageMessageProducer<Options, MessageView> extends LivenessArtifa
                 } else {
                     modifications.rowsModified = Index.CURRENT_FACTORY.getEmptyIndex();
                     modifications.rowsIncluded = Index.CURRENT_FACTORY.getEmptyIndex();
-                    modifications.data = sourceColumn.getChunkType().makeWritableChunk(0);
+                    modifications.data = sourceColumn.getChunkType().getEmptyChunk();
                 }
 
                 modifications.type = sourceColumn.getType();

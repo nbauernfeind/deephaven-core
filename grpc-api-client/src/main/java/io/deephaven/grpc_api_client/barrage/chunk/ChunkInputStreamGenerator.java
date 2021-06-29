@@ -12,7 +12,6 @@ import io.deephaven.db.util.LongSizedDataStructure;
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.Chunk;
 import io.deephaven.db.v2.sources.chunk.ChunkType;
-import io.deephaven.db.v2.sources.chunk.WritableChunk;
 import io.deephaven.db.v2.utils.Index;
 import io.deephaven.util.SafeCloseable;
 import io.grpc.Drainable;
@@ -54,35 +53,35 @@ public interface ChunkInputStreamGenerator extends SafeCloseable {
         }
     }
 
-    static <T> ChunkInputStreamGenerator makeInputStreamGenerator(final ChunkType chunkType, final Class<T> type, final WritableChunk<Attributes.Values> chunk) {
+    static <T> ChunkInputStreamGenerator makeInputStreamGenerator(final ChunkType chunkType, final Class<T> type, final Chunk<Attributes.Values> chunk) {
         switch (chunkType) {
             case Boolean:
                 throw new UnsupportedOperationException("Booleans are reinterpreted as bytes");
             case Char:
-                return new CharChunkInputStreamGenerator(chunk.asWritableCharChunk(), Character.BYTES);
+                return new CharChunkInputStreamGenerator(chunk.asCharChunk(), Character.BYTES);
             case Byte:
-                return new ByteChunkInputStreamGenerator(chunk.asWritableByteChunk(), Byte.BYTES);
+                return new ByteChunkInputStreamGenerator(chunk.asByteChunk(), Byte.BYTES);
             case Short:
-                return new ShortChunkInputStreamGenerator(chunk.asWritableShortChunk(), Short.BYTES);
+                return new ShortChunkInputStreamGenerator(chunk.asShortChunk(), Short.BYTES);
             case Int:
-                return new IntChunkInputStreamGenerator(chunk.asWritableIntChunk(), Integer.BYTES);
+                return new IntChunkInputStreamGenerator(chunk.asIntChunk(), Integer.BYTES);
             case Long:
-                return new LongChunkInputStreamGenerator(chunk.asWritableLongChunk(), Long.BYTES);
+                return new LongChunkInputStreamGenerator(chunk.asLongChunk(), Long.BYTES);
             case Float:
-                return new FloatChunkInputStreamGenerator(chunk.asWritableFloatChunk(), Float.BYTES);
+                return new FloatChunkInputStreamGenerator(chunk.asFloatChunk(), Float.BYTES);
             case Double:
-                return new DoubleChunkInputStreamGenerator(chunk.asWritableDoubleChunk(), Double.BYTES);
+                return new DoubleChunkInputStreamGenerator(chunk.asDoubleChunk(), Double.BYTES);
             case Object:
                 if (type.isArray()) {
-                    return new VarListChunkInputStreamGenerator<>(type, chunk.asWritableObjectChunk());
+                    return new VarListChunkInputStreamGenerator<>(type, chunk.asObjectChunk());
                 } else if (type == String.class) {
-                    return new VarBinaryChunkInputStreamGenerator<>(String.class, chunk.asWritableObjectChunk(), (out, str) -> {
+                    return new VarBinaryChunkInputStreamGenerator<>(String.class, chunk.asObjectChunk(), (out, str) -> {
                         out.write(str.getBytes(Charsets.UTF_8));
                     });
                 }
                 // TODO (core#513): BigDecimal, BigInteger
 
-                return new VarBinaryChunkInputStreamGenerator<>(type, chunk.asWritableObjectChunk(), (out, item) -> {
+                return new VarBinaryChunkInputStreamGenerator<>(type, chunk.asObjectChunk(), (out, item) -> {
                     out.write(item.toString().getBytes(Charsets.UTF_8));
                 });
             default:

@@ -189,7 +189,7 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
             this.name = name;
             this.barrageMessageProducer = barrageMessageProducer;
 
-            this.barrageTable = BarrageSourcedTable.make(liveTableRegistrar, LiveTableMonitor.DEFAULT, barrageMessageProducer.getTableDefinition(), subscribedColumns, viewport != null);
+            this.barrageTable = BarrageSourcedTable.make(liveTableRegistrar, LiveTableMonitor.DEFAULT, barrageMessageProducer.getTableDefinition(), viewport != null);
 
             final ChunkInputStreamGenerator.Options options = new ChunkInputStreamGenerator.Options.Builder()
                     .setIsViewport(viewport != null)
@@ -311,7 +311,8 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
         }
 
         public void setSubscribedColumns(final BitSet newColumns) {
-            setViewportAndColumns(viewport, newColumns);
+            subscribedColumns = newColumns;
+            barrageMessageProducer.updateSubscription(dummyObserver, newColumns);
         }
 
         public void setViewportAndColumns(final Index newViewport, final BitSet newColumns) {
@@ -491,7 +492,7 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
             nugget.newClient(null, subscribedColumns, "full");
 
             nugget.newClient(Index.FACTORY.getIndexByRange(0, size / 10), subscribedColumns, "header");
-            nugget.newClient(Index.FACTORY.getIndexByRange(size / 2, size * 3 / 4), subscribedColumns, "floating");
+            nugget.newClient(Index.FACTORY.getIndexByRange(size / 2, size * 3L / 4), subscribedColumns, "floating");
 
             final Index.SequentialBuilder swissIndexBuilder = Index.FACTORY.getSequentialBuilder();
             final long rangeSize = Math.max(1, size / 20);

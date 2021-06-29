@@ -51,6 +51,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
+import io.grpc.stub.AbstractAsyncStub;
 import io.grpc.stub.StreamObserver;
 import org.apache.arrow.flight.impl.Flight;
 import org.apache.arrow.flight.impl.FlightServiceGrpc;
@@ -170,13 +171,25 @@ public class SimpleDeephavenClient {
                 .onComplete(() -> log.info().append("Batch Complete"))
                 .build());
 
-
         flightService.getSchema(
                 SessionTicketResolver.exportIdToDescriptor(SessionTicketResolver.ticketToExportId(exportTable)),
                 new ResponseBuilder<Flight.SchemaResult>()
                         .onError(this::onError)
                         .onNext(this::onSchemaResult)
                         .build());
+
+        final StreamObserver<Flight.FlightData> putObserver = flightService.doPut(new ResponseBuilder<Flight.PutResult>()
+                .onError(this::onError)
+                .onComplete(() -> log.info().append("Flight PUT Complete").endl())
+                .build());
+        flightService.doGet(exportTable, new ResponseBuilder<Flight.FlightData>()
+                .onError(this::onError)
+                .onNext(data -> {
+                    log.info().append("DoGet Recv Payload").endl();
+                    putObserver.onNext(data);
+                })
+                .onComplete(putObserver::onCompleted)
+                .build());
     }
 
     private void onSchemaResult(final Flight.SchemaResult schemaResult) {
@@ -187,7 +200,7 @@ public class SimpleDeephavenClient {
         final BitSet columns = new BitSet();
         columns.set(0, definition.getColumns().length);
 
-        resultTable = BarrageSourcedTable.make(definition, columns, false);
+        resultTable = BarrageSourcedTable.make(definition, false);
         final InstrumentedShiftAwareListener listener = new InstrumentedShiftAwareListener("test") {
             @Override
             protected void onFailureInternal(final Throwable originalException, final UpdatePerformanceTracker.Entry sourceEntry) {
@@ -202,6 +215,7 @@ public class SimpleDeephavenClient {
         resultTable.listenForUpdates(listener);
 
         resultSub = new BarrageClientSubscription(
+                SessionTicketResolver.toReadableString(exportTable),
                 serverChannel, exportTable, SubscriptionRequest.newBuilder()
                 .setTicket(exportTable)
                 .setColumns(BarrageProtoUtil.toByteString(columns))

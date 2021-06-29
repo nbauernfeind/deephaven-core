@@ -1,12 +1,14 @@
 /*
  * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
  */
+
 package io.deephaven.grpc_api_client.barrage.chunk.array;
 
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.Chunk;
 import io.deephaven.db.v2.sources.chunk.ChunkType;
 import io.deephaven.db.v2.sources.chunk.IntChunk;
+import io.deephaven.db.v2.sources.chunk.ObjectChunk;
 import io.deephaven.db.v2.sources.chunk.WritableChunk;
 import io.deephaven.db.v2.sources.chunk.WritableIntChunk;
 import io.deephaven.db.v2.sources.chunk.WritableObjectChunk;
@@ -44,7 +46,7 @@ public interface ArrayExpansionKernel {
      * @param perElementLengthDest the destination IntChunk for which `dest.get(i + 1) - dest.get(i)` is equivalent to `source.get(i).length`
      * @return an unrolled/flattened chunk of T
      */
-    <T, A extends Attributes.Any> WritableChunk<A> expand(WritableObjectChunk<T, A> source, WritableIntChunk<Attributes.ChunkPositions> perElementLengthDest);
+    <T, A extends Attributes.Any> WritableChunk<A> expand(ObjectChunk<T, A> source, WritableIntChunk<Attributes.ChunkPositions> perElementLengthDest);
 
     /**
      * This contracts the source from a pair of `LongChunk` and `Chunk<T>` and produces a `Chunk<T[]>`. The returned

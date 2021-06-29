@@ -13,17 +13,17 @@ option optimize_for = SPEED;
 
 /*
  * User supplied Flight.Ticket(s) should begin with 'e' byte followed by an signed little-endian int. The client is only
- * allowed to use the positive client id key-space (client generated exportIds should be greater than 0). The client is
+ * allowed to use the positive exportId key-space (client generated exportIds should be greater than 0). The client is
  * encouraged to use a packed ranges of ids as this yields the smallest footprint server side for long running sessions.
  *
- * The client is responsible for releasing all Flight.Tickets that they create or was created for them via a gRPC call.
- * The documentation for the gRPC call will indicate that the exports must be released. Exports that need to be released
- * will always be communicated over the session's ExportNotification stream.
+ * The client is responsible for releasing all Flight.Tickets that they create or that were created for them via a gRPC
+ * call. The documentation for the gRPC call will indicate that the exports must be released. Exports that need to be
+ * released will always be communicated over the session's ExportNotification stream.
  *
  * When a session ends, either explicitly or due to timeout, all exported objects in that session are released
  * automatically.
  *
- * Some parts of the API return a Flight.Ticket that do not need to be released. It is not an error to attempt to
+ * Some parts of the API return a Flight.Ticket that does not need to be released. It is not an error to attempt to
  * release them.
  */
 service SessionService {
@@ -134,16 +134,16 @@ message ExportNotification {
   enum State {
     UNKNOWN = 0; // This item is a dependency, but hasn't been registered yet.
     PENDING = 1; // This item has pending dependencies.
-    QUEUED = 2; // This item is eligible for resolution and has been submitted to the executor.
-    EXPORTED = 3; // This item was successfully exported and is currently being retained.
-    RELEASED = 4; // This item was successfully released.
-    CANCELLED = 5; //  CANCELLED: The user cancelled the item before it exported.
-    FAILED = 6; // This item had a specific error.
-    DEPENDENCY_FAILED = 7; // One of this item's dependencies had an internal error before it exported.
-    DEPENDENCY_NEVER_FOUND = 8; // One of this item's dependencies was already released or never submitted within the out-of-order window.
-    DEPENDENCY_CANCELLED = 9; // Dependency was cancelled, causing a cascading cancel that applies to this export.
-    DEPENDENCY_RELEASED = 10; // Dependency was already released, causing a cascading failure that applies to this export.
-    PUBLISHING = 11; // This item is a client-supplied dependency with no guarantee on timing to EXPORT state.
+    PUBLISHING = 2; // This item is a client-supplied dependency with no guarantee on timing to EXPORT state.
+    QUEUED = 3; // This item is eligible for resolution and has been submitted to the executor.
+    EXPORTED = 4; // This item was successfully exported and is currently being retained.
+    RELEASED = 5; // This item was successfully released.
+    CANCELLED = 6; //  CANCELLED: The user cancelled the item before it exported.
+    FAILED = 7; // This item had a specific error.
+    DEPENDENCY_FAILED = 8; // One of this item's dependencies had an internal error before it exported.
+    DEPENDENCY_NEVER_FOUND = 9; // One of this item's dependencies was already released or never submitted within the out-of-order window.
+    DEPENDENCY_CANCELLED = 10; // Dependency was cancelled, causing a cascading cancel that applies to this export.
+    DEPENDENCY_RELEASED = 11; // Dependency was already released, causing a cascading failure that applies to this export.
   }
   State export_state = 2;
 

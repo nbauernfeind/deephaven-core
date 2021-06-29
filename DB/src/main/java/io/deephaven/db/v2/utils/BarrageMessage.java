@@ -7,6 +7,7 @@ package io.deephaven.db.v2.utils;
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.Chunk;
 import io.deephaven.db.v2.sources.chunk.WritableChunk;
+import io.deephaven.db.v2.sources.chunk.util.pools.PoolableChunk;
 import io.deephaven.util.SafeCloseable;
 
 import java.util.BitSet;
@@ -86,7 +87,9 @@ public class BarrageMessage implements SafeCloseable {
                     continue;
                 }
 
-                ((WritableChunk<Attributes.Values>) acd.data).close();
+                if (acd.data instanceof PoolableChunk) {
+                    ((PoolableChunk) acd.data).close();
+                }
             }
         }
         if (modColumnData != null) {
@@ -101,8 +104,8 @@ public class BarrageMessage implements SafeCloseable {
                 if (mcd.rowsIncluded != null) {
                     mcd.rowsIncluded.close();
                 }
-                if (mcd.data != null) {
-                    ((WritableChunk<Attributes.Values>) mcd.data).close();
+                if (mcd.data instanceof PoolableChunk) {
+                    ((PoolableChunk) mcd.data).close();
                 }
             }
         }

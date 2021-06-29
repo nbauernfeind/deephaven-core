@@ -5,7 +5,7 @@
 package io.deephaven.grpc_api_client.barrage.chunk;
 
 import com.google.common.io.LittleEndianDataOutputStream;
-import io.deephaven.grpc_api_client.barrage.chunk.array.ArrayExpansionKernel;
+import io.deephaven.UncheckedDeephavenException;
 import io.deephaven.db.util.LongSizedDataStructure;
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.ChunkType;
@@ -14,8 +14,9 @@ import io.deephaven.db.v2.sources.chunk.WritableChunk;
 import io.deephaven.db.v2.sources.chunk.WritableIntChunk;
 import io.deephaven.db.v2.sources.chunk.WritableLongChunk;
 import io.deephaven.db.v2.sources.chunk.WritableObjectChunk;
+import io.deephaven.db.v2.sources.chunk.util.pools.PoolableChunk;
 import io.deephaven.db.v2.utils.Index;
-import io.deephaven.UncheckedDeephavenException;
+import io.deephaven.grpc_api_client.barrage.chunk.array.ArrayExpansionKernel;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 
-public class VarListChunkInputStreamGenerator<T> extends BaseChunkInputStreamGenerator<WritableObjectChunk<T, Attributes.Values>> {
+public class VarListChunkInputStreamGenerator<T> extends BaseChunkInputStreamGenerator<ObjectChunk<T, Attributes.Values>> {
     private static final String DEBUG_NAME = "VarListChunkInputStreamGenerator";
 
     private final Class<T> type;
@@ -32,7 +33,7 @@ public class VarListChunkInputStreamGenerator<T> extends BaseChunkInputStreamGen
     private WritableIntChunk<Attributes.ChunkPositions> offsets;
     private ChunkInputStreamGenerator innerGenerator;
 
-    VarListChunkInputStreamGenerator(final Class<T> type, final WritableObjectChunk<T, Attributes.Values> chunk) {
+    VarListChunkInputStreamGenerator(final Class<T> type, final ObjectChunk<T, Attributes.Values> chunk) {
         super(chunk, 0);
         this.type = type;
     }
@@ -54,7 +55,9 @@ public class VarListChunkInputStreamGenerator<T> extends BaseChunkInputStreamGen
     @Override
     public void close() {
         if (REFERENCE_COUNT_UPDATER.decrementAndGet(this) == 0) {
-            chunk.close();
+            if (chunk instanceof PoolableChunk) {
+                ((PoolableChunk) chunk).close();
+            }
             if (offsets != null) {
                 offsets.close();
             }

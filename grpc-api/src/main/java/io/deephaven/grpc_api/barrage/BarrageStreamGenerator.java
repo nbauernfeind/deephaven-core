@@ -89,8 +89,7 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
         ModColumnData(final BarrageMessage.ModColumnData col) throws IOException {
             rowsModified = new IndexGenerator(col.rowsModified);
             rowsIncluded = new IndexGenerator(col.rowsIncluded);
-            data = ChunkInputStreamGenerator.makeInputStreamGenerator(col.data.getChunkType(),
-                    col.type, (WritableChunk<Attributes.Values>) col.data);
+            data = ChunkInputStreamGenerator.makeInputStreamGenerator(col.data.getChunkType(), col.type, col.data);
         }
     }
 
@@ -126,8 +125,7 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
             addColumnData = new ChunkInputStreamGenerator[message.addColumnData.length];
             for (int i = 0; i < message.addColumnData.length; ++i) {
                 final BarrageMessage.AddColumnData acd = message.addColumnData[i];
-                addColumnData[i] = ChunkInputStreamGenerator.makeInputStreamGenerator(acd.data.getChunkType(),
-                        acd.type, (WritableChunk<Attributes.Values>)acd.data);
+                addColumnData[i] = ChunkInputStreamGenerator.makeInputStreamGenerator(acd.data.getChunkType(), acd.type, acd.data);
             }
             modColumnData = new ModColumnData[message.modColumnData.length];
             for (int i = 0; i < modColumnData.length; ++i) {
@@ -240,6 +238,7 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
             try {
                 final int sz = is.available();
                 if (sz == 0) {
+                    is.close();
                     return;
                 }
 
@@ -311,15 +310,9 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
                     (offset, length) -> bufferInfos.add(new ChunkInputStreamGenerator.BufferInfo(offset, length));
 
             // add the add-column streams
-            for (int i = 0; i < addColumnData.length; ++i) {
-                final ChunkInputStreamGenerator.DrainableColumn drainableColumn;
-                if (view.subscribedColumns == null || view.subscribedColumns.get(i)) {
-                    drainableColumn = addColumnData[i].getInputStream(view.options, myAddedOffsets);
-                    addStream.accept(drainableColumn);
-                } else {
-                    drainableColumn = ChunkInputStreamGenerator.DrainableColumn.EMPTY;
-                }
-
+            for (final ChunkInputStreamGenerator col : addColumnData) {
+                final ChunkInputStreamGenerator.DrainableColumn drainableColumn = col.getInputStream(view.options, myAddedOffsets);
+                addStream.accept(drainableColumn);
                 drainableColumn.visitFieldNodes(fieldNodeListener);
                 drainableColumn.visitBuffers(bufferListener);
             }
@@ -426,10 +419,7 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
     public InputStream getDoGetInputStream(final SubView view) throws IOException {
         Assert.assertion(rowsRemoved.original.isEmpty(), "rowsRemoved.original.isEmpty()", "update is not a snapshot");
         Assert.assertion(shifted.original.empty(), "shifted.original.empty()", "update is not a snapshot");
-        for (final ModColumnData mcd : modColumnData) {
-            Assert.assertion(mcd == null || mcd.rowsModified.original.isEmpty(),
-                    "mcd == null || mcd.rowsModified.original.empty()", "update is not a snapshot");
-        }
+        Assert.eqZero(modColumnData.length, "modColumnData.length");
 
         final ArrayDeque<InputStream> streams = new ArrayDeque<>();
         final MutableInt size = new MutableInt();
@@ -467,7 +457,7 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
 
         final int nodesOffset;
         final int buffersOffset;
-        final int numOffsets = addColumnData.length + modColumnData.length;
+        final int numOffsets = addColumnData.length;
         try (final WritableObjectChunk<ChunkInputStreamGenerator.FieldNodeInfo, Attributes.Values> nodeInfos = WritableObjectChunk.makeWritableChunk(numOffsets);
              final WritableObjectChunk<ChunkInputStreamGenerator.BufferInfo, Attributes.Values> bufferInfos = WritableObjectChunk.makeWritableChunk(numOffsets * 3)) {
             nodeInfos.setSize(0);
@@ -478,15 +468,9 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
             final ChunkInputStreamGenerator.BufferListener bufferListener =
                     (offset, length) -> bufferInfos.add(new ChunkInputStreamGenerator.BufferInfo(offset, length));
 
-            for (int i = 0; i < addColumnData.length; ++i) {
-                final ChunkInputStreamGenerator.DrainableColumn drainableColumn;
-                if (view.subscribedColumns == null || view.subscribedColumns.get(i)) {
-                    drainableColumn = addColumnData[i].getInputStream(view.options, myAddedOffsets);
-                    addStream.accept(drainableColumn);
-                } else {
-                    drainableColumn = ChunkInputStreamGenerator.DrainableColumn.EMPTY;
-                }
-
+            for (final ChunkInputStreamGenerator column : addColumnData) {
+                final ChunkInputStreamGenerator.DrainableColumn drainableColumn = column.getInputStream(view.options, myAddedOffsets);
+                addStream.accept(drainableColumn);
                 drainableColumn.visitFieldNodes(fieldNodeListener);
                 drainableColumn.visitBuffers(bufferListener);
             }

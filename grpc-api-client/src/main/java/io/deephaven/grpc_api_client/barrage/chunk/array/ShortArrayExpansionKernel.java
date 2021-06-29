@@ -11,6 +11,7 @@ import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.ShortChunk;
 import io.deephaven.db.v2.sources.chunk.Chunk;
 import io.deephaven.db.v2.sources.chunk.IntChunk;
+import io.deephaven.db.v2.sources.chunk.ObjectChunk;
 import io.deephaven.db.v2.sources.chunk.WritableShortChunk;
 import io.deephaven.db.v2.sources.chunk.WritableChunk;
 import io.deephaven.db.v2.sources.chunk.WritableIntChunk;
@@ -22,13 +23,13 @@ public class ShortArrayExpansionKernel implements ArrayExpansionKernel {
     public final static ShortArrayExpansionKernel INSTANCE = new ShortArrayExpansionKernel();
 
     @Override
-    public <T, A extends Attributes.Any> WritableChunk<A> expand(final WritableObjectChunk<T, A> source, final WritableIntChunk<Attributes.ChunkPositions> perElementLengthDest) {
+    public <T, A extends Attributes.Any> WritableChunk<A> expand(final ObjectChunk<T, A> source, final WritableIntChunk<Attributes.ChunkPositions> perElementLengthDest) {
         if (source.size() == 0) {
             perElementLengthDest.setSize(0);
             return WritableShortChunk.makeWritableChunk(0);
         }
 
-        final WritableObjectChunk<short[], A> typedSource = source.asWritableObjectChunk();
+        final ObjectChunk<short[], A> typedSource = source.asObjectChunk();
         final SizedShortChunk<A> resultWrapper = new SizedShortChunk<>();
 
         int lenWritten = 0;

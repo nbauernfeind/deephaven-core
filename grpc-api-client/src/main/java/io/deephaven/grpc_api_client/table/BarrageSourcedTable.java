@@ -16,19 +16,20 @@ import io.deephaven.db.tables.live.LiveTable;
 import io.deephaven.db.tables.live.LiveTableMonitor;
 import io.deephaven.db.tables.live.LiveTableRegistrar;
 import io.deephaven.db.tables.live.NotificationQueue;
-import io.deephaven.db.tables.utils.DBDateTime;
-import io.deephaven.db.tables.utils.TableTools;
 import io.deephaven.db.v2.QueryTable;
 import io.deephaven.db.v2.ShiftAwareListener;
 import io.deephaven.db.v2.sources.ArrayBackedColumnSource;
 import io.deephaven.db.v2.sources.ColumnSource;
 import io.deephaven.db.v2.sources.LogicalClock;
 import io.deephaven.db.v2.sources.RedirectedColumnSource;
+import io.deephaven.db.v2.sources.ReinterpretUtilities;
 import io.deephaven.db.v2.sources.WritableChunkSink;
 import io.deephaven.db.v2.sources.WritableSource;
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.Chunk;
+import io.deephaven.db.v2.sources.chunk.ChunkBase;
 import io.deephaven.db.v2.sources.chunk.ChunkType;
+import io.deephaven.db.v2.sources.chunk.LongChunk;
 import io.deephaven.db.v2.sources.chunk.WritableLongChunk;
 import io.deephaven.db.v2.utils.BarrageMessage;
 import io.deephaven.db.v2.utils.Index;
@@ -38,14 +39,11 @@ import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.log.LogEntry;
 import io.deephaven.io.log.LogLevel;
 import io.deephaven.io.logger.Logger;
-import io.deephaven.util.MultiException;
-import io.deephaven.util.SafeCloseableList;
 import io.deephaven.util.annotations.InternalUseOnly;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
  * A client side viewport of a server side {@link Table}.
@@ -71,17 +69,15 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
     /** we compact the parent table's key-space and instead redirect; ideal for viewport */
     private final RedirectionIndex redirectionIndex;
     /** represents which rows in writable source exist but are not mapped to any parent rows */
-    private Index freeset = Index.FACTORY.getEmptyIndex();
+    private Index freeset = Index.CURRENT_FACTORY.getEmptyIndex();
 
 
     /** unsubscribed must never be reset to false once it has been set to true */
     private volatile boolean unsubscribed = false;
-    /** indicates whether or not this table should immediately stop propagating updates */
-    private volatile boolean frozen = false;
     private final boolean isViewPort;
 
     /**
-     * The client and the server run in two different processes. The client requests a viewport, and when convenient,
+     * The client and the server update asynchronously with respect to one another. The client requests a viewport,
      * the server will send the client the snapshot for the request and continue to send data that is inside of that view.
      * Due to the asynchronous aspect of this protocol, the client may have multiple requests in-flight and the server
      * may choose to honor the most recent request and assumes that the client no longer wants earlier but unacked viewport
@@ -94,12 +90,6 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
     private Index serverViewport;
     private BitSet serverColumns;
 
-    // the Index of rows that we have indicated should be freed; but we can not free until our next refresh cycle
-    private Index pendingFree = null;
-
-    private final ConcurrentLinkedQueue<Throwable> errorQueue = new ConcurrentLinkedQueue<>();
-
-    private volatile long processedDelta = -1;
 
     /** synchronize access to pendingUpdates */
     private final Object pendingUpdatesLock = new Object();
@@ -110,17 +100,24 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
     /** alternative pendingUpdates container to avoid allocating, and resizing, a new instance */
     private ArrayDeque<BarrageMessage> shadowPendingUpdates = new ArrayDeque<>();
 
+    /** if we receive an error from upstream, then we publish the error downstream and stop updating */
+    private Throwable pendingError = null;
+
     private final List<Object> processedData;
     private final TLongList processedStep;
+
+    /** enable prev tracking only after receiving first snapshot */
+    private volatile int prevTrackingEnabled = 0;
+    private static final AtomicIntegerFieldUpdater<BarrageSourcedTable> PREV_TRACKING_UPDATER =
+            AtomicIntegerFieldUpdater.newUpdater(BarrageSourcedTable.class, "prevTrackingEnabled");
 
     protected BarrageSourcedTable(final LiveTableRegistrar registrar,
                                   final NotificationQueue notificationQueue,
                                   final LinkedHashMap<String, ColumnSource<?>> columns,
                                   final WritableSource<?>[] writableSources,
                                   final RedirectionIndex redirectionIndex,
-                                  @Nullable final BitSet subscribedColumns,
                                   final boolean isViewPort) {
-        super(Index.FACTORY.getEmptyIndex(), columns); //, writableSources, redirectionIndex, subscribedColumns);
+        super(Index.FACTORY.getEmptyIndex(), columns);
         this.registrar = registrar;
         this.notificationQueue = notificationQueue;
 
@@ -136,16 +133,7 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
 
         this.destSources = new WritableSource<?>[writableSources.length];
         for (int ii = 0; ii < writableSources.length; ++ii) {
-            WritableSource<?> source = writableSources[ii];
-            final Class<?> columnType = source.getType();
-
-            if (columnType == DBDateTime.class) {
-                source = (WritableSource<?>) source.reinterpret(long.class);
-            } else if (columnType == boolean.class || columnType == Boolean.class) {
-                source = (WritableSource<?>) source.reinterpret(byte.class);
-            }
-
-            destSources[ii] = source;
+            destSources[ii] = (WritableSource<?>) ReinterpretUtilities.maybeConvertToPrimitive(writableSources[ii]);
         }
 
         // we always start empty, and can be notified this cycle if we are refreshed
@@ -167,10 +155,6 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
         }
     }
 
-    public long getProcessedDelta() {
-        return processedDelta;
-    }
-
     public ChunkType[] getWireChunkTypes() {
         return Arrays.stream(destSources).map(s -> ChunkType.fromElementType(s.getType())).toArray(ChunkType[]::new);
     }
@@ -187,8 +171,10 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
      * Invoke sealTable to prevent further updates from being processed and to mark this source table as static.
      */
     public synchronized void sealTable() {
+        // TODO (core#803): sealing of static table data acquired over flight/barrage
         setRefreshing(false);
         unsubscribed = true;
+        doWakeup();
     }
 
     @Override
@@ -206,8 +192,7 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
 
     @Override
     public void handleBarrageError(Throwable t) {
-        errorQueue.add(t);
-        doWakeup();
+        enqueueError(t);
     }
 
     private Index.IndexUpdateCoalescer processUpdate(final BarrageMessage update, final Index.IndexUpdateCoalescer coalescer) {
@@ -224,17 +209,11 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
 
         // make sure that these index updates make some sense compared with each other, and our current view of the table
         final Index currentIndex = getIndex();
-        final boolean initialSnapshot = currentIndex.empty() && update.isSnapshot;
+        final boolean mightBeInitialSnapshot = currentIndex.empty() && update.isSnapshot;
         currentIndex.remove(update.rowsRemoved);
 
-        try (final SafeCloseableList ignored = new SafeCloseableList();
-             // this is remote-LTMs index prior to this update
-             final Index preShiftPostRemoveIndex = currentIndex.clone();
-             final Index populatedRows = (serverViewport != null ? currentIndex.subindexByPos(serverViewport) : currentIndex.clone())) {
-
-            update.shifted.apply(currentIndex);
-            currentIndex.insert(update.rowsAdded);
-
+        try (final Index currRowsFromPrev = currentIndex.clone();
+             final Index populatedRows = (serverViewport != null ? currentIndex.subindexByPos(serverViewport) : null)) {
             if (REPLICATED_TABLE_DEBUG) {
                 // the included modifications must be a subset of the actual modifications
                 for (int i = 0; i < update.modColumnData.length; ++i) {
@@ -245,12 +224,19 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
             }
 
             // removes
-            freeRows(update.rowsRemoved);
+            try (final Index removed = serverViewport != null ? populatedRows.extract(update.rowsRemoved) : null) {
+                freeRows(removed != null ? removed : update.rowsRemoved);
+            }
 
             // shifts
             if (update.shifted.nonempty()) {
-                redirectionIndex.applyShift(preShiftPostRemoveIndex, update.shifted);
+                redirectionIndex.applyShift(currentIndex, update.shifted);
+                update.shifted.apply(currentIndex);
+                if (populatedRows != null) {
+                    update.shifted.apply(populatedRows);
+                }
             }
+            currentIndex.insert(update.rowsAdded);
 
             final Index totalMods = Index.FACTORY.getEmptyIndex();
             final Index includedMods = Index.FACTORY.getEmptyIndex();
@@ -259,54 +245,12 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
                 totalMods.insert(column.rowsModified);
                 includedMods.insert(column.rowsIncluded);
             }
-            includedMods.retain(populatedRows);
 
-            // post shift space removals due to mods outside of viewport
-            if (serverViewport != null && totalMods.nonempty()) {
-                try (final Index modsOutOfViewport = totalMods.minus(includedMods)) {
-                    freeRows(modsOutOfViewport);
-                }
-            }
-
-            if (serverViewport != null && update.rowsIncluded.nonempty()) {
-                // if we are a viewport, we might have mappings for some of these additions as they include scoped rows
-
-                try (final Index destinationIndex = getFreeRows(update.rowsIncluded.size());
-                     final Index.Iterator destIter = destinationIndex.iterator();
-                     final Index.Iterator outerIter = update.rowsIncluded.iterator();
-                     final WritableLongChunk<Attributes.KeyIndices> keys = WritableLongChunk.makeWritableChunk(update.rowsIncluded.intSize())) {
-
-                    int numNewKeys = 0;
-                    for (int i = 0; i < keys.size(); ++i) {
-                        final long outerKey = outerIter.nextLong();
-                        long redirDest = redirectionIndex.get(outerKey);
-                        if (redirDest == Index.NULL_KEY) {
-                            ++numNewKeys;
-                            redirDest = destIter.nextLong();
-                            redirectionIndex.put(outerKey, redirDest);
-                        }
-                        keys.set(i, redirDest);
-                    }
-
-                    if (destinationIndex.intSize() < numNewKeys) {
-                        // give back the unneeded free rows
-                        freeset.insert(destinationIndex.subindexByPos(numNewKeys, destinationIndex.intSize() - 1));
-                    }
-
-                    // Update data in a fill-unordered manner:
-                    for (int ii = 0; ii < update.addColumnData.length; ++ii) {
-                        if (update.addColumnData[ii] != null && isSubscribedColumn(ii)) {
-                            try (final WritableChunkSink.FillFromContext ctxt = destSources[ii].makeFillFromContext(keys.size())) {
-                                destSources[ii].fillFromChunkUnordered(ctxt, update.addColumnData[ii].data, keys);
-                            }
-                        }
-                    }
-                }
-            } else if (update.rowsIncluded.nonempty()) {
-                try (final Index destinationIndex = getFreeRows((update.rowsIncluded.size()))) {
+            if (update.rowsIncluded.nonempty()) {
+                try (final WritableChunkSink.FillFromContext redirContext = redirectionIndex.makeFillFromContext(update.rowsIncluded.intSize());
+                     final Index destinationIndex = getFreeRows(update.rowsIncluded.size())) {
                     // Update redirection mapping:
-                    final Index.Iterator destKeyIt = destinationIndex.iterator();
-                    update.rowsIncluded.forAllLongs(realKey -> redirectionIndex.put(realKey, destKeyIt.nextLong()));
+                    redirectionIndex.fillFromChunk(redirContext, destinationIndex.asKeyIndicesChunk(), update.rowsIncluded);
 
                     // Update data chunk-wise:
                     for (int ii = 0; ii < update.addColumnData.length; ++ii) {
@@ -324,21 +268,16 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
             modifiedColumnSet.clear();
             for (int ii = 0; ii < update.modColumnData.length; ++ii) {
                 final BarrageMessage.ModColumnData column = update.modColumnData[ii];
-                if (!isSubscribedColumn(ii)) {
-                    continue;
-                }
-
                 if (column.rowsIncluded.empty()) {
                     continue;
                 }
 
                 modifiedColumnSet.setColumnWithIndex(ii);
 
-                try (final Index.Iterator outerIter = column.rowsIncluded.iterator();
+                try (final RedirectionIndex.FillContext redirContext = redirectionIndex.makeFillContext(column.rowsIncluded.intSize(), null);
                      final WritableLongChunk<Attributes.KeyIndices> keys = WritableLongChunk.makeWritableChunk(column.rowsIncluded.intSize())) {
+                    redirectionIndex.fillChunk(redirContext, keys, column.rowsIncluded);
                     for (int i = 0; i < keys.size(); ++i) {
-                        final long outerKey = outerIter.nextLong();
-                        keys.set(i, redirectionIndex.get(outerKey));
                         Assert.notEquals(keys.get(i), "keys[i]", Index.NULL_KEY, "Index.NULL_KEY");
                     }
 
@@ -348,15 +287,23 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
                 }
             }
 
-            processedDelta = update.lastSeq;
+            // remove all data outside of our viewport
+            if (serverViewport != null) {
+                try (final Index toFree = populatedRows.extract(currentIndex.subindexByPos(serverViewport))) {
+                    freeRows(toFree);
+                }
+            }
 
-            if (!update.isSnapshot || initialSnapshot) {
-                final ShiftAwareListener.Update downstream = new ShiftAwareListener.Update(
-                        update.rowsAdded.clone(), update.rowsRemoved.clone(), totalMods, update.shifted, modifiedColumnSet);
-                return (coalescer == null) ? new Index.IndexUpdateCoalescer(preShiftPostRemoveIndex, downstream) : coalescer.update(downstream);
-            } else {
+            if (update.isSnapshot && !mightBeInitialSnapshot) {
+                // This applies to viewport or subscribed column changes; after the first snapshot later snapshots can't
+                // change the index. In this case, we apply the data from the snapshot to local column sources but
+                // otherwise cannot communicate this change to listeners.
                 return coalescer;
             }
+
+            final ShiftAwareListener.Update downstream = new ShiftAwareListener.Update(
+                    update.rowsAdded.clone(), update.rowsRemoved.clone(), totalMods, update.shifted, modifiedColumnSet);
+            return (coalescer == null) ? new Index.IndexUpdateCoalescer(currRowsFromPrev, downstream) : coalescer.update(downstream);
         }
     }
 
@@ -365,17 +312,21 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
     }
 
     private Index getFreeRows(long size) {
+        if (size <= 0) {
+            return Index.CURRENT_FACTORY.getEmptyIndex();
+        }
+
         boolean needsResizing = false;
         if (capacity == 0) {
             capacity = Integer.highestOneBit((int) Math.max(size * 2, 8));
-            freeset = Index.FACTORY.getFlatIndex(capacity);
+            freeset = Index.CURRENT_FACTORY.getFlatIndex(capacity);
             needsResizing = true;
         } else if (freeset.size() < size) {
-            int allocatedSize = (int) (capacity - freeset.size());
+            int usedSlots = (int) (capacity - freeset.size());
             int prevCapacity = capacity;
             do {
                 capacity *= 2;
-            } while ((capacity - allocatedSize) < size);
+            } while ((capacity - usedSlots) < size);
             freeset.insertRange(prevCapacity, capacity - 1);
             needsResizing = true;
         }
@@ -388,54 +339,29 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
 
         final Index result = freeset.subindexByPos(0, (int) size);
         Assert.assertion(result.size() == size,"result.size() == size");
-        freeset = freeset.subindexByPos((int) size, (int) freeset.size());
+        freeset.removeRange(0, result.lastKey());
         return result;
     }
 
-    private void freeRows(final Index removedIndex) {
-        if (removedIndex.empty()) {
+    private void freeRows(final Index rowsToFree) {
+        if (rowsToFree.empty()) {
             return;
         }
 
-        // full subscriptions free everything
-        if (serverViewport == null) {
-            doFreeRows(removedIndex);
-            return;
-        }
-
-        // viewport subscriptions are currently
-        try (final Index populatedRows = getIndex().subindexByPos(serverViewport);
-             final Index rowsToFree = removedIndex.intersect(populatedRows)) {
-            doFreeRows(rowsToFree);
-        }
-    }
-
-    private void processPendingFrees() {
-        if (pendingFree == null) {
-            return;
-        }
-        doFreeRows(pendingFree);
-        pendingFree.close();
-        pendingFree = null;
-    }
-
-    private void doFreeRows(final Index rowsToFree) {
         // Note: these are NOT OrderedKeyIndices until after the call to .sort()
-        final WritableLongChunk<Attributes.OrderedKeyIndices> redirectedRows
-                = WritableLongChunk.makeWritableChunk(rowsToFree.intSize("BarrageSourcedTable"));
-        redirectedRows.setSize(0);
+        try (final WritableLongChunk<Attributes.OrderedKeyIndices> redirectedRows
+                = WritableLongChunk.makeWritableChunk(rowsToFree.intSize("BarrageSourcedTable"))) {
+            redirectedRows.setSize(0);
 
-        for (final Index.Iterator removedIt = rowsToFree.iterator(); removedIt.hasNext();) {
-            final long next = removedIt.nextLong();
-            final long prevIndex = redirectionIndex.remove(next);
-            if (prevIndex == -1) {
-                Assert.assertion(false, "prevIndex != -1", prevIndex, "prevIndex", next, "next");
-            }
-            redirectedRows.add(prevIndex);
+            rowsToFree.forAllLongs(next -> {
+                final long prevIndex = redirectionIndex.remove(next);
+                Assert.assertion(prevIndex != -1, "prevIndex != -1", prevIndex, "prevIndex", next, "next");
+                redirectedRows.add(prevIndex);
+            });
+
+            redirectedRows.sort(); // now they're truly ordered
+            freeset.insert(redirectedRows, 0, redirectedRows.size());
         }
-
-        redirectedRows.sort(); // now they're truly ordered
-        freeset.insert(redirectedRows, 0, redirectedRows.size());
     }
 
     @Override
@@ -452,24 +378,18 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
     }
 
     private synchronized void realRefresh() {
-        if (!errorQueue.isEmpty()) {
-            Throwable t;
-            final List<Throwable> enqueuedErrors = new ArrayList<>();
-            while ((t = errorQueue.poll()) != null) {
-                enqueuedErrors.add(t);
-            }
-            notifyListenersOnError(MultiException.maybeWrapInMultiException("BarrageSourcedTable errors", enqueuedErrors), null);
+        if (pendingError != null) {
+            notifyListenersOnError(pendingError, null);
             // once we notify on error we are done, we can not notify any further, we are failed
             clearPendingData();
+            sealTable();
             return;
         }
         if (unsubscribed) {
-            if (!frozen) {
-                if (getIndex().nonempty()) {
-                    final Index allRows = getIndex().clone();
-                    getIndex().remove(allRows);
-                    notifyListeners(Index.FACTORY.getEmptyIndex(), allRows, Index.FACTORY.getEmptyIndex());
-                }
+            if (getIndex().nonempty()) {
+                final Index allRows = getIndex().clone();
+                getIndex().remove(allRows);
+                notifyListeners(Index.FACTORY.getEmptyIndex(), allRows, Index.FACTORY.getEmptyIndex());
             }
             registrar.removeTable(this);
             clearPendingData();
@@ -477,10 +397,6 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
             Assert.eqZero(shadowPendingUpdates.size(), "shadowPendingUpdates.size()");
             return;
         }
-
-        // before doing any other work, we should get rid of rows that have been freed because of viewport updates,
-        // but have not actually
-        processPendingFrees();
 
         final ArrayDeque<BarrageMessage> localPendingUpdates;
 
@@ -494,16 +410,6 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
             Assert.eqZero(pendingUpdates.size(), "pendingUpdates.size()");
         }
 
-        if (frozen) {
-            synchronized (pendingUpdatesLock) {
-                for (final BarrageMessage update : pendingUpdates) {
-                    update.close();
-                }
-                pendingUpdates.clear();
-            }
-            localPendingUpdates.clear();
-        }
-
         Index.IndexUpdateCoalescer coalescer = null;
         for (final BarrageMessage update : localPendingUpdates) {
             coalescer = processUpdate(update, coalescer);
@@ -512,6 +418,7 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
         localPendingUpdates.clear();
 
         if (coalescer != null) {
+            enablePrevTracking();
             notifyListeners(coalescer.coalesce());
         }
     }
@@ -542,50 +449,41 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
     }
 
     /**
-     * Freeze the table.  This will stop all update propagation.
-     */
-    public synchronized void freeze() {
-        frozen = true;
-    }
-
-    /**
      * Enqueue an error to be reported on the next refresh cycle.
      *
      * @param e The error
      */
     public void enqueueError(final Throwable e) {
-        errorQueue.add(e);
-        doWakeup();
+        synchronized (pendingUpdatesLock) {
+            pendingError = e;
+            doWakeup();
+        }
     }
 
     /**
-     * Set up a Replicated table from the given proxy, id and columns.  This is intended for internal use only.
+     * Set up a replicated table from the given proxy, id and columns.  This is intended for internal use only.
      *
      * @param tableDefinition the table definition
-     * @param subscribedColumns a bitset of columns that are subscribed
      * @param isViewPort true if the table will be a viewport.
      *
      * @return a properly initialized {@link BarrageSourcedTable}
      */
     @InternalUseOnly
-    public static BarrageSourcedTable make(final TableDefinition tableDefinition,
-                                           @Nullable final BitSet subscribedColumns,
-                                           final boolean isViewPort) {
-        return make(LiveTableMonitor.DEFAULT, LiveTableMonitor.DEFAULT, tableDefinition, subscribedColumns, isViewPort);
+    public static BarrageSourcedTable make(final TableDefinition tableDefinition, final boolean isViewPort) {
+        return make(LiveTableMonitor.DEFAULT, LiveTableMonitor.DEFAULT, tableDefinition, isViewPort);
     }
 
     @VisibleForTesting
     public static BarrageSourcedTable make(final LiveTableRegistrar registrar,
                                            final NotificationQueue queue,
                                            final TableDefinition tableDefinition,
-                                           @Nullable final BitSet subscribedColumns,
                                            final boolean isViewPort) {
         final ColumnDefinition<?>[] columns = tableDefinition.getColumns();
         final WritableSource<?>[] writableSources = new WritableSource[columns.length];
         final RedirectionIndex redirectionIndex = RedirectionIndex.FACTORY.createRedirectionIndex(8);
         final LinkedHashMap<String, ColumnSource<?>> finalColumns = makeColumns(columns, writableSources, redirectionIndex);
 
-        final BarrageSourcedTable table = new BarrageSourcedTable(registrar, queue, finalColumns, writableSources, redirectionIndex, subscribedColumns, isViewPort);
+        final BarrageSourcedTable table = new BarrageSourcedTable(registrar, queue, finalColumns, writableSources, redirectionIndex, isViewPort);
 
         // Even if this source table will eventually be static, the data isn't here already. Static tables need to
         // have refreshing set to false after processing data but prior to publishing the object to consumers.
@@ -610,12 +508,18 @@ public class BarrageSourcedTable extends QueryTable implements LiveTable, Barrag
             finalColumns.put(columns[ii].getName(), new RedirectedColumnSource<>(emptyRedirectionIndex, writableSources[ii], 0));
         }
 
-        for (final WritableSource<?> ws : writableSources) {
+        return finalColumns;
+    }
+
+    private void enablePrevTracking() {
+        if (!PREV_TRACKING_UPDATER.compareAndSet(this, 0, 1)) {
+            return;
+        }
+
+        for (final WritableSource<?> ws : destSources) {
             ws.startTrackingPrevValues();
         }
-        emptyRedirectionIndex.startTrackingPrevValues();
-
-        return finalColumns;
+        redirectionIndex.startTrackingPrevValues();
     }
 
     private void doWakeup() {

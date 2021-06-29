@@ -141,19 +141,19 @@ public class BarrageSchemaUtil {
                     try {
                         type = ClassUtil.lookupClass(keyValue.value());
                     } catch (final ClassNotFoundException e) {
-                        throw new UncheckedDeephavenException("could not load class from schema", e);
+                        throw new UncheckedDeephavenException("Could not load class from schema", e);
                     }
                 } else if (keyValue.key().equals("deephaven:componentType")) {
                     try {
                         componentType = ClassUtil.lookupClass(keyValue.value());
                     } catch (final ClassNotFoundException e) {
-                        throw new UncheckedDeephavenException("could not load class from schema", e);
+                        throw new UncheckedDeephavenException("Could not load class from schema", e);
                     }
                 }
             }
 
             if (type == null) {
-                throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "schema did not include `deephaven:type` metadata");
+                throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "Schema did not include `deephaven:type` metadata");
             }
             columns[i] = ColumnDefinition.fromGenericType(name, type, componentType);
         }

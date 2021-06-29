@@ -11,6 +11,7 @@ import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.BooleanChunk;
 import io.deephaven.db.v2.sources.chunk.Chunk;
 import io.deephaven.db.v2.sources.chunk.IntChunk;
+import io.deephaven.db.v2.sources.chunk.ObjectChunk;
 import io.deephaven.db.v2.sources.chunk.WritableBooleanChunk;
 import io.deephaven.db.v2.sources.chunk.WritableChunk;
 import io.deephaven.db.v2.sources.chunk.WritableIntChunk;
@@ -22,13 +23,13 @@ public class BooleanArrayExpansionKernel implements ArrayExpansionKernel {
     public final static BooleanArrayExpansionKernel INSTANCE = new BooleanArrayExpansionKernel();
 
     @Override
-    public <T, A extends Attributes.Any> WritableChunk<A> expand(final WritableObjectChunk<T, A> source, final WritableIntChunk<Attributes.ChunkPositions> perElementLengthDest) {
+    public <T, A extends Attributes.Any> WritableChunk<A> expand(final ObjectChunk<T, A> source, final WritableIntChunk<Attributes.ChunkPositions> perElementLengthDest) {
         if (source.size() == 0) {
             perElementLengthDest.setSize(0);
             return WritableBooleanChunk.makeWritableChunk(0);
         }
 
-        final WritableObjectChunk<boolean[], A> typedSource = source.asWritableObjectChunk();
+        final ObjectChunk<boolean[], A> typedSource = source.asObjectChunk();
         final SizedBooleanChunk<A> resultWrapper = new SizedBooleanChunk<>();
 
         int lenWritten = 0;

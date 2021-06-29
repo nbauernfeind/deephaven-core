@@ -17,7 +17,9 @@ import io.deephaven.barrage.flatbuf.Message;
 import io.deephaven.barrage.flatbuf.MessageHeader;
 import io.deephaven.barrage.flatbuf.RecordBatch;
 import io.deephaven.barrage.flatbuf.Schema;
+import io.deephaven.base.Function;
 import io.deephaven.base.RAPriQueue;
+import io.deephaven.base.verify.Assert;
 import io.deephaven.datastructures.util.CollectionUtil;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.util.liveness.SingletonLivenessManager;
@@ -30,6 +32,7 @@ import io.deephaven.db.v2.utils.IndexShiftData;
 import io.deephaven.grpc_api.barrage.BarrageStreamGenerator;
 import io.deephaven.grpc_api.barrage.BarrageStreamReader;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
+import io.deephaven.grpc_api.session.SessionTicketResolver;
 import io.deephaven.grpc_api.session.TicketRouter;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.grpc_api.session.SessionState;
@@ -53,11 +56,12 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Iterator;
 
 @Singleton
 public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBase {
-    // TODO (core#54): use app_metadata to communicate serialization options
+    // TODO (core#412): use app_metadata to communicate serialization options
     private static final ChunkInputStreamGenerator.Options DEFAULT_DESER_OPTIONS = new ChunkInputStreamGenerator.Options.Builder()
             .setUseDeephavenNulls(true)
             .build();
@@ -77,7 +81,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
     @Override
     public void listFlights(final Flight.Criteria request, final StreamObserver<Flight.FlightInfo> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-            ticketRouter.visitFlightInfo(responseObserver::onNext);
+            ticketRouter.visitFlightInfo(sessionService.getOptionalSession(), responseObserver::onNext);
             responseObserver.onCompleted();
         });
     }
@@ -141,7 +145,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
             final SessionState session = sessionService.getCurrentSession();
 
             return new StreamObserver<InputStream>() {
-                private final PutMarshaller marshaller = new PutMarshaller(session, responseObserver);
+                private final PutMarshaller marshaller = new PutMarshaller(session, FlightServiceGrpcImpl.this, responseObserver);
 
                 @Override
                 public void onNext(final InputStream request) {
@@ -158,6 +162,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 public void onError(final Throwable t) {
                     // ok; we're done then
                     marshaller.resultExportBuilder.submit(() -> { throw new UncheckedDeephavenException(t); });
+                    marshaller.onRequestDone();
                 }
 
                 @Override
@@ -189,7 +194,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
             }
 
             ticketRouter.publish(session, ticketBuf).submit(() -> {
-                final PutMarshaller put = new PutMarshaller(session, responseObserver);
+                final PutMarshaller put = new PutMarshaller(session, FlightServiceGrpcImpl.this, responseObserver);
                 put.parseNext(mi);
                 return put;
             });
@@ -305,8 +310,10 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
     private static class PutMarshaller extends SingletonLivenessManager implements Closeable {
 
         private final SessionState session;
+        private final FlightServiceGrpcImpl service;
         private final StreamObserver<Flight.PutResult> observer;
 
+        // TODO (core#29): lift out-of-band processing into a helper utility w/unit tests
         private RAPriQueue<MessageInfo> pendingSeq;
 
         private long nextSeq = 0;
@@ -319,12 +326,14 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
 
         private PutMarshaller(
                 final SessionState session,
+                final FlightServiceGrpcImpl service,
                 final StreamObserver<Flight.PutResult> observer) {
             this.session = session;
+            this.service = service;
             this.observer = observer;
             this.session.addOnCloseCallback(this);
             if (observer instanceof ServerCallStreamObserver) {
-                ((ServerCallStreamObserver<Flight.PutResult>) observer).setOnCancelHandler(this::onGrpcCancel);
+                ((ServerCallStreamObserver<Flight.PutResult>) observer).setOnCancelHandler(this::onRequestDone);
             }
         }
 
@@ -338,22 +347,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                         final long sequence = mi.app_metadata.sequence();
                         if (sequence != nextSeq) {
                             if (pendingSeq == null) {
-                                pendingSeq = new RAPriQueue<>(1, new RAPriQueue.Adapter<MessageInfo>() {
-                                    @Override
-                                    public boolean less(MessageInfo a, MessageInfo b) {
-                                        return a.app_metadata.sequence() < b.app_metadata.sequence();
-                                    }
-
-                                    @Override
-                                    public void setPos(MessageInfo mi, int pos) {
-                                        mi.pos = pos;
-                                    }
-
-                                    @Override
-                                    public int getPos(MessageInfo mi) {
-                                        return mi.pos;
-                                    }
-                                }, MessageInfo.class);
+                                pendingSeq = new RAPriQueue<>(1, MessageInfoQueueAdapter.INSTANCE, MessageInfo.class);
                             }
                             pendingSeq.enter(mi);
                             return;
@@ -362,17 +356,18 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 }
 
                 MessageInfo nmi = mi;
-                while (nmi != null) {
+                do {
                     process(nmi);
 
                     synchronized (this) {
                         ++nextSeq;
                         nmi = pendingSeq.top();
-                        if (nmi != null && nmi.app_metadata.sequence() != nextSeq) {
-                            nmi = null;
+                        if (nmi == null || nmi.app_metadata.sequence() != nextSeq) {
+                            break;
                         }
+                        Assert.eq(pendingSeq.removeTop(), "pendingSeq.remoteTop()", nmi, "nmi");
                     }
-                }
+                } while (true);
             });
         }
 
@@ -381,20 +376,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 if (resultExportBuilder != null) {
                     throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "only one descriptor definition allowed");
                 }
-                if (mi.descriptor.getType() != Flight.FlightDescriptor.DescriptorType.PATH
-                        || mi.descriptor.getPathCount() != 2
-                        || !mi.descriptor.getPath(0).equals("ticket")) {
-                    throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "flight path must be 'ticket/EXPORT_ID'");
-                }
-
-                final int exportId;
-                try {
-                    exportId = Integer.parseInt(mi.descriptor.getPath(1));
-                } catch (final NumberFormatException error) {
-                    throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "flight path EXPORT_ID non-numeric");
-                }
-
-                resultExportBuilder = session.newExport(exportId);
+                resultExportBuilder = service.ticketRouter.publish(session, mi.descriptor);
                 manage(resultExportBuilder.getExport());
             }
 
@@ -423,28 +405,28 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
             msg.shifted = IndexShiftData.EMPTY;
 
             // include all columns as add-columns
-            int numAdded = -1;
+            int numRowsAdded = -1;
             msg.addColumnData = new BarrageMessage.AddColumnData[numColumns];
-            for (int i = 0; i < numColumns; ++i) {
+            for (int ci = 0; ci < numColumns; ++ci) {
                 final BarrageMessage.AddColumnData acd = new BarrageMessage.AddColumnData();
-                msg.addColumnData[i] = acd;
+                msg.addColumnData[ci] = acd;
 
                 try {
-                    acd.data = ChunkInputStreamGenerator.extractChunkFromInputStream(DEFAULT_DESER_OPTIONS, columnChunkTypes[i], columnTypes[i], fieldNodeIter, bufferInfoIter, mi.inputStream);
+                    acd.data = ChunkInputStreamGenerator.extractChunkFromInputStream(DEFAULT_DESER_OPTIONS, columnChunkTypes[ci], columnTypes[ci], fieldNodeIter, bufferInfoIter, mi.inputStream);
                 } catch (final IOException unexpected) {
                     throw new UncheckedDeephavenException(unexpected);
                 }
 
-                if (numAdded == -1) {
-                    numAdded = acd.data.size();
-                } else if (acd.data.size() != numAdded) {
-                    throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "inconsistent num records per column: " + numAdded + " != " + acd.data.size());
+                if (numRowsAdded == -1) {
+                    numRowsAdded = acd.data.size();
+                } else if (acd.data.size() != numRowsAdded) {
+                    throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "inconsistent num records per column: " + numRowsAdded + " != " + acd.data.size());
                 }
-                acd.type = columnTypes[i];
-                acd.componentType = componentTypes[i];
+                acd.type = columnTypes[ci];
+                acd.componentType = componentTypes[ci];
             }
 
-            msg.rowsAdded = Index.FACTORY.getIndexByRange(resultTable.size(), resultTable.size() + numAdded - 1);
+            msg.rowsAdded = Index.FACTORY.getIndexByRange(resultTable.size(), resultTable.size() + numRowsAdded - 1);
             msg.rowsIncluded = msg.rowsAdded.clone();
             msg.modColumnData = ZERO_MOD_COLUMNS;
 
@@ -469,8 +451,8 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 resultTable.sealTable(); // no more changes allowed; this is officially static content
                 resultExportBuilder.submit(() -> resultTable);
 
-                nextSeq = -1;
                 observer.onCompleted();
+                onRequestDone();
             });
         }
 
@@ -480,19 +462,40 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
             GrpcUtil.safelyExecute(() -> observer.onError(GrpcUtil.statusRuntimeException(Code.UNAUTHENTICATED, "session expired")));
         }
 
-        private void onGrpcCancel() {
-            release();
-            session.removeOnCloseCallback(this);
+        private void onRequestDone() {
+            nextSeq = -1;
+            if (session.removeOnCloseCallback(this) != null) {
+                release();
+            }
         }
 
         private void parseSchema(final Schema header) {
             if (resultTable != null) {
                 throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "Schema evolution not supported");
             }
-            resultTable = BarrageSourcedTable.make(BarrageSchemaUtil.schemaToTableDefinition(header), null, false);
+            resultTable = BarrageSourcedTable.make(BarrageSchemaUtil.schemaToTableDefinition(header), false);
             columnChunkTypes = resultTable.getWireChunkTypes();
             columnTypes = resultTable.getWireTypes();
             componentTypes = resultTable.getWireComponentTypes();
+        }
+    }
+
+    private static class MessageInfoQueueAdapter implements RAPriQueue.Adapter<MessageInfo> {
+        private static final MessageInfoQueueAdapter INSTANCE = new MessageInfoQueueAdapter();
+
+        @Override
+        public boolean less(MessageInfo a, MessageInfo b) {
+            return a.app_metadata.sequence() < b.app_metadata.sequence();
+        }
+
+        @Override
+        public void setPos(MessageInfo mi, int pos) {
+            mi.pos = pos;
+        }
+
+        @Override
+        public int getPos(MessageInfo mi) {
+            return mi.pos;
         }
     }
 }

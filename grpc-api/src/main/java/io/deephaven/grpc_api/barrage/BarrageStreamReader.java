@@ -112,19 +112,26 @@ public class BarrageStreamReader implements BarrageMessageConsumer.StreamReader<
 
                     final ByteBuffer rowsIncluded = batch.addedRowsIncludedAsByteBuffer();
                     msg.rowsIncluded = rowsIncluded != null ? extractIndex(rowsIncluded) : msg.rowsAdded.clone();
-                    final int numAdded = msg.rowsIncluded.intSize();
+
+                    int numRowsAdded = msg.rowsIncluded.intSize();
+                    if (numRowsAdded == 0 && msg.isSnapshot) {
+                        // We only send the full table index in the initial snapshot. After that it is empty.
+                        numRowsAdded = -1;
+                    }
 
                     msg.addColumnData = new BarrageMessage.AddColumnData[columnTypes.length];
-                    for (int i = 0; i < msg.addColumnData.length; ++i) {
+                    for (int ci = 0; ci < msg.addColumnData.length; ++ci) {
                         final BarrageMessage.AddColumnData acd = new BarrageMessage.AddColumnData();
-                        msg.addColumnData[i] = acd;
+                        msg.addColumnData[ci] = acd;
 
-                        acd.data = ChunkInputStreamGenerator.extractChunkFromInputStream(options, columnChunkTypes[i], columnTypes[i], fieldNodeIter, bufferInfoIter, ois);
-                        if (acd.data.size() != numAdded) {
+                        acd.data = ChunkInputStreamGenerator.extractChunkFromInputStream(options, columnChunkTypes[ci], columnTypes[ci], fieldNodeIter, bufferInfoIter, ois);
+                        if (numRowsAdded == -1 && acd.data.size() != 0) {
+                            numRowsAdded = acd.data.size();
+                        } else if (acd.data.size() != 0 && acd.data.size() != numRowsAdded) {
                             throw new IllegalStateException("Add column data does not have the expected number of rows.");
                         }
-                        acd.type = columnTypes[i];
-                        acd.componentType = componentTypes[i];
+                        acd.type = columnTypes[ci];
+                        acd.componentType = componentTypes[ci];
                     }
 
                     msg.modColumnData = new BarrageMessage.ModColumnData[columnTypes.length];

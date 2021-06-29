@@ -7,6 +7,7 @@
 
 package io.deephaven.grpc_api_client.barrage.chunk;
 
+import io.deephaven.db.v2.sources.chunk.IntChunk;
 import io.deephaven.util.QueryConstants;
 import com.google.common.io.LittleEndianDataOutputStream;
 import io.deephaven.UncheckedDeephavenException;
@@ -23,10 +24,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 
-public class IntChunkInputStreamGenerator extends BaseChunkInputStreamGenerator<WritableIntChunk<Attributes.Values>> {
+public class IntChunkInputStreamGenerator extends BaseChunkInputStreamGenerator<IntChunk<Attributes.Values>> {
     private static final String DEBUG_NAME = "IntChunkInputStreamGenerator";
 
-    IntChunkInputStreamGenerator(final WritableIntChunk<Attributes.Values> chunk, final int elementSize) {
+    IntChunkInputStreamGenerator(final IntChunk<Attributes.Values> chunk, final int elementSize) {
         super(chunk, elementSize);
     }
 

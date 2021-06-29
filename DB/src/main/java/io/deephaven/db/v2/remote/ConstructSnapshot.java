@@ -10,6 +10,7 @@ import io.deephaven.base.log.LogOutputAppendable;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.configuration.Configuration;
 import io.deephaven.datastructures.util.CollectionUtil;
+import io.deephaven.db.v2.sources.ReinterpretUtilities;
 import io.deephaven.io.log.LogEntry;
 import io.deephaven.db.tables.ColumnDefinition;
 import io.deephaven.db.exceptions.QueryCancellationException;
@@ -42,6 +43,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static io.deephaven.db.v2.sources.chunk.Attributes.Values;
@@ -1248,6 +1250,8 @@ public class ConstructSnapshot {
         snapshot.rowsAdded = (usePrev ? table.getIndex().getPrevIndex() : table.getIndex()).clone();
         snapshot.rowsRemoved = Index.CURRENT_FACTORY.getEmptyIndex();
         snapshot.addColumnData = new BarrageMessage.AddColumnData[table.getColumnSources().size()];
+
+        // TODO (core#412): when sending app metadata; this can be reduced to a zero-len array
         snapshot.modColumnData = new BarrageMessage.ModColumnData[table.getColumnSources().size()];
 
         if (positionsToSnapshot != null) {
@@ -1275,11 +1279,10 @@ public class ConstructSnapshot {
 
                 final BarrageMessage.AddColumnData acd = new BarrageMessage.AddColumnData();
                 snapshot.addColumnData[ii] = acd;
-                if (columnsToSerialize == null || columnsToSerialize.get(ii)) {
-                    acd.data = getSnapshotDataAsChunk(columnSource, sharedContext, snapshot.rowsIncluded, usePrev);
-                } else {
-                    acd.data = columnSource.getChunkType().makeWritableChunk(0);
-                }
+                final boolean columnIsEmpty = columnsToSerialize != null && !columnsToSerialize.get(ii);
+                final Index rows = columnIsEmpty ? Index.FACTORY.getEmptyIndex() : snapshot.rowsIncluded;
+                // Note: cannot use shared context across several calls of differing lengths and no sharing necessary when empty
+                acd.data = getSnapshotDataAsChunk(columnSource, columnIsEmpty ? null : sharedContext, rows, usePrev);
                 acd.type = columnSource.getType();
                 acd.componentType = columnSource.getComponentType();
 
@@ -1287,20 +1290,20 @@ public class ConstructSnapshot {
                 snapshot.modColumnData[ii] = mcd;
                 mcd.rowsModified = Index.CURRENT_FACTORY.getEmptyIndex();
                 mcd.rowsIncluded = Index.CURRENT_FACTORY.getEmptyIndex();
-                mcd.data = columnSource.getChunkType().makeWritableChunk(0);
+                mcd.data = getSnapshotDataAsChunk(columnSource, null, Index.FACTORY.getEmptyIndex(), usePrev);
                 mcd.type = acd.type;
                 mcd.componentType = acd.componentType;
             }
         }
 
-        LogEntry infoEntry = log.info().append(System.identityHashCode(logIdentityObject))
+        final LogEntry infoEntry = log.info().append(System.identityHashCode(logIdentityObject))
                 .append(": Snapshot candidate step=").append((usePrev ? -1 : 0) + LogicalClock.getStep(getConcurrentAttemptClockValue()))
                 .append(", rows=").append(snapshot.rowsIncluded).append("/").append(positionsToSnapshot)
                 .append(", cols=");
         if (columnsToSerialize == null) {
-            infoEntry = infoEntry.append("ALL");
+            infoEntry.append("ALL");
         } else {
-            infoEntry = infoEntry.append(FormatBitSet.formatBitSet(columnsToSerialize));
+            infoEntry.append(FormatBitSet.formatBitSet(columnsToSerialize));
         }
         infoEntry.append(", usePrev=").append(usePrev).endl();
 
@@ -1323,167 +1326,45 @@ public class ConstructSnapshot {
     }
 
     private static <T> Object getSnapshotData(final ColumnSource<T> columnSource, final SharedContext sharedContext, final Index index, final boolean usePrev) {
-        final Class type = columnSource.getType();
+        final ColumnSource<?> sourceToUse = ReinterpretUtilities.maybeConvertToPrimitive(columnSource);
+        final Class<?> type = sourceToUse.getType();
         final int size = index.intSize();
-        if (type == DBDateTime.class) {
-            if (columnSource.allowsReinterpret(long.class)) {
-                final ColumnSource<Long> longSource = columnSource.reinterpret(long.class);
-                try (final ColumnSource.FillContext context = longSource.makeFillContext(size, sharedContext)) {
-                    final long [] resultArray = new long[size];
-                    final WritableLongChunk<Values> result = WritableLongChunk.writableChunkWrap(resultArray);
-                    if (usePrev) {
-                        longSource.fillPrevChunk(context, result, index);
-                    } else {
-                        longSource.fillChunk(context, result, index);
-                    }
-                    return resultArray;
-                }
+        try (final ColumnSource.FillContext context = sourceToUse.makeFillContext(size, sharedContext)) {
+            final ChunkType chunkType = sourceToUse.getChunkType();
+            final Object resultArray = chunkType.makeArray(size);
+            final WritableChunk<Values> result = chunkType.writableChunkWrap(resultArray, 0, size);
+            if (usePrev) {
+                sourceToUse.fillPrevChunk(context, result, index);
             } else {
-                try (final WritableObjectChunk<DBDateTime, Values> objectResult = WritableObjectChunk.makeWritableChunk(size)) {
-                    try (final ColumnSource.FillContext context = columnSource.makeFillContext(size, sharedContext)) {
-                        if (usePrev) {
-                            columnSource.fillPrevChunk(context, objectResult, index);
-                        } else {
-                            columnSource.fillChunk(context, objectResult, index);
-                        }
-                    }
-
-                    final long[] longResult = new long[size];
-                    for (int ii = 0; ii < objectResult.size(); ++ii) {
-                        final DBDateTime dbDateTime = objectResult.get(ii);
-                        longResult[ii] = dbDateTime == null ? QueryConstants.NULL_LONG : dbDateTime.getNanos();
-                    }
-                    return longResult;
-                }
+                sourceToUse.fillChunk(context, result, index);
             }
-        } else if (type == boolean.class || type == Boolean.class) {
-            if (columnSource.allowsReinterpret(byte.class)) {
-                final ColumnSource<Byte> byteSource = columnSource.reinterpret(byte.class);
-                try (final ColumnSource.FillContext context = byteSource.makeFillContext(size, sharedContext)) {
-                    final byte [] byteArray = new byte[size];
-                    final WritableByteChunk<Values> result = WritableByteChunk.writableChunkWrap(byteArray);
-                    if (usePrev) {
-                        byteSource.fillPrevChunk(context, result, index);
-                    } else {
-                        byteSource.fillChunk(context, result, index);
-                    }
-                    return byteArray;
-                }
-            } else {
-                try (final WritableObjectChunk<Boolean, Values> objectResult = WritableObjectChunk.makeWritableChunk(size)) {
-                    try (final ColumnSource.FillContext context = columnSource.makeFillContext(size, sharedContext)) {
-                        if (usePrev) {
-                            columnSource.fillPrevChunk(context, objectResult, index);
-                        } else {
-                            columnSource.fillChunk(context, objectResult, index);
-                        }
-                    }
-
-                    final byte[] byteResult = new byte[size];
-                    for (int ii = 0; ii < objectResult.size(); ++ii) {
-                        byteResult[ii] = BooleanUtils.booleanAsByte(objectResult.get(ii));
-                    }
-                    return byteResult;
-                }
-            }
-        } else {
-            try (final ColumnSource.FillContext context = columnSource.makeFillContext(size, sharedContext)) {
-                final ChunkType chunkType = columnSource.getChunkType();
-                final Object resultArray = chunkType.makeArray(size);
-                final WritableChunk<Values> result = chunkType.writableChunkWrap(resultArray, 0, size);
-                if (usePrev) {
-                    columnSource.fillPrevChunk(context, result, index);
-                } else {
-                    columnSource.fillChunk(context, result, index);
-                }
-                if (chunkType == ChunkType.Object) {
+            if (chunkType == ChunkType.Object) {
+                //noinspection unchecked
+                final T [] values = (T[]) Array.newInstance(type, size);
+                for (int ii = 0; ii < values.length; ++ii) {
                     //noinspection unchecked
-                    final T [] values = (T[]) Array.newInstance(type, size);
-                    for (int ii = 0; ii < values.length; ++ii) {
-                        //noinspection unchecked
-                        values[ii] = (T)result.asObjectChunk().get(ii);
-                    }
-                    return values;
-
+                    values[ii] = (T)result.asObjectChunk().get(ii);
                 }
-                return resultArray;
+                return values;
+
             }
+            return resultArray;
         }
     }
 
     private static <T> WritableChunk<Values> getSnapshotDataAsChunk(final ColumnSource<T> columnSource, final SharedContext sharedContext, final Index index, final boolean usePrev) {
-        final Class<T> type = columnSource.getType();
+        final ColumnSource<?> sourceToUse = ReinterpretUtilities.maybeConvertToPrimitive(columnSource);
         final int size = index.intSize();
-        if (type == DBDateTime.class) {
-            if (columnSource.allowsReinterpret(long.class)) {
-                final ColumnSource<Long> longSource = columnSource.reinterpret(long.class);
-                try (final ColumnSource.FillContext context = longSource.makeFillContext(size, sharedContext)) {
-                    final WritableLongChunk<Values> result = WritableLongChunk.makeWritableChunk(size);
-                    if (usePrev) {
-                        longSource.fillPrevChunk(context, result, index);
-                    } else {
-                        longSource.fillChunk(context, result, index);
-                    }
-                    return result;
-                }
+        try (final ColumnSource.FillContext context = sharedContext != null
+                ? sourceToUse.makeFillContext(size, sharedContext) : sourceToUse.makeFillContext(size)) {
+            final ChunkType chunkType = sourceToUse.getChunkType();
+            final WritableChunk<Values> result = chunkType.makeWritableChunk(size);
+            if (usePrev) {
+                sourceToUse.fillPrevChunk(context, result, index);
             } else {
-                try (final WritableObjectChunk<DBDateTime, Values> objectResult = WritableObjectChunk.makeWritableChunk(size)) {
-                    try (final ColumnSource.FillContext context = columnSource.makeFillContext(size, sharedContext)) {
-                        if (usePrev) {
-                            columnSource.fillPrevChunk(context, objectResult, index);
-                        } else {
-                            columnSource.fillChunk(context, objectResult, index);
-                        }
-                    }
-
-                    final WritableLongChunk<Attributes.Values> longResult = WritableLongChunk.makeWritableChunk(size);
-                    for (int ii = 0; ii < objectResult.size(); ++ii) {
-                        final DBDateTime dbDateTime = objectResult.get(ii);
-                        longResult.set(ii, dbDateTime == null ? QueryConstants.NULL_LONG : dbDateTime.getNanos());
-                    }
-                    return longResult;
-                }
+                sourceToUse.fillChunk(context, result, index);
             }
-        } else if (type == boolean.class || type == Boolean.class) {
-            if (columnSource.allowsReinterpret(byte.class)) {
-                final ColumnSource<Byte> byteSource = columnSource.reinterpret(byte.class);
-                try (final ColumnSource.FillContext context = byteSource.makeFillContext(size, sharedContext)) {
-                    final WritableByteChunk<Values> result = WritableByteChunk.makeWritableChunk(size);
-                    if (usePrev) {
-                        byteSource.fillPrevChunk(context, result, index);
-                    } else {
-                        byteSource.fillChunk(context, result, index);
-                    }
-                    return result;
-                }
-            } else {
-                try (final WritableObjectChunk<Boolean, Values> objectResult = WritableObjectChunk.makeWritableChunk(size)) {
-                    try (final ColumnSource.FillContext context = columnSource.makeFillContext(size, sharedContext)) {
-                        if (usePrev) {
-                            columnSource.fillPrevChunk(context, objectResult, index);
-                        } else {
-                            columnSource.fillChunk(context, objectResult, index);
-                        }
-                    }
-
-                    final WritableByteChunk<Attributes.Values> byteResult = WritableByteChunk.makeWritableChunk(size);
-                    for (int ii = 0; ii < objectResult.size(); ++ii) {
-                        byteResult.set(ii, BooleanUtils.booleanAsByte(objectResult.get(ii)));
-                    }
-                    return byteResult;
-                }
-            }
-        } else {
-            try (final ColumnSource.FillContext context = columnSource.makeFillContext(size, sharedContext)) {
-                final ChunkType chunkType = columnSource.getChunkType();
-                final WritableChunk<Values> result = chunkType.makeWritableChunk(size);
-                if (usePrev) {
-                    columnSource.fillPrevChunk(context, result, index);
-                } else {
-                    columnSource.fillChunk(context, result, index);
-                }
-                return result;
-            }
+            return result;
         }
     }
 

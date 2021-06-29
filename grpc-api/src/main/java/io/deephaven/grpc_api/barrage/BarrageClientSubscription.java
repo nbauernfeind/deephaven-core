@@ -6,7 +6,6 @@ package io.deephaven.grpc_api.barrage;
 
 import io.deephaven.base.log.LogOutput;
 import io.deephaven.base.log.LogOutputAppendable;
-import io.deephaven.grpc_api.session.SessionTicketResolver;
 import io.deephaven.grpc_api_client.barrage.chunk.ChunkInputStreamGenerator;
 import io.deephaven.grpc_api_client.table.BarrageSourcedTable;
 import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
@@ -38,6 +37,7 @@ public class BarrageClientSubscription implements LogOutputAppendable {
 
     private volatile boolean connected = false;
 
+    private final String logName;
     private final Flight.Ticket handle;
     private final boolean isViewport;
 
@@ -45,12 +45,13 @@ public class BarrageClientSubscription implements LogOutputAppendable {
 
     public BarrageClientSubscription(
 //            final AuthSessionClientManager authClientManager,
+            final String logName,
             final Channel channel,
             final Flight.Ticket handle,
             final SubscriptionRequest initialRequest,
             final BarrageMessageConsumer.StreamReader<ChunkInputStreamGenerator.Options> streamReader,
             final BarrageSourcedTable resultTable) {
-        this(channel, handle, initialRequest, streamReader,
+        this(logName, channel, handle, initialRequest, streamReader,
                 resultTable.getWireChunkTypes(),
                 resultTable.getWireTypes(),
                 resultTable.getWireComponentTypes(),
@@ -59,6 +60,7 @@ public class BarrageClientSubscription implements LogOutputAppendable {
 
     public BarrageClientSubscription(
 //            final AuthSessionClientManager authClientManager,
+            final String logName,
             final Channel channel,
             final Flight.Ticket handle,
             final SubscriptionRequest initialRequest,
@@ -67,7 +69,7 @@ public class BarrageClientSubscription implements LogOutputAppendable {
             final Class<?>[] wireTypes,
             final Class<?>[] wireComponentTypes,
             final WeakReference<BarrageMessage.Listener> weakListener) {
-
+        this.logName = logName;
         this.handle = handle;
         this.isViewport = !initialRequest.getViewport().isEmpty();
 
@@ -134,9 +136,7 @@ public class BarrageClientSubscription implements LogOutputAppendable {
             private BarrageMessage.Listener getListener() {
                 final BarrageMessage.Listener listener = weakListener.get();
                 if (listener == null) {
-                    call.halfClose();
-                    connected = false;
-                    return null;
+                    close();
                 }
                 return listener;
             }
@@ -200,9 +200,7 @@ public class BarrageClientSubscription implements LogOutputAppendable {
 
     @Override
     public LogOutput append(final LogOutput logOutput) {
-        return logOutput.append("Barrage/")
-                .append("/ClientSubscription/")
-                .append(SessionTicketResolver.ticketToExportId(handle))
-                .append("/").append(System.identityHashCode(this)).append("/");
+        return logOutput.append("Barrage/").append("/ClientSubscription/").append(logName).append("/")
+                .append(System.identityHashCode(this)).append("/");
     }
 }
