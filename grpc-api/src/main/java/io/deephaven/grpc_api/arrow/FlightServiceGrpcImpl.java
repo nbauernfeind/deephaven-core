@@ -14,7 +14,13 @@ import com.google.rpc.Code;
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.list.array.TLongArrayList;
 import io.deephaven.UncheckedDeephavenException;
+import io.deephaven.barrage.flatbuf.BarrageMessageType;
 import io.deephaven.barrage.flatbuf.BarrageMessageWrapper;
+import io.deephaven.barrage.flatbuf.BarrageSubscriptionRequest;
+import io.deephaven.configuration.Configuration;
+import io.deephaven.db.v2.QueryTable;
+import io.deephaven.grpc_api.barrage.BarrageMessageProducer;
+import io.deephaven.grpc_api.util.ExportTicketHelper;
 import org.apache.arrow.flatbuf.Message;
 import org.apache.arrow.flatbuf.MessageHeader;
 import org.apache.arrow.flatbuf.RecordBatch;
@@ -55,10 +61,13 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
+import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Queue;
 
 @Singleton
-public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBase {
+public class FlightServiceGrpcImpl<Options, View> extends FlightServiceGrpc.FlightServiceImplBase {
     private static final int TAG_TYPE_BITS = 3;
     private static final BarrageMessage.ModColumnData[] ZERO_MOD_COLUMNS = new BarrageMessage.ModColumnData[0];
 
@@ -75,11 +84,23 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
     private final SessionService sessionService;
     private final TicketRouter ticketRouter;
 
+    private static final int DEFAULT_UPDATE_INTERVAL_MS = Configuration.getInstance().getIntegerWithDefault("barrage.updateInterval", 1000);
+
+    private final BarrageMessageProducer.Operation.Factory<Options, View> operationFactory;
+    private final BarrageMessageProducer.Adapter<StreamObserver<InputStream>, StreamObserver<View>> listenerAdapter;
+    private final BarrageMessageProducer.Adapter<BarrageSubscriptionRequest, Options> optionsAdapter;
+
     @Inject()
     public FlightServiceGrpcImpl(final SessionService sessionService,
-                                 final TicketRouter ticketRouter) {
-        this.sessionService = sessionService;
+                                 final TicketRouter ticketRouter,
+                                 final BarrageMessageProducer.Operation.Factory<Options, View> operationFactory,
+                                 final BarrageMessageProducer.Adapter<StreamObserver<InputStream>, StreamObserver<View>> listenerAdapter,
+                                 final BarrageMessageProducer.Adapter<BarrageSubscriptionRequest, Options> optionsAdapter) {
         this.ticketRouter = ticketRouter;
+        this.sessionService = sessionService;
+        this.operationFactory = operationFactory;
+        this.listenerAdapter = listenerAdapter;
+        this.optionsAdapter = optionsAdapter;
     }
 
     @Override
@@ -309,13 +330,262 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
         LittleEndianDataInputStream inputStream = null;
     }
 
+//    /**
+//     * Receive an out-of-band subscription update for an existing subscription that was
+//     * @param request the request to submit as if it was sent on the client-streaming side of the export
+//     * @param responseObserver the response observer to notify of any errors or successes
+//     */
+//    @Override
+//    public void doUpdateSubscription(final SubscriptionRequest request, final StreamObserver<OutOfBandSubscriptionResponse> responseObserver) {
+//        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
+//            if (!request.hasExportId()) {
+//                responseObserver.onError(GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "Export ID not specified."));
+//                return;
+//            }
+//
+//            final SessionState session = sessionService.getCurrentSession();
+//            final SessionState.ExportObject<SubscriptionObserver> subscription = ticketRouter.resolve(session, request.getExportId());
+//
+//            session.nonExport()
+//                    .require(subscription)
+//                    .onError(responseObserver::onError)
+//                    .submit(() -> {
+//                        subscription.get().onNext(request);
+//                        responseObserver.onNext(OutOfBandSubscriptionResponse.newBuilder().setSubscriptionFound(true).build());
+//                        responseObserver.onCompleted();
+//                    });
+//        });
+//    }
+//
+//    /**
+//     * Subscribe with a normal bi-directional stream.
+//     * @param responseObserver the observer to send subscription events to
+//     * @return the observer that grpc can delegate updates to
+//     */
+//    public StreamObserver<SubscriptionRequest> doSubscribeCustom(final StreamObserver<InputStream> responseObserver) {
+//        return GrpcUtil.rpcWrapper(log, responseObserver, () -> new SubscriptionObserver(sessionService.getCurrentSession(), responseObserver));
+//    }
+//
+//    /**
+//     * Subscribe with server-side streaming only. (Updates may be sent out of band, if subscription is also exported.)
+//     * @param request the initial one-shot subscription request to get this subscription started
+//     * @param responseObserver the observer to send subscription events to
+//     */
+//    public void doSubscribeCustom(final SubscriptionRequest request, final StreamObserver<InputStream> responseObserver) {
+//        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
+//            final SubscriptionObserver observer = new SubscriptionObserver(sessionService.getCurrentSession(), responseObserver);
+//            observer.onNext(request);
+//        });
+//    }
+
+    /**
+     * Helper class that maintains a subscription whether it was created by a bi-directional stream request or the
+     * no-client-streaming request. If the SubscriptionRequest sets the sequence, then it treats sequence as a watermark
+     * and will not send out-of-order requests (due to out-of-band requests). The client should already anticipate
+     * subscription changes may be coalesced by the BarrageMessageProducer.
+     */
+    private class SubscriptionObserver extends SingletonLivenessManager implements StreamObserver<Flight.FlightData>, Closeable {
+        private final String myPrefix;
+        private final SessionState session;
+
+        private long seqWatermark;
+        private boolean isViewport;
+        private BarrageMessageProducer<Options, View> bmp;
+        private Queue<BarrageMessageWrapper> preExportSubscriptions;
+
+        private final StreamObserver<View> listener;
+
+        private boolean isClosed = false;
+        private SessionState.ExportObject<SubscriptionObserver> subscriptionExport;
+
+        public SubscriptionObserver(final SessionState session, final StreamObserver<InputStream> responseObserver) {
+            this.myPrefix = "SubscriptionObserver{" + Integer.toHexString(System.identityHashCode(this)) + "}: ";
+            this.session = session;
+            this.listener = listenerAdapter.adapt(responseObserver);
+            this.session.addOnCloseCallback(this);
+            ((ServerCallStreamObserver<InputStream>) responseObserver).setOnCancelHandler(this::tryClose);
+        }
+
+        @Override
+        public synchronized void onNext(final Flight.FlightData subscriptionRequest) {
+            GrpcUtil.rpcWrapper(log, listener, () -> {
+                final BarrageMessageWrapper msg = BarrageMessageWrapper.getRootAsBarrageMessageWrapper(subscriptionRequest.getAppMetadata().asReadOnlyByteBuffer());
+
+                if (bmp == null) {
+                    synchronized (this) {
+                        if (bmp == null) {
+                            queueRequest(msg);
+                            return;
+                        }
+                    }
+                }
+
+                apply(msg);
+            });
+        }
+
+        /**
+         * Update the existing subscription to match the new request.
+         * @param msg the requested view change
+         */
+        private void apply(final BarrageMessageWrapper msg) {
+            if (msg.magic() != BarrageStreamGenerator.FLATBUFFER_MAGIC || msg.msgType() != BarrageMessageType.BarrageSubscriptionRequest) {
+                return;
+            }
+
+            if (seqWatermark > 0 && seqWatermark >= msg.sequence()) {
+                return;
+            }
+            seqWatermark = msg.sequence();
+            log.info().append(myPrefix).append("applying subscription request w/seq ").append(seqWatermark).endl();
+
+            final BarrageSubscriptionRequest subscriptionRequest = BarrageSubscriptionRequest.getRootAsBarrageSubscriptionRequest(msg.msgPayloadAsByteBuffer());
+            final boolean hasColumns = subscriptionRequest.columnsVector() != null;
+            final BitSet columns = hasColumns ? BitSet.valueOf(subscriptionRequest.columnsAsByteBuffer()) : new BitSet();
+
+            final boolean hasViewport = subscriptionRequest.viewportVector() != null;
+            final Index viewport = isViewport ? BarrageProtoUtil.toIndex(subscriptionRequest.viewportAsByteBuffer()) : null;
+
+            final boolean subscriptionFound;
+            if (isViewport && hasColumns && hasViewport) {
+                subscriptionFound = bmp.updateViewportAndColumns(listener, viewport, columns);
+            } else if (isViewport && hasViewport) {
+                subscriptionFound = bmp.updateViewport(listener, viewport);
+            } else if (hasColumns) {
+                subscriptionFound = bmp.updateSubscription(listener, columns);
+            } else {
+                subscriptionFound = true;
+            }
+
+            if (!subscriptionFound) {
+                throw GrpcUtil.statusRuntimeException(Code.INTERNAL, "Subscription was not found.");
+            }
+        }
+
+        private synchronized void queueRequest(final BarrageMessageWrapper msg) {
+            if (preExportSubscriptions != null) {
+                preExportSubscriptions.add(msg);
+                return;
+            }
+
+            preExportSubscriptions = new ArrayDeque<>();
+            preExportSubscriptions.add(msg);
+
+            final BarrageSubscriptionRequest subscriptionRequest = BarrageSubscriptionRequest.getRootAsBarrageSubscriptionRequest(msg.msgPayloadAsByteBuffer());
+            if (subscriptionRequest.ticketVector() == null) {
+                listener.onError(GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "Ticket not specified."));
+                return;
+            }
+
+            final SessionState.ExportObject<Object> parent = ticketRouter.resolve(session, subscriptionRequest.ticketAsByteBuffer());
+
+            final SessionState.ExportBuilder<SubscriptionObserver> exportBuilder;
+            if (msg.rpcTicketVector() != null) {
+                exportBuilder = session.newExport(ExportTicketHelper.ticketToExportId(msg.rpcTicketAsByteBuffer()));
+            } else {
+                exportBuilder = session.nonExport();
+            }
+
+            subscriptionExport = exportBuilder
+                    .require(parent)
+                    .onError(listener::onError)
+                    .submit(() -> {
+                        synchronized (SubscriptionObserver.this) {
+                            subscriptionExport = null;
+
+                            if (isClosed) {
+                                return null;
+                            }
+
+                            final Object export = parent.get();
+                            if (export instanceof QueryTable) {
+                                final QueryTable table = (QueryTable) export;
+                                long updateIntervalMs = subscriptionRequest.updateIntervalMs();
+                                if (updateIntervalMs == 0) {
+                                    updateIntervalMs = DEFAULT_UPDATE_INTERVAL_MS;
+                                }
+                                bmp = table.getResult(operationFactory.create(table, updateIntervalMs));
+                                manage(bmp);
+                            } else {
+                                listener.onError(GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Ticket ("
+                                        + ExportTicketHelper.toReadableString(subscriptionRequest.ticketAsByteBuffer())
+                                        + ") is not a subscribable table."));
+                                return null;
+                            }
+
+                            log.info().append(myPrefix).append("processing initial subscription").endl();
+                            final BarrageMessageWrapper initial = preExportSubscriptions.remove();
+                            seqWatermark = initial.sequence();
+
+                            final boolean hasColumns = subscriptionRequest.columnsVector() != null;
+                            final BitSet columns = hasColumns ? BitSet.valueOf(subscriptionRequest.columnsAsByteBuffer()) : new BitSet();
+
+                            isViewport = subscriptionRequest.viewportVector() != null;
+                            final Index viewport = isViewport ? BarrageProtoUtil.toIndex(subscriptionRequest.viewportAsByteBuffer()) : null;
+
+                            if (!bmp.addSubscription(listener, optionsAdapter.adapt(subscriptionRequest), columns, viewport)) {
+                                throw new IllegalStateException("listener is already a subscriber!");
+                            }
+
+                            for (final BarrageMessageWrapper request : preExportSubscriptions) {
+                                apply(request);
+                            }
+
+                            // we will now process requests as they are received
+                            preExportSubscriptions = null;
+                            return SubscriptionObserver.this;
+                        }
+                    });
+        }
+
+        @Override
+        public void onError(final Throwable t) {
+            log.error().append(myPrefix).append("unexpected error; force closing subscription: caused by ").append(t).endl();
+            tryClose();
+        }
+
+        @Override
+        public void onCompleted() {
+            log.error().append(myPrefix).append("client stream closed subscription").endl();
+            tryClose();
+        }
+
+        @Override
+        public void close() {
+            synchronized (this) {
+                if (isClosed) {
+                    return;
+                }
+
+                isClosed = true;
+            }
+
+            if (subscriptionExport != null) {
+                subscriptionExport.cancel();
+                subscriptionExport = null;
+            }
+
+            if (bmp != null) {
+                bmp.removeSubscription(listener);
+                bmp = null;
+            }
+            release();
+        }
+
+        private void tryClose() {
+            if (session.removeOnCloseCallback(this) != null) {
+                close();
+            }
+        }
+    }
+
     /**
      * This is a stateful marshaller; a PUT stream begins with its schema.
      */
     private static class PutMarshaller extends SingletonLivenessManager implements Closeable {
 
         private final SessionState session;
-        private final FlightServiceGrpcImpl service;
+        private final FlightServiceGrpcImpl<?, ?> service;
         private final StreamObserver<Flight.PutResult> observer;
 
         // TODO (core#29): lift out-of-band processing into a helper utility w/unit tests
@@ -331,7 +601,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
 
         private PutMarshaller(
                 final SessionState session,
-                final FlightServiceGrpcImpl service,
+                final FlightServiceGrpcImpl<?, ?> service,
                 final StreamObserver<Flight.PutResult> observer) {
             this.session = session;
             this.service = service;

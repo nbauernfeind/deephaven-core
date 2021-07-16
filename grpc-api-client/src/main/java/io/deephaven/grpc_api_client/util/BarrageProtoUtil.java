@@ -12,6 +12,7 @@ import com.google.protobuf.CodedInputStream;
 import io.deephaven.UncheckedDeephavenException;
 import io.deephaven.db.v2.utils.ExternalizableIndexUtils;
 import io.deephaven.db.v2.utils.Index;
+import io.deephaven.io.streams.ByteBufferInputStream;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
@@ -57,6 +58,16 @@ public class BarrageProtoUtil {
     public static Index toIndex(final ByteString string) {
         //noinspection UnstableApiUsage
         try (final ByteArrayInputStream bais = new ByteArrayInputStream(string.toByteArray());
+             final LittleEndianDataInputStream ois = new LittleEndianDataInputStream(bais)) {
+            return ExternalizableIndexUtils.readExternalCompressedDelta(ois);
+        } catch (final IOException e) {
+            throw new UncheckedDeephavenException("Unexpected exception during deserialization: ", e);
+        }
+    }
+
+    public static Index toIndex(final ByteBuffer string) {
+        //noinspection UnstableApiUsage
+        try (final InputStream bais = new ByteBufferInputStream(string);
              final LittleEndianDataInputStream ois = new LittleEndianDataInputStream(bais)) {
             return ExternalizableIndexUtils.readExternalCompressedDelta(ois);
         } catch (final IOException e) {
