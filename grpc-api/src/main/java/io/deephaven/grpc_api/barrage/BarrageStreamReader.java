@@ -26,7 +26,6 @@ import io.deephaven.grpc_api_client.util.FlatBufferIteratorAdapter;
 import io.deephaven.grpc_api_client.util.GrpcMarshallingException;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
-import org.apache.arrow.flatbuf.FieldNode;
 import org.apache.arrow.flatbuf.Message;
 import org.apache.arrow.flatbuf.MessageHeader;
 import org.apache.arrow.flatbuf.RecordBatch;
@@ -42,6 +41,10 @@ public class BarrageStreamReader implements BarrageMessageConsumer.StreamReader<
 
     private static final Logger log = LoggerFactory.getLogger(BarrageStreamReader.class);
 
+    private int numAddBatchesRemaining = 0;
+    private int numModBatchesRemaining = 0;
+    private BarrageMessage msg = null;
+
     @Override
     public BarrageMessage safelyParseFrom(final ChunkInputStreamGenerator.Options options,
                                           final ChunkType[] columnChunkTypes,
@@ -49,9 +52,6 @@ public class BarrageStreamReader implements BarrageMessageConsumer.StreamReader<
                                           final Class<?>[] componentTypes,
                                           final InputStream stream) {
         Message header = null;
-        BarrageUpdateMetadata metadata = null;
-        final BarrageMessage msg = new BarrageMessage();
-
         try {
             boolean bodyParsed = false;
             final CodedInputStream decoder = CodedInputStream.newInstance(stream);
@@ -63,10 +63,63 @@ public class BarrageStreamReader implements BarrageMessageConsumer.StreamReader<
                     continue;
                 } else if (tag == FlightServiceGrpcImpl.APP_METADATA_TAG) {
                     final int size = decoder.readRawVarint32();
-                    final BarrageMessageWrapper wrapper = BarrageMessageWrapper.getRootAsBarrageMessageWrapper(ByteBuffer.wrap(decoder.readRawBytes(size)));
+                    final ByteBuffer msgAsBB = ByteBuffer.wrap(decoder.readRawBytes(size));
+                    final BarrageMessageWrapper wrapper = BarrageMessageWrapper.getRootAsBarrageMessageWrapper(msgAsBB);
                     if (wrapper.magic() == BarrageStreamGenerator.FLATBUFFER_MAGIC && wrapper.msgType() == BarrageMessageType.BarrageUpdateMetadata) {
-                        metadata = BarrageUpdateMetadata.getRootAsBarrageUpdateMetadata(wrapper.msgPayloadAsByteBuffer());
+                        if (msg != null) {
+                            throw new IllegalStateException("Previous message was not complete; pending " + numAddBatchesRemaining
+                                    + " add batches and " + numModBatchesRemaining + " mod batches");
+                        }
+
+                        final BarrageUpdateMetadata metadata =
+                                BarrageUpdateMetadata.getRootAsBarrageUpdateMetadata(wrapper.msgPayloadAsByteBuffer());
+
+                        msg = new BarrageMessage();
+
+                        msg.isSnapshot = metadata.isSnapshot();
+                        numAddBatchesRemaining = metadata.numAddBatches();
+                        numModBatchesRemaining = metadata.numModBatches();
+                        if (numAddBatchesRemaining > 1 || numModBatchesRemaining > 1) {
+                            throw new UnsupportedOperationException("Multiple consecutive add or mod RecordBatches are not yet supported");
+                        }
+                        if (numAddBatchesRemaining < 0 || numModBatchesRemaining < 0) {
+                            throw new IllegalStateException("Found negative number of record batches in barrage metadata: "
+                                    + numAddBatchesRemaining + " add batches and " + numModBatchesRemaining + " mod batches");
+                        }
+
+                        if (msg.isSnapshot) {
+                            final ByteBuffer effectiveViewport = metadata.effectiveViewportAsByteBuffer();
+                            if (effectiveViewport != null) {
+                                msg.snapshotIndex = extractIndex(effectiveViewport);
+                            }
+                            msg.snapshotColumns = extractBitSet(metadata.effectiveColumnSetAsByteBuffer());
+                        }
+
+                        msg.firstSeq = metadata.firstSeq();
+                        msg.lastSeq = metadata.lastSeq();
+                        msg.rowsAdded = extractIndex(metadata.addedRowsAsByteBuffer());
+                        msg.rowsRemoved = extractIndex(metadata.removedRowsAsByteBuffer());
+                        msg.shifted = extractIndexShiftData(metadata.shiftDataAsByteBuffer());
+
+                        final ByteBuffer rowsIncluded = metadata.addedRowsIncludedAsByteBuffer();
+                        msg.rowsIncluded = rowsIncluded != null ? extractIndex(rowsIncluded) : msg.rowsAdded.clone();
+                        msg.addColumnData = new BarrageMessage.AddColumnData[columnTypes.length];
+                        for (int ci = 0; ci < msg.addColumnData.length; ++ci) {
+                            msg.addColumnData[ci] = new BarrageMessage.AddColumnData();
+                            msg.addColumnData[ci].type = columnTypes[ci];
+                            msg.addColumnData[ci].componentType = componentTypes[ci];
+                        }
+                        msg.modColumnData = new BarrageMessage.ModColumnData[columnTypes.length];
+                        for (int ci = 0; ci < msg.modColumnData.length; ++ci) {
+                            msg.modColumnData[ci] = new BarrageMessage.ModColumnData();
+                            msg.modColumnData[ci].type = columnTypes[ci];
+                            msg.modColumnData[ci].componentType = componentTypes[ci];
+
+                            final BarrageModColumnMetadata mcd = metadata.nodes(ci);
+                            msg.modColumnData[ci].rowsModified = extractIndex(mcd.modifiedRowsAsByteBuffer());
+                        }
                     }
+
                     continue;
                 } else if (tag != FlightServiceGrpcImpl.BODY_TAG) {
                     decoder.skipField(tag);
@@ -88,11 +141,14 @@ public class BarrageStreamReader implements BarrageMessageConsumer.StreamReader<
                     throw new IllegalStateException("Only know how to decode Schema/BarrageRecordBatch messages");
                 }
 
-                final RecordBatch batch = (RecordBatch) header.header(new RecordBatch());
-                msg.isSnapshot = metadata.isSnapshot();
+                if (msg == null) {
+                    throw new IllegalStateException("Could not detect barrage metadata for update");
+                }
 
                 bodyParsed = true;
                 final int size = decoder.readRawVarint32();
+                final RecordBatch batch = (RecordBatch) header.header(new RecordBatch());
+
                 //noinspection UnstableApiUsage
                 try (final LittleEndianDataInputStream ois = new LittleEndianDataInputStream(new BarrageProtoUtil.ObjectInputStreamAdapter(decoder, size))) {
                     final MutableInt bufferOffset = new MutableInt();
@@ -113,60 +169,26 @@ public class BarrageStreamReader implements BarrageMessageConsumer.StreamReader<
                     }
                     final TLongIterator bufferInfoIter = bufferInfo.iterator();
 
-                    if (msg.isSnapshot) {
-                        final ByteBuffer effectiveViewport = metadata.effectiveViewportAsByteBuffer();
-                        if (effectiveViewport != null) {
-                            msg.snapshotIndex = extractIndex(effectiveViewport);
-                        }
-                        msg.snapshotColumns = extractBitSet(metadata.effectiveColumnSetAsByteBuffer());
+                    final boolean isAddBatch = numAddBatchesRemaining > 0;
+                    if (isAddBatch) {
+                        --numAddBatchesRemaining;
+                    } else {
+                        --numModBatchesRemaining;
                     }
 
-                    msg.firstSeq = metadata.firstSeq();
-                    msg.lastSeq = metadata.lastSeq();
-                    msg.rowsAdded = extractIndex(metadata.addedRowsAsByteBuffer());
-                    msg.rowsRemoved = extractIndex(metadata.removedRowsAsByteBuffer());
-                    msg.shifted = extractIndexShiftData(metadata.shiftDataAsByteBuffer());
-
-                    final ByteBuffer rowsIncluded = metadata.addedRowsIncludedAsByteBuffer();
-                    msg.rowsIncluded = rowsIncluded != null ? extractIndex(rowsIncluded) : msg.rowsAdded.clone();
-
-                    int numRowsAdded = msg.rowsIncluded.intSize();
-                    if (numRowsAdded == 0 && msg.isSnapshot) {
-                        // We only send the full table index in the initial snapshot. After that it is empty.
-                        numRowsAdded = -1;
-                    }
-
-                    msg.addColumnData = new BarrageMessage.AddColumnData[columnTypes.length];
-                    for (int ci = 0; ci < msg.addColumnData.length; ++ci) {
-                        final BarrageMessage.AddColumnData acd = new BarrageMessage.AddColumnData();
-                        msg.addColumnData[ci] = acd;
-
-                        acd.data = ChunkInputStreamGenerator.extractChunkFromInputStream(options, columnChunkTypes[ci], columnTypes[ci], fieldNodeIter, bufferInfoIter, ois);
-                        if (numRowsAdded == -1 && acd.data.size() != 0) {
-                            numRowsAdded = acd.data.size();
-                        } else if (acd.data.size() != 0 && acd.data.size() != numRowsAdded) {
-                            throw new IllegalStateException("Add column data does not have the expected number of rows.");
+                    if (isAddBatch) {
+                        for (int ci = 0; ci < msg.addColumnData.length; ++ci) {
+                            msg.addColumnData[ci].data = ChunkInputStreamGenerator.extractChunkFromInputStream(options, columnChunkTypes[ci], columnTypes[ci], fieldNodeIter, bufferInfoIter, ois);
                         }
-                        acd.type = columnTypes[ci];
-                        acd.componentType = componentTypes[ci];
-                    }
-
-                    msg.modColumnData = new BarrageMessage.ModColumnData[columnTypes.length];
-                    for (int i = 0; i < msg.modColumnData.length; ++i) {
-                        final BarrageMessage.ModColumnData mcd = new BarrageMessage.ModColumnData();
-                        msg.modColumnData[i] = mcd;
-
-                        final BarrageModColumnMetadata md = metadata.nodes(i);
-                        final ByteBuffer bb = md.modifiedRowsAsByteBuffer();
-                        mcd.rowsModified = extractIndex(bb);
-
-                        final int numModded = mcd.rowsModified.intSize();
-                        mcd.data = ChunkInputStreamGenerator.extractChunkFromInputStream(options, columnChunkTypes[i], columnTypes[i], fieldNodeIter, bufferInfoIter, ois);
-                        if (mcd.data.size() != numModded) {
-                            throw new IllegalStateException("Mod column data does not have the expected number of rows.");
+                    } else {
+                        for (int ci = 0; ci < msg.modColumnData.length; ++ci) {
+                            final BarrageMessage.ModColumnData mcd = msg.modColumnData[ci];
+                            final int numModded = mcd.rowsModified.intSize();
+                            mcd.data = ChunkInputStreamGenerator.extractChunkFromInputStream(options, columnChunkTypes[ci], columnTypes[ci], fieldNodeIter, bufferInfoIter, ois);
+                            if (mcd.data.size() != numModded) {
+                                throw new IllegalStateException("Mod column data does not have the expected number of rows.");
+                            }
                         }
-                        mcd.type = columnTypes[i];
-                        mcd.componentType = componentTypes[i];
                     }
                 }
             }
@@ -180,7 +202,14 @@ public class BarrageStreamReader implements BarrageMessageConsumer.StreamReader<
                 throw new IllegalStateException("Missing body tag");
             }
 
-            return msg;
+            if (numAddBatchesRemaining + numModBatchesRemaining == 0) {
+                final BarrageMessage retval = msg;
+                msg = null;
+                return retval;
+            }
+
+            // otherwise, must wait for more data
+            return null;
         } catch (final Exception e) {
             log.error().append("Unable to parse a received BarrageMessage: ").append(e).endl();
             throw new GrpcMarshallingException("Unable to parse BarrageMessage object", e);

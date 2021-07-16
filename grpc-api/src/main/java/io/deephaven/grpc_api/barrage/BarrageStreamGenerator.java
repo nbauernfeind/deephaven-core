@@ -220,17 +220,17 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
             this.viewport = viewport;
             this.keyspaceViewport = keyspaceViewport;
             this.subscribedColumns = subscribedColumns;
-            // TODO: support skipping empty add / mod batches
-            this.hasAddBatch = true;
-            this.hasModBatch = true;
+            this.hasModBatch = generator.doesSubViewHaveMods(this);
+            // require an add batch if the mod batch is being skipped
+            this.hasAddBatch = !this.hasModBatch || generator.rowsIncluded.original.nonempty();
         }
 
         @Override
         public void forEachStream(Consumer<InputStream> visitor) throws IOException {
-            // TODO: support skipping empty add / mod batches (clear metadata for second half if both)
             ByteBuffer metadata = generator.getMetadata(this);
             if (hasAddBatch) {
                 visitor.accept(generator.getInputStream(this, metadata, generator::appendAddColumns));
+                metadata = null;
             }
             if (hasModBatch) {
                 visitor.accept(generator.getInputStream(this, metadata, generator::appendModColumns));
@@ -329,7 +329,7 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
 
             RecordBatch.startNodesVector(header, nodeOffsets.size());
             for (int i = nodeOffsets.size() - 1; i >= 0; --i) {
-                ChunkInputStreamGenerator.FieldNodeInfo node = nodeOffsets.get(i);
+                final ChunkInputStreamGenerator.FieldNodeInfo node = nodeOffsets.get(i);
                 FieldNode.createFieldNode(header, node.numElements, node.nullCount);
             }
             nodesOffset = header.endVector();
@@ -405,14 +405,13 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
         // now add mod-column streams, and write the mod column indexes
         long numRows = 0;
         for (final ModColumnData mcd : modColumnData) {
-
             Index myModOffsets = null;
             if (view.isViewport()) {
                 // only include added rows that are within the viewport
                 myModOffsets = mcd.rowsModified.original.invert(view.keyspaceViewport.intersect(mcd.rowsModified.original));
                 numRows = Math.max(numRows, myModOffsets.size());
             } else {
-                numRows = mcd.rowsModified.original.size();
+                numRows = Math.max(numRows, mcd.rowsModified.original.size());
             }
 
             final ChunkInputStreamGenerator.DrainableColumn drainableColumn =
@@ -423,6 +422,23 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
             drainableColumn.visitBuffers(bufferListener);
         }
         return numRows;
+    }
+
+    private boolean doesSubViewHaveMods(final SubView view) {
+        for (final ModColumnData mcd : modColumnData) {
+            Index myModOffsets = null;
+            if (view.isViewport()) {
+                // only include added rows that are within the viewport
+                if (view.keyspaceViewport.overlaps(mcd.rowsModified.original)) {
+                    return true;
+                }
+            } else {
+                if (mcd.rowsModified.original.nonempty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private ByteBuffer getMetadata(final SubView view) throws IOException {
@@ -466,7 +482,6 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
             } else {
                 myModRowOffset = mcd.rowsModified.addToFlatBuffer(metadata);
             }
-            modOffsets.add(myModRowOffset);
             modOffsets.add(BarrageModColumnMetadata.createBarrageModColumnMetadata(metadata, myModRowOffset));
         }
 
@@ -475,9 +490,8 @@ public class BarrageStreamGenerator implements BarrageMessageProducer.StreamGene
         final int nodesOffset = metadata.endVector();
 
         BarrageUpdateMetadata.startBarrageUpdateMetadata(metadata);
-        // TODO: support skipping empty add / mod batches
-        BarrageUpdateMetadata.addNumAddBatches(metadata, 1);
-        BarrageUpdateMetadata.addNumModBatches(metadata, 1);
+        BarrageUpdateMetadata.addNumAddBatches(metadata, view.hasAddBatch ? 1 : 0);
+        BarrageUpdateMetadata.addNumModBatches(metadata, view.hasModBatch ? 1 : 0);
         BarrageUpdateMetadata.addIsSnapshot(metadata, isSnapshot);
         BarrageUpdateMetadata.addFirstSeq(metadata, firstSeq);
         BarrageUpdateMetadata.addLastSeq(metadata, lastSeq);

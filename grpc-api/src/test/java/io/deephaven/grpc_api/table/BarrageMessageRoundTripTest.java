@@ -76,8 +76,6 @@ import static io.deephaven.db.v2.TstUtils.initColumnInfos;
 public class BarrageMessageRoundTripTest extends LiveTableTestCase {
     private static final long UPDATE_INTERVAL = 1000; // arbitrary; we enforce coalescing on both sides
 
-    private final BarrageStreamReader STREAM_READER_INSTANCE = new BarrageStreamReader();
-
     private Logger log;
     private TestControlledScheduler scheduler;
     private Deque<Throwable> exceptions;
@@ -201,7 +199,7 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
                     .build();
             final BarrageMarshaller marshaller = new BarrageMarshaller(
                     options, barrageTable.getWireChunkTypes(), barrageTable.getWireTypes(),
-                    barrageTable.getWireComponentTypes(), STREAM_READER_INSTANCE);
+                    barrageTable.getWireComponentTypes(), new BarrageStreamReader());
             this.dummyObserver = new DummyObserver(marshaller, commandQueue);
 
             if (viewport == null) {
@@ -1147,6 +1145,7 @@ public class BarrageMessageRoundTripTest extends LiveTableTestCase {
                 messageView.forEachStream(inputStream -> {
                     try (final BarrageProtoUtil.ExposedByteArrayOutputStream baos = new BarrageProtoUtil.ExposedByteArrayOutputStream()) {
                         ((Drainable) inputStream).drainTo(baos);
+                        inputStream.close();
                         final BarrageMessage message = marshaller.parse(new ByteArrayInputStream(baos.peekBuffer(), 0, baos.size()));
                         // we skip schema messages, but can't suppress without propagating something...
                         if (message != null) {

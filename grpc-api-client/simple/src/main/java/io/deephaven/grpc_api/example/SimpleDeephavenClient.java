@@ -10,19 +10,13 @@ import io.deephaven.db.tables.TableDefinition;
 import io.deephaven.db.tables.live.LiveTableMonitor;
 import io.deephaven.db.tables.utils.DBTimeUtils;
 import io.deephaven.db.v2.InstrumentedShiftAwareListener;
-import io.deephaven.db.v2.ModifiedColumnSet;
-import io.deephaven.db.v2.ShiftAwareListener;
-import io.deephaven.db.v2.utils.BarrageMessage;
-import io.deephaven.db.v2.utils.Index;
 import io.deephaven.db.v2.utils.UpdatePerformanceTracker;
 import io.deephaven.grpc_api.barrage.BarrageClientSubscription;
-import io.deephaven.grpc_api.barrage.BarrageStreamReader;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
 import io.deephaven.grpc_api.runner.DeephavenApiServerModule;
 import io.deephaven.grpc_api.util.ExportTicketHelper;
 import io.deephaven.grpc_api.util.Scheduler;
 import io.deephaven.grpc_api_client.table.BarrageSourcedTable;
-import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.log.LogEntry;
 import io.deephaven.io.logger.Logger;
@@ -57,7 +51,6 @@ import org.apache.arrow.flatbuf.Schema;
 import org.apache.arrow.flight.impl.Flight;
 import org.apache.arrow.flight.impl.FlightServiceGrpc;
 
-import java.lang.ref.WeakReference;
 import java.util.BitSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -134,7 +127,6 @@ public class SimpleDeephavenClient {
 
     BarrageSourcedTable resultTable;
     BarrageClientSubscription resultSub;
-    final BarrageStreamReader reader = new BarrageStreamReader();
 
     private void runScript() {
         log.info().append("Script Running: ").endl();

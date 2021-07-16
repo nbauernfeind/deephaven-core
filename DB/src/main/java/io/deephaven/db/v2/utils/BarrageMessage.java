@@ -23,7 +23,6 @@ public class BarrageMessage implements SafeCloseable {
 
     public static class ModColumnData {
         public Index rowsModified;
-        public Index rowsIncluded;
         public Class<?> type;
         public Class<?> componentType;
         public Chunk<Attributes.Values> data;
