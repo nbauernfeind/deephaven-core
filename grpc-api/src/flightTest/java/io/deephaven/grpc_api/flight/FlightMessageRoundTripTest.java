@@ -5,9 +5,9 @@ import dagger.Component;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.tables.utils.TableDiff;
 import io.deephaven.db.tables.utils.TableTools;
+import io.deephaven.grpc_api.arrow.ArrowModule;
 import io.deephaven.grpc_api.arrow.FlightServiceGrpcBinding;
 import io.deephaven.grpc_api.auth.AuthContextModule;
-import io.deephaven.grpc_api.barrage.BarrageModule;
 import io.deephaven.grpc_api.session.SessionModule;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.grpc_api.session.SessionServiceGrpcImpl;
@@ -18,7 +18,6 @@ import io.deephaven.proto.backplane.grpc.HandshakeRequest;
 import io.deephaven.proto.backplane.grpc.HandshakeResponse;
 import io.deephaven.proto.backplane.grpc.SessionServiceGrpc;
 import io.grpc.*;
-import io.grpc.CallOptions;
 import io.grpc.netty.NettyServerBuilder;
 import org.apache.arrow.flight.*;
 import org.apache.arrow.flight.impl.Flight;
@@ -40,7 +39,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -55,7 +53,7 @@ public class FlightMessageRoundTripTest {
 
     @Singleton
     @Component(modules = {
-            BarrageModule.class,
+            ArrowModule.class,
             SessionModule.class,
             AuthContextModule.class
     })
@@ -82,90 +80,6 @@ public class FlightMessageRoundTripTest {
     private SessionServiceGrpc.SessionServiceBlockingStub sessionServiceClient;
     private UUID sessionToken;
     private SessionState currentSession;
-
-    private class InterceptingManagedChannel extends ManagedChannel {
-
-        private final ClientInterceptor interceptor;
-        private final ManagedChannel wrappedManagedChannel;
-
-        private InterceptingManagedChannel(ManagedChannel wrappedManagedChannel, ClientInterceptor interceptor) {
-            this.interceptor = interceptor;
-            this.wrappedManagedChannel = wrappedManagedChannel;
-        }
-
-        @Override
-        public <RequestT, ResponseT> ClientCall<RequestT, ResponseT> newCall(MethodDescriptor<RequestT, ResponseT> methodDescriptor, CallOptions callOptions) {
-            return interceptor.interceptCall(methodDescriptor, callOptions, wrappedManagedChannel);
-        }
-
-        @Override
-        public ConnectivityState getState(boolean requestConnection) {
-            return wrappedManagedChannel.getState(requestConnection);
-        }
-
-        @Override
-        public void notifyWhenStateChanged(ConnectivityState source, Runnable callback) {
-            wrappedManagedChannel.notifyWhenStateChanged(source, callback);
-        }
-
-        @Override
-        public void resetConnectBackoff() {
-            wrappedManagedChannel.resetConnectBackoff();
-        }
-
-        @Override
-        public void enterIdle() {
-            wrappedManagedChannel.enterIdle();
-        }
-
-        @Override
-        public ManagedChannel shutdown() {
-            return wrappedManagedChannel.shutdown();
-        }
-
-        @Override
-        public boolean isShutdown() {
-            return wrappedManagedChannel.isShutdown();
-        }
-
-        @Override
-        public boolean isTerminated() {
-            return wrappedManagedChannel.isTerminated();
-        }
-
-        @Override
-        public ManagedChannel shutdownNow() {
-            return wrappedManagedChannel.shutdownNow();
-        }
-
-        @Override
-        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-            return wrappedManagedChannel.awaitTermination(timeout, unit);
-        }
-
-        @Override
-        public String authority() {
-            return wrappedManagedChannel.authority();
-        }
-    }
-
-    private class AuthInterceptor implements ClientInterceptor {
-        @Override
-        public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
-                final MethodDescriptor<ReqT, RespT> methodDescriptor, final CallOptions callOptions, final Channel channel) {
-            return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(channel.newCall(methodDescriptor, callOptions)) {
-                @Override
-                public void start(final Listener<RespT> responseListener, final Metadata headers) {
-                    final UUID currSession = sessionToken;
-                    if (currSession != null) {
-                        headers.put(SessionServiceGrpcImpl.SESSION_HEADER_KEY, currSession.toString());
-                    }
-                    super.start(responseListener, headers);
-                }
-            };
-        }
-    }
-
 
     @Before
     public void setup() throws IOException {

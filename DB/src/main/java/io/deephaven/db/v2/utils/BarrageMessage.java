@@ -6,7 +6,6 @@ package io.deephaven.db.v2.utils;
 
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.Chunk;
-import io.deephaven.db.v2.sources.chunk.WritableChunk;
 import io.deephaven.db.v2.sources.chunk.util.pools.PoolableChunk;
 import io.deephaven.util.SafeCloseable;
 
@@ -100,9 +99,6 @@ public class BarrageMessage implements SafeCloseable {
 
                 if (mcd.rowsModified != null) {
                     mcd.rowsModified.close();
-                }
-                if (mcd.rowsIncluded != null) {
-                    mcd.rowsIncluded.close();
                 }
                 if (mcd.data instanceof PoolableChunk) {
                     ((PoolableChunk) mcd.data).close();

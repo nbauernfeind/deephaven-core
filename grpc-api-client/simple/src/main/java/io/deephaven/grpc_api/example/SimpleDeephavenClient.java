@@ -5,9 +5,6 @@
 package io.deephaven.grpc_api.example;
 
 import com.google.protobuf.ByteString;
-import io.deephaven.barrage.flatbuf.Field;
-import io.deephaven.barrage.flatbuf.KeyValue;
-import io.deephaven.barrage.flatbuf.Schema;
 import io.deephaven.base.formatters.FormatBitSet;
 import io.deephaven.db.tables.TableDefinition;
 import io.deephaven.db.tables.live.LiveTableMonitor;
@@ -29,7 +26,6 @@ import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.log.LogEntry;
 import io.deephaven.io.logger.Logger;
-import io.deephaven.proto.backplane.grpc.BarrageServiceGrpc;
 import io.deephaven.proto.backplane.grpc.BatchTableRequest;
 import io.deephaven.proto.backplane.grpc.ExportNotification;
 import io.deephaven.proto.backplane.grpc.ExportNotificationRequest;
@@ -41,7 +37,6 @@ import io.deephaven.proto.backplane.grpc.HandshakeResponse;
 import io.deephaven.proto.backplane.grpc.ReleaseResponse;
 import io.deephaven.proto.backplane.grpc.SelectOrUpdateRequest;
 import io.deephaven.proto.backplane.grpc.SessionServiceGrpc;
-import io.deephaven.proto.backplane.grpc.SubscriptionRequest;
 import io.deephaven.proto.backplane.grpc.TableReference;
 import io.deephaven.proto.backplane.grpc.TableServiceGrpc;
 import io.deephaven.proto.backplane.grpc.TimeTableRequest;
@@ -56,6 +51,9 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
 import io.grpc.stub.StreamObserver;
+import org.apache.arrow.flatbuf.Field;
+import org.apache.arrow.flatbuf.KeyValue;
+import org.apache.arrow.flatbuf.Schema;
 import org.apache.arrow.flight.impl.Flight;
 import org.apache.arrow.flight.impl.FlightServiceGrpc;
 
@@ -92,7 +90,6 @@ public class SimpleDeephavenClient {
 
     private final SessionServiceGrpc.SessionServiceStub sessionService;
     private final TableServiceGrpc.TableServiceStub tableService;
-    private final BarrageServiceGrpc.BarrageServiceStub barrageService;
     private final FlightServiceGrpc.FlightServiceStub flightService;
 
     private volatile UUID session;
@@ -104,7 +101,6 @@ public class SimpleDeephavenClient {
         this.serverChannel = ClientInterceptors.intercept(managedChannel, new AuthInterceptor());
         this.sessionService = SessionServiceGrpc.newStub(serverChannel);
         this.tableService = TableServiceGrpc.newStub(serverChannel);
-        this.barrageService = BarrageServiceGrpc.newStub(serverChannel);
         this.flightService = FlightServiceGrpc.newStub(serverChannel);
     }
 
@@ -218,13 +214,14 @@ public class SimpleDeephavenClient {
         };
         resultTable.listenForUpdates(listener);
 
-        resultSub = new BarrageClientSubscription(
-                ExportTicketHelper.toReadableString(exportTable),
-                serverChannel, exportTable, SubscriptionRequest.newBuilder()
-                .setTicket(exportTable)
-                .setColumns(BarrageProtoUtil.toByteString(columns))
-                .setUseDeephavenNulls(true)
-                .build(), reader, resultTable);
+        // TODO: NATE: CLIENT
+//        resultSub = new BarrageClientSubscription(
+//                ExportTicketHelper.toReadableString(exportTable),
+//                serverChannel, exportTable, SubscriptionRequest.newBuilder()
+//                .setTicket(exportTable)
+//                .setColumns(BarrageProtoUtil.toByteString(columns))
+//                .setUseDeephavenNulls(true)
+//                .build(), reader, resultTable);
     }
 
     private void onSchemaResultNoLocalLTM(final Flight.SchemaResult schemaResult) {
@@ -237,34 +234,34 @@ public class SimpleDeephavenClient {
 
         BarrageSourcedTable dummy = BarrageSourcedTable.make(definition, false);
 
-        resultSub = new BarrageClientSubscription(
-                ExportTicketHelper.toReadableString(exportTable),
-                serverChannel, exportTable, SubscriptionRequest.newBuilder()
-                .setTicket(exportTable)
-                .setColumns(BarrageProtoUtil.toByteString(columns))
-                .setUseDeephavenNulls(true)
-                .build(), reader,
-                dummy.getWireChunkTypes(),
-                dummy.getWireTypes(),
-                dummy.getWireComponentTypes(),
-                new WeakReference<>(new BarrageMessage.Listener() {
-                    @Override
-                    public void handleBarrageMessage(final BarrageMessage update) {
-                        final Index mods = Index.CURRENT_FACTORY.getEmptyIndex();
-                        for (int ci = 0; ci < update.modColumnData.length; ++ci) {
-                            mods.insert(update.modColumnData[ci].rowsModified);
-                        }
-                        final ShiftAwareListener.Update up = new ShiftAwareListener.Update(
-                                update.rowsAdded, update.rowsRemoved, mods, update.shifted, ModifiedColumnSet.ALL);
-
-                        log.info().append("recv update: ").append(up).endl();
-                    }
-
-                    @Override
-                    public void handleBarrageError(Throwable t) {
-                        log.error().append("upstream client failed: " + t.getMessage());
-                    }
-                }));
+//        resultSub = new BarrageClientSubscription(
+//                ExportTicketHelper.toReadableString(exportTable),
+//                serverChannel, exportTable, SubscriptionRequest.newBuilder()
+//                .setTicket(exportTable)
+//                .setColumns(BarrageProtoUtil.toByteString(columns))
+//                .setUseDeephavenNulls(true)
+//                .build(), reader,
+//                dummy.getWireChunkTypes(),
+//                dummy.getWireTypes(),
+//                dummy.getWireComponentTypes(),
+//                new WeakReference<>(new BarrageMessage.Listener() {
+//                    @Override
+//                    public void handleBarrageMessage(final BarrageMessage update) {
+//                        final Index mods = Index.CURRENT_FACTORY.getEmptyIndex();
+//                        for (int ci = 0; ci < update.modColumnData.length; ++ci) {
+//                            mods.insert(update.modColumnData[ci].rowsModified);
+//                        }
+//                        final ShiftAwareListener.Update up = new ShiftAwareListener.Update(
+//                                update.rowsAdded, update.rowsRemoved, mods, update.shifted, ModifiedColumnSet.ALL);
+//
+//                        log.info().append("recv update: ").append(up).endl();
+//                    }
+//
+//                    @Override
+//                    public void handleBarrageError(Throwable t) {
+//                        log.error().append("upstream client failed: " + t.getMessage());
+//                    }
+//                }));
     }
 
     private void onScriptComplete() {

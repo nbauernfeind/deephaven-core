@@ -14,11 +14,11 @@ import com.google.rpc.Code;
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.list.array.TLongArrayList;
 import io.deephaven.UncheckedDeephavenException;
-import io.deephaven.barrage.flatbuf.BarragePutMetadata;
-import io.deephaven.barrage.flatbuf.Message;
-import io.deephaven.barrage.flatbuf.MessageHeader;
-import io.deephaven.barrage.flatbuf.RecordBatch;
-import io.deephaven.barrage.flatbuf.Schema;
+import io.deephaven.barrage.flatbuf.BarrageMessageWrapper;
+import org.apache.arrow.flatbuf.Message;
+import org.apache.arrow.flatbuf.MessageHeader;
+import org.apache.arrow.flatbuf.RecordBatch;
+import org.apache.arrow.flatbuf.Schema;
 import io.deephaven.base.RAPriQueue;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.datastructures.util.CollectionUtil;
@@ -43,7 +43,6 @@ import io.deephaven.grpc_api_client.util.BarrageProtoUtil;
 import io.deephaven.grpc_api_client.util.FlatBufferIteratorAdapter;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
-import io.deephaven.proto.backplane.grpc.BarrageData;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import org.apache.arrow.flight.impl.Flight;
@@ -60,7 +59,15 @@ import java.util.Iterator;
 
 @Singleton
 public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBase {
-    // TODO (core#412): use app_metadata to communicate serialization options
+    private static final int TAG_TYPE_BITS = 3;
+    private static final BarrageMessage.ModColumnData[] ZERO_MOD_COLUMNS = new BarrageMessage.ModColumnData[0];
+
+    public static final int BODY_TAG = (Flight.FlightData.DATA_BODY_FIELD_NUMBER << TAG_TYPE_BITS) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
+    public static final int DATA_HEADER_TAG = (Flight.FlightData.DATA_HEADER_FIELD_NUMBER << TAG_TYPE_BITS) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
+    public static final int APP_METADATA_TAG = (Flight.FlightData.APP_METADATA_FIELD_NUMBER << TAG_TYPE_BITS) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
+    public static final int FLIGHT_DESCRIPTOR_TAG = (Flight.FlightData.FLIGHT_DESCRIPTOR_FIELD_NUMBER << TAG_TYPE_BITS) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
+
+    // TODO NATE: pull app_metadata off of DoGet -- what about doPut? (core#412): use app_metadata to communicate serialization options
     private static final ChunkInputStreamGenerator.Options DEFAULT_DESER_OPTIONS = new ChunkInputStreamGenerator.Options.Builder().build();
 
     private static final Logger log = LoggerFactory.getLogger(FlightServiceGrpcImpl.class);
@@ -115,10 +122,10 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                         // Send Schema wrapped in Message
                         final FlatBufferBuilder builder = new FlatBufferBuilder();
                         final int schemaOffset = BarrageSchemaUtil.makeSchemaPayload(builder, table.getDefinition(), table.getAttributes());
-                        builder.finish(BarrageStreamGenerator.wrapInMessage(builder, schemaOffset, BarrageStreamGenerator.SCHEMA_TYPE_ID));
+                        builder.finish(BarrageStreamGenerator.wrapInMessage(builder, schemaOffset,  org.apache.arrow.flatbuf.MessageHeader.Schema));
                         final ByteBuffer serializedMessage = builder.dataBuffer();
 
-                        final byte[] msgBytes = BarrageData.newBuilder()
+                        final byte[] msgBytes = Flight.FlightData.newBuilder()
                                 .setDataHeader(ByteStringAccess.wrap(serializedMessage))
                                 .build()
                                 .toByteArray();
@@ -129,7 +136,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                         msg.modColumnData = new BarrageMessage.ModColumnData[0]; // actually no mod column data for DoGet
 
                         try (final BarrageStreamGenerator bsg = new BarrageStreamGenerator(msg)) {
-                            responseObserver.onNext(bsg.getDoGetInputStream(bsg.getSubView(DEFAULT_DESER_OPTIONS, false, null, null, null)));
+                            bsg.forEachDoGetStream(bsg.getSubView(DEFAULT_DESER_OPTIONS, false), responseObserver::onNext);
                         } catch (final IOException e) {
                             throw new UncheckedDeephavenException(e); // unexpected
                         }
@@ -187,7 +194,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
             } catch (final IOException unexpected) {
                 throw GrpcUtil.securelyWrapError(log, unexpected);
             }
-            final BarragePutMetadata app_metadata = mi.app_metadata;
+            final BarrageMessageWrapper app_metadata = mi.app_metadata;
             if (app_metadata == null) {
                 throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "no app_metadata provided");
             }
@@ -215,7 +222,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                 throw GrpcUtil.securelyWrapError(log, unexpected);
             }
 
-            final BarragePutMetadata app_metadata = mi.app_metadata;
+            final BarrageMessageWrapper app_metadata = mi.app_metadata;
             if (app_metadata == null) {
                 throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "no app_metadata provided");
             }
@@ -237,13 +244,6 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
         });
     }
 
-    private static final int TAG_TYPE_BITS = 3;
-    private static final int BODY_TAG = (Flight.FlightData.DATA_BODY_FIELD_NUMBER << TAG_TYPE_BITS) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
-    private static final int DATA_HEADER_TAG = (Flight.FlightData.DATA_HEADER_FIELD_NUMBER << TAG_TYPE_BITS) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
-    private static final int APP_METADATA_TAG = (Flight.FlightData.APP_METADATA_FIELD_NUMBER << TAG_TYPE_BITS) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
-    private static final int FLIGHT_DESCRIPTOR_TAG = (Flight.FlightData.FLIGHT_DESCRIPTOR_FIELD_NUMBER << TAG_TYPE_BITS) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
-    private static final BarrageMessage.ModColumnData[] ZERO_MOD_COLUMNS = new BarrageMessage.ModColumnData[0];
-
     private static MessageInfo parseProtoMessage(final InputStream stream) throws IOException {
         final MessageInfo mi = new MessageInfo();
 
@@ -261,7 +261,11 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
                     break;
                 case APP_METADATA_TAG:
                     size = decoder.readRawVarint32();
-                    mi.app_metadata = BarragePutMetadata.getRootAsBarragePutMetadata(ByteBuffer.wrap(decoder.readRawBytes(size)));
+                    mi.app_metadata = BarrageMessageWrapper.getRootAsBarrageMessageWrapper(ByteBuffer.wrap(decoder.readRawBytes(size)));
+                    if (mi.app_metadata.magic() != BarrageStreamGenerator.FLATBUFFER_MAGIC) {
+                        log.error().append("received invalid magic").endl();
+                        mi.app_metadata = null;
+                    }
                     break;
                 case FLIGHT_DESCRIPTOR_TAG:
                     size = decoder.readRawVarint32();
@@ -297,7 +301,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
         /** outer-most Arrow Flight Message that indicates the msg type (i.e. schema, record batch, etc) */
         Message header = null;
         /** the embedded flatbuffer metadata indicating information about this batch */
-        BarragePutMetadata app_metadata = null;
+        BarrageMessageWrapper app_metadata = null;
         /** the parsed protobuf from the flight descriptor embedded in app_metadata */
         Flight.FlightDescriptor descriptor = null;
         /** the payload beyond the header metadata */

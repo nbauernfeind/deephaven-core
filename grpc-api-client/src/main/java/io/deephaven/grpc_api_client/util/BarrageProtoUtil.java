@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.BitSet;
 
 public class BarrageProtoUtil {
@@ -36,6 +37,18 @@ public class BarrageProtoUtil {
             ExternalizableIndexUtils.writeExternalCompressedDeltas(oos, index);
             oos.flush();
             return ByteStringAccess.wrap(baos.peekBuffer(), 0, baos.size());
+        } catch (final IOException e) {
+            throw new UncheckedDeephavenException("Unexpected exception during serialization: ", e);
+        }
+    }
+
+    public static ByteBuffer toByteBuffer(final Index index) {
+        //noinspection UnstableApiUsage
+        try (final ExposedByteArrayOutputStream baos = new ExposedByteArrayOutputStream();
+             final LittleEndianDataOutputStream oos = new LittleEndianDataOutputStream(baos)) {
+            ExternalizableIndexUtils.writeExternalCompressedDeltas(oos, index);
+            oos.flush();
+            return ByteBuffer.wrap(baos.peekBuffer(), 0, baos.size());
         } catch (final IOException e) {
             throw new UncheckedDeephavenException("Unexpected exception during serialization: ", e);
         }

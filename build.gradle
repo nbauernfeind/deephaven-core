@@ -37,6 +37,7 @@ allprojects {
                 includeGroup 'com.hadoop.gplcompression'
             }
         }
+        mavenLocal()
     }
 }
 

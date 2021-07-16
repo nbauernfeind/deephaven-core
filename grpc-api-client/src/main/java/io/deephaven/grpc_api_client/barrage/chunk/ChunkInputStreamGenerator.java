@@ -6,8 +6,6 @@ package io.deephaven.grpc_api_client.barrage.chunk;
 
 import com.google.common.base.Charsets;
 import gnu.trove.iterator.TLongIterator;
-import io.deephaven.barrage.flatbuf.BarrageFieldNode;
-import io.deephaven.barrage.flatbuf.FieldNode;
 import io.deephaven.db.util.LongSizedDataStructure;
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.Chunk;
@@ -141,12 +139,7 @@ public interface ChunkInputStreamGenerator extends SafeCloseable {
             this.nullCount = nullCount;
         }
 
-        public FieldNodeInfo(final FieldNode node) {
-            this(LongSizedDataStructure.intSize("FieldNodeInfo", node.length()),
-                    LongSizedDataStructure.intSize("FieldNodeInfo", node.nullCount()));
-        }
-
-        public FieldNodeInfo(final BarrageFieldNode node) {
+        public FieldNodeInfo(final org.apache.arrow.flatbuf.FieldNode node) {
             this(LongSizedDataStructure.intSize("FieldNodeInfo", node.length()),
                     LongSizedDataStructure.intSize("FieldNodeInfo", node.nullCount()));
         }

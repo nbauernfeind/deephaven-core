@@ -7,7 +7,7 @@ package io.deephaven.grpc_api.barrage.util;
 import com.google.flatbuffers.FlatBufferBuilder;
 import com.google.rpc.Code;
 import io.deephaven.UncheckedDeephavenException;
-import io.deephaven.barrage.flatbuf.KeyValue;
+import org.apache.arrow.flatbuf.KeyValue;
 import io.deephaven.base.ClassUtil;
 import io.deephaven.db.tables.ColumnDefinition;
 import io.deephaven.db.tables.Table;
@@ -125,11 +125,11 @@ public class BarrageSchemaUtil {
         metadata.put("deephaven:" + key, value);
     }
 
-    public static TableDefinition schemaToTableDefinition(final io.deephaven.barrage.flatbuf.Schema schema) {
+    public static TableDefinition schemaToTableDefinition(final org.apache.arrow.flatbuf.Schema schema) {
         final ColumnDefinition<?>[] columns = new ColumnDefinition[schema.fieldsLength()];
 
         for (int i = 0; i < schema.fieldsLength(); ++i) {
-            final io.deephaven.barrage.flatbuf.Field field = schema.fields(i);
+            final org.apache.arrow.flatbuf.Field field = schema.fields(i);
 
             final String name = DBNameValidator.legalizeColumnName(field.name());
 

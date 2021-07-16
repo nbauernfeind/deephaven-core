@@ -4,9 +4,11 @@
 
 package io.deephaven.grpc_api.arrow;
 
+import io.deephaven.db.v2.sources.chunk.ChunkType;
+import io.deephaven.db.v2.utils.BarrageMessage;
+import io.deephaven.grpc_api.barrage.BarrageMessageConsumer;
 import io.deephaven.grpc_api_client.util.GrpcServiceOverrideBuilder;
 import io.deephaven.grpc_api.util.PassthroughInputStreamMarshaller;
-import io.deephaven.proto.backplane.grpc.BarrageServiceGrpc;
 import io.grpc.BindableService;
 import io.grpc.MethodDescriptor;
 import io.grpc.ServerServiceDefinition;
@@ -30,6 +32,8 @@ public class FlightServiceGrpcBinding implements BindableService {
     private static final String DO_PUT = MethodDescriptor.generateFullMethodName(SERVICE, "DoPut");
     private static final String DO_PUT_OOB_CLIENT_STREAM = MethodDescriptor.generateFullMethodName(SERVICE, "DoPutOOBClientStream");
     private static final String DO_PUT_OOB_CLIENT_STREAM_UPDATE = MethodDescriptor.generateFullMethodName(SERVICE, "DoPutOOBClientStreamUpdate");
+
+    private static final String DO_EXCHANGE = MethodDescriptor.generateFullMethodName(SERVICE, "DoExchange");
 
     private final FlightServiceGrpcImpl delegate;
 
@@ -62,6 +66,30 @@ public class FlightServiceGrpcBinding implements BindableService {
                         ProtoUtils.marshaller(Flight.OOBPutResult.getDefaultInstance()),
                         FlightServiceGrpc.getDoPutOOBClientStreamUpdateMethod()), new DoPutOOBUpdate(delegate))
                 .build();
+    }
+
+    /**
+     * Fetch the client side descriptor for a specific table schema.
+     *
+     * @param options           the set of options that last across the entire life of the subscription
+     * @param columnChunkTypes  the chunk types per column
+     * @param columnTypes       the class type per column
+     * @param componentTypes    the component class type per column
+     * @param streamReader      the stream reader - intended to be thread safe and re-usable
+     * @param <Options>         the options related to deserialization
+     * @return the client side method descriptor
+     */
+    public static <Options> MethodDescriptor<Flight.FlightData, BarrageMessage> getClientDoSubscribeDescriptor(
+            final Options options,
+            final ChunkType[] columnChunkTypes,
+            final Class<?>[] columnTypes,
+            final Class<?>[] componentTypes,
+            final BarrageMessageConsumer.StreamReader<Options> streamReader) {
+        return GrpcServiceOverrideBuilder.descriptorFor(
+                MethodDescriptor.MethodType.BIDI_STREAMING, DO_EXCHANGE,
+                ProtoUtils.marshaller(Flight.FlightData.getDefaultInstance()),
+                new BarrageDataMarshaller<>(options, columnChunkTypes, columnTypes, componentTypes, streamReader),
+                FlightServiceGrpc.getDoExchangeMethod());
     }
 
     private static class DoGet implements ServerCalls.ServerStreamingMethod<Flight.Ticket, InputStream> {
@@ -125,6 +153,37 @@ public class FlightServiceGrpcBinding implements BindableService {
             serverCall.disableAutoInboundFlowControl();
             serverCall.request(Integer.MAX_VALUE);
             delegate.doPutUpdateCustom(request, responseObserver);
+        }
+    }
+
+    public static class BarrageDataMarshaller<Options> implements MethodDescriptor.Marshaller<BarrageMessage> {
+        private final Options options;
+        private final ChunkType[] columnChunkTypes;
+        private final Class<?>[] columnTypes;
+        private final Class<?>[] componentTypes;
+        private final BarrageMessageConsumer.StreamReader<Options> streamReader;
+
+        public BarrageDataMarshaller(
+                final Options options,
+                final ChunkType[] columnChunkTypes,
+                final Class<?>[] columnTypes,
+                final Class<?>[] componentTypes,
+                final BarrageMessageConsumer.StreamReader<Options> streamReader) {
+            this.options = options;
+            this.columnChunkTypes = columnChunkTypes;
+            this.columnTypes = columnTypes;
+            this.componentTypes = componentTypes;
+            this.streamReader = streamReader;
+        }
+
+        @Override
+        public InputStream stream(final BarrageMessage value) {
+            throw new UnsupportedOperationException("BarrageDataMarshaller unexpectedly used to directly convert BarrageMessage to InputStream");
+        }
+
+        @Override
+        public BarrageMessage parse(final InputStream stream) {
+            return streamReader.safelyParseFrom(options, columnChunkTypes, columnTypes, componentTypes, stream);
         }
     }
 }
