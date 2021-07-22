@@ -190,13 +190,15 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     public void bindTableToVariable(BindTableToVariableRequest request, StreamObserver<BindTableToVariableResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState session = sessionService.getCurrentSession();
-
-            SessionState.ExportObject<ScriptSession> exportedConsole = ticketRouter.resolve(session, request.getConsoleId());
+            SessionState.ExportObject<ScriptSession> exportedConsole = request.hasConsoleId() ? ticketRouter.resolve(session, request.getConsoleId()) : null;
             SessionState.ExportObject<Table> exportedTable = ticketRouter.resolve(session, request.getTableId());
             session.nonExport()
                     .require(exportedConsole, exportedTable)
+                    .onError(responseObserver::onError)
                     .submit(() -> {
-                        exportedConsole.get().setVariable(request.getVariableName(), exportedTable.get());
+                        final ScriptSession scriptSession = exportedConsole != null ? exportedConsole.get() : globalSessionProvider.getGlobalSession();
+                        scriptSession.setVariable(request.getVariableName(), exportedTable.get());
+                        scriptSession.manageVariable(exportedTable.get());
                         responseObserver.onNext(BindTableToVariableResponse.getDefaultInstance());
                         responseObserver.onCompleted();
                     });
