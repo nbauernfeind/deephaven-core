@@ -265,6 +265,66 @@ public class FlightServiceGrpcImpl<Options, View> extends FlightServiceGrpc.Flig
         });
     }
 
+    public void doExchangeUpdateCustom(final InputStream request, final StreamObserver<Flight.OOBPutResult> responseObserver) {
+        throw new UnsupportedOperationException("todo: refactor reusable pattern?");
+    }
+
+    /**
+     * Receive an out-of-band exchange update for an existing exchange call.
+     *
+     * @param request the request to submit as if it was sent on the client-streaming side of the export
+     * @param responseObserver the response observer to notify of any errors or successes
+     */
+    public void doUpdateDoExchange(final Flight.FlightData request, final StreamObserver<Flight.OOBPutResult> responseObserver) {
+        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
+            final ByteString metadataByteString = request.getAppMetadata();
+            final BarrageMessageWrapper wrapper = BarrageMessageWrapper.getRootAsBarrageMessageWrapper(metadataByteString.asReadOnlyByteBuffer());
+            if (wrapper.magic() != BarrageStreamGenerator.FLATBUFFER_MAGIC) {
+                responseObserver.onError(GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT,
+                        "Out-of-band support requires BarrageMessageWrapper app_metadata with correct magic \"dhvn\""));
+                return;
+            }
+
+            if (wrapper.rpcTicketVector() == null) {
+                responseObserver.onError(GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "Export ticket not specified; cannot locate DoExchange"));
+                return;
+            }
+
+            final SessionState session = sessionService.getCurrentSession();
+            final SessionState.ExportObject<SubscriptionObserver> subscription = ticketRouter.resolve(session, wrapper.rpcTicketAsByteBuffer());
+
+            session.nonExport()
+                    .require(subscription)
+                    .onError(responseObserver::onError)
+                    .submit(() -> {
+                        subscription.get().onNext(request);
+                        responseObserver.onNext(Flight.OOBPutResult.newBuilder().build());
+                        responseObserver.onCompleted();
+                    });
+        });
+    }
+
+    /**
+     * Subscribe with a normal bi-directional stream.
+     * @param responseObserver the observer to send subscription events to
+     * @return the observer that grpc can delegate updates to
+     */
+    public StreamObserver<Flight.FlightData> doExchangeCustom(final StreamObserver<InputStream> responseObserver) {
+        return GrpcUtil.rpcWrapper(log, responseObserver, () -> new SubscriptionObserver(sessionService.getCurrentSession(), responseObserver));
+    }
+
+    /**
+     * Subscribe with server-side streaming only. (Updates may be sent out of band, if subscription is also exported.)
+     * @param request the initial one-shot subscription request to get this subscription started
+     * @param responseObserver the observer to send subscription events to
+     */
+    public void doExchangeCustom(final Flight.FlightData request, final StreamObserver<InputStream> responseObserver) {
+        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
+            final SubscriptionObserver observer = new SubscriptionObserver(sessionService.getCurrentSession(), responseObserver);
+            observer.onNext(request);
+        });
+    }
+
     private static MessageInfo parseProtoMessage(final InputStream stream) throws IOException {
         final MessageInfo mi = new MessageInfo();
 
@@ -329,54 +389,6 @@ public class FlightServiceGrpcImpl<Options, View> extends FlightServiceGrpc.Flig
         @SuppressWarnings("UnstableApiUsage")
         LittleEndianDataInputStream inputStream = null;
     }
-
-//    /**
-//     * Receive an out-of-band subscription update for an existing subscription that was
-//     * @param request the request to submit as if it was sent on the client-streaming side of the export
-//     * @param responseObserver the response observer to notify of any errors or successes
-//     */
-//    @Override
-//    public void doUpdateSubscription(final SubscriptionRequest request, final StreamObserver<OutOfBandSubscriptionResponse> responseObserver) {
-//        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-//            if (!request.hasExportId()) {
-//                responseObserver.onError(GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "Export ID not specified."));
-//                return;
-//            }
-//
-//            final SessionState session = sessionService.getCurrentSession();
-//            final SessionState.ExportObject<SubscriptionObserver> subscription = ticketRouter.resolve(session, request.getExportId());
-//
-//            session.nonExport()
-//                    .require(subscription)
-//                    .onError(responseObserver::onError)
-//                    .submit(() -> {
-//                        subscription.get().onNext(request);
-//                        responseObserver.onNext(OutOfBandSubscriptionResponse.newBuilder().setSubscriptionFound(true).build());
-//                        responseObserver.onCompleted();
-//                    });
-//        });
-//    }
-//
-//    /**
-//     * Subscribe with a normal bi-directional stream.
-//     * @param responseObserver the observer to send subscription events to
-//     * @return the observer that grpc can delegate updates to
-//     */
-//    public StreamObserver<SubscriptionRequest> doSubscribeCustom(final StreamObserver<InputStream> responseObserver) {
-//        return GrpcUtil.rpcWrapper(log, responseObserver, () -> new SubscriptionObserver(sessionService.getCurrentSession(), responseObserver));
-//    }
-//
-//    /**
-//     * Subscribe with server-side streaming only. (Updates may be sent out of band, if subscription is also exported.)
-//     * @param request the initial one-shot subscription request to get this subscription started
-//     * @param responseObserver the observer to send subscription events to
-//     */
-//    public void doSubscribeCustom(final SubscriptionRequest request, final StreamObserver<InputStream> responseObserver) {
-//        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-//            final SubscriptionObserver observer = new SubscriptionObserver(sessionService.getCurrentSession(), responseObserver);
-//            observer.onNext(request);
-//        });
-//    }
 
     /**
      * Helper class that maintains a subscription whether it was created by a bi-directional stream request or the

@@ -9,6 +9,7 @@ import io.deephaven.db.v2.utils.BarrageMessage;
 import io.deephaven.grpc_api.barrage.BarrageMessageConsumer;
 import io.deephaven.grpc_api_client.util.GrpcServiceOverrideBuilder;
 import io.deephaven.grpc_api.util.PassthroughInputStreamMarshaller;
+import io.deephaven.io.streams.ByteBufferStreams;
 import io.grpc.BindableService;
 import io.grpc.MethodDescriptor;
 import io.grpc.ServerServiceDefinition;
@@ -65,6 +66,11 @@ public class FlightServiceGrpcBinding implements BindableService {
                         PassthroughInputStreamMarshaller.INSTANCE,
                         ProtoUtils.marshaller(Flight.OOBPutResult.getDefaultInstance()),
                         FlightServiceGrpc.getDoPutOOBClientStreamUpdateMethod()), new DoPutOOBUpdate(delegate))
+                .override(GrpcServiceOverrideBuilder.descriptorFor(
+                        MethodDescriptor.MethodType.BIDI_STREAMING, DO_EXCHANGE,
+                        PassthroughInputStreamMarshaller.INSTANCE,
+                        ProtoUtils.marshaller(Flight.OOBPutResult.getDefaultInstance()),
+                        FlightServiceGrpc.getDoPutOOBClientStreamUpdateMethod()), new DoPutOOBUpdate(delegate))
                 .build();
     }
 
@@ -79,7 +85,7 @@ public class FlightServiceGrpcBinding implements BindableService {
      * @param <Options>         the options related to deserialization
      * @return the client side method descriptor
      */
-    public static <Options> MethodDescriptor<Flight.FlightData, BarrageMessage> getClientDoSubscribeDescriptor(
+    public static <Options> MethodDescriptor<Flight.FlightData, BarrageMessage> getClientDoExchangeDescriptor(
             final Options options,
             final ChunkType[] columnChunkTypes,
             final Class<?>[] columnTypes,
@@ -93,9 +99,9 @@ public class FlightServiceGrpcBinding implements BindableService {
     }
 
     private static class DoGet implements ServerCalls.ServerStreamingMethod<Flight.Ticket, InputStream> {
-        private final FlightServiceGrpcImpl delegate;
+        private final FlightServiceGrpcImpl<?, ?> delegate;
 
-        private DoGet(final FlightServiceGrpcImpl delegate) {
+        private DoGet(final FlightServiceGrpcImpl<?, ?> delegate) {
             this.delegate = delegate;
         }
 
@@ -109,9 +115,9 @@ public class FlightServiceGrpcBinding implements BindableService {
     }
 
     private static class DoPut implements ServerCalls.BidiStreamingMethod<InputStream, Flight.PutResult> {
-        private final FlightServiceGrpcImpl delegate;
+        private final FlightServiceGrpcImpl<?, ?> delegate;
 
-        private DoPut(final FlightServiceGrpcImpl delegate) {
+        private DoPut(final FlightServiceGrpcImpl<?, ?> delegate) {
             this.delegate = delegate;
         }
 
@@ -125,9 +131,9 @@ public class FlightServiceGrpcBinding implements BindableService {
     }
 
     private static class DoPutOOB implements ServerCalls.ServerStreamingMethod<InputStream, Flight.PutResult> {
-        private final FlightServiceGrpcImpl delegate;
+        private final FlightServiceGrpcImpl<?, ?> delegate;
 
-        private DoPutOOB(final FlightServiceGrpcImpl delegate) {
+        private DoPutOOB(final FlightServiceGrpcImpl<?, ?> delegate) {
             this.delegate = delegate;
         }
 
@@ -141,9 +147,9 @@ public class FlightServiceGrpcBinding implements BindableService {
     }
 
     private static class DoPutOOBUpdate implements ServerCalls.UnaryMethod<InputStream, Flight.OOBPutResult> {
-        private final FlightServiceGrpcImpl delegate;
+        private final FlightServiceGrpcImpl<?, ?> delegate;
 
-        private DoPutOOBUpdate(final FlightServiceGrpcImpl delegate) {
+        private DoPutOOBUpdate(final FlightServiceGrpcImpl<?, ?> delegate) {
             this.delegate = delegate;
         }
 
@@ -153,6 +159,54 @@ public class FlightServiceGrpcBinding implements BindableService {
             serverCall.disableAutoInboundFlowControl();
             serverCall.request(Integer.MAX_VALUE);
             delegate.doPutUpdateCustom(request, responseObserver);
+        }
+    }
+
+    private static class DoExchange implements ServerCalls.BidiStreamingMethod<Flight.FlightData, InputStream> {
+        private final FlightServiceGrpcImpl<?, ?> delegate;
+
+        private DoExchange(final FlightServiceGrpcImpl<?, ?> delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public StreamObserver<Flight.FlightData> invoke(final StreamObserver<InputStream> responseObserver) {
+            final ServerCallStreamObserver<InputStream> serverCall = (ServerCallStreamObserver<InputStream>) responseObserver;
+            serverCall.disableAutoInboundFlowControl();
+            serverCall.request(Integer.MAX_VALUE);
+            return delegate.doExchangeCustom(responseObserver);
+        }
+    }
+
+    private static class DoExchangeOOB implements ServerCalls.ServerStreamingMethod<Flight.FlightData, InputStream> {
+        private final FlightServiceGrpcImpl<?, ?> delegate;
+
+        private DoExchangeOOB(final FlightServiceGrpcImpl<?, ?> delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void invoke(Flight.FlightData request, StreamObserver<InputStream> responseObserver) {
+            final ServerCallStreamObserver<InputStream> serverCall = (ServerCallStreamObserver<InputStream>) responseObserver;
+            serverCall.disableAutoInboundFlowControl();
+            serverCall.request(Integer.MAX_VALUE);
+             delegate.doExchangeCustom(responseObserver);
+        }
+    }
+
+    private static class DoExchangeOOBUpdate implements ServerCalls.UnaryMethod<InputStream, Flight.OOBPutResult> {
+        private final FlightServiceGrpcImpl<?, ?> delegate;
+
+        private DoExchangeOOBUpdate(final FlightServiceGrpcImpl<?, ?> delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void invoke(InputStream request, StreamObserver<Flight.OOBPutResult> responseObserver) {
+            final ServerCallStreamObserver<Flight.OOBPutResult> serverCall = (ServerCallStreamObserver<Flight.OOBPutResult>) responseObserver;
+            serverCall.disableAutoInboundFlowControl();
+            serverCall.request(Integer.MAX_VALUE);
+            delegate.doExchangeUpdateCustom(request, responseObserver);
         }
     }
 

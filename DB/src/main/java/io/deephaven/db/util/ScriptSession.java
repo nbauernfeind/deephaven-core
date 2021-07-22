@@ -108,6 +108,15 @@ public interface ScriptSession extends LivenessNode {
     void setVariable(String name, Object value);
 
     /**
+     * Pins a LivenessReferent by managing it for the remainder of the script session's life.
+     * <p/>
+     * This will prevent a liveness object from being pruned while it might be accessible to users of a script session.
+     *
+     * @param value potentially a liveness referent
+     */
+    void manageVariable(Object value);
+
+    /**
      * @return a textual description of this script session's language for use in messages.
      */
     String scriptType();

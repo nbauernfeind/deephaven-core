@@ -10,6 +10,7 @@ import io.deephaven.db.tables.TableDefinition;
 import io.deephaven.db.tables.libs.QueryLibrary;
 import io.deephaven.db.tables.select.QueryScope;
 import io.deephaven.db.util.liveness.LivenessArtifact;
+import io.deephaven.db.util.liveness.LivenessReferent;
 import io.deephaven.db.util.liveness.LivenessScope;
 import io.deephaven.db.util.liveness.LivenessScopeStack;
 import io.deephaven.lang.parse.api.CompletionParseService;
@@ -86,6 +87,13 @@ public abstract class AbstractScriptSession extends LivenessArtifact implements 
         } else {
             // hm, should maybe log to the user that we are using a do-nothing completer...
             parser = new CompletionParseServiceNoOp();
+        }
+    }
+
+    @Override
+    public void manageVariable(Object value) {
+        if (value instanceof LivenessReferent) {
+            livenessScope.manage((LivenessReferent) value);
         }
     }
 

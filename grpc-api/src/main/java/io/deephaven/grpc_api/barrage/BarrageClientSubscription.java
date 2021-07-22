@@ -93,7 +93,7 @@ public class BarrageClientSubscription implements LogOutputAppendable {
                 .build();
 
         final MethodDescriptor<Flight.FlightData, BarrageMessage> subscribeDescriptor =
-                FlightServiceGrpcBinding.getClientDoSubscribeDescriptor(options, wireChunkTypes, wireTypes, wireComponentTypes, streamReader);
+                FlightServiceGrpcBinding.getClientDoExchangeDescriptor(options, wireChunkTypes, wireTypes, wireComponentTypes, streamReader);
         this.call = channel.newCall(subscribeDescriptor, CallOptions.DEFAULT);
 
         ClientCalls.asyncBidiStreamingCall(call, new ClientResponseObserver<Flight.FlightData, BarrageMessage>() {
