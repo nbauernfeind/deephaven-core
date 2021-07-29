@@ -1,4 +1,4 @@
-package io.deephaven.db.appmode;
+package io.deephaven.appmode;
 
 import io.deephaven.annotations.SimpleStyle;
 import io.deephaven.db.tables.Table;

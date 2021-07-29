@@ -1,13 +1,11 @@
-package io.deephaven.db.appmode;
+package io.deephaven.appmode;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import io.deephaven.db.appmode.Application.Builder;
+import io.deephaven.appmode.Application.Builder;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.v2.TableMap;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;

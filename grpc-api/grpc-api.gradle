@@ -58,6 +58,9 @@ dependencies {
 
     // it is essential that this is only added to the classpath for flightTestCompile
     flightTestCompile 'org.apache.arrow:flight-grpc:4.0.0'
+
+    annotationProcessor 'org.immutables:value:2.8.1'
+    compileOnly 'org.immutables:value-annotations:2.8.1'
 }
 
 // testOutOfBand: non-parallel, not a db test, not isolated

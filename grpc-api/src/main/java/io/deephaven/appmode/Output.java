@@ -1,4 +1,4 @@
-package io.deephaven.db.appmode;
+package io.deephaven.appmode;
 
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.v2.TableMap;

@@ -1,8 +1,6 @@
 package io.deephaven.grpc_api.runner;
 
 import io.deephaven.appmode.ApplicationInjector;
-import io.deephaven.db.appmode.Application;
-import io.deephaven.db.appmode.ApplicationConfig;
 import io.deephaven.db.util.AbstractScriptSession;
 import io.deephaven.grpc_api.console.ConsoleServiceGrpcImpl;
 import io.deephaven.grpc_api.session.SessionService;
@@ -13,7 +11,6 @@ import dagger.BindsInstance;
 import dagger.Component;
 import io.deephaven.grpc_api.log.LogInit;
 import io.deephaven.internal.log.LoggerFactory;
-import io.deephaven.proto.backplane.script.grpc.ConsoleServiceGrpc;
 import io.deephaven.util.process.ProcessEnvironment;
 import io.deephaven.util.process.ShutdownManager;
 import io.grpc.Server;

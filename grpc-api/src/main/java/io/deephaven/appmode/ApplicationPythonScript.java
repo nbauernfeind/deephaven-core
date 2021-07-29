@@ -1,4 +1,4 @@
-package io.deephaven.db.appmode;
+package io.deephaven.appmode;
 
 import io.deephaven.annotations.BuildableStyle;
 import org.immutables.value.Value.Immutable;
@@ -11,15 +11,15 @@ import java.util.Properties;
 
 @Immutable
 @BuildableStyle
-public abstract class ApplicationGroovyScript implements ApplicationConfig {
+public abstract class ApplicationPythonScript implements ApplicationConfig {
 
-    public static final String TYPE = "groovy";
+    public static final String TYPE = "python";
 
     public static Builder builder() {
-        return ImmutableApplicationGroovyScript.builder();
+        return ImmutableApplicationPythonScript.builder();
     }
 
-    public static ApplicationGroovyScript parse(Properties properties) {
+    public static ApplicationPythonScript parse(Properties properties) {
         return builder()
                 .id(properties.getProperty("id"))
                 .name(properties.getProperty("name"))
@@ -47,6 +47,6 @@ public abstract class ApplicationGroovyScript implements ApplicationConfig {
 
         Builder addFiles(Path... files);
 
-        ApplicationGroovyScript build();
+        ApplicationPythonScript build();
     }
 }
