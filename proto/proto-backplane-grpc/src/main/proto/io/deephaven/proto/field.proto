@@ -1,0 +1,67 @@
+/*
+ * Copyright (c) 2016-2021 Deephaven Data Labs and Patent Pending
+ */
+
+syntax = "proto3";
+
+package io.deephaven.proto.backplane.grpc;
+
+option java_multiple_files = true;
+option optimize_for = SPEED;
+
+import "arrow/flight/protocol/flight.proto";
+
+/*
+ * Allows clients to list fields that are accessible to them.
+ */
+service FieldService {
+
+  /*
+   * Request the list of the fields exposed via the worker.
+   */
+  rpc listFields(ListFieldsRequest) returns (stream FieldInfo) {}
+
+}
+
+message ListFieldsRequest {
+  // Intentionally empty and is here for backwards compatibility should this API change.
+}
+
+/*
+ * A lightweight object describing the exposed field.
+ */
+message FieldInfo {
+  arrow.flight.protocol.Ticket ticket = 1;
+  string field_name = 2;
+  FieldType field_type = 3;
+  string field_description = 4;
+  reserved 5; // reserved for future app name or id
+
+  message FieldType {
+    oneof field {
+      OpaqueInfo opaque = 1;
+      arrow.flight.protocol.FlightInfo table = 2;
+      FigureInfo figure = 3;
+      // reserved = 4; // for TableMap
+      // reserved = 5; // for TreeTable
+
+      // Use values above 4096 for custom client behavior.
+    }
+  }
+}
+
+/*
+ * OpaqueInfo can be used to provide information about an exposed field in an unstructured way.
+ *
+ * Alternatively, one can extend FieldType and re-build with custom types of their own structure.
+ */
+message OpaqueInfo {
+  bytes app_metadata = 1;
+}
+
+/*
+ * Lightly describes a Figure.
+ */
+message FigureInfo {
+  // Intentionally empty and is here for backwards compatibility should this API change.
+}
