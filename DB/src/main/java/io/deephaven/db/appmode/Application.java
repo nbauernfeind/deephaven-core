@@ -1,6 +1,6 @@
 package io.deephaven.db.appmode;
 
-import io.deephaven.api.BuildableStyle;
+import io.deephaven.annotations.BuildableStyle;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.v2.TableMap;
 import org.immutables.value.Value.Immutable;

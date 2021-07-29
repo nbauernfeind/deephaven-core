@@ -1,6 +1,6 @@
 package io.deephaven.db.appmode;
 
-import io.deephaven.api.BuildableStyle;
+import io.deephaven.annotations.BuildableStyle;
 import org.immutables.value.Value.Immutable;
 
 import java.nio.file.Path;
@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 @Immutable
 @BuildableStyle
@@ -24,7 +23,7 @@ public abstract class ApplicationPythonScript implements ApplicationConfig {
         return builder()
                 .id(properties.getProperty("id"))
                 .name(properties.getProperty("name"))
-                .addFiles(Arrays.stream(properties.getProperty("file").split(";")).map(Paths::get).collect(Collectors.toList()))
+                .addFiles(Arrays.stream(properties.getProperty("file").split(";")).map(Paths::get).toArray(Path[]::new))
                 .build();
     }
 
@@ -46,7 +45,7 @@ public abstract class ApplicationPythonScript implements ApplicationConfig {
 
         Builder name(String name);
 
-        Builder addFiles(List<Path> file);
+        Builder addFiles(Path... files);
 
         ApplicationPythonScript build();
     }

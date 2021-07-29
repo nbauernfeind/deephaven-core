@@ -1,6 +1,6 @@
 package io.deephaven.db.appmode;
 
-import io.deephaven.api.SimpleStyle;
+import io.deephaven.annotations.SimpleStyle;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;
 
