@@ -50,6 +50,7 @@ public class ApplicationInjector {
         Application application = Application.of(config);
         log.info().append("Starting application '").append(application.name()).append('\'').endl();
 
+        // TODO validate global session equals application type if groovy/python
         ScriptSession session = globalSessionProvider.getGlobalSession();
         for (Entry<String, Output> e : application.output().entrySet()) {
             e.getValue().walk(new ManageOutput(session, application.name(), e.getKey()));

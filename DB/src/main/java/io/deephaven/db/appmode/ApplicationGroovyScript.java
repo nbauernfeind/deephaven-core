@@ -5,7 +5,10 @@ import org.immutables.value.Value.Immutable;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 @Immutable
 @BuildableStyle
@@ -21,7 +24,7 @@ public abstract class ApplicationGroovyScript implements ApplicationConfig {
         return builder()
                 .id(properties.getProperty("id"))
                 .name(properties.getProperty("name"))
-                .file(Paths.get(properties.getProperty("file")))
+                .addFiles(Arrays.stream(properties.getProperty("file").split(";")).map(Paths::get).collect(Collectors.toList()))
                 .build();
     }
 
@@ -29,7 +32,7 @@ public abstract class ApplicationGroovyScript implements ApplicationConfig {
 
     public abstract String name();
 
-    public abstract Path file();
+    public abstract List<Path> files();
 
     @Override
     public final <V extends Visitor> V walk(V visitor) {
@@ -43,7 +46,7 @@ public abstract class ApplicationGroovyScript implements ApplicationConfig {
 
         Builder name(String name);
 
-        Builder file(Path file);
+        Builder addFiles(List<Path> files);
 
         ApplicationGroovyScript build();
     }
