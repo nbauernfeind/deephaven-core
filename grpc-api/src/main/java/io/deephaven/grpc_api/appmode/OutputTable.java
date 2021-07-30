@@ -1,4 +1,4 @@
-package io.deephaven.appmode;
+package io.deephaven.grpc_api.appmode;
 
 import io.deephaven.annotations.SimpleStyle;
 import io.deephaven.db.tables.Table;

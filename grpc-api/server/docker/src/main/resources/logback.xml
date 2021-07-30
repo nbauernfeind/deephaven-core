@@ -22,7 +22,7 @@
   <!--<logger name="io.netty" level="INFO"/>-->
   <!--<logger name="io.deephaven" level="INFO"/>-->
 
-  <logger name="io.deephaven.appmode.ApplicationInjector" level="DEBUG"/>
+  <logger name="io.deephaven.grpc_api.appmode.ApplicationInjector" level="DEBUG"/>
 
   <root level="info">
     <appender-ref ref="STDOUT" />

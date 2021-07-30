@@ -1,4 +1,4 @@
-package io.deephaven.appmode;
+package io.deephaven.grpc_api.appmode;
 
 import io.deephaven.annotations.BuildableStyle;
 import org.immutables.value.Value.Immutable;

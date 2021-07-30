@@ -1,4 +1,4 @@
-package io.deephaven.appmode;
+package io.deephaven.grpc_api.appmode;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,4 +1,4 @@
-package io.deephaven.appmode;
+package io.deephaven.grpc_api.appmode;
 
 import java.io.BufferedReader;
 import java.io.IOException;

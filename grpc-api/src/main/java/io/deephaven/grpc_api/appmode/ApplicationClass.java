@@ -1,7 +1,7 @@
-package io.deephaven.appmode;
+package io.deephaven.grpc_api.appmode;
 
 import io.deephaven.annotations.SimpleStyle;
-import io.deephaven.appmode.Application.Factory;
+import io.deephaven.grpc_api.appmode.Application.Factory;
 import org.immutables.value.Value.Check;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;

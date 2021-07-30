@@ -1,8 +1,8 @@
-package io.deephaven.appmode;
+package io.deephaven.grpc_api.appmode;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import io.deephaven.appmode.Application.Builder;
+import io.deephaven.grpc_api.appmode.Application.Builder;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.v2.TableMap;
 

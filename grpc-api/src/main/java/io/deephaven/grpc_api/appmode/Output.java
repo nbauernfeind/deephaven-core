@@ -1,4 +1,4 @@
-package io.deephaven.appmode;
+package io.deephaven.grpc_api.appmode;
 
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.v2.TableMap;

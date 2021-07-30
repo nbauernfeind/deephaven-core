@@ -1,4 +1,4 @@
-package io.deephaven.appmode;
+package io.deephaven.grpc_api.appmode;
 
 import io.deephaven.db.v2.JUnit4QueryTableTestBase;
 import org.junit.After;

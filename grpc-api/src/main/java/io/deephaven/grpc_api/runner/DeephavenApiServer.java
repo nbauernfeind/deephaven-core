@@ -1,6 +1,6 @@
 package io.deephaven.grpc_api.runner;
 
-import io.deephaven.appmode.ApplicationInjector;
+import io.deephaven.grpc_api.appmode.ApplicationInjector;
 import io.deephaven.db.util.AbstractScriptSession;
 import io.deephaven.grpc_api.console.ConsoleServiceGrpcImpl;
 import io.deephaven.grpc_api.session.SessionService;
