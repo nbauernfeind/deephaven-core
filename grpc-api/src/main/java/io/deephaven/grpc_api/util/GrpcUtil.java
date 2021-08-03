@@ -2,15 +2,14 @@ package io.deephaven.grpc_api.util;
 
 import io.deephaven.io.logger.Logger;
 import com.google.rpc.Code;
-import com.google.rpc.Status;
 import io.deephaven.db.util.liveness.LivenessScopeStack;
 import io.deephaven.util.FunctionalInterfaces;
 import io.deephaven.util.SafeCloseable;
 import io.deephaven.internal.log.LoggerFactory;
 import io.grpc.StatusRuntimeException;
-import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -18,13 +17,13 @@ import java.util.function.Function;
 public class GrpcUtil {
     private static Logger log = LoggerFactory.getLogger(GrpcUtil.class);
 
-    public static void rpcWrapper(final Logger log, final StreamObserver<?> response, final Runnable lambda) {
+    public static <T extends IOException> void rpcWrapper(final Logger log, final StreamObserver<?> response, final FunctionalInterfaces.ThrowingRunnable<T> lambda) {
         try (final SafeCloseable ignored = LivenessScopeStack.open()) {
             lambda.run();
         } catch (final StatusRuntimeException err) {
             log.error().append(err).endl();
             response.onError(err);
-        } catch (final RuntimeException | Error err) {
+        } catch (final RuntimeException | IOException err) {
             response.onError(securelyWrapError(log, err));
         }
     }
