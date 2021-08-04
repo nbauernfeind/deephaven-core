@@ -5,7 +5,7 @@ import picocli.CommandLine.ITypeConverter;
 
 import java.nio.file.Paths;
 
-class TableConverter implements ITypeConverter<TableSpec> {
+public class TableConverter implements ITypeConverter<TableSpec> {
 
     @Override
     public TableSpec convert(String value) throws Exception {
