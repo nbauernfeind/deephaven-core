@@ -66,7 +66,7 @@ public class VersionedTextDocumentIdentifier {
 
   public native String getUri();
 
-  public native double getVersion();
+  public native int getVersion();
 
   public native Uint8Array serializeBinary();
 
