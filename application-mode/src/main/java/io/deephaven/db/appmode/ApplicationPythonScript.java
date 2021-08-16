@@ -4,6 +4,8 @@ import org.immutables.value.Value.Immutable;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 @Immutable
@@ -19,7 +21,7 @@ public abstract class ApplicationPythonScript implements ApplicationConfig {
         return builder()
                 .id(properties.getProperty("id"))
                 .name(properties.getProperty("name"))
-                .file(Paths.get(properties.getProperty("file")))
+                .addFiles(Arrays.stream(properties.getProperty("file").split(";")).map(Paths::get).toArray(Path[]::new))
                 .build();
     }
 
@@ -27,7 +29,7 @@ public abstract class ApplicationPythonScript implements ApplicationConfig {
 
     public abstract String name();
 
-    public abstract Path file();
+    public abstract List<Path> files();
 
     @Override
     public final <V extends Visitor> V walk(V visitor) {
@@ -41,7 +43,7 @@ public abstract class ApplicationPythonScript implements ApplicationConfig {
 
         Builder name(String name);
 
-        Builder file(Path file);
+        Builder addFiles(Path... file);
 
         ApplicationPythonScript build();
     }

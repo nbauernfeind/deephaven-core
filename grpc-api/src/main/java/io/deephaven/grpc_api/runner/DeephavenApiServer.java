@@ -4,6 +4,7 @@ import io.deephaven.appmode.ApplicationInjector;
 import io.deephaven.db.appmode.Application;
 import io.deephaven.db.appmode.ApplicationConfig;
 import io.deephaven.db.util.AbstractScriptSession;
+import io.deephaven.grpc_api.app_mode.AppMode;
 import io.deephaven.grpc_api.console.ConsoleServiceGrpcImpl;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.io.logger.Logger;
@@ -42,6 +43,7 @@ public class DeephavenApiServer {
             @BindsInstance Builder withSessionTokenExpireTmMs(@Named("session.tokenExpireMs") long tokenExpireMs);
             @BindsInstance Builder withOut(@Named("out") PrintStream out);
             @BindsInstance Builder withErr(@Named("err") PrintStream err);
+            @BindsInstance Builder withAppMode(AppMode appMode);
             ServerComponent build();
         }
     }
@@ -54,6 +56,7 @@ public class DeephavenApiServer {
                 .withSessionTokenExpireTmMs(300000) // defaults to 5 min
                 .withOut(out)
                 .withErr(err)
+                .withAppMode(AppMode.HYBRID) // TODO NOCOMMIT (NATE): this needs to be flaggable
                 .build();
         final DeephavenApiServer server = injector.getServer();
         final SessionService sessionService = injector.getSessionService();

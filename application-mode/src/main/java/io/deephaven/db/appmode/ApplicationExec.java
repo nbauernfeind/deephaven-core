@@ -29,11 +29,13 @@ class ApplicationExec implements ApplicationConfig.Visitor {
         Map<String, Object> variables = new LinkedHashMap<>();
         Binding binding = new Binding(variables);
         GroovyShell groovyShell = new GroovyShell(binding);
+        /*
         try {
             groovyShell.evaluate(script.file().toFile());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+        */
         Builder builder = Fields.builder();
         for (Map.Entry<String, Object> e : variables.entrySet()) {
             builder.addFields(Field.of(e.getKey(), e.getValue()));

@@ -49,6 +49,7 @@ public class ApplicationInjector {
         Application application = Application.of(config);
         log.info().append("Starting application '").append(application.name()).append('\'').endl();
 
+        // TODO validate global session equals application type if groovy/python
         ScriptSession session = globalSessionProvider.getGlobalSession();
 
         for (Field<?> field : application.fields()) {
