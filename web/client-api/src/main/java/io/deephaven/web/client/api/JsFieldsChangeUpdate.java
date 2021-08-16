@@ -12,15 +12,18 @@ import java.io.Serializable;
 public class JsFieldsChangeUpdate implements Serializable {
     private JsArray<JsFieldDefinition> newFields;
     private JsArray<JsFieldDefinition> removedFields;
+    private JsArray<JsFieldDefinition> modifiedFields;
 
     @JsConstructor
     public JsFieldsChangeUpdate() {
     }
 
     @JsIgnore
-    public JsFieldsChangeUpdate(JsArray<JsFieldDefinition> newFields, JsArray<JsFieldDefinition> removedFields) {
+    public JsFieldsChangeUpdate(JsArray<JsFieldDefinition> newFields, JsArray<JsFieldDefinition> removedFields, JsArray<JsFieldDefinition> modifiedFields) {
+        this();
         this.newFields = newFields;
         this.removedFields = removedFields;
+        this.modifiedFields = modifiedFields;
     }
 
     @JsProperty
@@ -31,5 +34,10 @@ public class JsFieldsChangeUpdate implements Serializable {
     @JsProperty
     public JsArray<JsFieldDefinition> getRemovedFields() {
         return removedFields;
+    }
+
+    @JsProperty
+    public JsArray<JsFieldDefinition> getModifiedFields() {
+        return modifiedFields;
     }
 }

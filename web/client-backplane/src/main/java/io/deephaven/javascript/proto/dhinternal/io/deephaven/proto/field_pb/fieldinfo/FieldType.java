@@ -5,7 +5,6 @@ import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.Figu
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.OpaqueInfo;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.RemovedField;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.TableInfo;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.fieldinfo.fieldtype.FieldCase;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -351,7 +350,7 @@ public class FieldType {
 
   public native void clearTable();
 
-  public native FieldCase getFieldCase();
+  public native int getFieldCase();
 
   public native FigureInfo getFigure();
 

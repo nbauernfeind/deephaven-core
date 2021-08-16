@@ -3,6 +3,7 @@ package io.deephaven.web.client.api;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FieldInfo;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.fieldinfo.FieldType;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.ticket_pb.Ticket;
+import io.deephaven.web.client.api.console.JsVariableDefinition;
 import io.deephaven.web.shared.ide.VariableType;
 import jsinterop.annotations.JsConstructor;
 import jsinterop.annotations.JsIgnore;
@@ -14,9 +15,8 @@ import java.io.Serializable;
 @JsType(namespace = "dh")
 public class JsFieldDefinition implements Serializable {
     private Ticket ticket;
-    private String fieldName;
-    private VariableType fieldType;
     private String fieldDescription;
+    private JsVariableDefinition definition;
 
     @JsConstructor
     public JsFieldDefinition() {
@@ -26,8 +26,7 @@ public class JsFieldDefinition implements Serializable {
     public JsFieldDefinition(FieldInfo fi) {
         this();
         this.ticket = fi.getTicket();
-        this.fieldName = fi.getFieldName();
-        this.fieldType = getFieldTypeFor(fi.getFieldType());
+        this.definition = new JsVariableDefinition(fi.getFieldName(), getFieldTypeFor(fi.getFieldType()).toString());
         this.fieldDescription = fi.getFieldDescription();
     }
 
@@ -37,13 +36,8 @@ public class JsFieldDefinition implements Serializable {
     }
 
     @JsProperty
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    @JsProperty
-    public VariableType getFieldType() {
-        return fieldType;
+    public JsVariableDefinition getDefinition() {
+        return definition;
     }
 
     @JsProperty

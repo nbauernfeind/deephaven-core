@@ -4,6 +4,8 @@ import io.deephaven.db.tables.Table;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
 import io.deephaven.grpc_api.console.GlobalSessionProvider;
 import io.deephaven.grpc_api.console.ScopeTicketResolver;
+import io.deephaven.grpc_api.session.SessionService;
+import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.util.GrpcUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
@@ -23,26 +25,31 @@ public class FieldServiceGrpcImpl extends FieldServiceGrpc.FieldServiceImplBase 
 
     private final AppMode mode;
     private final GlobalSessionProvider sessionProvider;
+    private final SessionService sessionService;
 
     @Inject
     public FieldServiceGrpcImpl(final AppMode mode,
-                                final GlobalSessionProvider globalSessionProvider) {
+                                final GlobalSessionProvider globalSessionProvider,
+                                final SessionService sessionService) {
         this.mode = mode;
         this.sessionProvider = globalSessionProvider;
+        this.sessionService = sessionService;
     }
 
     @Override
     public void listFields(ListFieldsRequest request, StreamObserver<FieldsChangeUpdate> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
+            final SessionState session = sessionService.getOptionalSession();
+            final FieldsChangeUpdate.Builder responseBuilder = FieldsChangeUpdate.newBuilder();
+
             if (mode.hasVisibilityToAppExports()) {
-                // TODO NOCOMMIT(NATE): Show App Exports
                 log.warn().append("Skipping request to list application mode exports.").endl();
             }
-            if (mode.hasVisibilityToConsoleExports()) {
+            if (mode.hasVisibilityToConsoleExports() && session != null) {
                 sessionProvider.getGlobalSession().getVariables().forEach((var, obj) ->{
                     final FieldInfo.FieldType fieldType = fetchFieldType(obj);
                     if (fieldType != null) {
-                        responseObserver.onNext(FieldInfo.newBuilder()
+                        responseBuilder.addFields(FieldInfo.newBuilder()
                                 .setTicket(ScopeTicketResolver.ticketForName(var))
                                 .setFieldName(var)
                                 .setFieldType(fieldType)
@@ -51,7 +58,8 @@ public class FieldServiceGrpcImpl extends FieldServiceGrpc.FieldServiceImplBase 
                     }
                 });
             }
-            responseObserver.onCompleted();
+            responseObserver.onNext(responseBuilder.build());
+            // TODO: note we are not closing, because we want to eventually send updates to the client
         });
     }
 

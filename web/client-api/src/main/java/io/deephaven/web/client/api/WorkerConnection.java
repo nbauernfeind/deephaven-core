@@ -27,6 +27,7 @@ import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.Lo
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.LogSubscriptionRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb_service.ConsoleServiceClient;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FieldInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FieldsChangeUpdate;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.ListFieldsRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb_service.FieldServiceClient;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.ExportNotification;
@@ -159,8 +160,7 @@ public class WorkerConnection {
     private ResponseStreamWrapper<LogSubscriptionData> logStream;
 
     private final JsSet<JsConsumer<JsFieldsChangeUpdate>> fieldUpdatesCallback = new JsSet<>();
-    private Map<Ticket, JsFieldDefinition> knownFields = new HashMap<>();
-    private JsConsumer<JsFieldsChangeUpdate> recordFieldsChange = this::onJsFieldsChangeUpdate;
+    private Map<String, JsFieldDefinition> knownFields = new HashMap<>();
     private ResponseStreamWrapper<FieldsChangeUpdate> fieldsChangeUpdateStream;
 
     public WorkerConnection(QueryConnectable<?> info, Supplier<Promise<ConnectToken>> authTokenPromiseSupplier) {
@@ -631,39 +631,65 @@ public class WorkerConnection {
         });
     }
 
-    public JsRunnable subscribeFieldDefinitionUpdates(JsConsumer<JsArray<JsFieldDefinition>> callback) {
-        boolean mustSub = fieldUpdatesCallback.size == 0;
+    @JsMethod
+    public JsRunnable subscribeFieldDefinitionUpdates(JsConsumer<JsFieldsChangeUpdate> callback) {
         fieldUpdatesCallback.add(callback);
-        if (mustSub) {
-            logCallbacks.add(recordLog);
-            //TODO core#225 track latest message seen and only sub after that
-            logStream = ResponseStreamWrapper.of(consoleServiceClient.subscribeToLogs(new LogSubscriptionRequest(), metadata));
-            logStream.onData(data -> {
-                LogItem logItem = new LogItem();
-                logItem.setLogLevel(data.getLogLevel());
-                logItem.setMessage(data.getMessage());
-                logItem.setMicros(data.getMicros());
+        if (fieldUpdatesCallback.size == 1) {
+            fieldsChangeUpdateStream = ResponseStreamWrapper.of(fieldServiceClient.listFields(new ListFieldsRequest(), metadata));
+            fieldsChangeUpdateStream.onData(data -> {
+                final JsArray<JsFieldDefinition> newFields = new JsArray<>();
+                final JsArray<JsFieldDefinition> removedFields = new JsArray<>();
+                final JsArray<JsFieldDefinition> modifiedFields = new JsArray<>();
 
-                notifyLog(logItem);
+                JsArray<FieldInfo> fieldsList = data.getFieldsList();
+                for (int i = 0; i < fieldsList.length; ++i) {
+                    FieldInfo fi = fieldsList.getAt(i);
+                    String id = fi.getTicket().getTicket_asB64();
+
+                    if (fi.getFieldType().hasRemoved()) {
+                        JsFieldDefinition fd = knownFields.remove(id);
+                        if (fd != null) {
+                            removedFields.push(fd);
+                        }
+                    } else {
+                        JsFieldDefinition fd = new JsFieldDefinition(fi);
+
+                        JsFieldDefinition prev = knownFields.put(id, fd);
+                        if (prev != null) {
+                            modifiedFields.push(prev);
+                        } else{
+                            newFields.push(fd);
+                        }
+                    }
+                }
+
+                notifyFieldsChangeListeners(new JsFieldsChangeUpdate(newFields, removedFields, modifiedFields));
             });
-            logStream.onEnd(status -> {
+            fieldsChangeUpdateStream.onEnd(status -> {
                 //TODO handle reconnect
             });
         } else {
-            pastLogs.forEach(callback::apply);
+            JsArray<JsFieldDefinition> fields = new JsArray<>();
+            knownFields.values().forEach(fields::push);
+            JsFieldsChangeUpdate update = new JsFieldsChangeUpdate(fields, new JsArray<>(), new JsArray<>());
+            callback.apply(update);
         }
         return ()-> {
-            logCallbacks.delete(callback);
-            if (logCallbacks.size == 1) {
-                logCallbacks.delete(recordLog);
-                assert logCallbacks.size == 0;
-                pastLogs.clear();
-                if (logStream != null) {
-                    logStream.cancel();
-                    logStream = null;
+            fieldUpdatesCallback.delete(callback);
+            if (fieldUpdatesCallback.size == 0) {
+                knownFields.clear();
+                if (fieldsChangeUpdateStream != null) {
+                    fieldsChangeUpdateStream.cancel();
+                    fieldsChangeUpdateStream = null;
                 }
             }
         };
+    }
+
+    private void notifyFieldsChangeListeners(JsFieldsChangeUpdate update) {
+        for (JsConsumer<JsFieldsChangeUpdate> callback : JsItr.iterate(fieldUpdatesCallback.keys())) {
+            callback.apply(update);
+        }
     }
 
     public Promise<Object> whenServerReady(String operationName) {
