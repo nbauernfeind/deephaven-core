@@ -11,5 +11,6 @@ public enum FieldCase {
   FIELD_NOT_SET,
   FIGURE,
   OPAQUE,
+  REMOVED,
   TABLE;
 }

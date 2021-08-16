@@ -171,6 +171,9 @@ public class FieldInfo {
       FieldInfo.ToObjectReturnType.FieldFieldType.OpaqueFieldType getOpaque();
 
       @JsProperty
+      Object getRemoved();
+
+      @JsProperty
       FieldInfo.ToObjectReturnType.FieldFieldType.TableFieldType getTable();
 
       @JsProperty
@@ -178,6 +181,9 @@ public class FieldInfo {
 
       @JsProperty
       void setOpaque(FieldInfo.ToObjectReturnType.FieldFieldType.OpaqueFieldType opaque);
+
+      @JsProperty
+      void setRemoved(Object removed);
 
       @JsProperty
       void setTable(FieldInfo.ToObjectReturnType.FieldFieldType.TableFieldType table);
@@ -427,6 +433,9 @@ public class FieldInfo {
       FieldInfo.ToObjectReturnType0.FieldFieldType.OpaqueFieldType getOpaque();
 
       @JsProperty
+      Object getRemoved();
+
+      @JsProperty
       FieldInfo.ToObjectReturnType0.FieldFieldType.TableFieldType getTable();
 
       @JsProperty
@@ -434,6 +443,9 @@ public class FieldInfo {
 
       @JsProperty
       void setOpaque(FieldInfo.ToObjectReturnType0.FieldFieldType.OpaqueFieldType opaque);
+
+      @JsProperty
+      void setRemoved(Object removed);
 
       @JsProperty
       void setTable(FieldInfo.ToObjectReturnType0.FieldFieldType.TableFieldType table);

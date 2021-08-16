@@ -3,6 +3,7 @@ package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.fie
 import elemental2.core.Uint8Array;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FigureInfo;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.OpaqueInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.RemovedField;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.TableInfo;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.fieldinfo.fieldtype.FieldCase;
 import jsinterop.annotations.JsOverlay;
@@ -157,6 +158,9 @@ public class FieldType {
     FieldType.ToObjectReturnType.OpaqueFieldType getOpaque();
 
     @JsProperty
+    Object getRemoved();
+
+    @JsProperty
     FieldType.ToObjectReturnType.TableFieldType getTable();
 
     @JsProperty
@@ -164,6 +168,9 @@ public class FieldType {
 
     @JsProperty
     void setOpaque(FieldType.ToObjectReturnType.OpaqueFieldType opaque);
+
+    @JsProperty
+    void setRemoved(Object removed);
 
     @JsProperty
     void setTable(FieldType.ToObjectReturnType.TableFieldType table);
@@ -309,6 +316,9 @@ public class FieldType {
     FieldType.ToObjectReturnType0.OpaqueFieldType getOpaque();
 
     @JsProperty
+    Object getRemoved();
+
+    @JsProperty
     FieldType.ToObjectReturnType0.TableFieldType getTable();
 
     @JsProperty
@@ -316,6 +326,9 @@ public class FieldType {
 
     @JsProperty
     void setOpaque(FieldType.ToObjectReturnType0.OpaqueFieldType opaque);
+
+    @JsProperty
+    void setRemoved(Object removed);
 
     @JsProperty
     void setTable(FieldType.ToObjectReturnType0.TableFieldType table);
@@ -334,6 +347,8 @@ public class FieldType {
 
   public native void clearOpaque();
 
+  public native void clearRemoved();
+
   public native void clearTable();
 
   public native FieldCase getFieldCase();
@@ -342,11 +357,15 @@ public class FieldType {
 
   public native OpaqueInfo getOpaque();
 
+  public native RemovedField getRemoved();
+
   public native TableInfo getTable();
 
   public native boolean hasFigure();
 
   public native boolean hasOpaque();
+
+  public native boolean hasRemoved();
 
   public native boolean hasTable();
 
@@ -359,6 +378,10 @@ public class FieldType {
   public native void setOpaque();
 
   public native void setOpaque(OpaqueInfo value);
+
+  public native void setRemoved();
+
+  public native void setRemoved(RemovedField value);
 
   public native void setTable();
 

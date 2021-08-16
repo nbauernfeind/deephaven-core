@@ -1,7 +1,7 @@
 package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb_service;
 
 import io.deephaven.javascript.proto.dhinternal.browserheaders.BrowserHeaders;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FieldInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FieldsChangeUpdate;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.ListFieldsRequest;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
@@ -17,8 +17,8 @@ public class FieldServiceClient {
 
   public FieldServiceClient(String serviceHost) {}
 
-  public native ResponseStream<FieldInfo> listFields(
+  public native ResponseStream<FieldsChangeUpdate> listFields(
       ListFieldsRequest requestMessage, BrowserHeaders metadata);
 
-  public native ResponseStream<FieldInfo> listFields(ListFieldsRequest requestMessage);
+  public native ResponseStream<FieldsChangeUpdate> listFields(ListFieldsRequest requestMessage);
 }
