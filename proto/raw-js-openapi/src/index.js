@@ -2,11 +2,13 @@ require("deephaven/proto/session_pb");
 require("deephaven/proto/table_pb");
 require("deephaven/proto/console_pb");
 require("deephaven/proto/ticket_pb");
+require("deephaven/proto/field_pb");
 require("Flight_pb")
 require("BrowserFlight_pb")
 var sessionService = require("deephaven/proto/session_pb_service");
 var tableService = require("deephaven/proto/table_pb_service");
 var consoleService = require("deephaven/proto/console_pb_service");
+var fieldService = require("deephaven/proto/field_pb_service");
 var browserFlightService = require("BrowserFlight_pb_service");
 var flightService = require("Flight_pb_service");
 
@@ -29,6 +31,8 @@ var io = { deephaven: {
             console_pb: proto.io.deephaven.proto.backplane.script.grpc,
             console_pb_service: consoleService,
             ticket_pb: proto.io.deephaven.proto.backplane.grpc,
+            field_pb: proto.io.deephaven.proto.backplane.grpc,
+            field_pb_service: fieldService,
         },
         barrage: {
             "flatbuf": {

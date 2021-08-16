@@ -18,13 +18,25 @@ service FieldService {
 
   /*
    * Request the list of the fields exposed via the worker.
+   *
+   * - The first received message contains all fields that are currently available
+   *   on the worker. None of these fields will be RemovedFields.
+   * - Subsequent messages modify the existing state. Fields are identified by
+   *   their ticket and may be replaced or removed.
    */
-  rpc listFields(ListFieldsRequest) returns (stream FieldInfo) {}
+  rpc listFields(ListFieldsRequest) returns (stream FieldsChangeUpdate) {}
 
 }
 
 message ListFieldsRequest {
   // Intentionally empty and is here for backwards compatibility should this API change.
+}
+
+/*
+ * Represents a batch of fields.
+ */
+message FieldsChangeUpdate {
+  repeated FieldInfo fields = 1;
 }
 
 /*
@@ -39,15 +51,23 @@ message FieldInfo {
 
   message FieldType {
     oneof field {
-      OpaqueInfo opaque = 1;
-      TableInfo table = 2;
-      FigureInfo figure = 3;
+      RemovedField removed = 1;
+      OpaqueInfo opaque = 2;
+      TableInfo table = 3;
+      FigureInfo figure = 4;
       // reserved = 4; // for TableMap
       // reserved = 5; // for TreeTable
 
       // use values above 4096 for custom client behavior
     }
   }
+}
+
+/*
+ * RemovedField represents that the provided ticket is no longer available.
+ */
+message RemovedField {
+  // Intentionally empty and is here for backwards compatibility should this API change.
 }
 
 /*

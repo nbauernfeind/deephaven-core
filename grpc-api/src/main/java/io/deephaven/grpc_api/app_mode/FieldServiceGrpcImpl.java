@@ -9,6 +9,7 @@ import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.proto.backplane.grpc.FieldInfo;
 import io.deephaven.proto.backplane.grpc.FieldServiceGrpc;
+import io.deephaven.proto.backplane.grpc.FieldsChangeUpdate;
 import io.deephaven.proto.backplane.grpc.ListFieldsRequest;
 import io.deephaven.proto.backplane.grpc.TableInfo;
 import io.grpc.stub.StreamObserver;
@@ -31,7 +32,7 @@ public class FieldServiceGrpcImpl extends FieldServiceGrpc.FieldServiceImplBase 
     }
 
     @Override
-    public void listFields(ListFieldsRequest request, StreamObserver<FieldInfo> responseObserver) {
+    public void listFields(ListFieldsRequest request, StreamObserver<FieldsChangeUpdate> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             if (mode.hasVisibilityToAppExports()) {
                 // TODO NOCOMMIT(NATE): Show App Exports

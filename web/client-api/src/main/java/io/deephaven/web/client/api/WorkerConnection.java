@@ -1,5 +1,6 @@
 package io.deephaven.web.client.api;
 
+import elemental2.core.JsArray;
 import elemental2.core.JsSet;
 import elemental2.core.JsWeakMap;
 import elemental2.core.Uint8Array;
@@ -25,6 +26,9 @@ import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.Fe
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.LogSubscriptionData;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.LogSubscriptionRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb_service.ConsoleServiceClient;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FieldInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.ListFieldsRequest;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb_service.FieldServiceClient;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.ExportNotification;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.ExportNotificationRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.HandshakeRequest;
@@ -132,6 +136,7 @@ public class WorkerConnection {
     private SessionServiceClient sessionServiceClient;
     private TableServiceClient tableServiceClient;
     private ConsoleServiceClient consoleServiceClient;
+    private FieldServiceClient fieldServiceClient;
     private FlightServiceClient flightServiceClient;
     private BrowserFlightServiceClient browserFlightServiceClient;
 
@@ -153,6 +158,11 @@ public class WorkerConnection {
     private JsConsumer<LogItem> recordLog = pastLogs::add;
     private ResponseStreamWrapper<LogSubscriptionData> logStream;
 
+    private final JsSet<JsConsumer<JsFieldsChangeUpdate>> fieldUpdatesCallback = new JsSet<>();
+    private Map<Ticket, JsFieldDefinition> knownFields = new HashMap<>();
+    private JsConsumer<JsFieldsChangeUpdate> recordFieldsChange = this::onJsFieldsChangeUpdate;
+    private ResponseStreamWrapper<FieldsChangeUpdate> fieldsChangeUpdateStream;
+
     public WorkerConnection(QueryConnectable<?> info, Supplier<Promise<ConnectToken>> authTokenPromiseSupplier) {
         this.info = info;
         this.config = new ClientConfiguration();
@@ -163,6 +173,7 @@ public class WorkerConnection {
         tableServiceClient = new TableServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
         consoleServiceClient = new ConsoleServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
         flightServiceClient = new FlightServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
+        fieldServiceClient = new FieldServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
         browserFlightServiceClient = new BrowserFlightServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
 
 //        builder.setConnectionErrorHandler(msg -> info.failureHandled(String.valueOf(msg)));
@@ -597,6 +608,62 @@ public class WorkerConnection {
             default:
                 return Promise.reject(new Error("Object " + definition.getName() + " unknown type " + definition.getType() + " for script."));
         }
+    }
+
+    public Promise<JsArray<JsFieldDefinition>> getExposedFields() {
+        return whenServerReady("FieldService.listFields").then(serve -> {
+            JsLog.debug("innerGetExposedFields started");
+            ListFieldsRequest request = new ListFieldsRequest();
+
+            return new Promise<>((resolve, reject) -> {
+                ResponseStreamWrapper<FieldInfo> resultStream = ResponseStreamWrapper.of(fieldServiceClient.listFields(request, metadata));
+
+                resultStream.onData(fieldInfo -> {
+                });
+                resultStream.onEnd(status -> {
+                    if (status.getCode() == Code.OK) {
+//                        resolve.onInvoke();
+                    } else {
+                        reject.onInvoke("Could not fetch FieldService fields. Return code: " + status);
+                    }
+                });
+            });
+        });
+    }
+
+    public JsRunnable subscribeFieldDefinitionUpdates(JsConsumer<JsArray<JsFieldDefinition>> callback) {
+        boolean mustSub = fieldUpdatesCallback.size == 0;
+        fieldUpdatesCallback.add(callback);
+        if (mustSub) {
+            logCallbacks.add(recordLog);
+            //TODO core#225 track latest message seen and only sub after that
+            logStream = ResponseStreamWrapper.of(consoleServiceClient.subscribeToLogs(new LogSubscriptionRequest(), metadata));
+            logStream.onData(data -> {
+                LogItem logItem = new LogItem();
+                logItem.setLogLevel(data.getLogLevel());
+                logItem.setMessage(data.getMessage());
+                logItem.setMicros(data.getMicros());
+
+                notifyLog(logItem);
+            });
+            logStream.onEnd(status -> {
+                //TODO handle reconnect
+            });
+        } else {
+            pastLogs.forEach(callback::apply);
+        }
+        return ()-> {
+            logCallbacks.delete(callback);
+            if (logCallbacks.size == 1) {
+                logCallbacks.delete(recordLog);
+                assert logCallbacks.size == 0;
+                pastLogs.clear();
+                if (logStream != null) {
+                    logStream.cancel();
+                    logStream = null;
+                }
+            }
+        };
     }
 
     public Promise<Object> whenServerReady(String operationName) {

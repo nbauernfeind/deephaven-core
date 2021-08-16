@@ -12,6 +12,10 @@ option optimize_for = SPEED;
 import "deephaven/proto/ticket.proto";
 
 service TableService {
+  /*
+   * Fetch and re-export an existing ticket to a client managed export.
+   */
+  rpc ExportFromTicket(ExportTicketRequest) returns (ExportedTableCreationResponse) {}
 
   /*
    * Create an empty table with the given column names and types.
@@ -169,6 +173,11 @@ service TableService {
    * initial update had been sent.
    */
   rpc ExportedTableUpdates(ExportedTableUpdatesRequest) returns (stream ExportedTableUpdateMessage) {}
+}
+
+message ExportTicketRequest {
+  Ticket source_ticket = 1;
+  Ticket result_id = 2;
 }
 
 message TableReference {
