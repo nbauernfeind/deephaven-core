@@ -49,6 +49,14 @@ public class ApplicationState {
         return (Field<T>) fields.get(name);
     }
 
+    public synchronized <T> void setField(String name, T value) {
+        setField(Field.of(name, value));
+    }
+
+    public synchronized <T> void setField(String name, T value, String description) {
+        setField(Field.of(name, value, description));
+    }
+
     public synchronized void setField(Field<?> field) {
         fields.put(field.name(), field);
     }
