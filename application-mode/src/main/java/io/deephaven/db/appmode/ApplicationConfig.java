@@ -1,11 +1,14 @@
 package io.deephaven.db.appmode;
 
+import org.immutables.value.Value;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 public interface ApplicationConfig {
@@ -49,14 +52,20 @@ public interface ApplicationConfig {
     <V extends Visitor> V walk(V visitor);
 
     interface Visitor {
-        void visit(ApplicationGroovyScript script);
+        void visit(GroovyScriptApplication script);
 
-        void visit(ApplicationPythonScript script);
+        void visit(PythonScriptApplication script);
 
-        void visit(ApplicationClass<?> clazz);
+        void visit(StaticClassApplication<?> clazz);
 
-        void visit(ApplicationQST qst);
+        void visit(QSTApplication qst);
 
-        void visit(ApplicationAdvanced<?> advanced);
+        void visit(DynamicApplication<?> advanced);
+    }
+
+    static Path[] splitFilePropertyIntoPaths(final String file) {
+        return Arrays.stream(file.split(";"))
+                .map(Paths::get)
+                .toArray(Path[]::new);
     }
 }

@@ -1,5 +1,6 @@
 package io.deephaven.grpc_api.app_mode;
 
+import io.deephaven.db.appmode.ApplicationState;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.session.TicketResolverBase;
 import org.apache.arrow.flight.impl.Flight;
@@ -11,13 +12,17 @@ import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
 @Singleton
-public class FieldTicketResolver extends TicketResolverBase {
+public class ApplicationTicketResolver extends TicketResolverBase {
     private static final char TICKET_PREFIX = 'a';
     private static final String FLIGHT_DESCRIPTOR_ROUTE = "app";
 
     @Inject
-    public FieldTicketResolver() {
+    public ApplicationTicketResolver() {
         super((byte)TICKET_PREFIX, FLIGHT_DESCRIPTOR_ROUTE);
+    }
+
+    public void onApplicationLoad(final ApplicationState app) {
+
     }
 
     @Override

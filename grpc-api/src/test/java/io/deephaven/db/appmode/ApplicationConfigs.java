@@ -2,7 +2,6 @@ package io.deephaven.db.appmode;
 
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.tables.utils.TableTools;
-import org.checkerframework.checker.units.qual.A;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,24 +9,44 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class ApplicationConfigs {
-    static ApplicationClass<ClassApplication> app00() {
-        return ApplicationClass.of(ClassApplication.class);
+    static StaticClassApplication<App003> app00() {
+        return StaticClassApplication.<App003>builder()
+                .id(ApplicationConfigs.class.getName() + ".app00")
+                .name("Static Class Application")
+                .clazz(App003.class)
+                .build();
     }
 
-    static ApplicationGroovyScript app01() {
-        return ApplicationGroovyScript.builder().id(ApplicationConfigs.class.getName() + ".app01").name("My Groovy Application").addFiles(resolve("01-groovy.groovy")).build();
+    static GroovyScriptApplication app01() {
+        return GroovyScriptApplication.builder()
+                .id(ApplicationConfigs.class.getName() + ".app01")
+                .name("My Groovy Application")
+                .addFiles(resolve("01-groovy.groovy"))
+                .build();
     }
 
-    static ApplicationPythonScript app02() {
-        return ApplicationPythonScript.builder().id(ApplicationConfigs.class.getName() + ".app02").name("My Python Application").addFiles(resolve("02-python.py")).build();
+    static PythonScriptApplication app02() {
+        return PythonScriptApplication.builder()
+                .id(ApplicationConfigs.class.getName() + ".app02")
+                .name("My Python Application")
+                .addFiles(resolve("02-python.py"))
+                .build();
     }
 
-    static ApplicationQST app03() {
-        return ApplicationQST.of(resolve("03-qst.qst"));
+    static QSTApplication app03() {
+        return QSTApplication.builder()
+                .id(ApplicationConfigs.class.getName() + ".app02")
+                .name("My QST Application")
+                .addFiles(resolve("03-qst.qst"))
+                .build();
     }
 
-    static ApplicationAdvanced<DynamicApplication> app04() {
-        return ApplicationAdvanced.of(DynamicApplication.class);
+    static DynamicApplication<App004> app04() {
+        return DynamicApplication.<App004>builder()
+                .id(ApplicationConfigs.class.getName() + ".app02")
+                .name("My Dynamic Application")
+                .clazz(App004.class)
+                .build();
     }
 
     static Path resolve(String path) {
@@ -41,21 +60,21 @@ public class ApplicationConfigs {
         return Paths.get("deephaven-core/grpc-api/src/test/app.d");
     }
 
-    public static class ClassApplication implements Application.Factory {
+    public static class App003 implements Application.Factory {
 
         @Override
         public final Application create() {
             Field<Table> hello = Field.of("hello", TableTools.emptyTable(42).view("I=i"), "A table with one column 'I' and 42 rows, 0-41.");
             Field<Table> world = Field.of("world", TableTools.timeTable("00:00:01"));
             return Application.builder()
-                    .id(ClassApplication.class.getName())
+                    .id(App003.class.getName())
                     .name("My Class Application")
                     .fields(Fields.of(hello, world))
                     .build();
         }
     }
 
-    public static class DynamicApplication implements ApplicationState.Factory {
+    public static class App004 implements ApplicationState.Factory {
 
         @Override
         public ApplicationState create() {

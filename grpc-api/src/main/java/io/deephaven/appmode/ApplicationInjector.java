@@ -1,6 +1,13 @@
 package io.deephaven.appmode;
 
 import io.deephaven.db.appmode.ApplicationConfig;
+import io.deephaven.db.appmode.ApplicationState;
+import io.deephaven.db.appmode.DynamicApplication;
+import io.deephaven.db.appmode.GroovyScriptApplication;
+import io.deephaven.db.appmode.PythonScriptApplication;
+import io.deephaven.db.appmode.QSTApplication;
+import io.deephaven.db.appmode.StaticClassApplication;
+import io.deephaven.grpc_api.app_mode.ApplicationTicketResolver;
 import io.deephaven.grpc_api.console.GlobalSessionProvider;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
@@ -15,10 +22,13 @@ public class ApplicationInjector {
     private static final Logger log = LoggerFactory.getLogger(ApplicationInjector.class);
 
     private final GlobalSessionProvider globalSessionProvider;
+    private final ApplicationTicketResolver ticketResolver;
 
     @Inject
-    public ApplicationInjector(GlobalSessionProvider globalSessionProvider) {
+    public ApplicationInjector(final GlobalSessionProvider globalSessionProvider,
+                               final ApplicationTicketResolver ticketResolver) {
         this.globalSessionProvider = Objects.requireNonNull(globalSessionProvider);
+        this.ticketResolver = ticketResolver;
     }
 
     public void run() throws IOException, ClassNotFoundException {
@@ -27,47 +37,56 @@ public class ApplicationInjector {
         }
 
         log.info().append("Finding application(s)...").endl();
-        List<ApplicationConfig> configs = ApplicationConfig.find();
+        final List<ApplicationConfig> configs = ApplicationConfig.find();
 
         if (configs.isEmpty()) {
             log.warn().append("No application(s) found...").endl();
             return;
         }
 
-        if (configs.size() > 1) {
-            throw new UnsupportedOperationException("TODO: support multiple applications");
-        }
+        configs.forEach(this::loadApplication);
+    }
 
-        ApplicationConfig config = configs.get(0);
+    private void loadApplication(final ApplicationConfig config) {
         log.info().append("Found application config: ").append(config.toString()).endl();
 
-        /*
-        Application application = ApplicationExec.of(config);
-        log.info().append("Starting application '").append(application.name()).append('\'').endl();
+        final NameVisitor nameVisitor = new NameVisitor();
+        config.walk(nameVisitor);
+        log.info().append("Starting application '").append(nameVisitor.name).append('\'').endl();
+        final ApplicationState app = ApplicationFactory.create(config, globalSessionProvider.getGlobalSession());
 
-        // TODO validate global session equals application type if groovy/python
-        ScriptSession session = globalSessionProvider.getGlobalSession();
+        int numExports = app.listFields().size();
+        log.info().append("\tfound ").append(numExports).append(" exports").endl();
 
-        ApplicationState state = application.toState();*/
+        ticketResolver.onApplicationLoad(app);
+    }
 
-        /*
+    private static class NameVisitor implements ApplicationConfig.Visitor {
+        private String name;
 
-        for (Field<?> field : application.fields()) {
+        @Override
+        public void visit(GroovyScriptApplication script) {
+            name = script.name();
+        }
 
-            // todo: use registration pattern based on class name
+        @Override
+        public void visit(PythonScriptApplication script) {
+            name = script.name();
+        }
 
-            Object value = field.value();
-            if (value instanceof Table) {
-                log.debug().append("Application '").append(application.name()).append("', managing Table '").append(field.name()).append('\'').endl();
-                session.setVariable(field.name(), value);
-                session.manage((Table)value);
-            } else if (value instanceof TableMap) {
-                log.debug().append("Application '").append(application.name()).append("', managing TableMap '").append(field.name()).append('\'').endl();
-                session.setVariable(field.name(), value);
-                session.manage((TableMap)value);
-            } else {
-                log.warn().append("Application '").append(application.name()).append("', unable to manage '").append(field.name()).append('\'').endl();
-            }
-        }*/
+        @Override
+        public void visit(StaticClassApplication<?> clazz) {
+            name = clazz.name();
+        }
+
+        @Override
+        public void visit(QSTApplication qst) {
+            name = qst.name();
+        }
+
+        @Override
+        public void visit(DynamicApplication<?> advanced) {
+            name = advanced.name();
+        }
     }
 }

@@ -13,10 +13,6 @@ public class ApplicationState {
         ApplicationState create();
     }
 
-    public static ApplicationState of(ApplicationConfig config) {
-        return ApplicationStateExec.of(config);
-    }
-
     private final String id;
     private final String name;
     private final Map<String, Field<?>> fields;
@@ -28,8 +24,6 @@ public class ApplicationState {
         this.fields = new HashMap<>();
     }
 
-
-
     public String id() {
         return id;
     }
@@ -38,12 +32,21 @@ public class ApplicationState {
         return name;
     }
 
+    public synchronized int numFieldsExported() {
+        return fields.size();
+    }
+
     public synchronized List<Field<?>> listFields() {
         return new ArrayList<>(fields.values());
     }
 
     public synchronized void clearFields() {
         fields.clear();
+    }
+
+    public synchronized <T> Field<T> getField(String name) {
+        //noinspection unchecked
+        return (Field<T>) fields.get(name);
     }
 
     public synchronized void setField(Field<?> field) {

@@ -1,2 +1,2 @@
 type=advanced
-class=io.deephaven.db.appmode.ApplicationConfigs$DynamicApplication
+class=io.deephaven.db.appmode.ApplicationConfigs$App004

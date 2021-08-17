@@ -17,6 +17,8 @@ import io.deephaven.util.SafeCloseable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -148,6 +150,16 @@ public abstract class AbstractScriptSession extends LivenessScope implements Scr
         }
 
         return diff;
+    }
+
+    @Override
+    public Changes evaluateScript(Path scriptPath) {
+        try {
+            final String script = FileUtils.readTextFile(scriptPath.toFile());
+            return evaluateScript(script, scriptPath.toString());
+        } catch (IOException err) {
+            throw new UncheckedDeephavenException(String.format("could not read script file %s: ", scriptPath.toString()), err);
+        }
     }
 
     @Override

@@ -41,16 +41,16 @@ class ApplicationConfigImpl {
         }
         String type = properties.getProperty("type");
         switch (type) {
-            case ApplicationQST.TYPE:
-                return ApplicationQST.parse(properties);
-            case ApplicationGroovyScript.TYPE:
-                return ApplicationGroovyScript.parse(properties);
-            case ApplicationPythonScript.TYPE:
-                return ApplicationPythonScript.parse(properties);
-            case ApplicationClass.TYPE:
-                return ApplicationClass.parse(properties);
-            case ApplicationAdvanced.TYPE:
-                return ApplicationAdvanced.parse(properties);
+            case QSTApplication.TYPE:
+                return QSTApplication.parse(properties);
+            case GroovyScriptApplication.TYPE:
+                return GroovyScriptApplication.parse(properties);
+            case PythonScriptApplication.TYPE:
+                return PythonScriptApplication.parse(properties);
+            case StaticClassApplication.TYPE:
+                return StaticClassApplication.parse(properties);
+            case DynamicApplication.TYPE:
+                return DynamicApplication.parse(properties);
         }
         throw new IllegalArgumentException("Unexpected type " + type);
     }
