@@ -14,7 +14,7 @@ import "deephaven/proto/ticket.proto";
 /*
  * Allows clients to list fields that are accessible to them.
  */
-service FieldService {
+service ApplicationService {
 
   /*
    * Request the list of the fields exposed via the worker.

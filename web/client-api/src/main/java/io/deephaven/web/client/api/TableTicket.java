@@ -16,20 +16,22 @@ public class TableTicket {
      *   PENDING: 1,
      *   PUBLISHING: 2,
      *   QUEUED: 3,
-     *   EXPORTED: 4,
-     *   RELEASED: 5,
-     *   CANCELLED: 6,
-     *   FAILED: 7,
-     *   DEPENDENCY_FAILED: 8,
-     *   DEPENDENCY_NEVER_FOUND: 9
-     *   DEPENDENCY_CANCELLED: 10
-     *   DEPENDENCY_RELEASED: 11
+     *   RUNNING: 4,
+     *   EXPORTED: 5,
+     *   RELEASED: 6,
+     *   CANCELLED: 7,
+     *   FAILED: 8,
+     *   DEPENDENCY_FAILED: 9,
+     *   DEPENDENCY_NEVER_FOUND: 10,
+     *   DEPENDENCY_CANCELLED: 11,
+     *   DEPENDENCY_RELEASED: 12
      */
     public enum State {
         UNKNOWN,
         PENDING,
         PUBLISHING,
         QUEUED,
+        RUNNING,
         EXPORTED,
         RELEASED,
         CANCELLED,

@@ -787,6 +787,7 @@ public class SessionState {
                 if (state != ExportNotification.State.QUEUED || session.isExpired() || capturedExport == null) {
                     return; // had a cancel race with client
                 }
+                setState(ExportNotification.State.RUNNING);
             }
             Exception exception = null;
             boolean shouldLog = false;

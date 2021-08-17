@@ -10,7 +10,7 @@ import io.grpc.BindableService;
 public interface AppModeModule {
     @Binds
     @IntoSet
-    BindableService bindFieldServiceImpl(FieldServiceGrpcImpl fieldService);
+    BindableService bindApplicationServiceImpl(ApplicationServiceGrpcImpl applicationService);
 
     @Binds @IntoSet
     TicketResolver bindFieldTicketResolver(FieldTicketResolver resolver);

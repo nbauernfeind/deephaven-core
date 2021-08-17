@@ -10,7 +10,7 @@ import io.deephaven.grpc_api.util.GrpcUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.proto.backplane.grpc.FieldInfo;
-import io.deephaven.proto.backplane.grpc.FieldServiceGrpc;
+import io.deephaven.proto.backplane.grpc.ApplicationServiceGrpc;
 import io.deephaven.proto.backplane.grpc.FieldsChangeUpdate;
 import io.deephaven.proto.backplane.grpc.ListFieldsRequest;
 import io.deephaven.proto.backplane.grpc.TableInfo;
@@ -20,17 +20,17 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class FieldServiceGrpcImpl extends FieldServiceGrpc.FieldServiceImplBase {
-    private static final Logger log = LoggerFactory.getLogger(FieldServiceGrpcImpl.class);
+public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.ApplicationServiceImplBase {
+    private static final Logger log = LoggerFactory.getLogger(ApplicationServiceGrpcImpl.class);
 
     private final AppMode mode;
     private final GlobalSessionProvider sessionProvider;
     private final SessionService sessionService;
 
     @Inject
-    public FieldServiceGrpcImpl(final AppMode mode,
-                                final GlobalSessionProvider globalSessionProvider,
-                                final SessionService sessionService) {
+    public ApplicationServiceGrpcImpl(final AppMode mode,
+                                      final GlobalSessionProvider globalSessionProvider,
+                                      final SessionService sessionService) {
         this.mode = mode;
         this.sessionProvider = globalSessionProvider;
         this.sessionService = sessionService;

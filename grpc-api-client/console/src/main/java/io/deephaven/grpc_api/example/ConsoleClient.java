@@ -98,7 +98,9 @@ public class ConsoleClient {
     private void stop() {
         if (consoleTicket != null) {
             // clean up our console and its scope
-            sessionService.release(consoleTicket, new ResponseBuilder<ReleaseResponse>().build());
+            sessionService.release(
+                    ReleaseRequest.newBuilder().setId(consoleTicket).build(),
+                    new ResponseBuilder<ReleaseResponse>().build());
         }
 
         shutdownRequested.countDown();
