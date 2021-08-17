@@ -1,11 +1,6 @@
 package io.deephaven.appmode;
 
-import io.deephaven.db.appmode.Application;
 import io.deephaven.db.appmode.ApplicationConfig;
-import io.deephaven.db.appmode.Field;
-import io.deephaven.db.tables.Table;
-import io.deephaven.db.util.ScriptSession;
-import io.deephaven.db.v2.TableMap;
 import io.deephaven.grpc_api.console.GlobalSessionProvider;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
@@ -46,11 +41,16 @@ public class ApplicationInjector {
         ApplicationConfig config = configs.get(0);
         log.info().append("Found application config: ").append(config.toString()).endl();
 
-        Application application = Application.of(config);
+        /*
+        Application application = ApplicationExec.of(config);
         log.info().append("Starting application '").append(application.name()).append('\'').endl();
 
         // TODO validate global session equals application type if groovy/python
         ScriptSession session = globalSessionProvider.getGlobalSession();
+
+        ApplicationState state = application.toState();*/
+
+        /*
 
         for (Field<?> field : application.fields()) {
 
@@ -68,6 +68,6 @@ public class ApplicationInjector {
             } else {
                 log.warn().append("Application '").append(application.name()).append("', unable to manage '").append(field.name()).append('\'').endl();
             }
-        }
+        }*/
     }
 }

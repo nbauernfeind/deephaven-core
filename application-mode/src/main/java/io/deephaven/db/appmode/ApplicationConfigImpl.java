@@ -18,7 +18,8 @@ class ApplicationConfigImpl {
     static final String APPLICATION_DIR = System.getProperty(APPLICATION_DIR_PROP, null);
 
     static List<ApplicationConfig> find(Path dir) throws IOException, ClassNotFoundException {
-        try (Stream<Path> stream = Files.list(dir).filter(ApplicationConfigImpl::isAppFile).sorted()) {
+        try (Stream<Path> stream =
+            Files.list(dir).filter(ApplicationConfigImpl::isAppFile).sorted()) {
             List<ApplicationConfig> configs = new ArrayList<>();
             Iterator<Path> it = stream.iterator();
             while (it.hasNext()) {
@@ -29,9 +30,8 @@ class ApplicationConfigImpl {
     }
 
     static boolean isAppFile(Path path) {
-        return path.getFileName().toString().endsWith(".app")
-                && Files.isReadable(path)
-                && Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS);
+        return path.getFileName().toString().endsWith(".app") && Files.isReadable(path)
+            && Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS);
     }
 
     static ApplicationConfig parse(Path file) throws IOException, ClassNotFoundException {
@@ -49,6 +49,8 @@ class ApplicationConfigImpl {
                 return ApplicationPythonScript.parse(properties);
             case ApplicationClass.TYPE:
                 return ApplicationClass.parse(properties);
+            case ApplicationAdvanced.TYPE:
+                return ApplicationAdvanced.parse(properties);
         }
         throw new IllegalArgumentException("Unexpected type " + type);
     }

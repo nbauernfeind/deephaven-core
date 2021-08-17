@@ -18,11 +18,10 @@ public abstract class ApplicationPythonScript implements ApplicationConfig {
     }
 
     public static ApplicationPythonScript parse(Properties properties) {
-        return builder()
-                .id(properties.getProperty("id"))
-                .name(properties.getProperty("name"))
-                .addFiles(Arrays.stream(properties.getProperty("file").split(";")).map(Paths::get).toArray(Path[]::new))
-                .build();
+        return builder().id(properties.getProperty("id")).name(properties.getProperty("name"))
+            .addFiles(Arrays.stream(properties.getProperty("file").split(";")).map(Paths::get)
+                .toArray(Path[]::new))
+            .build();
     }
 
     public abstract String id();

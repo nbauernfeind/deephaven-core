@@ -26,7 +26,8 @@ public abstract class Field<T> {
     @Check
     final void checkName() {
         if (!SourceVersion.isName(name())) {
-            throw new IllegalArgumentException("name() is invalid, must conform to javax.lang.model.SourceVersion#isName");
+            throw new IllegalArgumentException(
+                "name() is invalid, must conform to javax.lang.model.SourceVersion#isName");
         }
     }
 

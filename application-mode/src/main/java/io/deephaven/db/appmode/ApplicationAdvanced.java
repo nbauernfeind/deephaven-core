@@ -1,6 +1,6 @@
 package io.deephaven.db.appmode;
 
-import io.deephaven.db.appmode.Application.Factory;
+import io.deephaven.db.appmode.ApplicationState.Factory;
 import org.immutables.value.Value.Check;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;
@@ -8,15 +8,16 @@ import org.immutables.value.Value.Parameter;
 import java.util.Properties;
 
 @Immutable
-public abstract class ApplicationClass<T extends Application.Factory> implements ApplicationConfig {
+public abstract class ApplicationAdvanced<T extends Factory> implements ApplicationConfig {
 
-    public static final String TYPE = "class";
+    public static final String TYPE = "advanced";
 
-    public static <T extends Application.Factory> ApplicationClass<T> of(Class<T> clazz) {
-        return ImmutableApplicationClass.of(clazz);
+    public static <T extends Factory> ApplicationAdvanced<T> of(Class<T> clazz) {
+        return ImmutableApplicationAdvanced.of(clazz);
     }
 
-    public static ApplicationClass<?> parse(Properties properties) throws ClassNotFoundException {
+    public static ApplicationAdvanced<?> parse(Properties properties)
+        throws ClassNotFoundException {
         Class<?> clazz = Class.forName(properties.getProperty("class"));
         // noinspection unchecked
         return of((Class<Factory>) clazz);
@@ -25,7 +26,7 @@ public abstract class ApplicationClass<T extends Application.Factory> implements
     @Parameter
     public abstract Class<T> clazz();
 
-    public final Application create() throws InstantiationException, IllegalAccessException {
+    public final ApplicationState create() throws InstantiationException, IllegalAccessException {
         return clazz().newInstance().create();
     }
 
@@ -37,9 +38,9 @@ public abstract class ApplicationClass<T extends Application.Factory> implements
 
     @Check
     final void checkClazz() {
-        if (!Application.Factory.class.isAssignableFrom(clazz())) {
+        if (!Factory.class.isAssignableFrom(clazz())) {
             throw new IllegalArgumentException(
-                String.format("clazz should extend '%s'", Application.Factory.class));
+                String.format("clazz should extend '%s'", Factory.class));
         }
     }
 }

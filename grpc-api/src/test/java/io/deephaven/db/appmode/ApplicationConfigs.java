@@ -2,9 +2,12 @@ package io.deephaven.db.appmode;
 
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.tables.utils.TableTools;
+import org.checkerframework.checker.units.qual.A;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class ApplicationConfigs {
     static ApplicationClass<ClassApplication> app00() {
@@ -12,15 +15,19 @@ public class ApplicationConfigs {
     }
 
     static ApplicationGroovyScript app01() {
-        return ApplicationGroovyScript.builder().id(ApplicationConfigs.class.getName() + ".app01").name("My Groovy Application").file(resolve("01-groovy.groovy")).build();
+        return ApplicationGroovyScript.builder().id(ApplicationConfigs.class.getName() + ".app01").name("My Groovy Application").addFiles(resolve("01-groovy.groovy")).build();
     }
 
     static ApplicationPythonScript app02() {
-        return ApplicationPythonScript.builder().id(ApplicationConfigs.class.getName() + ".app02").name("My Python Application").file(resolve("02-python.py")).build();
+        return ApplicationPythonScript.builder().id(ApplicationConfigs.class.getName() + ".app02").name("My Python Application").addFiles(resolve("02-python.py")).build();
     }
 
     static ApplicationQST app03() {
         return ApplicationQST.of(resolve("03-qst.qst"));
+    }
+
+    static ApplicationAdvanced<DynamicApplication> app04() {
+        return ApplicationAdvanced.of(DynamicApplication.class);
     }
 
     static Path resolve(String path) {
@@ -45,6 +52,37 @@ public class ApplicationConfigs {
                     .name("My Class Application")
                     .fields(Fields.of(hello, world))
                     .build();
+        }
+    }
+
+    public static class DynamicApplication implements ApplicationState.Factory {
+
+        @Override
+        public ApplicationState create() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            final ApplicationState state = new ApplicationState("", "My Dynamic Application") {
+                @Override
+                public void shutdown() {
+                    latch.countDown();
+                }
+            };
+            state.setField(Field.of("initial_field", TableTools.timeTable("00:00:01")));
+            final Thread thread = new Thread(() -> {
+                for (int i = 0; ; ++i) {
+                    state.setField(Field.of(String.format("field_%d", i), TableTools.emptyTable(i).view("I=i").tail(1)));
+                    try {
+                        if (latch.await(1, TimeUnit.SECONDS)) {
+                            return;
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+            });
+            thread.setDaemon(true);
+            thread.start();
+            return state;
         }
     }
 }

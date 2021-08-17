@@ -5,6 +5,10 @@ import org.immutables.value.Value.Immutable;
 @Immutable
 public abstract class Application {
 
+    public static <T extends Application.Factory> Application of(Class<T> clazz) {
+        return ImmutableApplication.of(clazz);
+    }
+
     public interface Builder {
 
         Builder id(String id);
@@ -22,10 +26,6 @@ public abstract class Application {
 
     public static Builder builder() {
         return ImmutableApplication.builder();
-    }
-
-    public static Application of(ApplicationConfig config) {
-        return ApplicationExec.of(config);
     }
 
     /**
@@ -48,4 +48,10 @@ public abstract class Application {
      * @return the fields
      */
     public abstract Fields fields();
+
+    public final ApplicationState toState() {
+        final ApplicationState state = new ApplicationState(id(), name());
+        state.setFields(fields());
+        return state;
+    }
 }

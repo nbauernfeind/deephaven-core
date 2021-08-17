@@ -15,12 +15,17 @@ public abstract class ApplicationQST implements ApplicationConfig {
 
     public static final String TYPE = "qst";
 
+    public static ApplicationQST of(Path... files) {
+        return ImmutableApplicationQST.of(files);
+    }
+
     public static ApplicationQST of(List<Path> files) {
         return ImmutableApplicationQST.of(files);
     }
 
     public static ApplicationQST parse(Properties properties) {
-        return of(Arrays.stream(properties.getProperty("file").split(";")).map(Paths::get).collect(Collectors.toList()));
+        return of(Arrays.stream(properties.getProperty("file").split(";")).map(Paths::get)
+            .collect(Collectors.toList()));
     }
 
     @Parameter

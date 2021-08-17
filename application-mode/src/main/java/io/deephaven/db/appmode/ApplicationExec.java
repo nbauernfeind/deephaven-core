@@ -13,14 +13,14 @@ import java.util.Objects;
 class ApplicationExec implements ApplicationConfig.Visitor {
 
     public static Application of(ApplicationConfig config) {
-        return config.walk(new ApplicationExec()).getOut();
+        return config.walk(new ApplicationExec()).out();
     }
 
     private Application out;
 
-    private ApplicationExec() { }
+    private ApplicationExec() {}
 
-    public Application getOut() {
+    public Application out() {
         return Objects.requireNonNull(out);
     }
 
@@ -29,23 +29,23 @@ class ApplicationExec implements ApplicationConfig.Visitor {
         Map<String, Object> variables = new LinkedHashMap<>();
         Binding binding = new Binding(variables);
         GroovyShell groovyShell = new GroovyShell(binding);
-        /*
         try {
-            groovyShell.evaluate(script.file().toFile());
+            groovyShell.evaluate(script.files().get(0).toFile());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        */
         Builder builder = Fields.builder();
         for (Map.Entry<String, Object> e : variables.entrySet()) {
             builder.addFields(Field.of(e.getKey(), e.getValue()));
         }
-        out = Application.builder().id(script.id()).name(script.name()).fields(builder.build()).build();
+        out = Application.builder().id(script.id()).name(script.name()).fields(builder.build())
+            .build();
     }
 
     @Override
     public void visit(ApplicationPythonScript qst) {
-        throw new UnsupportedOperationException("TODO, execute in a script query scope and get out the stuff");
+        throw new UnsupportedOperationException(
+            "TODO, execute in a script query scope and get out the stuff");
     }
 
     @Override
@@ -60,5 +60,11 @@ class ApplicationExec implements ApplicationConfig.Visitor {
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void visit(ApplicationAdvanced<?> advanced) {
+        throw new IllegalArgumentException(
+            String.format("Please use '%s'", ApplicationStateExec.class));
     }
 }
