@@ -10,34 +10,34 @@ import java.io.Serializable;
 
 @JsType(namespace = "dh")
 public class JsFieldsChangeUpdate implements Serializable {
-    private JsArray<JsFieldDefinition> newFields;
-    private JsArray<JsFieldDefinition> removedFields;
-    private JsArray<JsFieldDefinition> modifiedFields;
+    private JsArray<JsFieldDefinition> created;
+    private JsArray<JsFieldDefinition> removed;
+    private JsArray<JsFieldDefinition> updated;
 
     @JsConstructor
     public JsFieldsChangeUpdate() {
     }
 
     @JsIgnore
-    public JsFieldsChangeUpdate(JsArray<JsFieldDefinition> newFields, JsArray<JsFieldDefinition> removedFields, JsArray<JsFieldDefinition> modifiedFields) {
+    public JsFieldsChangeUpdate(JsArray<JsFieldDefinition> created, JsArray<JsFieldDefinition> removed, JsArray<JsFieldDefinition> updated) {
         this();
-        this.newFields = newFields;
-        this.removedFields = removedFields;
-        this.modifiedFields = modifiedFields;
+        this.created = created;
+        this.removed = removed;
+        this.updated = updated;
     }
 
     @JsProperty
-    public JsArray<JsFieldDefinition> getNewFields() {
-        return newFields;
+    public JsArray<JsFieldDefinition> getCreated() {
+        return created;
     }
 
     @JsProperty
-    public JsArray<JsFieldDefinition> getRemovedFields() {
-        return removedFields;
+    public JsArray<JsFieldDefinition> getRemoved() {
+        return removed;
     }
 
     @JsProperty
-    public JsArray<JsFieldDefinition> getModifiedFields() {
-        return modifiedFields;
+    public JsArray<JsFieldDefinition> getUpdated() {
+        return updated;
     }
 }

@@ -21,19 +21,20 @@ import io.deephaven.javascript.proto.dhinternal.flatbuffers.Long;
 import io.deephaven.javascript.proto.dhinternal.grpcweb.Grpc;
 import io.deephaven.javascript.proto.dhinternal.grpcweb.grpc.Code;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.barrage.flatbuf.barrage_generated.io.deephaven.barrage.flatbuf.*;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb_service.ApplicationServiceClient;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.FetchFigureRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.FetchTableRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.LogSubscriptionData;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.LogSubscriptionRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb_service.ConsoleServiceClient;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FieldInfo;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FieldsChangeUpdate;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.ListFieldsRequest;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb_service.FieldServiceClient;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.FieldInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.FieldsChangeUpdate;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.ListFieldsRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.ExportNotification;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.ExportNotificationRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.HandshakeRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.HandshakeResponse;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.ReleaseRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb_service.SessionServiceClient;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.*;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb_service.TableServiceClient;
@@ -137,7 +138,7 @@ public class WorkerConnection {
     private SessionServiceClient sessionServiceClient;
     private TableServiceClient tableServiceClient;
     private ConsoleServiceClient consoleServiceClient;
-    private FieldServiceClient fieldServiceClient;
+    private ApplicationServiceClient applicationServiceClient;
     private FlightServiceClient flightServiceClient;
     private BrowserFlightServiceClient browserFlightServiceClient;
 
@@ -173,7 +174,7 @@ public class WorkerConnection {
         tableServiceClient = new TableServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
         consoleServiceClient = new ConsoleServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
         flightServiceClient = new FlightServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
-        fieldServiceClient = new FieldServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
+        applicationServiceClient = new ApplicationServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
         browserFlightServiceClient = new BrowserFlightServiceClient(info.getServerUrl(), JsPropertyMap.of("debug", debugGrpc));
 
 //        builder.setConnectionErrorHandler(msg -> info.failureHandled(String.valueOf(msg)));
@@ -610,36 +611,15 @@ public class WorkerConnection {
         }
     }
 
-    public Promise<JsArray<JsFieldDefinition>> getExposedFields() {
-        return whenServerReady("FieldService.listFields").then(serve -> {
-            JsLog.debug("innerGetExposedFields started");
-            ListFieldsRequest request = new ListFieldsRequest();
-
-            return new Promise<>((resolve, reject) -> {
-                ResponseStreamWrapper<FieldInfo> resultStream = ResponseStreamWrapper.of(fieldServiceClient.listFields(request, metadata));
-
-                resultStream.onData(fieldInfo -> {
-                });
-                resultStream.onEnd(status -> {
-                    if (status.getCode() == Code.OK) {
-//                        resolve.onInvoke();
-                    } else {
-                        reject.onInvoke("Could not fetch FieldService fields. Return code: " + status);
-                    }
-                });
-            });
-        });
-    }
-
     @JsMethod
     public JsRunnable subscribeFieldDefinitionUpdates(JsConsumer<JsFieldsChangeUpdate> callback) {
         fieldUpdatesCallback.add(callback);
         if (fieldUpdatesCallback.size == 1) {
-            fieldsChangeUpdateStream = ResponseStreamWrapper.of(fieldServiceClient.listFields(new ListFieldsRequest(), metadata));
+            fieldsChangeUpdateStream = ResponseStreamWrapper.of(applicationServiceClient.listFields(new ListFieldsRequest(), metadata));
             fieldsChangeUpdateStream.onData(data -> {
-                final JsArray<JsFieldDefinition> newFields = new JsArray<>();
-                final JsArray<JsFieldDefinition> removedFields = new JsArray<>();
-                final JsArray<JsFieldDefinition> modifiedFields = new JsArray<>();
+                final JsArray<JsFieldDefinition> created = new JsArray<>();
+                final JsArray<JsFieldDefinition> removed = new JsArray<>();
+                final JsArray<JsFieldDefinition> updated = new JsArray<>();
 
                 JsArray<FieldInfo> fieldsList = data.getFieldsList();
                 for (int i = 0; i < fieldsList.length; ++i) {
@@ -649,21 +629,21 @@ public class WorkerConnection {
                     if (fi.getFieldType().hasRemoved()) {
                         JsFieldDefinition fd = knownFields.remove(id);
                         if (fd != null) {
-                            removedFields.push(fd);
+                            removed.push(fd);
                         }
                     } else {
                         JsFieldDefinition fd = new JsFieldDefinition(fi);
 
                         JsFieldDefinition prev = knownFields.put(id, fd);
                         if (prev != null) {
-                            modifiedFields.push(prev);
+                            updated.push(prev);
                         } else{
-                            newFields.push(fd);
+                            created.push(fd);
                         }
                     }
                 }
 
-                notifyFieldsChangeListeners(new JsFieldsChangeUpdate(newFields, removedFields, modifiedFields));
+                notifyFieldsChangeListeners(new JsFieldsChangeUpdate(created, removed, updated));
             });
             fieldsChangeUpdateStream.onEnd(status -> {
                 //TODO handle reconnect
@@ -1063,7 +1043,9 @@ public class WorkerConnection {
      */
     public void releaseTicket(Ticket ticket) {
         //TODO verify cleanup core#223
-        sessionServiceClient.release(ticket, metadata, null);
+        ReleaseRequest releaseRequest = new ReleaseRequest();
+        releaseRequest.setId(ticket);
+        sessionServiceClient.release(releaseRequest, metadata, null);
     }
 
 

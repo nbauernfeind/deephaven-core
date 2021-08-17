@@ -1,7 +1,7 @@
 package io.deephaven.web.client.api;
 
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FieldInfo;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.fieldinfo.FieldType;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.FieldInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.fieldinfo.FieldType;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.ticket_pb.Ticket;
 import io.deephaven.web.client.api.console.JsVariableDefinition;
 import io.deephaven.web.shared.ide.VariableType;
