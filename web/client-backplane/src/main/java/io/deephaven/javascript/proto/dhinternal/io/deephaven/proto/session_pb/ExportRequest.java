@@ -1,4 +1,4 @@
-package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb;
+package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb;
 
 import elemental2.core.Uint8Array;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.ticket_pb.Ticket;
@@ -11,18 +11,17 @@ import jsinterop.base.JsPropertyMap;
 
 @JsType(
     isNative = true,
-    name = "dhinternal.io.deephaven.proto.table_pb.ExportTicketRequest",
+    name = "dhinternal.io.deephaven.proto.session_pb.ExportRequest",
     namespace = JsPackage.GLOBAL)
-public class ExportTicketRequest {
+public class ExportRequest {
   @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
   public interface ToObjectReturnType {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-    public interface SourceTicketFieldType {
+    public interface SourceIdFieldType {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
       public interface GetTicketUnionType {
         @JsOverlay
-        static ExportTicketRequest.ToObjectReturnType.SourceTicketFieldType.GetTicketUnionType of(
-            Object o) {
+        static ExportRequest.ToObjectReturnType.SourceIdFieldType.GetTicketUnionType of(Object o) {
           return Js.cast(o);
         }
 
@@ -48,36 +47,33 @@ public class ExportTicketRequest {
       }
 
       @JsOverlay
-      static ExportTicketRequest.ToObjectReturnType.SourceTicketFieldType create() {
+      static ExportRequest.ToObjectReturnType.SourceIdFieldType create() {
         return Js.uncheckedCast(JsPropertyMap.of());
       }
 
       @JsProperty
-      ExportTicketRequest.ToObjectReturnType.SourceTicketFieldType.GetTicketUnionType getTicket();
+      ExportRequest.ToObjectReturnType.SourceIdFieldType.GetTicketUnionType getTicket();
 
       @JsProperty
-      void setTicket(
-          ExportTicketRequest.ToObjectReturnType.SourceTicketFieldType.GetTicketUnionType ticket);
+      void setTicket(ExportRequest.ToObjectReturnType.SourceIdFieldType.GetTicketUnionType ticket);
 
       @JsOverlay
       default void setTicket(String ticket) {
         setTicket(
-            Js
-                .<ExportTicketRequest.ToObjectReturnType.SourceTicketFieldType.GetTicketUnionType>
-                    uncheckedCast(ticket));
+            Js.<ExportRequest.ToObjectReturnType.SourceIdFieldType.GetTicketUnionType>uncheckedCast(
+                ticket));
       }
 
       @JsOverlay
       default void setTicket(Uint8Array ticket) {
         setTicket(
-            Js
-                .<ExportTicketRequest.ToObjectReturnType.SourceTicketFieldType.GetTicketUnionType>
-                    uncheckedCast(ticket));
+            Js.<ExportRequest.ToObjectReturnType.SourceIdFieldType.GetTicketUnionType>uncheckedCast(
+                ticket));
       }
     }
 
     @JsOverlay
-    static ExportTicketRequest.ToObjectReturnType create() {
+    static ExportRequest.ToObjectReturnType create() {
       return Js.uncheckedCast(JsPropertyMap.of());
     }
 
@@ -85,24 +81,23 @@ public class ExportTicketRequest {
     Object getResultId();
 
     @JsProperty
-    ExportTicketRequest.ToObjectReturnType.SourceTicketFieldType getSourceTicket();
+    ExportRequest.ToObjectReturnType.SourceIdFieldType getSourceId();
 
     @JsProperty
     void setResultId(Object resultId);
 
     @JsProperty
-    void setSourceTicket(ExportTicketRequest.ToObjectReturnType.SourceTicketFieldType sourceTicket);
+    void setSourceId(ExportRequest.ToObjectReturnType.SourceIdFieldType sourceId);
   }
 
   @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
   public interface ToObjectReturnType0 {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-    public interface SourceTicketFieldType {
+    public interface SourceIdFieldType {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
       public interface GetTicketUnionType {
         @JsOverlay
-        static ExportTicketRequest.ToObjectReturnType0.SourceTicketFieldType.GetTicketUnionType of(
-            Object o) {
+        static ExportRequest.ToObjectReturnType0.SourceIdFieldType.GetTicketUnionType of(Object o) {
           return Js.cast(o);
         }
 
@@ -128,22 +123,21 @@ public class ExportTicketRequest {
       }
 
       @JsOverlay
-      static ExportTicketRequest.ToObjectReturnType0.SourceTicketFieldType create() {
+      static ExportRequest.ToObjectReturnType0.SourceIdFieldType create() {
         return Js.uncheckedCast(JsPropertyMap.of());
       }
 
       @JsProperty
-      ExportTicketRequest.ToObjectReturnType0.SourceTicketFieldType.GetTicketUnionType getTicket();
+      ExportRequest.ToObjectReturnType0.SourceIdFieldType.GetTicketUnionType getTicket();
 
       @JsProperty
-      void setTicket(
-          ExportTicketRequest.ToObjectReturnType0.SourceTicketFieldType.GetTicketUnionType ticket);
+      void setTicket(ExportRequest.ToObjectReturnType0.SourceIdFieldType.GetTicketUnionType ticket);
 
       @JsOverlay
       default void setTicket(String ticket) {
         setTicket(
             Js
-                .<ExportTicketRequest.ToObjectReturnType0.SourceTicketFieldType.GetTicketUnionType>
+                .<ExportRequest.ToObjectReturnType0.SourceIdFieldType.GetTicketUnionType>
                     uncheckedCast(ticket));
       }
 
@@ -151,13 +145,13 @@ public class ExportTicketRequest {
       default void setTicket(Uint8Array ticket) {
         setTicket(
             Js
-                .<ExportTicketRequest.ToObjectReturnType0.SourceTicketFieldType.GetTicketUnionType>
+                .<ExportRequest.ToObjectReturnType0.SourceIdFieldType.GetTicketUnionType>
                     uncheckedCast(ticket));
       }
     }
 
     @JsOverlay
-    static ExportTicketRequest.ToObjectReturnType0 create() {
+    static ExportRequest.ToObjectReturnType0 create() {
       return Js.uncheckedCast(JsPropertyMap.of());
     }
 
@@ -165,37 +159,36 @@ public class ExportTicketRequest {
     Object getResultId();
 
     @JsProperty
-    ExportTicketRequest.ToObjectReturnType0.SourceTicketFieldType getSourceTicket();
+    ExportRequest.ToObjectReturnType0.SourceIdFieldType getSourceId();
 
     @JsProperty
     void setResultId(Object resultId);
 
     @JsProperty
-    void setSourceTicket(
-        ExportTicketRequest.ToObjectReturnType0.SourceTicketFieldType sourceTicket);
+    void setSourceId(ExportRequest.ToObjectReturnType0.SourceIdFieldType sourceId);
   }
 
-  public static native ExportTicketRequest deserializeBinary(Uint8Array bytes);
+  public static native ExportRequest deserializeBinary(Uint8Array bytes);
 
-  public static native ExportTicketRequest deserializeBinaryFromReader(
-      ExportTicketRequest message, Object reader);
+  public static native ExportRequest deserializeBinaryFromReader(
+      ExportRequest message, Object reader);
 
-  public static native void serializeBinaryToWriter(ExportTicketRequest message, Object writer);
+  public static native void serializeBinaryToWriter(ExportRequest message, Object writer);
 
-  public static native ExportTicketRequest.ToObjectReturnType toObject(
-      boolean includeInstance, ExportTicketRequest msg);
+  public static native ExportRequest.ToObjectReturnType toObject(
+      boolean includeInstance, ExportRequest msg);
 
   public native void clearResultId();
 
-  public native void clearSourceTicket();
+  public native void clearSourceId();
 
   public native Ticket getResultId();
 
-  public native Ticket getSourceTicket();
+  public native Ticket getSourceId();
 
   public native boolean hasResultId();
 
-  public native boolean hasSourceTicket();
+  public native boolean hasSourceId();
 
   public native Uint8Array serializeBinary();
 
@@ -203,11 +196,11 @@ public class ExportTicketRequest {
 
   public native void setResultId(Ticket value);
 
-  public native void setSourceTicket();
+  public native void setSourceId();
 
-  public native void setSourceTicket(Ticket value);
+  public native void setSourceId(Ticket value);
 
-  public native ExportTicketRequest.ToObjectReturnType0 toObject();
+  public native ExportRequest.ToObjectReturnType0 toObject();
 
-  public native ExportTicketRequest.ToObjectReturnType0 toObject(boolean includeInstance);
+  public native ExportRequest.ToObjectReturnType0 toObject(boolean includeInstance);
 }

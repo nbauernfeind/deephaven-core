@@ -1,7 +1,7 @@
-package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb;
+package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb;
 
 import elemental2.core.Uint8Array;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.fieldinfo.FieldType;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.fieldinfo.FieldType;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.ticket_pb.Ticket;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
@@ -12,7 +12,7 @@ import jsinterop.base.JsPropertyMap;
 
 @JsType(
     isNative = true,
-    name = "dhinternal.io.deephaven.proto.field_pb.FieldInfo",
+    name = "dhinternal.io.deephaven.proto.application_pb.FieldInfo",
     namespace = JsPackage.GLOBAL)
 public class FieldInfo {
   @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)

@@ -1,4 +1,4 @@
-package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb_service;
+package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb_service;
 
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
@@ -9,13 +9,13 @@ import jsinterop.base.JsPropertyMap;
 
 @JsType(
     isNative = true,
-    name = "dhinternal.io.deephaven.proto.field_pb_service.FieldService",
+    name = "dhinternal.io.deephaven.proto.application_pb_service.ApplicationService",
     namespace = JsPackage.GLOBAL)
-public class FieldService {
+public class ApplicationService {
   @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
   public interface ListFieldsType {
     @JsOverlay
-    static FieldService.ListFieldsType create() {
+    static ApplicationService.ListFieldsType create() {
       return Js.uncheckedCast(JsPropertyMap.of());
     }
 
@@ -56,6 +56,6 @@ public class FieldService {
     void setService(Object service);
   }
 
-  public static FieldService.ListFieldsType listFields;
+  public static ApplicationService.ListFieldsType listFields;
   public static String serviceName;
 }

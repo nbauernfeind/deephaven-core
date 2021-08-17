@@ -1,10 +1,11 @@
-package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.fieldinfo;
+package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.fieldinfo;
 
 import elemental2.core.Uint8Array;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.FigureInfo;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.OpaqueInfo;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.RemovedField;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb.TableInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.FigureInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.OpaqueInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.RemovedField;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.TableInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.fieldinfo.fieldtype.FieldCase;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -14,7 +15,7 @@ import jsinterop.base.JsPropertyMap;
 
 @JsType(
     isNative = true,
-    name = "dhinternal.io.deephaven.proto.field_pb.FieldInfo.FieldType",
+    name = "dhinternal.io.deephaven.proto.application_pb.FieldInfo.FieldType",
     namespace = JsPackage.GLOBAL)
 public class FieldType {
   @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
@@ -350,7 +351,7 @@ public class FieldType {
 
   public native void clearTable();
 
-  public native int getFieldCase();
+  public native FieldCase getFieldCase();
 
   public native FigureInfo getFigure();
 

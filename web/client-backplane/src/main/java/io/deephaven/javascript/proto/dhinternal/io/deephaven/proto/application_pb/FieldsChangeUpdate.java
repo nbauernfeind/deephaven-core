@@ -1,4 +1,4 @@
-package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb;
+package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb;
 
 import elemental2.core.JsArray;
 import elemental2.core.Uint8Array;
@@ -11,7 +11,7 @@ import jsinterop.base.JsPropertyMap;
 
 @JsType(
     isNative = true,
-    name = "dhinternal.io.deephaven.proto.field_pb.FieldsChangeUpdate",
+    name = "dhinternal.io.deephaven.proto.application_pb.FieldsChangeUpdate",
     namespace = JsPackage.GLOBAL)
 public class FieldsChangeUpdate {
   @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)

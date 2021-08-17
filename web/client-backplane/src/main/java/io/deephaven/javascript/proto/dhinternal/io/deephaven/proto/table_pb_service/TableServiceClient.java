@@ -8,7 +8,6 @@ import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.Cros
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.DropColumnsRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.EmptyTableRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.ExactJoinTablesRequest;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.ExportTicketRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.ExportedTableCreationResponse;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.ExportedTableUpdateMessage;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.ExportedTableUpdatesRequest;
@@ -27,6 +26,7 @@ import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.Sort
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.TimeTableRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.UngroupRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.table_pb.UnstructuredFilterTableRequest;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.ticket_pb.Ticket;
 import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
@@ -605,100 +605,6 @@ public class TableServiceClient {
   }
 
   @JsFunction
-  public interface ExportFromTicketCallbackFn {
-    @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-    public interface P0Type {
-      @JsOverlay
-      static TableServiceClient.ExportFromTicketCallbackFn.P0Type create() {
-        return Js.uncheckedCast(JsPropertyMap.of());
-      }
-
-      @JsProperty
-      double getCode();
-
-      @JsProperty
-      String getMessage();
-
-      @JsProperty
-      BrowserHeaders getMetadata();
-
-      @JsProperty
-      void setCode(double code);
-
-      @JsProperty
-      void setMessage(String message);
-
-      @JsProperty
-      void setMetadata(BrowserHeaders metadata);
-    }
-
-    void onInvoke(
-        TableServiceClient.ExportFromTicketCallbackFn.P0Type p0, ExportedTableCreationResponse p1);
-  }
-
-  @JsFunction
-  public interface ExportFromTicketMetadata_or_callbackFn {
-    @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-    public interface P0Type {
-      @JsOverlay
-      static TableServiceClient.ExportFromTicketMetadata_or_callbackFn.P0Type create() {
-        return Js.uncheckedCast(JsPropertyMap.of());
-      }
-
-      @JsProperty
-      double getCode();
-
-      @JsProperty
-      String getMessage();
-
-      @JsProperty
-      BrowserHeaders getMetadata();
-
-      @JsProperty
-      void setCode(double code);
-
-      @JsProperty
-      void setMessage(String message);
-
-      @JsProperty
-      void setMetadata(BrowserHeaders metadata);
-    }
-
-    void onInvoke(
-        TableServiceClient.ExportFromTicketMetadata_or_callbackFn.P0Type p0,
-        ExportedTableCreationResponse p1);
-  }
-
-  @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-  public interface ExportFromTicketMetadata_or_callbackUnionType {
-    @JsOverlay
-    static TableServiceClient.ExportFromTicketMetadata_or_callbackUnionType of(Object o) {
-      return Js.cast(o);
-    }
-
-    @JsOverlay
-    default BrowserHeaders asBrowserHeaders() {
-      return Js.cast(this);
-    }
-
-    @JsOverlay
-    default TableServiceClient.ExportFromTicketMetadata_or_callbackFn
-        asExportFromTicketMetadata_or_callbackFn() {
-      return Js.cast(this);
-    }
-
-    @JsOverlay
-    default boolean isBrowserHeaders() {
-      return (Object) this instanceof BrowserHeaders;
-    }
-
-    @JsOverlay
-    default boolean isExportFromTicketMetadata_or_callbackFn() {
-      return (Object) this instanceof TableServiceClient.ExportFromTicketMetadata_or_callbackFn;
-    }
-  }
-
-  @JsFunction
   public interface FilterCallbackFn {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
     public interface P0Type {
@@ -879,6 +785,104 @@ public class TableServiceClient {
     @JsOverlay
     default boolean isFlattenMetadata_or_callbackFn() {
       return (Object) this instanceof TableServiceClient.FlattenMetadata_or_callbackFn;
+    }
+  }
+
+  @JsFunction
+  public interface GetExportedTableCreationResponseCallbackFn {
+    @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
+    public interface P0Type {
+      @JsOverlay
+      static TableServiceClient.GetExportedTableCreationResponseCallbackFn.P0Type create() {
+        return Js.uncheckedCast(JsPropertyMap.of());
+      }
+
+      @JsProperty
+      double getCode();
+
+      @JsProperty
+      String getMessage();
+
+      @JsProperty
+      BrowserHeaders getMetadata();
+
+      @JsProperty
+      void setCode(double code);
+
+      @JsProperty
+      void setMessage(String message);
+
+      @JsProperty
+      void setMetadata(BrowserHeaders metadata);
+    }
+
+    void onInvoke(
+        TableServiceClient.GetExportedTableCreationResponseCallbackFn.P0Type p0,
+        ExportedTableCreationResponse p1);
+  }
+
+  @JsFunction
+  public interface GetExportedTableCreationResponseMetadata_or_callbackFn {
+    @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
+    public interface P0Type {
+      @JsOverlay
+      static TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackFn.P0Type
+          create() {
+        return Js.uncheckedCast(JsPropertyMap.of());
+      }
+
+      @JsProperty
+      double getCode();
+
+      @JsProperty
+      String getMessage();
+
+      @JsProperty
+      BrowserHeaders getMetadata();
+
+      @JsProperty
+      void setCode(double code);
+
+      @JsProperty
+      void setMessage(String message);
+
+      @JsProperty
+      void setMetadata(BrowserHeaders metadata);
+    }
+
+    void onInvoke(
+        TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackFn.P0Type p0,
+        ExportedTableCreationResponse p1);
+  }
+
+  @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
+  public interface GetExportedTableCreationResponseMetadata_or_callbackUnionType {
+    @JsOverlay
+    static TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackUnionType of(
+        Object o) {
+      return Js.cast(o);
+    }
+
+    @JsOverlay
+    default BrowserHeaders asBrowserHeaders() {
+      return Js.cast(this);
+    }
+
+    @JsOverlay
+    default TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackFn
+        asGetExportedTableCreationResponseMetadata_or_callbackFn() {
+      return Js.cast(this);
+    }
+
+    @JsOverlay
+    default boolean isBrowserHeaders() {
+      return (Object) this instanceof BrowserHeaders;
+    }
+
+    @JsOverlay
+    default boolean isGetExportedTableCreationResponseMetadata_or_callbackFn() {
+      return (Object) this
+          instanceof TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackFn;
     }
   }
 
@@ -2970,58 +2974,6 @@ public class TableServiceClient {
       ExactJoinTablesRequest requestMessage,
       TableServiceClient.ExactJoinTablesMetadata_or_callbackUnionType metadata_or_callback);
 
-  @JsOverlay
-  public final UnaryResponse exportFromTicket(
-      ExportTicketRequest requestMessage,
-      BrowserHeaders metadata_or_callback,
-      TableServiceClient.ExportFromTicketCallbackFn callback) {
-    return exportFromTicket(
-        requestMessage,
-        Js.<TableServiceClient.ExportFromTicketMetadata_or_callbackUnionType>uncheckedCast(
-            metadata_or_callback),
-        callback);
-  }
-
-  @JsOverlay
-  public final UnaryResponse exportFromTicket(
-      ExportTicketRequest requestMessage, BrowserHeaders metadata_or_callback) {
-    return exportFromTicket(
-        requestMessage,
-        Js.<TableServiceClient.ExportFromTicketMetadata_or_callbackUnionType>uncheckedCast(
-            metadata_or_callback));
-  }
-
-  @JsOverlay
-  public final UnaryResponse exportFromTicket(
-      ExportTicketRequest requestMessage,
-      TableServiceClient.ExportFromTicketMetadata_or_callbackFn metadata_or_callback,
-      TableServiceClient.ExportFromTicketCallbackFn callback) {
-    return exportFromTicket(
-        requestMessage,
-        Js.<TableServiceClient.ExportFromTicketMetadata_or_callbackUnionType>uncheckedCast(
-            metadata_or_callback),
-        callback);
-  }
-
-  @JsOverlay
-  public final UnaryResponse exportFromTicket(
-      ExportTicketRequest requestMessage,
-      TableServiceClient.ExportFromTicketMetadata_or_callbackFn metadata_or_callback) {
-    return exportFromTicket(
-        requestMessage,
-        Js.<TableServiceClient.ExportFromTicketMetadata_or_callbackUnionType>uncheckedCast(
-            metadata_or_callback));
-  }
-
-  public native UnaryResponse exportFromTicket(
-      ExportTicketRequest requestMessage,
-      TableServiceClient.ExportFromTicketMetadata_or_callbackUnionType metadata_or_callback,
-      TableServiceClient.ExportFromTicketCallbackFn callback);
-
-  public native UnaryResponse exportFromTicket(
-      ExportTicketRequest requestMessage,
-      TableServiceClient.ExportFromTicketMetadata_or_callbackUnionType metadata_or_callback);
-
   public native ResponseStream<ExportedTableUpdateMessage> exportedTableUpdates(
       ExportedTableUpdatesRequest requestMessage, BrowserHeaders metadata);
 
@@ -3131,6 +3083,66 @@ public class TableServiceClient {
   public native UnaryResponse flatten(
       FlattenRequest requestMessage,
       TableServiceClient.FlattenMetadata_or_callbackUnionType metadata_or_callback);
+
+  @JsOverlay
+  public final UnaryResponse getExportedTableCreationResponse(
+      Ticket requestMessage,
+      BrowserHeaders metadata_or_callback,
+      TableServiceClient.GetExportedTableCreationResponseCallbackFn callback) {
+    return getExportedTableCreationResponse(
+        requestMessage,
+        Js
+            .<TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackUnionType>
+                uncheckedCast(metadata_or_callback),
+        callback);
+  }
+
+  @JsOverlay
+  public final UnaryResponse getExportedTableCreationResponse(
+      Ticket requestMessage, BrowserHeaders metadata_or_callback) {
+    return getExportedTableCreationResponse(
+        requestMessage,
+        Js
+            .<TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackUnionType>
+                uncheckedCast(metadata_or_callback));
+  }
+
+  @JsOverlay
+  public final UnaryResponse getExportedTableCreationResponse(
+      Ticket requestMessage,
+      TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackFn
+          metadata_or_callback,
+      TableServiceClient.GetExportedTableCreationResponseCallbackFn callback) {
+    return getExportedTableCreationResponse(
+        requestMessage,
+        Js
+            .<TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackUnionType>
+                uncheckedCast(metadata_or_callback),
+        callback);
+  }
+
+  @JsOverlay
+  public final UnaryResponse getExportedTableCreationResponse(
+      Ticket requestMessage,
+      TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackFn
+          metadata_or_callback) {
+    return getExportedTableCreationResponse(
+        requestMessage,
+        Js
+            .<TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackUnionType>
+                uncheckedCast(metadata_or_callback));
+  }
+
+  public native UnaryResponse getExportedTableCreationResponse(
+      Ticket requestMessage,
+      TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackUnionType
+          metadata_or_callback,
+      TableServiceClient.GetExportedTableCreationResponseCallbackFn callback);
+
+  public native UnaryResponse getExportedTableCreationResponse(
+      Ticket requestMessage,
+      TableServiceClient.GetExportedTableCreationResponseMetadata_or_callbackUnionType
+          metadata_or_callback);
 
   @JsOverlay
   public final UnaryResponse head(

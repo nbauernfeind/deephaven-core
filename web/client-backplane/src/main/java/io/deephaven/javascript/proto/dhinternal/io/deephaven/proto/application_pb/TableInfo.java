@@ -1,4 +1,4 @@
-package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.field_pb;
+package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb;
 
 import elemental2.core.Uint8Array;
 import jsinterop.annotations.JsOverlay;
@@ -10,7 +10,7 @@ import jsinterop.base.JsPropertyMap;
 
 @JsType(
     isNative = true,
-    name = "dhinternal.io.deephaven.proto.field_pb.TableInfo",
+    name = "dhinternal.io.deephaven.proto.application_pb.TableInfo",
     namespace = JsPackage.GLOBAL)
 public class TableInfo {
   @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
