@@ -1,4 +1,4 @@
-import io.deephaven.db.appmode.ApplicationContext
+import io.deephaven.appmode.ApplicationContext
 import io.deephaven.db.tables.utils.TableTools
 
 app = ApplicationContext.get()

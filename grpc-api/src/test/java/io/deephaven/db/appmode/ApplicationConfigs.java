@@ -9,19 +9,15 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class ApplicationConfigs {
-    static StaticClassApplication<App003> app00() {
-        return StaticClassApplication.<App003>builder()
-                .id(ApplicationConfigs.class.getName() + ".app00")
-                .name("Static Class Application")
-                .clazz(App003.class)
-                .build();
+    static StaticClassApplication<App00> app00() {
+        return StaticClassApplication.of(App00.class);
     }
 
     static GroovyScriptApplication app01() {
         return GroovyScriptApplication.builder()
                 .id(ApplicationConfigs.class.getName() + ".app01")
                 .name("My Groovy Application")
-                .addFiles(resolve("01-groovy.groovy"))
+                .addFiles(Paths.get("01-groovy.groovy"))
                 .build();
     }
 
@@ -29,24 +25,16 @@ public class ApplicationConfigs {
         return PythonScriptApplication.builder()
                 .id(ApplicationConfigs.class.getName() + ".app02")
                 .name("My Python Application")
-                .addFiles(resolve("02-python.py"))
+                .addFiles(Paths.get("02-python.py"))
                 .build();
     }
 
     static QSTApplication app03() {
-        return QSTApplication.builder()
-                .id(ApplicationConfigs.class.getName() + ".app02")
-                .name("My QST Application")
-                .addFiles(resolve("03-qst.qst"))
-                .build();
+        return QSTApplication.of();
     }
 
-    static DynamicApplication<App004> app04() {
-        return DynamicApplication.<App004>builder()
-                .id(ApplicationConfigs.class.getName() + ".app02")
-                .name("My Dynamic Application")
-                .clazz(App004.class)
-                .build();
+    static DynamicApplication<App04> app04() {
+        return DynamicApplication.of(App04.class);
     }
 
     static Path resolve(String path) {
@@ -60,21 +48,21 @@ public class ApplicationConfigs {
         return Paths.get("deephaven-core/grpc-api/src/test/app.d");
     }
 
-    public static class App003 implements Application.Factory {
+    public static class App00 implements Application.Factory {
 
         @Override
         public final Application create() {
             Field<Table> hello = Field.of("hello", TableTools.emptyTable(42).view("I=i"), "A table with one column 'I' and 42 rows, 0-41.");
             Field<Table> world = Field.of("world", TableTools.timeTable("00:00:01"));
             return Application.builder()
-                    .id(App003.class.getName())
+                    .id(App00.class.getName())
                     .name("My Class Application")
                     .fields(Fields.of(hello, world))
                     .build();
         }
     }
 
-    public static class App004 implements ApplicationState.Factory {
+    public static class App04 implements ApplicationState.Factory {
 
         @Override
         public ApplicationState create() {

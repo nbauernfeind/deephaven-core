@@ -1,7 +1,5 @@
 package io.deephaven.db.appmode;
 
-import org.immutables.value.Value;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -23,17 +21,12 @@ public interface ApplicationConfig {
     }
 
     /**
-     * Parses the list of application configs found by searching the directory specified by the
-     * system property {@code Application.dir}. A path is considered an application file when the
-     * name ends in {@code .app}, the file is {@link Files#isReadable(Path) readable}, and the file
-     * is {@link Files#isRegularFile(Path, LinkOption...) regular} and not a link. The resulting
-     * configs will be sorted lexicographically based on file name.
+     * The application directory. Application mode must be enabled.
      *
-     * @return the list of application configs
-     * @throws IOException on I/O exception
-     * @throws ClassNotFoundException on class not found
+     * @return the application dir
+     * @see #isEnabled()
      */
-    static List<ApplicationConfig> find() throws IOException, ClassNotFoundException {
+    static Path applicationDir() {
         if (!isEnabled()) {
             throw new IllegalStateException(
                 String.format("Application mode is not enabled, please set system property '%s'",
@@ -46,7 +39,23 @@ public interface ApplicationConfig {
             throw new IllegalArgumentException(String.format("Invalid application directory '%s'",
                 ApplicationConfigImpl.APPLICATION_DIR));
         }
-        return ApplicationConfigImpl.find(applicationDir);
+        return applicationDir;
+    }
+
+    /**
+     * Parses the list of application configs found by searching the directory specified by the
+     * system property {@code Application.dir}. A path is considered an application file when the
+     * name ends in {@code .app}, the file is {@link Files#isReadable(Path) readable}, and the file
+     * is {@link Files#isRegularFile(Path, LinkOption...) regular} and not a link. The resulting
+     * configs will be sorted lexicographically based on file name. Application mode must be
+     * enabled.
+     *
+     * @return the list of application configs
+     * @throws IOException on I/O exception
+     * @throws ClassNotFoundException on class not found
+     */
+    static List<ApplicationConfig> find() throws IOException, ClassNotFoundException {
+        return ApplicationConfigImpl.find(applicationDir());
     }
 
     <V extends Visitor> V walk(V visitor);
@@ -64,8 +73,6 @@ public interface ApplicationConfig {
     }
 
     static Path[] splitFilePropertyIntoPaths(final String file) {
-        return Arrays.stream(file.split(";"))
-                .map(Paths::get)
-                .toArray(Path[]::new);
+        return Arrays.stream(file.split(";")).map(Paths::get).toArray(Path[]::new);
     }
 }

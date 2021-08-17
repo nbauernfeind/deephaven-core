@@ -10,7 +10,7 @@ public class ApplicationConfigTest {
 
     @Test
     public void clazz() throws IOException, ClassNotFoundException {
-        check("00-class.app", ApplicationConfigs.app00());
+        check("00-static.app", ApplicationConfigs.app00());
     }
 
     @Test
@@ -29,9 +29,14 @@ public class ApplicationConfigTest {
     }
 
     @Test
+    public void dynamic() throws IOException, ClassNotFoundException {
+        check("04-dynamic.app", ApplicationConfigs.app04());
+    }
+
+    @Test
     public void find() throws IOException, ClassNotFoundException {
         assertThat(ApplicationConfigImpl.find(ApplicationConfigs.resolve(".")))
-                .containsExactly(ApplicationConfigs.app00(), ApplicationConfigs.app01(), ApplicationConfigs.app02(), ApplicationConfigs.app03());
+                .containsExactly(ApplicationConfigs.app00(), ApplicationConfigs.app01(), ApplicationConfigs.app02(), ApplicationConfigs.app03(), ApplicationConfigs.app04());
     }
 
     private static void check(String path, ApplicationConfig expected) throws IOException, ClassNotFoundException {

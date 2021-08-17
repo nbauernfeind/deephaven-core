@@ -7,30 +7,21 @@ import org.immutables.value.Value.Parameter;
 
 import java.util.Properties;
 
-@Immutable
+@Immutable(builder = false)
 public abstract class DynamicApplication<T extends Factory> implements ApplicationConfig {
 
     public static final String TYPE = "dynamic";
 
-
-    public static <T extends Factory> DynamicApplication.Builder<T> builder() {
-        return ImmutableDynamicApplication.builder();
-    }
-
-    public static DynamicApplication<Factory> parse(Properties properties) throws ClassNotFoundException {
-        //noinspection unchecked
+    public static DynamicApplication<Factory> parse(Properties properties)
+        throws ClassNotFoundException {
+        // noinspection unchecked
         Class<Factory> clazz = (Class<Factory>) Class.forName(properties.getProperty("class"));
-        return builder()
-                .clazz(clazz)
-                .name(properties.getProperty("name"))
-                .build();
+        return of(clazz);
     }
 
-    @Parameter
-    public abstract String id();
-
-    @Parameter
-    public abstract String name();
+    public static <T extends Factory> DynamicApplication<T> of(Class<T> clazz) {
+        return ImmutableDynamicApplication.of(clazz);
+    }
 
     @Parameter
     public abstract Class<T> clazz();
@@ -51,16 +42,5 @@ public abstract class DynamicApplication<T extends Factory> implements Applicati
             throw new IllegalArgumentException(
                 String.format("clazz should extend '%s'", Factory.class));
         }
-    }
-
-    public interface Builder<T extends Factory> {
-
-        Builder<T> id(String id);
-
-        Builder<T> name(String name);
-
-        Builder<T> clazz(Class<T> id);
-
-        DynamicApplication<T> build();
     }
 }

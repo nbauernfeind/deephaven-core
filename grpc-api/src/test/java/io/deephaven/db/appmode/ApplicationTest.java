@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static io.deephaven.db.appmode.ApplicationConfigs.testAppDir;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApplicationTest {
@@ -36,7 +37,7 @@ public class ApplicationTest {
 
     @Test
     public void app00() {
-        ApplicationState app = ApplicationFactory.create(ApplicationConfigs.app00(), session);
+        ApplicationState app = ApplicationFactory.create(testAppDir(), ApplicationConfigs.app00(), session);
         assertThat(app.name()).isEqualTo("My Class Application");
         assertThat(app.numFieldsExported()).isEqualTo(2);
         assertThat(app.getField("hello").value()).isInstanceOf(Table.class);
@@ -47,7 +48,7 @@ public class ApplicationTest {
     @Test
     public void app01() throws IOException {
         session = new GroovyDeephavenSession(GroovyDeephavenSession.RunScripts.none(), false);
-        ApplicationState app = ApplicationFactory.create(ApplicationConfigs.app01(), session);
+        ApplicationState app = ApplicationFactory.create(testAppDir(), ApplicationConfigs.app01(), session);
         assertThat(app.name()).isEqualTo("My Groovy Application");
         assertThat(app.numFieldsExported()).isEqualTo(2);
         assertThat(app.getField("hello").value()).isInstanceOf(Table.class);
@@ -58,7 +59,7 @@ public class ApplicationTest {
     @Test
     public void app02() throws IOException {
         session = new PythonDeephavenSession(false, false);
-        ApplicationState app = ApplicationFactory.create(ApplicationConfigs.app02(), session);
+        ApplicationState app = ApplicationFactory.create(testAppDir(), ApplicationConfigs.app02(), session);
         assertThat(app.name()).isEqualTo("My Python Application");
         assertThat(app.numFieldsExported()).isEqualTo(2);
         assertThat(app.getField("hello").value()).isInstanceOf(Table.class);
@@ -68,7 +69,7 @@ public class ApplicationTest {
 
     @Test
     public void app03() {
-        ApplicationState app = ApplicationFactory.create(ApplicationConfigs.app03(), session);
+        ApplicationState app = ApplicationFactory.create(testAppDir(), ApplicationConfigs.app03(), session);
         assertThat(app.name()).isEqualTo("My QST Application");
         assertThat(app.numFieldsExported()).isEqualTo(2);
         assertThat(app.getField("hello").value()).isInstanceOf(Table.class);
@@ -78,7 +79,7 @@ public class ApplicationTest {
 
     @Test
     public void app04() {
-        ApplicationState app = ApplicationFactory.create(ApplicationConfigs.app04(), session);
+        ApplicationState app = ApplicationFactory.create(testAppDir(), ApplicationConfigs.app04(), session);
         assertThat(app.name()).isEqualTo("My Dynamic Application");
         app.shutdown();
     }

@@ -45,7 +45,7 @@ public class ApplicationState {
     }
 
     public synchronized <T> Field<T> getField(String name) {
-        //noinspection unchecked
+        // noinspection unchecked
         return (Field<T>) fields.get(name);
     }
 

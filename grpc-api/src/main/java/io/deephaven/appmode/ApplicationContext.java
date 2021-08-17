@@ -2,25 +2,28 @@ package io.deephaven.appmode;
 
 import io.deephaven.db.appmode.ApplicationState;
 
-import java.util.concurrent.Callable;
-
 /**
  * This application context can be used to get access to the application state from
  * within script applications.
  */
 public class ApplicationContext {
-    private static ApplicationState currentContext = null;
+
+    private static final ThreadLocal<ApplicationState> states = new ThreadLocal<>();
 
     public static ApplicationState get() {
-        return currentContext;
+        final ApplicationState state = states.get();
+        if (state == null) {
+            throw new IllegalStateException("Should not be getting application state outside runUnderContext");
+        }
+        return state;
     }
 
-    public static void runUnderContext(final ApplicationState context, final Runnable runner) {
+    static void runUnderContext(final ApplicationState context, final Runnable runner) {
+        ApplicationContext.states.set(context);
         try {
-            currentContext = context;
             runner.run();
         } finally {
-            currentContext = null;
+            ApplicationContext.states.remove();
         }
     }
 }

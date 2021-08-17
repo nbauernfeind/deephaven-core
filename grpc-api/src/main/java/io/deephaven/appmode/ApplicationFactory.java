@@ -11,18 +11,22 @@ import io.deephaven.db.util.GroovyDeephavenSession;
 import io.deephaven.db.util.PythonDeephavenSession;
 import io.deephaven.db.util.ScriptSession;
 
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 public class ApplicationFactory implements ApplicationConfig.Visitor {
 
-    public static ApplicationState create(ApplicationConfig config, ScriptSession scriptSession) {
-        return config.walk(new ApplicationFactory(scriptSession)).out();
+    public static ApplicationState create(Path applicationDir, ApplicationConfig config, ScriptSession scriptSession) {
+        return config.walk(new ApplicationFactory(applicationDir, scriptSession)).out();
     }
 
+    private final Path applicationDir;
     private final ScriptSession scriptSession;
     private ApplicationState out;
 
-    private ApplicationFactory(final ScriptSession scriptSession) {
+    private ApplicationFactory(final Path applicationDir, final ScriptSession scriptSession) {
+        this.applicationDir = Objects.requireNonNull(applicationDir);
         this.scriptSession = scriptSession;
     }
 
@@ -38,9 +42,7 @@ public class ApplicationFactory implements ApplicationConfig.Visitor {
         }
 
         out = new ApplicationState(script.id(), script.name());
-        ApplicationContext.runUnderContext(out, () -> {
-            script.files().forEach(scriptSession::evaluateScript);
-        });
+        ApplicationContext.runUnderContext(out, () -> evaluateScripts(script.files()));
     }
 
     @Override
@@ -51,9 +53,7 @@ public class ApplicationFactory implements ApplicationConfig.Visitor {
         }
 
         out = new ApplicationState(script.id(), script.name());
-        ApplicationContext.runUnderContext(out, () -> {
-            script.files().forEach(scriptSession::evaluateScript);
-        });
+        ApplicationContext.runUnderContext(out, () -> evaluateScripts(script.files()));
     }
 
     @Override
@@ -76,6 +76,16 @@ public class ApplicationFactory implements ApplicationConfig.Visitor {
             out = clazz.create().toState();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private Path absolutePath(Path path) {
+        return path.isAbsolute() ? path : applicationDir.resolve(path);
+    }
+
+    private void evaluateScripts(List<Path> files) {
+        for (Path file : files) {
+            scriptSession.evaluateScript(absolutePath(file));
         }
     }
 }
