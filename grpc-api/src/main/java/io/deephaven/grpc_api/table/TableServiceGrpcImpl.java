@@ -6,8 +6,6 @@ package io.deephaven.grpc_api.table;
 
 import com.google.rpc.Code;
 import io.deephaven.db.tables.Table;
-import io.deephaven.db.tables.remote.preview.ColumnPreviewManager;
-import io.deephaven.db.util.ScriptSession;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.grpc_api.session.SessionState;
@@ -45,7 +43,6 @@ import io.deephaven.proto.backplane.grpc.Ticket;
 import io.deephaven.proto.backplane.grpc.TimeTableRequest;
 import io.deephaven.proto.backplane.grpc.UngroupRequest;
 import io.deephaven.proto.backplane.grpc.UnstructuredFilterTableRequest;
-import io.deephaven.proto.backplane.script.grpc.FetchTableRequest;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 
@@ -305,6 +302,30 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
         });
     }
 
+    @Override
+    public void getExportedTableCreationResponse(final Ticket request, final StreamObserver<ExportedTableCreationResponse> responseObserver) {
+        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
+            final SessionState session = sessionService.getCurrentSession();
+
+            final SessionState.ExportObject<Object> export = session.getExport(request);
+
+            session.nonExport()
+                    .require(export)
+                    .onError(responseObserver::onError)
+                    .submit(() -> {
+                        final Object obj = export.get();
+                        if (!(obj instanceof Table)) {
+                            responseObserver.onError(GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Ticket is not a table"));
+                            return;
+                        }
+
+                        TableReference ref = TableReference.newBuilder().setTicket(request).build();
+                        responseObserver.onNext(buildTableCreationResponse(ref, (Table)obj));
+                        responseObserver.onCompleted();
+                    });
+        });
+    }
+
     public static ExportedTableCreationResponse buildTableCreationResponse(final TableReference tableRef, final Table table) {
         return ExportedTableCreationResponse.newBuilder()
                 .setSuccess(true)
@@ -314,42 +335,6 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
                 .setSchemaHeader(BarrageSchemaUtil.schemaBytesFromTable(table))
                 .build();
     }
-
-
-//    public void exportTicket(ExportTicketRequest request, StreamObserver<ExportedTableCreationResponse> responseObserver) {
-//        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-//            final SessionState session = sessionService.getCurrentSession();
-//
-//            SessionState.ExportObject<ScriptSession> exportedConsole = ticketRouter.resolve(session, request.getConsoleId());
-//
-//            session.newExport(request.getTableId())
-//                    .require(exportedConsole)
-//                    .onError(responseObserver::onError)
-//                    .submit(() -> liveTableMonitor.exclusiveLock().computeLocked(() -> {
-//                        ScriptSession scriptSession = exportedConsole.get();
-//                        String tableName = request.getTableName();
-//                        if (!scriptSession.hasVariableName(tableName)) {
-//                            throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "No value exists with name " + tableName);
-//                        }
-//
-//                        // Explicit typecheck to catch any wrong-type-ness right away
-//                        Object result = scriptSession.unwrapObject(scriptSession.getVariable(tableName));
-//                        if (!(result instanceof Table)) {
-//                            throw GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "Value bound to name " + tableName + " is not a Table");
-//                        }
-//
-//                        // Apply preview columns TODO core#107 move to table service
-//                        Table table = ColumnPreviewManager.applyPreview((Table) result);
-//
-//                        safelyExecute(() -> {
-//                            final TableReference resultRef = TableReference.newBuilder().setTicket(request.getTableId()).build();
-//                            responseObserver.onNext(TableServiceGrpcImpl.buildTableCreationResponse(resultRef, table));
-//                            responseObserver.onCompleted();
-//                        });
-//                        return table;
-//                    }));
-//        });
-
 
     /**
      * This helper is a wrapper that enables one-shot RPCs to utilize the same code paths that a batch RPC utilizes.
