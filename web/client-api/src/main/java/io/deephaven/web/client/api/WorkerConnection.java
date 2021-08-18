@@ -533,19 +533,23 @@ public class WorkerConnection {
         info.failureHandled(throwable.toString());
     }
 
-    public Promise<JsTable> getTable(String tableName) {
+    public Promise<JsTable> getTable(JsVariableDefinition varDef) {
         return whenServerReady("get a table").then(serve -> {
-            JsLog.debug("innerGetTable", tableName, " started");
+            JsLog.debug("innerGetTable", varDef.getTitle(), " started");
             return newState(info,
                 (c, cts, metadata) -> {
-                    JsLog.debug("performing fetch for ", tableName, " / ", cts, " (" + LazyString.of(cts::getHandle), ")");
+                    JsLog.debug("performing fetch for ", varDef.getTitle(), " / ", cts, " (" + LazyString.of(cts::getHandle), ")");
+                    // io.deephaven.javascript.proto.dhinternal.jspb.Message.bytesAsU8()
+                    TableReference tableReference = new TableReference();
+                    tableReference.setTicket(new Ticket());
+                    tableReference.getTicket().setTicket(varDef.getId());
                     FetchTableRequest fetch = new FetchTableRequest();
-                    fetch.setTableName(tableName);
-                    fetch.setTableId(cts.getHandle().makeTicket());
-                    consoleServiceClient.fetchTable(fetch, metadata, c::apply);
-                }, "fetch table " + tableName
+                    fetch.setSourceId(tableReference);
+                    fetch.setResultId(cts.getHandle().makeTicket());
+                    tableServiceClient.fetchTable(fetch, metadata, c::apply);
+                }, "fetch table " + varDef.getTitle()
             ).then(cts -> {
-                JsLog.debug("innerGetTable", tableName, " succeeded ", cts);
+                JsLog.debug("innerGetTable", varDef.getTitle(), " succeeded ", cts);
                 JsTable table = new JsTable(this, cts);
                 return Promise.resolve(table);
             });
@@ -581,15 +585,15 @@ public class WorkerConnection {
     public Promise<Object> getObject(JsVariableDefinition definition) {
         switch (VariableType.valueOf(definition.getType())) {
             case Table:
-                return (Promise) getTable(definition.getName());
+                return (Promise) getTable(definition);
             case TreeTable:
-                return (Promise) getTreeTable(definition.getName());
+                return (Promise) getTreeTable(definition);
             case Figure:
-                return (Promise) getFigure(definition.getName());
+                return (Promise) getFigure(definition);
             case Pandas:
-                return (Promise) getPandas(definition.getName());
-            case OtherWidget:
-                return (Promise) getWidget(definition.getName());
+                return (Promise) getPandas(definition);
+//            case OtherWidget:
+//                return (Promise) getWidget(definition.getName());
 //            case TableMap:
 //                return (Promise) getTableMap(definition.getName(), script);
             default:

@@ -27,6 +27,7 @@ import jsinterop.base.Any;
 import jsinterop.base.Js;
 import jsinterop.base.JsArrayLike;
 import jsinterop.base.JsPropertyMap;
+import org.apache.xpath.operations.Variable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -57,8 +58,8 @@ public class IdeSession extends HasEventHandling {
         this.closer = closer;
     }
 
-    public Promise<JsTable> getTable(String name) {
-        final Promise<JsTable> table = connection.getTable(name, result);
+    public Promise<JsTable> getTable(JsVariableDefinition varDef) {
+        final Promise<JsTable> table = connection.getTable(varDef);
         final CustomEventInit event = CustomEventInit.create();
         event.setDetail(table);
         fireEvent(EVENT_TABLE_OPENED, event);
