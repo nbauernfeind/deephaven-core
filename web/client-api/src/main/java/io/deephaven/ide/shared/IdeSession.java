@@ -77,7 +77,7 @@ public class IdeSession extends HasEventHandling {
 
     public Promise<Object> getObject(Object definitionObject) {
         JsVariableDefinition definition = JsVariableDefinition.from(definitionObject);
-        return connection.getObject(definition, result);
+        return connection.getObject(definition);
     }
 
     public Promise<JsTable> newTable(String[] columnNames, String[] types, String[][] data, String userTimeZone) {

@@ -9,7 +9,6 @@ package io.deephaven.proto.backplane.grpc;
 option java_multiple_files = true;
 option optimize_for = SPEED;
 
-import "deephaven/proto/session.proto";
 import "deephaven/proto/ticket.proto";
 
 service TableService {
@@ -222,17 +221,17 @@ message ExportedTableCreationResponse {
 }
 
 message FetchTableRequest {
-  Ticket source_id = 1;
+  TableReference source_id = 1;
   Ticket result_id = 2;
 }
 
 message FetchPandasTableRequest {
-  Ticket source_id = 1;
+  TableReference source_id = 1;
   Ticket result_id = 2;
 }
 
 message FetchTableMapRequest {
-  Ticket source_id = 1;
+  TableReference source_id = 1;
   Ticket result_id = 2;
 }
 

@@ -81,7 +81,7 @@ message ExecuteCommandResponse {
 message VariableDefinition {
     string type = 1;
     string title = 2;
-    Ticket id = 3;
+    io.deephaven.proto.backplane.grpc.Ticket id = 3;
 }
 message BindTableToVariableRequest {
     io.deephaven.proto.backplane.grpc.Ticket console_id = 1;
@@ -184,7 +184,7 @@ message TextEdit {
 }
 
 message FetchFigureRequest {
-    string figure_name = 1;
+    io.deephaven.proto.backplane.grpc.Ticket source_id = 1;
 }
 message FetchFigureResponse {
     FigureDescriptor figure_descriptor = 1;

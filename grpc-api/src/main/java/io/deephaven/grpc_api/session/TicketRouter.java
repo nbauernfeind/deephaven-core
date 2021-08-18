@@ -158,6 +158,16 @@ public class TicketRouter {
      * @param ticket the ticket to parse
      * @return a string that is good for log/error messages
      */
+    public String getLogNameFor(final Ticket ticket) {
+        return getLogNameFor(ticket.getTicket().asReadOnlyByteBuffer());
+    }
+
+    /**
+     * Create a human readable string to identify this Flight.Ticket.
+     *
+     * @param ticket the ticket to parse
+     * @return a string that is good for log/error messages
+     */
     public String getLogNameFor(final Flight.Ticket ticket) {
         return getLogNameFor(ticket.getTicket().asReadOnlyByteBuffer());
     }

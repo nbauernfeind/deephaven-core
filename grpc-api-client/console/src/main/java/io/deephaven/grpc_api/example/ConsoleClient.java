@@ -4,6 +4,7 @@
 
 package io.deephaven.grpc_api.example;
 
+import io.deephaven.grpc_api.console.ScopeTicketResolver;
 import io.deephaven.grpc_api.util.ExportTicketHelper;
 import io.deephaven.io.log.LogEntry;
 import io.deephaven.io.logger.Logger;
@@ -69,6 +70,7 @@ public class ConsoleClient {
 
     private final SessionServiceGrpc.SessionServiceStub sessionService;
     private final ConsoleServiceGrpc.ConsoleServiceStub consoleServiceGrpc;
+    private final TableServiceGrpc.TableServiceStub tableServiceGrpc;
     private final String sessionType;
 
     private UUID session;
@@ -80,6 +82,7 @@ public class ConsoleClient {
         this.serverChannel = ClientInterceptors.intercept(managedChannel, new AuthInterceptor());
         this.sessionService = SessionServiceGrpc.newStub(serverChannel);
         this.consoleServiceGrpc = ConsoleServiceGrpc.newStub(serverChannel);
+        this.tableServiceGrpc = TableServiceGrpc.newStub(serverChannel);
         this.sessionType = sessionType;
     }
 
@@ -184,21 +187,21 @@ public class ConsoleClient {
                             Optional<VariableDefinition> firstTable = response.getCreatedList().stream().filter(var -> var.getType().equals("Table")).findAny();
                             firstTable.ifPresent(table -> {
                                 log.debug().append("A table was created: ").append(table.toString()).endl();
-                                 consoleServiceGrpc.fetchTable(FetchTableRequest.newBuilder()
-                                         .setConsoleId(consoleTicket)
-                                         .setTableId(ExportTicketHelper.exportIdToTicket(nextId++))
-                                         .setTableName(table.getName())
-                                         .build(),
-                                         new ResponseBuilder<ExportedTableCreationResponse>()
-                                                 .onNext(this::onExportedTableCreationResponse)
-                                                 .onError(err -> {
-                                                     log.error(err).append("onError").endl();
-                                                     scheduler.runImmediately(this::awaitCommand);
-                                                 })
-                                                 .onComplete(() -> {
-                                                     log.debug().append("fetch complete").endl();
-                                                 })
-                                                 .build());
+                                tableServiceGrpc.fetchTable(FetchTableRequest.newBuilder()
+                                                .setResultId(ExportTicketHelper.exportIdToTicket(nextId++))
+                                                .setSourceId(TableReference.newBuilder()
+                                                        .setTicket(ScopeTicketResolver.ticketForName(table.getTitle())))
+                                                .build(),
+                                        new ResponseBuilder<ExportedTableCreationResponse>()
+                                                .onNext(this::onExportedTableCreationResponse)
+                                                .onError(err -> {
+                                                    log.error(err).append("onError").endl();
+                                                    scheduler.runImmediately(this::awaitCommand);
+                                                })
+                                                .onComplete(() -> {
+                                                    log.debug().append("fetch complete").endl();
+                                                })
+                                                .build());
                             });
                             //otherwise go for another query
                             if (!firstTable.isPresent()) {

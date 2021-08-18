@@ -186,7 +186,8 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     }
 
     private static VariableDefinition makeVariableDefinition(Map.Entry<String, ExportedObjectType> entry) {
-        return VariableDefinition.newBuilder().setName(entry.getKey()).setType(entry.getValue().name()).build();
+        return VariableDefinition.newBuilder().setTitle(entry.getKey()).setType(entry.getValue().name())
+                .setId(ScopeTicketResolver.ticketForName(entry.getKey())).build();
     }
 
     @Override
@@ -222,43 +223,6 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                 responseObserver.onNext(BindTableToVariableResponse.getDefaultInstance());
                 responseObserver.onCompleted();
             });
-        });
-    }
-
-    // TODO will be moved to a more general place, serve as a general "Fetch from scope" and this will be deprecated
-    @Override
-    public void fetchTable(FetchTableRequest request, StreamObserver<ExportedTableCreationResponse> responseObserver) {
-        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-            final SessionState session = sessionService.getCurrentSession();
-
-            SessionState.ExportObject<ScriptSession> exportedConsole = ticketRouter.resolve(session, request.getConsoleId());
-
-            session.newExport(request.getTableId())
-                    .require(exportedConsole)
-                    .onError(responseObserver::onError)
-                    .submit(() -> liveTableMonitor.exclusiveLock().computeLocked(() -> {
-                        ScriptSession scriptSession = exportedConsole.get();
-                        String tableName = request.getTableName();
-                        if (!scriptSession.hasVariableName(tableName)) {
-                            throw GrpcUtil.statusRuntimeException(Code.NOT_FOUND, "No value exists with name " + tableName);
-                        }
-
-                        // Explicit typecheck to catch any wrong-type-ness right away
-                        Object result = scriptSession.unwrapObject(scriptSession.getVariable(tableName));
-                        if (!(result instanceof Table)) {
-                            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Value bound to name " + tableName + " is not a Table");
-                        }
-
-                        // Apply preview columns TODO core#107 move to table service
-                        Table table = ColumnPreviewManager.applyPreview((Table) result);
-
-                        safelyExecute(() -> {
-                            final TableReference resultRef = TableReference.newBuilder().setTicket(request.getTableId()).build();
-                            responseObserver.onNext(TableServiceGrpcImpl.buildTableCreationResponse(resultRef, table));
-                            responseObserver.onCompleted();
-                        });
-                        return table;
-                    }));
         });
     }
 
@@ -369,23 +333,16 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     public void fetchFigure(FetchFigureRequest request, StreamObserver<FetchFigureResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState session = sessionService.getCurrentSession();
-
-            SessionState.ExportObject<ScriptSession> exportedConsole = session.getExport(request.getConsoleId());
+            final SessionState.ExportObject<Object> figure = ticketRouter.resolve(session, request.getSourceId());
 
             session.nonExport()
-                    .require(exportedConsole)
+                    .require(figure)
                     .onError(responseObserver::onError)
                     .submit(() -> {
-                        ScriptSession scriptSession = exportedConsole.get();
-
-                        String figureName = request.getFigureName();
-                        if (!scriptSession.hasVariableName(figureName)) {
-                            throw GrpcUtil.statusRuntimeException(Code.NOT_FOUND, "No value exists with name " + figureName);
-                        }
-
-                        Object result = scriptSession.unwrapObject(scriptSession.getVariable(figureName));
+                        Object result = figure.get();
                         if (!(result instanceof FigureWidget)) {
-                            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Value bound to name " + figureName + " is not a FigureWidget");
+                            final String name = ticketRouter.getLogNameFor(request.getSourceId());
+                            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Value bound to ticket " + name + " is not a FigureWidget");
                         }
                         FigureWidget widget = (FigureWidget) result;
 
