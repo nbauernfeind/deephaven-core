@@ -63,7 +63,8 @@ public class ApplicationState {
         setField(CustomField.builder(type).of(name, value));
     }
 
-    public synchronized <T> void setCustomField(String type, String name, T value, String description) {
+    public synchronized <T> void setCustomField(String type, String name, T value,
+        String description) {
         setField(CustomField.builder(type).of(name, value, description));
     }
 

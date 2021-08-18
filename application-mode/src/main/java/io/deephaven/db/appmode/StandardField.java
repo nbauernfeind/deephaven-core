@@ -14,7 +14,8 @@ public abstract class StandardField<T> implements Field<T> {
     }
 
     public static <T> Field<T> of(String name, T value, String description) {
-        return ImmutableStandardField.<T>builder().name(name).value(value).description(description).build();
+        return ImmutableStandardField.<T>builder().name(name).value(value).description(description)
+            .build();
     }
 
     public abstract String name();

@@ -14,7 +14,8 @@ public interface Field<T> {
     T value();
 
     /**
-     * An optional description for users who want to improve exploration of an existing application state.
+     * An optional description for users who want to improve exploration of an existing application
+     * state.
      */
     Optional<String> description();
 }

@@ -25,7 +25,7 @@ public abstract class CustomField<T> implements Field<T> {
     final void checkName() {
         if (!SourceVersion.isName(name())) {
             throw new IllegalArgumentException(
-                    "name() is invalid, must conform to javax.lang.model.SourceVersion#isName");
+                "name() is invalid, must conform to javax.lang.model.SourceVersion#isName");
         }
     }
 
@@ -33,7 +33,7 @@ public abstract class CustomField<T> implements Field<T> {
     final void checkType() {
         if (!SourceVersion.isName(type())) {
             throw new IllegalArgumentException(
-                    "name() is invalid, must conform to javax.lang.model.SourceVersion#isName");
+                "name() is invalid, must conform to javax.lang.model.SourceVersion#isName");
         }
     }
 
