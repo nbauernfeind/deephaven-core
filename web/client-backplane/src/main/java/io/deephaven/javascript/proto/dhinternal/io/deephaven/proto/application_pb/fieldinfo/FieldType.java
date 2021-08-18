@@ -1,10 +1,11 @@
 package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.fieldinfo;
 
 import elemental2.core.Uint8Array;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.CustomInfo;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.FigureInfo;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.OpaqueInfo;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.RemovedField;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.TableInfo;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.fieldinfo.fieldtype.FieldCase;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -20,60 +21,17 @@ public class FieldType {
   @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
   public interface ToObjectReturnType {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-    public interface OpaqueFieldType {
-      @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-      public interface GetAppMetadataUnionType {
-        @JsOverlay
-        static FieldType.ToObjectReturnType.OpaqueFieldType.GetAppMetadataUnionType of(Object o) {
-          return Js.cast(o);
-        }
-
-        @JsOverlay
-        default String asString() {
-          return Js.asString(this);
-        }
-
-        @JsOverlay
-        default Uint8Array asUint8Array() {
-          return Js.cast(this);
-        }
-
-        @JsOverlay
-        default boolean isString() {
-          return (Object) this instanceof String;
-        }
-
-        @JsOverlay
-        default boolean isUint8Array() {
-          return (Object) this instanceof Uint8Array;
-        }
-      }
-
+    public interface CustomFieldType {
       @JsOverlay
-      static FieldType.ToObjectReturnType.OpaqueFieldType create() {
+      static FieldType.ToObjectReturnType.CustomFieldType create() {
         return Js.uncheckedCast(JsPropertyMap.of());
       }
 
       @JsProperty
-      FieldType.ToObjectReturnType.OpaqueFieldType.GetAppMetadataUnionType getAppMetadata();
+      String getType();
 
       @JsProperty
-      void setAppMetadata(
-          FieldType.ToObjectReturnType.OpaqueFieldType.GetAppMetadataUnionType appMetadata);
-
-      @JsOverlay
-      default void setAppMetadata(String appMetadata) {
-        setAppMetadata(
-            Js.<FieldType.ToObjectReturnType.OpaqueFieldType.GetAppMetadataUnionType>uncheckedCast(
-                appMetadata));
-      }
-
-      @JsOverlay
-      default void setAppMetadata(Uint8Array appMetadata) {
-        setAppMetadata(
-            Js.<FieldType.ToObjectReturnType.OpaqueFieldType.GetAppMetadataUnionType>uncheckedCast(
-                appMetadata));
-      }
+      void setType(String type);
     }
 
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
@@ -151,10 +109,10 @@ public class FieldType {
     }
 
     @JsProperty
-    Object getFigure();
+    FieldType.ToObjectReturnType.CustomFieldType getCustom();
 
     @JsProperty
-    FieldType.ToObjectReturnType.OpaqueFieldType getOpaque();
+    Object getFigure();
 
     @JsProperty
     Object getRemoved();
@@ -163,10 +121,10 @@ public class FieldType {
     FieldType.ToObjectReturnType.TableFieldType getTable();
 
     @JsProperty
-    void setFigure(Object figure);
+    void setCustom(FieldType.ToObjectReturnType.CustomFieldType custom);
 
     @JsProperty
-    void setOpaque(FieldType.ToObjectReturnType.OpaqueFieldType opaque);
+    void setFigure(Object figure);
 
     @JsProperty
     void setRemoved(Object removed);
@@ -178,60 +136,17 @@ public class FieldType {
   @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
   public interface ToObjectReturnType0 {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-    public interface OpaqueFieldType {
-      @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-      public interface GetAppMetadataUnionType {
-        @JsOverlay
-        static FieldType.ToObjectReturnType0.OpaqueFieldType.GetAppMetadataUnionType of(Object o) {
-          return Js.cast(o);
-        }
-
-        @JsOverlay
-        default String asString() {
-          return Js.asString(this);
-        }
-
-        @JsOverlay
-        default Uint8Array asUint8Array() {
-          return Js.cast(this);
-        }
-
-        @JsOverlay
-        default boolean isString() {
-          return (Object) this instanceof String;
-        }
-
-        @JsOverlay
-        default boolean isUint8Array() {
-          return (Object) this instanceof Uint8Array;
-        }
-      }
-
+    public interface CustomFieldType {
       @JsOverlay
-      static FieldType.ToObjectReturnType0.OpaqueFieldType create() {
+      static FieldType.ToObjectReturnType0.CustomFieldType create() {
         return Js.uncheckedCast(JsPropertyMap.of());
       }
 
       @JsProperty
-      FieldType.ToObjectReturnType0.OpaqueFieldType.GetAppMetadataUnionType getAppMetadata();
+      String getType();
 
       @JsProperty
-      void setAppMetadata(
-          FieldType.ToObjectReturnType0.OpaqueFieldType.GetAppMetadataUnionType appMetadata);
-
-      @JsOverlay
-      default void setAppMetadata(String appMetadata) {
-        setAppMetadata(
-            Js.<FieldType.ToObjectReturnType0.OpaqueFieldType.GetAppMetadataUnionType>uncheckedCast(
-                appMetadata));
-      }
-
-      @JsOverlay
-      default void setAppMetadata(Uint8Array appMetadata) {
-        setAppMetadata(
-            Js.<FieldType.ToObjectReturnType0.OpaqueFieldType.GetAppMetadataUnionType>uncheckedCast(
-                appMetadata));
-      }
+      void setType(String type);
     }
 
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
@@ -309,10 +224,10 @@ public class FieldType {
     }
 
     @JsProperty
-    Object getFigure();
+    FieldType.ToObjectReturnType0.CustomFieldType getCustom();
 
     @JsProperty
-    FieldType.ToObjectReturnType0.OpaqueFieldType getOpaque();
+    Object getFigure();
 
     @JsProperty
     Object getRemoved();
@@ -321,10 +236,10 @@ public class FieldType {
     FieldType.ToObjectReturnType0.TableFieldType getTable();
 
     @JsProperty
-    void setFigure(Object figure);
+    void setCustom(FieldType.ToObjectReturnType0.CustomFieldType custom);
 
     @JsProperty
-    void setOpaque(FieldType.ToObjectReturnType0.OpaqueFieldType opaque);
+    void setFigure(Object figure);
 
     @JsProperty
     void setRemoved(Object removed);
@@ -342,27 +257,27 @@ public class FieldType {
   public static native FieldType.ToObjectReturnType toObject(
       boolean includeInstance, FieldType msg);
 
-  public native void clearFigure();
+  public native void clearCustom();
 
-  public native void clearOpaque();
+  public native void clearFigure();
 
   public native void clearRemoved();
 
   public native void clearTable();
 
-  public native int getFieldCase();
+  public native CustomInfo getCustom();
+
+  public native FieldCase getFieldCase();
 
   public native FigureInfo getFigure();
-
-  public native OpaqueInfo getOpaque();
 
   public native RemovedField getRemoved();
 
   public native TableInfo getTable();
 
-  public native boolean hasFigure();
+  public native boolean hasCustom();
 
-  public native boolean hasOpaque();
+  public native boolean hasFigure();
 
   public native boolean hasRemoved();
 
@@ -370,13 +285,13 @@ public class FieldType {
 
   public native Uint8Array serializeBinary();
 
+  public native void setCustom();
+
+  public native void setCustom(CustomInfo value);
+
   public native void setFigure();
 
   public native void setFigure(FigureInfo value);
-
-  public native void setOpaque();
-
-  public native void setOpaque(OpaqueInfo value);
 
   public native void setRemoved();
 

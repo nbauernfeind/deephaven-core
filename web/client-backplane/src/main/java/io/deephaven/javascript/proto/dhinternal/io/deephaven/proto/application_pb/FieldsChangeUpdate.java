@@ -21,72 +21,19 @@ public class FieldsChangeUpdate {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
       public interface FieldFieldType {
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-        public interface OpaqueFieldType {
-          @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-          public interface GetAppMetadataUnionType {
-            @JsOverlay
-            static FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.FieldFieldType
-                    .OpaqueFieldType.GetAppMetadataUnionType
-                of(Object o) {
-              return Js.cast(o);
-            }
-
-            @JsOverlay
-            default String asString() {
-              return Js.asString(this);
-            }
-
-            @JsOverlay
-            default Uint8Array asUint8Array() {
-              return Js.cast(this);
-            }
-
-            @JsOverlay
-            default boolean isString() {
-              return (Object) this instanceof String;
-            }
-
-            @JsOverlay
-            default boolean isUint8Array() {
-              return (Object) this instanceof Uint8Array;
-            }
-          }
-
+        public interface CustomFieldType {
           @JsOverlay
           static FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.FieldFieldType
-                  .OpaqueFieldType
+                  .CustomFieldType
               create() {
             return Js.uncheckedCast(JsPropertyMap.of());
           }
 
           @JsProperty
-          FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.FieldFieldType.OpaqueFieldType
-                  .GetAppMetadataUnionType
-              getAppMetadata();
+          String getType();
 
           @JsProperty
-          void setAppMetadata(
-              FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.FieldFieldType
-                      .OpaqueFieldType.GetAppMetadataUnionType
-                  appMetadata);
-
-          @JsOverlay
-          default void setAppMetadata(String appMetadata) {
-            setAppMetadata(
-                Js
-                    .<FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.FieldFieldType
-                            .OpaqueFieldType.GetAppMetadataUnionType>
-                        uncheckedCast(appMetadata));
-          }
-
-          @JsOverlay
-          default void setAppMetadata(Uint8Array appMetadata) {
-            setAppMetadata(
-                Js
-                    .<FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.FieldFieldType
-                            .OpaqueFieldType.GetAppMetadataUnionType>
-                        uncheckedCast(appMetadata));
-          }
+          void setType(String type);
         }
 
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
@@ -176,11 +123,11 @@ public class FieldsChangeUpdate {
         }
 
         @JsProperty
-        Object getFigure();
+        FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.FieldFieldType.CustomFieldType
+            getCustom();
 
         @JsProperty
-        FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.FieldFieldType.OpaqueFieldType
-            getOpaque();
+        Object getFigure();
 
         @JsProperty
         Object getRemoved();
@@ -190,12 +137,12 @@ public class FieldsChangeUpdate {
             getTable();
 
         @JsProperty
-        void setFigure(Object figure);
+        void setCustom(
+            FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.FieldFieldType.CustomFieldType
+                custom);
 
         @JsProperty
-        void setOpaque(
-            FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.FieldFieldType.OpaqueFieldType
-                opaque);
+        void setFigure(Object figure);
 
         @JsProperty
         void setRemoved(Object removed);
@@ -278,6 +225,12 @@ public class FieldsChangeUpdate {
       }
 
       @JsProperty
+      String getApplicationId();
+
+      @JsProperty
+      String getApplicationName();
+
+      @JsProperty
       String getFieldDescription();
 
       @JsProperty
@@ -288,6 +241,12 @@ public class FieldsChangeUpdate {
 
       @JsProperty
       FieldsChangeUpdate.ToObjectReturnType.FieldsListFieldType.TicketFieldType getTicket();
+
+      @JsProperty
+      void setApplicationId(String applicationId);
+
+      @JsProperty
+      void setApplicationName(String applicationName);
 
       @JsProperty
       void setFieldDescription(String fieldDescription);
@@ -332,72 +291,19 @@ public class FieldsChangeUpdate {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
       public interface FieldFieldType {
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-        public interface OpaqueFieldType {
-          @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-          public interface GetAppMetadataUnionType {
-            @JsOverlay
-            static FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.FieldFieldType
-                    .OpaqueFieldType.GetAppMetadataUnionType
-                of(Object o) {
-              return Js.cast(o);
-            }
-
-            @JsOverlay
-            default String asString() {
-              return Js.asString(this);
-            }
-
-            @JsOverlay
-            default Uint8Array asUint8Array() {
-              return Js.cast(this);
-            }
-
-            @JsOverlay
-            default boolean isString() {
-              return (Object) this instanceof String;
-            }
-
-            @JsOverlay
-            default boolean isUint8Array() {
-              return (Object) this instanceof Uint8Array;
-            }
-          }
-
+        public interface CustomFieldType {
           @JsOverlay
           static FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.FieldFieldType
-                  .OpaqueFieldType
+                  .CustomFieldType
               create() {
             return Js.uncheckedCast(JsPropertyMap.of());
           }
 
           @JsProperty
-          FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.FieldFieldType.OpaqueFieldType
-                  .GetAppMetadataUnionType
-              getAppMetadata();
+          String getType();
 
           @JsProperty
-          void setAppMetadata(
-              FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.FieldFieldType
-                      .OpaqueFieldType.GetAppMetadataUnionType
-                  appMetadata);
-
-          @JsOverlay
-          default void setAppMetadata(String appMetadata) {
-            setAppMetadata(
-                Js
-                    .<FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.FieldFieldType
-                            .OpaqueFieldType.GetAppMetadataUnionType>
-                        uncheckedCast(appMetadata));
-          }
-
-          @JsOverlay
-          default void setAppMetadata(Uint8Array appMetadata) {
-            setAppMetadata(
-                Js
-                    .<FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.FieldFieldType
-                            .OpaqueFieldType.GetAppMetadataUnionType>
-                        uncheckedCast(appMetadata));
-          }
+          void setType(String type);
         }
 
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
@@ -487,11 +393,11 @@ public class FieldsChangeUpdate {
         }
 
         @JsProperty
-        Object getFigure();
+        FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.FieldFieldType.CustomFieldType
+            getCustom();
 
         @JsProperty
-        FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.FieldFieldType.OpaqueFieldType
-            getOpaque();
+        Object getFigure();
 
         @JsProperty
         Object getRemoved();
@@ -501,13 +407,13 @@ public class FieldsChangeUpdate {
             getTable();
 
         @JsProperty
-        void setFigure(Object figure);
+        void setCustom(
+            FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.FieldFieldType
+                    .CustomFieldType
+                custom);
 
         @JsProperty
-        void setOpaque(
-            FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.FieldFieldType
-                    .OpaqueFieldType
-                opaque);
+        void setFigure(Object figure);
 
         @JsProperty
         void setRemoved(Object removed);
@@ -591,6 +497,12 @@ public class FieldsChangeUpdate {
       }
 
       @JsProperty
+      String getApplicationId();
+
+      @JsProperty
+      String getApplicationName();
+
+      @JsProperty
       String getFieldDescription();
 
       @JsProperty
@@ -601,6 +513,12 @@ public class FieldsChangeUpdate {
 
       @JsProperty
       FieldsChangeUpdate.ToObjectReturnType0.FieldsListFieldType.TicketFieldType getTicket();
+
+      @JsProperty
+      void setApplicationId(String applicationId);
+
+      @JsProperty
+      void setApplicationName(String applicationName);
 
       @JsProperty
       void setFieldDescription(String fieldDescription);

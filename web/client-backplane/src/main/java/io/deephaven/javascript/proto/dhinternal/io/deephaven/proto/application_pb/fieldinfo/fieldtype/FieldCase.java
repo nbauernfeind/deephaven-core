@@ -8,9 +8,9 @@ import jsinterop.annotations.JsType;
     name = "dhinternal.io.deephaven.proto.application_pb.FieldInfo.FieldType.FieldCase",
     namespace = JsPackage.GLOBAL)
 public class FieldCase {
-  public static int FIELD_NOT_SET,
+  public static int CUSTOM,
+  FIELD_NOT_SET,
   FIGURE,
-  OPAQUE,
   REMOVED,
   TABLE;
 }

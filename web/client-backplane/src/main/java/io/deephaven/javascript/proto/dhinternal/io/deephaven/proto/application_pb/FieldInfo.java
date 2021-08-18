@@ -20,67 +20,17 @@ public class FieldInfo {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
     public interface FieldFieldType {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-      public interface OpaqueFieldType {
-        @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-        public interface GetAppMetadataUnionType {
-          @JsOverlay
-          static FieldInfo.ToObjectReturnType.FieldFieldType.OpaqueFieldType.GetAppMetadataUnionType
-              of(Object o) {
-            return Js.cast(o);
-          }
-
-          @JsOverlay
-          default String asString() {
-            return Js.asString(this);
-          }
-
-          @JsOverlay
-          default Uint8Array asUint8Array() {
-            return Js.cast(this);
-          }
-
-          @JsOverlay
-          default boolean isString() {
-            return (Object) this instanceof String;
-          }
-
-          @JsOverlay
-          default boolean isUint8Array() {
-            return (Object) this instanceof Uint8Array;
-          }
-        }
-
+      public interface CustomFieldType {
         @JsOverlay
-        static FieldInfo.ToObjectReturnType.FieldFieldType.OpaqueFieldType create() {
+        static FieldInfo.ToObjectReturnType.FieldFieldType.CustomFieldType create() {
           return Js.uncheckedCast(JsPropertyMap.of());
         }
 
         @JsProperty
-        FieldInfo.ToObjectReturnType.FieldFieldType.OpaqueFieldType.GetAppMetadataUnionType
-            getAppMetadata();
+        String getType();
 
         @JsProperty
-        void setAppMetadata(
-            FieldInfo.ToObjectReturnType.FieldFieldType.OpaqueFieldType.GetAppMetadataUnionType
-                appMetadata);
-
-        @JsOverlay
-        default void setAppMetadata(String appMetadata) {
-          setAppMetadata(
-              Js
-                  .<FieldInfo.ToObjectReturnType.FieldFieldType.OpaqueFieldType
-                          .GetAppMetadataUnionType>
-                      uncheckedCast(appMetadata));
-        }
-
-        @JsOverlay
-        default void setAppMetadata(Uint8Array appMetadata) {
-          setAppMetadata(
-              Js
-                  .<FieldInfo.ToObjectReturnType.FieldFieldType.OpaqueFieldType
-                          .GetAppMetadataUnionType>
-                      uncheckedCast(appMetadata));
-        }
+        void setType(String type);
       }
 
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
@@ -165,10 +115,10 @@ public class FieldInfo {
       }
 
       @JsProperty
-      Object getFigure();
+      FieldInfo.ToObjectReturnType.FieldFieldType.CustomFieldType getCustom();
 
       @JsProperty
-      FieldInfo.ToObjectReturnType.FieldFieldType.OpaqueFieldType getOpaque();
+      Object getFigure();
 
       @JsProperty
       Object getRemoved();
@@ -177,10 +127,10 @@ public class FieldInfo {
       FieldInfo.ToObjectReturnType.FieldFieldType.TableFieldType getTable();
 
       @JsProperty
-      void setFigure(Object figure);
+      void setCustom(FieldInfo.ToObjectReturnType.FieldFieldType.CustomFieldType custom);
 
       @JsProperty
-      void setOpaque(FieldInfo.ToObjectReturnType.FieldFieldType.OpaqueFieldType opaque);
+      void setFigure(Object figure);
 
       @JsProperty
       void setRemoved(Object removed);
@@ -251,6 +201,12 @@ public class FieldInfo {
     }
 
     @JsProperty
+    String getApplicationId();
+
+    @JsProperty
+    String getApplicationName();
+
+    @JsProperty
     String getFieldDescription();
 
     @JsProperty
@@ -261,6 +217,12 @@ public class FieldInfo {
 
     @JsProperty
     FieldInfo.ToObjectReturnType.TicketFieldType getTicket();
+
+    @JsProperty
+    void setApplicationId(String applicationId);
+
+    @JsProperty
+    void setApplicationName(String applicationName);
 
     @JsProperty
     void setFieldDescription(String fieldDescription);
@@ -280,68 +242,17 @@ public class FieldInfo {
     @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
     public interface FieldFieldType {
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-      public interface OpaqueFieldType {
-        @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
-        public interface GetAppMetadataUnionType {
-          @JsOverlay
-          static FieldInfo.ToObjectReturnType0.FieldFieldType.OpaqueFieldType
-                  .GetAppMetadataUnionType
-              of(Object o) {
-            return Js.cast(o);
-          }
-
-          @JsOverlay
-          default String asString() {
-            return Js.asString(this);
-          }
-
-          @JsOverlay
-          default Uint8Array asUint8Array() {
-            return Js.cast(this);
-          }
-
-          @JsOverlay
-          default boolean isString() {
-            return (Object) this instanceof String;
-          }
-
-          @JsOverlay
-          default boolean isUint8Array() {
-            return (Object) this instanceof Uint8Array;
-          }
-        }
-
+      public interface CustomFieldType {
         @JsOverlay
-        static FieldInfo.ToObjectReturnType0.FieldFieldType.OpaqueFieldType create() {
+        static FieldInfo.ToObjectReturnType0.FieldFieldType.CustomFieldType create() {
           return Js.uncheckedCast(JsPropertyMap.of());
         }
 
         @JsProperty
-        FieldInfo.ToObjectReturnType0.FieldFieldType.OpaqueFieldType.GetAppMetadataUnionType
-            getAppMetadata();
+        String getType();
 
         @JsProperty
-        void setAppMetadata(
-            FieldInfo.ToObjectReturnType0.FieldFieldType.OpaqueFieldType.GetAppMetadataUnionType
-                appMetadata);
-
-        @JsOverlay
-        default void setAppMetadata(String appMetadata) {
-          setAppMetadata(
-              Js
-                  .<FieldInfo.ToObjectReturnType0.FieldFieldType.OpaqueFieldType
-                          .GetAppMetadataUnionType>
-                      uncheckedCast(appMetadata));
-        }
-
-        @JsOverlay
-        default void setAppMetadata(Uint8Array appMetadata) {
-          setAppMetadata(
-              Js
-                  .<FieldInfo.ToObjectReturnType0.FieldFieldType.OpaqueFieldType
-                          .GetAppMetadataUnionType>
-                      uncheckedCast(appMetadata));
-        }
+        void setType(String type);
       }
 
       @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
@@ -427,10 +338,10 @@ public class FieldInfo {
       }
 
       @JsProperty
-      Object getFigure();
+      FieldInfo.ToObjectReturnType0.FieldFieldType.CustomFieldType getCustom();
 
       @JsProperty
-      FieldInfo.ToObjectReturnType0.FieldFieldType.OpaqueFieldType getOpaque();
+      Object getFigure();
 
       @JsProperty
       Object getRemoved();
@@ -439,10 +350,10 @@ public class FieldInfo {
       FieldInfo.ToObjectReturnType0.FieldFieldType.TableFieldType getTable();
 
       @JsProperty
-      void setFigure(Object figure);
+      void setCustom(FieldInfo.ToObjectReturnType0.FieldFieldType.CustomFieldType custom);
 
       @JsProperty
-      void setOpaque(FieldInfo.ToObjectReturnType0.FieldFieldType.OpaqueFieldType opaque);
+      void setFigure(Object figure);
 
       @JsProperty
       void setRemoved(Object removed);
@@ -513,6 +424,12 @@ public class FieldInfo {
     }
 
     @JsProperty
+    String getApplicationId();
+
+    @JsProperty
+    String getApplicationName();
+
+    @JsProperty
     String getFieldDescription();
 
     @JsProperty
@@ -523,6 +440,12 @@ public class FieldInfo {
 
     @JsProperty
     FieldInfo.ToObjectReturnType0.TicketFieldType getTicket();
+
+    @JsProperty
+    void setApplicationId(String applicationId);
+
+    @JsProperty
+    void setApplicationName(String applicationName);
 
     @JsProperty
     void setFieldDescription(String fieldDescription);
@@ -550,6 +473,10 @@ public class FieldInfo {
 
   public native void clearTicket();
 
+  public native String getApplicationId();
+
+  public native String getApplicationName();
+
   public native String getFieldDescription();
 
   public native String getFieldName();
@@ -563,6 +490,10 @@ public class FieldInfo {
   public native boolean hasTicket();
 
   public native Uint8Array serializeBinary();
+
+  public native void setApplicationId(String value);
+
+  public native void setApplicationName(String value);
 
   public native void setFieldDescription(String value);
 
