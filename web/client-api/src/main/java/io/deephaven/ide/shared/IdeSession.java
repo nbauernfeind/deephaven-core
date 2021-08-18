@@ -9,6 +9,7 @@ import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.*;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.changedocumentrequest.TextDocumentContentChangeEvent;
 import io.deephaven.web.client.api.*;
 import io.deephaven.web.client.api.console.JsCommandResult;
+import io.deephaven.web.client.api.console.JsVariableChanges;
 import io.deephaven.web.client.api.console.JsVariableDefinition;
 import io.deephaven.web.client.api.tree.JsTreeTable;
 import io.deephaven.web.client.api.widget.plot.JsFigure;
@@ -18,11 +19,9 @@ import io.deephaven.web.client.fu.LazyPromise;
 import io.deephaven.web.shared.data.LogItem;
 import io.deephaven.web.shared.fu.JsConsumer;
 import io.deephaven.web.shared.fu.JsRunnable;
-import io.deephaven.web.shared.ide.CommandResult;
 import io.deephaven.web.shared.ide.ExecutionHandle;
-import io.deephaven.web.shared.ide.VariableChanges;
-import io.deephaven.web.shared.ide.VariableDefinition;
 import jsinterop.annotations.JsIgnore;
+import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsOptional;
 import jsinterop.annotations.JsType;
 import jsinterop.base.Any;
@@ -114,7 +113,7 @@ public class IdeSession extends HasEventHandling {
     }
 
     public CancellablePromise<JsCommandResult> runCode(String code) {
-        LazyPromise<CommandResult> promise = new LazyPromise<>();
+        LazyPromise<JsCommandResult> promise = new LazyPromise<>();
         ExecuteCommandRequest request = new ExecuteCommandRequest();
         request.setConsoleId(this.result);
         request.setCode(code);
@@ -122,14 +121,12 @@ public class IdeSession extends HasEventHandling {
             connection.consoleServiceClient().executeCommand(request, connection.metadata(), c::apply);
         });
         runCodePromise.then(response -> {
-            CommandResult commandResult = new CommandResult();
-            commandResult.setError(response.getErrorMessage());
-            VariableChanges changes = new VariableChanges();
-            changes.created = copyVariables(response.getCreatedList());
-            changes.updated = copyVariables(response.getUpdatedList());
-            changes.removed = copyVariables(response.getRemovedList());
-            commandResult.setChanges(changes);
-            promise.succeed(commandResult);
+            JsVariableChanges changes = new JsVariableChanges(
+                    copyVariables(response.getCreatedList()),
+                    copyVariables(response.getUpdatedList()),
+                    copyVariables(response.getRemovedList())
+            );
+            promise.succeed(new JsCommandResult(changes, response.getErrorMessage()));
             return null;
         }, err -> {
             promise.fail(err);
@@ -137,7 +134,6 @@ public class IdeSession extends HasEventHandling {
         });
 
         CancellablePromise<JsCommandResult> result = promise.asPromise(
-                res -> new JsCommandResult(res),
                 () -> {
 //                    cancelled.add(handle);
 //                    CancelCommandRequest cancelRequest = new CancelCommandRequest();
@@ -155,10 +151,10 @@ public class IdeSession extends HasEventHandling {
         return result;
     }
 
-    private VariableDefinition[] copyVariables(JsArray<io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.VariableDefinition> list) {
-        VariableDefinition[] array = new VariableDefinition[0];
+    private JsVariableDefinition[] copyVariables(JsArray<io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.VariableDefinition> list) {
+        JsVariableDefinition[] array = new JsVariableDefinition[0];
         //noinspection ConstantConditions
-        list.forEach((item, p1, p2) -> array[array.length] = new VariableDefinition(item.getName(), item.getType()));
+        list.forEach((item, p1, p2) -> array[array.length] = new JsVariableDefinition(item.getType(), item.getName(), item.getName(), ""));
         return array;
     }
 

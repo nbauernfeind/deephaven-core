@@ -42,6 +42,7 @@ import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.ticket_pb.Tic
 import io.deephaven.web.client.api.barrage.BarrageUtils;
 import io.deephaven.web.client.api.batch.RequestBatcher;
 import io.deephaven.web.client.api.batch.TableConfig;
+import io.deephaven.web.client.api.console.JsVariableChanges;
 import io.deephaven.web.client.api.console.JsVariableDefinition;
 import io.deephaven.web.client.api.csv.CsvTypeParser;
 import io.deephaven.web.client.api.lifecycle.HasLifecycle;
@@ -160,8 +161,8 @@ public class WorkerConnection {
     private JsConsumer<LogItem> recordLog = pastLogs::add;
     private ResponseStreamWrapper<LogSubscriptionData> logStream;
 
-    private final JsSet<JsConsumer<JsFieldsChangeUpdate>> fieldUpdatesCallback = new JsSet<>();
-    private Map<String, JsFieldDefinition> knownFields = new HashMap<>();
+    private final JsSet<JsConsumer<JsVariableChanges>> fieldUpdatesCallback = new JsSet<>();
+    private Map<String, JsVariableDefinition> knownFields = new HashMap<>();
     private ResponseStreamWrapper<FieldsChangeUpdate> fieldsChangeUpdateStream;
 
     public WorkerConnection(QueryConnectable<?> info, Supplier<Promise<ConnectToken>> authTokenPromiseSupplier) {
@@ -612,14 +613,14 @@ public class WorkerConnection {
     }
 
     @JsMethod
-    public JsRunnable subscribeToFieldUpdates(JsConsumer<JsFieldsChangeUpdate> callback) {
+    public JsRunnable subscribeToFieldUpdates(JsConsumer<JsVariableChanges> callback) {
         fieldUpdatesCallback.add(callback);
         if (fieldUpdatesCallback.size == 1) {
             fieldsChangeUpdateStream = ResponseStreamWrapper.of(applicationServiceClient.listFields(new ListFieldsRequest(), metadata));
             fieldsChangeUpdateStream.onData(data -> {
-                final JsArray<JsFieldDefinition> created = new JsArray<>();
-                final JsArray<JsFieldDefinition> removed = new JsArray<>();
-                final JsArray<JsFieldDefinition> updated = new JsArray<>();
+                final JsVariableDefinition[] created = new JsVariableDefinition[0];
+                final JsVariableDefinition[] removed = new JsVariableDefinition[0];
+                final JsVariableDefinition[] updated = new JsVariableDefinition[0];
 
                 JsArray<FieldInfo> fieldsList = data.getFieldsList();
                 for (int i = 0; i < fieldsList.length; ++i) {
@@ -627,31 +628,35 @@ public class WorkerConnection {
                     String id = fi.getTicket().getTicket_asB64();
 
                     if (fi.getFieldType().hasRemoved()) {
-                        JsFieldDefinition fd = knownFields.remove(id);
+                        JsVariableDefinition fd = knownFields.remove(id);
                         if (fd != null) {
-                            removed.push(fd);
+                            removed[removed.length] = fd;
                         }
                     } else {
-                        JsFieldDefinition fd = new JsFieldDefinition(fi);
+                        JsVariableDefinition fd = new JsVariableDefinition(fi);
 
-                        JsFieldDefinition prev = knownFields.put(id, fd);
+                        JsVariableDefinition prev = knownFields.put(id, fd);
                         if (prev != null) {
-                            updated.push(prev);
-                        } else{
-                            created.push(fd);
+                            if (!prev.getType().equals(fd.getType())) {
+                                removed[removed.length] = prev;
+                                updated[updated.length] = fd;
+                            } else {
+                                updated[updated.length] = fd;
+                            }
+                        } else {
+                            created[created.length] = fd;
                         }
                     }
                 }
 
-                notifyFieldsChangeListeners(new JsFieldsChangeUpdate(created, removed, updated));
+                notifyFieldsChangeListeners(new JsVariableChanges(created, removed, updated));
             });
             fieldsChangeUpdateStream.onEnd(status -> {
                 //TODO handle reconnect
             });
         } else {
-            JsArray<JsFieldDefinition> fields = new JsArray<>();
-            knownFields.values().forEach(fields::push);
-            JsFieldsChangeUpdate update = new JsFieldsChangeUpdate(fields, new JsArray<>(), new JsArray<>());
+            final JsVariableDefinition[] empty = new JsVariableDefinition[0];
+            final JsVariableChanges update = new JsVariableChanges(knownFields.values().toArray(empty), empty, empty);
             callback.apply(update);
         }
         return ()-> {
@@ -666,8 +671,8 @@ public class WorkerConnection {
         };
     }
 
-    private void notifyFieldsChangeListeners(JsFieldsChangeUpdate update) {
-        for (JsConsumer<JsFieldsChangeUpdate> callback : JsItr.iterate(fieldUpdatesCallback.keys())) {
+    private void notifyFieldsChangeListeners(JsVariableChanges update) {
+        for (JsConsumer<JsVariableChanges> callback : JsItr.iterate(fieldUpdatesCallback.keys())) {
             callback.apply(update);
         }
     }

@@ -267,7 +267,7 @@ public class FieldType {
 
   public native CustomInfo getCustom();
 
-  public native FieldCase getFieldCase();
+  public native int getFieldCase();
 
   public native FigureInfo getFigure();
 

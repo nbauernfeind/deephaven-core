@@ -56,8 +56,9 @@ message FieldInfo {
       CustomInfo custom = 2;
       TableInfo table = 3;
       FigureInfo figure = 4;
-      // reserved = 4; // for TableMap
-      // reserved = 5; // for TreeTable
+      // reserved = 5; // for TableMap
+      // reserved = 6; // for TreeTable
+      // reserved = 7; // for PANDAS
 
       // use values above 4096 for custom client behavior
     }
