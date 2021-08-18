@@ -16,6 +16,7 @@ import java.io.IOException;
 import static io.deephaven.db.appmode.ApplicationConfigs.testAppDir;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Ignore("cannot predict working directory; tests can't predictably find files")
 public class ApplicationTest {
 
     private final JUnit4QueryTableTestBase base = new JUnit4QueryTableTestBase();
@@ -47,19 +48,19 @@ public class ApplicationTest {
     }
 
     @Test
-    @Ignore("the working directory is not useful; cannot create path to app files")
     public void app01() throws IOException {
         session = new GroovyDeephavenSession(GroovyDeephavenSession.RunScripts.none(), false);
         ApplicationState app = ApplicationFactory.create(testAppDir(), ApplicationConfigs.app01(), session);
         assertThat(app.name()).isEqualTo("My Groovy Application");
-        assertThat(app.numFieldsExported()).isEqualTo(2);
+        assertThat(app.numFieldsExported()).isEqualTo(3);
         assertThat(app.getField("hello").value()).isInstanceOf(Table.class);
         assertThat(app.getField("world").value()).isInstanceOf(Table.class);
+        assertThat(app.getField("hello_i").value()).isInstanceOf(Table.class);
         app.shutdown();
     }
 
     @Test
-    @Ignore("python test needs to run in a container; also working directory is not useful")
+    @Ignore("python test needs to run in a container")
     public void app02() throws IOException {
         session = new PythonDeephavenSession(false, false);
         ApplicationState app = ApplicationFactory.create(testAppDir(), ApplicationConfigs.app02(), session);

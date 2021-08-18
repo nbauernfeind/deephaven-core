@@ -2,5 +2,6 @@ import io.deephaven.appmode.ApplicationContext
 import io.deephaven.db.tables.utils.TableTools
 
 app = ApplicationContext.get()
-app.setField("hello", TableTools.emptyTable(42))
+hello = TableTools.emptyTable(42)
+app.setField("hello", hello)
 app.setField("world", TableTools.timeTable("00:00:01"))

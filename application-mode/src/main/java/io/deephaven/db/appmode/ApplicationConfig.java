@@ -6,7 +6,6 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 public interface ApplicationConfig {
@@ -70,9 +69,5 @@ public interface ApplicationConfig {
         void visit(QSTApplication qst);
 
         void visit(DynamicApplication<?> advanced);
-    }
-
-    static Path[] splitFilePropertyIntoPaths(final String file) {
-        return Arrays.stream(file.split(";")).map(Paths::get).toArray(Path[]::new);
     }
 }

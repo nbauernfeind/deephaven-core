@@ -18,6 +18,7 @@ public class ApplicationConfigs {
                 .id(ApplicationConfigs.class.getName() + ".app01")
                 .name("My Groovy Application")
                 .addFiles(Paths.get("01-groovy.groovy"))
+                .addFiles(Paths.get("01-groovy-b.groovy"))
                 .build();
     }
 
@@ -45,7 +46,7 @@ public class ApplicationConfigs {
         // TODO: figure out why we do this in our top level build.gradle
         // b/c referring to the checked out directory name "deephaven-core" is very fragile
         //workingDir = "$rootDir/.."
-        return Paths.get("core/grpc-api/src/test/app.d");
+        return Paths.get("deephaven-core/grpc-api/src/test/app.d");
     }
 
     public static class App00 implements Application.Factory {
