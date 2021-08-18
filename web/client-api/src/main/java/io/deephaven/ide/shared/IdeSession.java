@@ -68,12 +68,12 @@ public class IdeSession extends HasEventHandling {
 
     // TODO: #37: Need SmartKey support for this functionality
     @JsIgnore
-    public Promise<JsTreeTable> getTreeTable(String name) {
-        return connection.getTreeTable(name, result);
+    public Promise<JsTreeTable> getTreeTable(JsVariableDefinition name) {
+        return connection.getTreeTable(name);
     }
 
-    public Promise<JsFigure> getFigure(String name) {
-        return connection.getFigure(name, result);
+    public Promise<JsFigure> getFigure(JsVariableDefinition name) {
+        return connection.getFigure(name);
     }
 
     public Promise<Object> getObject(Object definitionObject) {
@@ -161,11 +161,8 @@ public class IdeSession extends HasEventHandling {
     private JsVariableDefinition[] copyVariables(JsArray<io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.VariableDefinition> list) {
         JsVariableDefinition[] array = new JsVariableDefinition[0];
         list.forEach((item, p1, p2) -> {
-            // Must manually create the id for console variables.
-            String id = "s/" + item.getName();
-            String id_b64 = Base64.getEncoder().encodeToString(id.getBytes(StandardCharsets.UTF_8));
             //noinspection ConstantConditions
-            return array[array.length] = new JsVariableDefinition(item.getType(), item.getName(), id_b64, "");
+            return array[array.length] = new JsVariableDefinition(item.getType(), item.getTitle(), item.getId().getTicket_asB64(), "");
         });
         return array;
     }

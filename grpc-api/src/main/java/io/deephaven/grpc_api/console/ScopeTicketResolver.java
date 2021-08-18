@@ -139,7 +139,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
      * @return the flight ticket this descriptor represents
      */
     public static Flight.Ticket flightTicketForName(final String name) {
-        final byte[] ticket = (TICKET_PREFIX + '/' + name).getBytes(StandardCharsets.UTF_8);
+        final byte[] ticket = (TICKET_PREFIX + "/" + name).getBytes(StandardCharsets.UTF_8);
         return Flight.Ticket.newBuilder()
                 .setTicket(ByteStringAccess.wrap(ticket))
                 .build();
@@ -152,7 +152,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
      * @return the flight ticket this descriptor represents
      */
     public static Ticket ticketForName(final String name) {
-        final byte[] ticket = (TICKET_PREFIX + '/' + name).getBytes(StandardCharsets.UTF_8);
+        final byte[] ticket = (TICKET_PREFIX + "/" + name).getBytes(StandardCharsets.UTF_8);
         return Ticket.newBuilder()
                 .setTicket(ByteStringAccess.wrap(ticket))
                 .build();

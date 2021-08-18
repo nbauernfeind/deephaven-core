@@ -63,7 +63,7 @@ public class JsVariableDefinition {
 
     @JsProperty @Deprecated
     public String getName() {
-        return id;
+        return title;
     }
 
     @JsProperty
