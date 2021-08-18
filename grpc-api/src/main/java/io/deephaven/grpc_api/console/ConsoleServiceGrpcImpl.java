@@ -54,8 +54,8 @@ import static io.deephaven.grpc_api.util.GrpcUtil.safelyExecuteLocked;
 public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImplBase {
     private static final Logger log = LoggerFactory.getLogger(ConsoleServiceGrpcImpl.class);
 
-    public static final String WORKER_CONSOLE_TYPE = Configuration.getInstance().getStringWithDefault("io.deephaven.console.type", "python");
-    public static final boolean REMOTE_CONSOLE_DISABLED = Configuration.getInstance().getBooleanWithDefault("io.deephaven.console.disable", false);
+    public static final String WORKER_CONSOLE_TYPE = Configuration.getInstance().getStringWithDefault("deephaven.console.type", "python");
+    public static final boolean REMOTE_CONSOLE_DISABLED = Configuration.getInstance().getBooleanWithDefault("deephaven.console.disable", false);
 
     private final Map<String, Provider<ScriptSession>> scriptTypes;
     private final TicketRouter ticketRouter;

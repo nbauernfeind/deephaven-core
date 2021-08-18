@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 class ApplicationConfigImpl {
 
-    static final String APPLICATION_DIR_PROP = "Application.dir";
+    static final String APPLICATION_DIR_PROP = "deephaven.application.dir";
 
     static final String APPLICATION_DIR = System.getProperty(APPLICATION_DIR_PROP, null);
 
