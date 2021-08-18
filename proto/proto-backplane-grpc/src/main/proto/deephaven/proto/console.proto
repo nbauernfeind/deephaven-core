@@ -31,10 +31,7 @@ service ConsoleService {
     rpc GetCompletionItems(GetCompletionItemsRequest) returns (GetCompletionItemsResponse) {}
     rpc CloseDocument(CloseDocumentRequest) returns (CloseDocumentResponse) {}
 
-    rpc FetchTable(FetchTableRequest) returns (io.deephaven.proto.backplane.grpc.ExportedTableCreationResponse) {}
-    rpc FetchPandasTable(FetchPandasTableRequest) returns (io.deephaven.proto.backplane.grpc.ExportedTableCreationResponse) {}
     rpc FetchFigure(FetchFigureRequest) returns (FetchFigureResponse) {}
-    rpc FetchTableMap(FetchTableMapRequest) returns (FetchTableMapResponse) {}
 }
 
 
@@ -82,8 +79,9 @@ message ExecuteCommandResponse {
     repeated VariableDefinition removed = 4;
 }
 message VariableDefinition {
-    string name = 1;
-    string type = 2;
+    string type = 1;
+    string title = 2;
+    Ticket id = 3;
 }
 message BindTableToVariableRequest {
     io.deephaven.proto.backplane.grpc.Ticket console_id = 1;
@@ -185,22 +183,8 @@ message TextEdit {
     string text = 2;
 }
 
-message FetchTableRequest {
-    io.deephaven.proto.backplane.grpc.Ticket console_id = 1;
-    io.deephaven.proto.backplane.grpc.Ticket table_id = 2;
-
-    string table_name = 3;
-}
-
-message FetchPandasTableRequest {
-    io.deephaven.proto.backplane.grpc.Ticket console_id = 1;
-    io.deephaven.proto.backplane.grpc.Ticket table_id = 2;
-}
-
 message FetchFigureRequest {
-    io.deephaven.proto.backplane.grpc.Ticket console_id = 1;
-
-    string figure_name = 2;
+    string figure_name = 1;
 }
 message FetchFigureResponse {
     FigureDescriptor figure_descriptor = 1;
@@ -459,12 +443,4 @@ message FigureDescriptor {
         repeated string column_types = 2;
         bool require_all_filters_to_display = 3;
     }
-}
-
-message FetchTableMapRequest {
-    io.deephaven.proto.backplane.grpc.Ticket console_id = 1;
-    reserved 2;// ticket to place the result in
-}
-message FetchTableMapResponse {
-
 }

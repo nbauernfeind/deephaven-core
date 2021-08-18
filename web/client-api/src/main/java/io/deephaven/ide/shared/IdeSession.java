@@ -21,13 +21,15 @@ import io.deephaven.web.shared.fu.JsConsumer;
 import io.deephaven.web.shared.fu.JsRunnable;
 import io.deephaven.web.shared.ide.ExecutionHandle;
 import jsinterop.annotations.JsIgnore;
-import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsOptional;
 import jsinterop.annotations.JsType;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
 import jsinterop.base.JsArrayLike;
 import jsinterop.base.JsPropertyMap;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import static io.deephaven.web.client.api.QueryConnectable.EVENT_TABLE_OPENED;
 
@@ -108,6 +110,10 @@ public class IdeSession extends HasEventHandling {
         );
     }
 
+    public JsRunnable subscribeToFieldUpdates(JsConsumer<JsVariableChanges> callback) {
+        return connection.subscribeToFieldUpdates(callback);
+    }
+
     public void close() {
         closer.run();
     }
@@ -153,8 +159,13 @@ public class IdeSession extends HasEventHandling {
 
     private JsVariableDefinition[] copyVariables(JsArray<io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.console_pb.VariableDefinition> list) {
         JsVariableDefinition[] array = new JsVariableDefinition[0];
-        //noinspection ConstantConditions
-        list.forEach((item, p1, p2) -> array[array.length] = new JsVariableDefinition(item.getType(), item.getName(), item.getName(), ""));
+        list.forEach((item, p1, p2) -> {
+            // Must manually create the id for console variables.
+            String id = "s/" + item.getName();
+            String id_b64 = Base64.getEncoder().encodeToString(id.getBytes(StandardCharsets.UTF_8));
+            //noinspection ConstantConditions
+            return array[array.length] = new JsVariableDefinition(item.getType(), item.getName(), id_b64, "");
+        });
         return array;
     }
 

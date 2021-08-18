@@ -32,6 +32,7 @@ import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_p
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.ListFieldsRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.ExportNotification;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.ExportNotificationRequest;
+import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.ExportRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.HandshakeRequest;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.HandshakeResponse;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.session_pb.ReleaseRequest;
@@ -56,7 +57,9 @@ import io.deephaven.web.client.state.ClientTableState;
 import io.deephaven.web.client.state.HasTableBinding;
 import io.deephaven.web.client.state.TableReviver;
 import io.deephaven.web.shared.data.*;
+import io.deephaven.web.shared.fu.JsBiConsumer;
 import io.deephaven.web.shared.fu.JsConsumer;
+import io.deephaven.web.shared.fu.JsFunction;
 import io.deephaven.web.shared.fu.JsRunnable;
 import io.deephaven.web.shared.ide.VariableType;
 import jsinterop.annotations.JsMethod;
@@ -70,6 +73,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -530,18 +534,12 @@ public class WorkerConnection {
     }
 
     public Promise<JsTable> getTable(String tableName) {
-        return getTable(tableName, null);
-    }
-
-    public Promise<JsTable> getTable(String tableName, Ticket script) {
         return whenServerReady("get a table").then(serve -> {
             JsLog.debug("innerGetTable", tableName, " started");
             return newState(info,
                 (c, cts, metadata) -> {
-                    JsLog.debug("performing fetch for ", tableName, " / ", cts, " (" + LazyString.of(cts::getHandle), ",", script, ")");
-                    assert script != null : "no global scope support at this time";
+                    JsLog.debug("performing fetch for ", tableName, " / ", cts, " (" + LazyString.of(cts::getHandle), ")");
                     FetchTableRequest fetch = new FetchTableRequest();
-                    fetch.setConsoleId(script);
                     fetch.setTableName(tableName);
                     fetch.setTableId(cts.getHandle().makeTicket());
                     consoleServiceClient.fetchTable(fetch, metadata, c::apply);
@@ -588,31 +586,19 @@ public class WorkerConnection {
                 return (Promise) getTreeTable(definition.getName());
             case Figure:
                 return (Promise) getFigure(definition.getName());
-            case TableMap:
-                return (Promise) getTableMap(definition.getName());
             case Pandas:
                 return (Promise) getPandas(definition.getName());
-            default:
-                return Promise.reject(new Error("Object " + definition.getName() + " unknown type " + definition.getType()));
-        }
-    }
-
-    public Promise<Object> getObject(JsVariableDefinition definition, Ticket script) {
-        switch (VariableType.valueOf(definition.getType())) {
-            case Table:
-                return (Promise) getTable(definition.getName(), script);
-            case TreeTable:
-                return (Promise) getTreeTable(definition.getName(), script);
-            case Figure:
-                return (Promise) getFigure(definition.getName(), script);
-            case Pandas:
-                return (Promise) getPandas(definition.getName(), script);
+            case OtherWidget:
+                return (Promise) getWidget(definition.getName());
+//            case TableMap:
+//                return (Promise) getTableMap(definition.getName(), script);
             default:
                 return Promise.reject(new Error("Object " + definition.getName() + " unknown type " + definition.getType() + " for script."));
         }
     }
 
     @JsMethod
+    @SuppressWarnings("ConstantConditions")
     public JsRunnable subscribeToFieldUpdates(JsConsumer<JsVariableChanges> callback) {
         fieldUpdatesCallback.add(callback);
         if (fieldUpdatesCallback.size == 1) {
@@ -639,7 +625,7 @@ public class WorkerConnection {
                         if (prev != null) {
                             if (!prev.getType().equals(fd.getType())) {
                                 removed[removed.length] = prev;
-                                updated[updated.length] = fd;
+                                created[created.length] = fd;
                             } else {
                                 updated[updated.length] = fd;
                             }
