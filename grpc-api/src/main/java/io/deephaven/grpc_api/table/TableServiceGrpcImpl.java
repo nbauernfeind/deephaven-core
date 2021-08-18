@@ -307,7 +307,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState session = sessionService.getCurrentSession();
 
-            final SessionState.ExportObject<Object> export = session.getExport(request);
+            final SessionState.ExportObject<Object> export = ticketRouter.resolve(session, request);
 
             session.nonExport()
                     .require(export)

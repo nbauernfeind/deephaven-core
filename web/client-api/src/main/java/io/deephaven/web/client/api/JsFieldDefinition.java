@@ -10,10 +10,8 @@ import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
-import java.io.Serializable;
-
-@JsType(namespace = "dh")
-public class JsFieldDefinition implements Serializable {
+@JsType(namespace = "dh", name = "FieldDefinition")
+public class JsFieldDefinition {
     private Ticket ticket;
     private String fieldDescription;
     private JsVariableDefinition definition;

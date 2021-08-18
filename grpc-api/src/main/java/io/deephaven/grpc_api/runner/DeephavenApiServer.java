@@ -1,10 +1,9 @@
 package io.deephaven.grpc_api.runner;
 
 import io.deephaven.appmode.ApplicationInjector;
-import io.deephaven.db.appmode.Application;
-import io.deephaven.db.appmode.ApplicationConfig;
 import io.deephaven.db.util.AbstractScriptSession;
 import io.deephaven.grpc_api.app_mode.AppMode;
+import io.deephaven.grpc_api.app_mode.ApplicationServiceGrpcImpl;
 import io.deephaven.grpc_api.console.ConsoleServiceGrpcImpl;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.io.logger.Logger;
@@ -56,7 +55,7 @@ public class DeephavenApiServer {
                 .withSessionTokenExpireTmMs(300000) // defaults to 5 min
                 .withOut(out)
                 .withErr(err)
-                .withAppMode(AppMode.HYBRID) // TODO NOCOMMIT (NATE): this needs to be flaggable
+                .withAppMode(AppMode.currentMode())
                 .build();
         final DeephavenApiServer server = injector.getServer();
         final SessionService sessionService = injector.getSessionService();
@@ -89,6 +88,7 @@ public class DeephavenApiServer {
     private final LogInit logInit;
     private final ConsoleServiceGrpcImpl consoleService;
     private final ApplicationInjector applicationInjector;
+    private final ApplicationServiceGrpcImpl applicationService;
 
     @Inject
     public DeephavenApiServer(
@@ -96,12 +96,14 @@ public class DeephavenApiServer {
             final LiveTableMonitor ltm,
             final LogInit logInit,
             final ConsoleServiceGrpcImpl consoleService,
-            final ApplicationInjector applicationInjector) {
+            final ApplicationInjector applicationInjector,
+            final ApplicationServiceGrpcImpl applicationService) {
         this.server = server;
         this.ltm = ltm;
         this.logInit = logInit;
         this.consoleService = consoleService;
         this.applicationInjector = applicationInjector;
+        this.applicationService = applicationService;
     }
 
     private void start() throws IOException, ClassNotFoundException {
@@ -119,10 +121,12 @@ public class DeephavenApiServer {
         log.info().append("Starting LTM...").endl();
         ltm.start();
 
+        // inject applications before we start the gRPC server
+        applicationInjector.run();
+        applicationService.validateFields();
+
         log.info().append("Starting server...").endl();
         server.start();
-
-        applicationInjector.run();
     }
 
     private void blockUntilShutdown() throws InterruptedException {

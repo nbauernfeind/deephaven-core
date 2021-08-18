@@ -612,7 +612,7 @@ public class WorkerConnection {
     }
 
     @JsMethod
-    public JsRunnable subscribeFieldDefinitionUpdates(JsConsumer<JsFieldsChangeUpdate> callback) {
+    public JsRunnable subscribeToFieldUpdates(JsConsumer<JsFieldsChangeUpdate> callback) {
         fieldUpdatesCallback.add(callback);
         if (fieldUpdatesCallback.size == 1) {
             fieldsChangeUpdateStream = ResponseStreamWrapper.of(applicationServiceClient.listFields(new ListFieldsRequest(), metadata));

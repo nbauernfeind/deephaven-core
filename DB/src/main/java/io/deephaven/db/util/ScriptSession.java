@@ -12,7 +12,6 @@ import io.deephaven.db.util.scripts.ScriptPathLoaderState;
 import io.deephaven.lang.parse.api.CompletionParseService;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;

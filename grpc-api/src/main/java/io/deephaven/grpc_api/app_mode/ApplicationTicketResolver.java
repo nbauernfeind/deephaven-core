@@ -25,6 +25,10 @@ public class ApplicationTicketResolver extends TicketResolverBase {
 
     }
 
+    public void visitAllApplications(Consumer<ApplicationState> consumer) {
+
+    }
+
     @Override
     public <T> SessionState.ExportObject<T> resolve(@Nullable SessionState session, ByteBuffer ticket) {
         throw new UnsupportedOperationException("not yet implemented");

@@ -1,5 +1,6 @@
 package io.deephaven.appmode;
 
+import com.google.rpc.Code;
 import io.deephaven.db.appmode.DynamicApplication;
 import io.deephaven.db.appmode.QSTApplication;
 import io.deephaven.db.appmode.StaticClassApplication;
@@ -10,6 +11,7 @@ import io.deephaven.db.appmode.ApplicationState;
 import io.deephaven.db.util.GroovyDeephavenSession;
 import io.deephaven.db.util.PythonDeephavenSession;
 import io.deephaven.db.util.ScriptSession;
+import io.deephaven.grpc_api.util.GrpcUtil;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -67,7 +69,7 @@ public class ApplicationFactory implements ApplicationConfig.Visitor {
 
     @Override
     public void visit(QSTApplication qst) {
-        throw new UnsupportedOperationException("TODO, QST");
+        throw GrpcUtil.statusRuntimeException(Code.UNIMPLEMENTED, "See deephaven-core#1080; support qst application");
     }
 
     @Override

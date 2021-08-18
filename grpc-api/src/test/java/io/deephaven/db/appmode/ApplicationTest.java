@@ -8,6 +8,7 @@ import io.deephaven.db.util.PythonDeephavenSession;
 import io.deephaven.db.v2.JUnit4QueryTableTestBase;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class ApplicationTest {
     }
 
     @Test
+    @Ignore("the working directory is not useful; cannot create path to app files")
     public void app01() throws IOException {
         session = new GroovyDeephavenSession(GroovyDeephavenSession.RunScripts.none(), false);
         ApplicationState app = ApplicationFactory.create(testAppDir(), ApplicationConfigs.app01(), session);
@@ -57,6 +59,7 @@ public class ApplicationTest {
     }
 
     @Test
+    @Ignore("python test needs to run in a container; also working directory is not useful")
     public void app02() throws IOException {
         session = new PythonDeephavenSession(false, false);
         ApplicationState app = ApplicationFactory.create(testAppDir(), ApplicationConfigs.app02(), session);
@@ -68,6 +71,7 @@ public class ApplicationTest {
     }
 
     @Test
+    @Ignore("TODO: deephaven-core#1080 support QST application")
     public void app03() {
         ApplicationState app = ApplicationFactory.create(testAppDir(), ApplicationConfigs.app03(), session);
         assertThat(app.name()).isEqualTo("My QST Application");

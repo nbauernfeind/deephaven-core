@@ -47,12 +47,13 @@ message FieldInfo {
   string field_name = 2;
   FieldType field_type = 3;
   string field_description = 4;
-  reserved 5; // reserved for future app name or id
+  string application_name = 5; // display-friendly identification
+  string application_id = 6; // computer-friendly identification
 
   message FieldType {
     oneof field {
       RemovedField removed = 1;
-      OpaqueInfo opaque = 2;
+      CustomInfo custom = 2;
       TableInfo table = 3;
       FigureInfo figure = 4;
       // reserved = 4; // for TableMap
@@ -71,12 +72,12 @@ message RemovedField {
 }
 
 /*
- * OpaqueInfo can be used to provide information about an exposed field in an unstructured way.
+ * CustomInfo can be used to provide information about an exposed field in an unstructured way.
  *
  * Alternatively, one can extend FieldType and re-build with custom types of their own structure.
  */
-message OpaqueInfo {
-  bytes app_metadata = 1;
+message CustomInfo {
+  string type = 1; // application-specific type to identify the purpose of this custom field reference
 }
 
 /*

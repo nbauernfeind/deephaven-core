@@ -13,5 +13,5 @@ public interface AppModeModule {
     BindableService bindApplicationServiceImpl(ApplicationServiceGrpcImpl applicationService);
 
     @Binds @IntoSet
-    TicketResolver bindFieldTicketResolver(ApplicationTicketResolver resolver);
+    TicketResolver bindApplicationTicketResolver(ApplicationTicketResolver resolver);
 }

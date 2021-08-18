@@ -7,10 +7,8 @@ import jsinterop.annotations.JsType;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
 
-import java.io.Serializable;
-
-@JsType(namespace = "dh")
-public class JsVariableDefinition implements Serializable {
+@JsType(namespace = "dh", name = "VariableDefinition")
+public class JsVariableDefinition {
     private String name;
     private String type;
 

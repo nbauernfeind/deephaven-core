@@ -45,15 +45,15 @@ public class ApplicationConfigs {
         // TODO: figure out why we do this in our top level build.gradle
         // b/c referring to the checked out directory name "deephaven-core" is very fragile
         //workingDir = "$rootDir/.."
-        return Paths.get("deephaven-core/grpc-api/src/test/app.d");
+        return Paths.get("core/grpc-api/src/test/app.d");
     }
 
     public static class App00 implements Application.Factory {
 
         @Override
         public final Application create() {
-            Field<Table> hello = Field.of("hello", TableTools.emptyTable(42).view("I=i"), "A table with one column 'I' and 42 rows, 0-41.");
-            Field<Table> world = Field.of("world", TableTools.timeTable("00:00:01"));
+            Field<Table> hello = StandardField.of("hello", TableTools.emptyTable(42).view("I=i"), "A table with one column 'I' and 42 rows, 0-41.");
+            Field<Table> world = StandardField.of("world", TableTools.timeTable("00:00:01"));
             return Application.builder()
                     .id(App00.class.getName())
                     .name("My Class Application")
@@ -73,10 +73,10 @@ public class ApplicationConfigs {
                     latch.countDown();
                 }
             };
-            state.setField(Field.of("initial_field", TableTools.timeTable("00:00:01")));
+            state.setField("initial_field", TableTools.timeTable("00:00:01"));
             final Thread thread = new Thread(() -> {
                 for (int i = 0; ; ++i) {
-                    state.setField(Field.of(String.format("field_%d", i), TableTools.emptyTable(i).view("I=i").tail(1)));
+                    state.setField(String.format("field_%d", i), TableTools.emptyTable(i).view("I=i").tail(1));
                     try {
                         if (latch.await(1, TimeUnit.SECONDS)) {
                             return;

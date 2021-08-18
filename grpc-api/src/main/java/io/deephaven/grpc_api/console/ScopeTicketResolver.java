@@ -234,7 +234,6 @@ public class ScopeTicketResolver extends TicketResolverBase {
      * @param descriptor the descriptor to convert
      * @return a flight ticket that represents the descriptor
      */
-    //TODO #412 use this or remove it (above is unused too?)
     public static Flight.Ticket descriptorToTicket(final Flight.FlightDescriptor descriptor) {
         return flightTicketForName(nameForDescriptor(descriptor));
     }

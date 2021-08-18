@@ -1,40 +1,20 @@
 package io.deephaven.db.appmode;
 
-import org.immutables.value.Value.Check;
-import org.immutables.value.Value.Immutable;
-
-import javax.lang.model.SourceVersion;
 import java.util.Optional;
 
-@Immutable
-public abstract class Field<T> {
+public interface Field<T> {
+    /**
+     * A human readable name for this field. Often used to label the web-ui tab.
+     */
+    String name();
 
-    public static <T> Field<T> of(String name, T value) {
-        return ImmutableField.<T>builder().name(name).value(value).build();
-    }
+    /**
+     * Retrieve the instance that this field references.
+     */
+    T value();
 
-    public static <T> Field<T> of(String name, T value, String description) {
-        return ImmutableField.<T>builder().name(name).value(value).description(description).build();
-    }
-
-    public abstract String name();
-
-    public abstract T value();
-
-    public abstract Optional<String> description();
-
-    @Check
-    final void checkName() {
-        if (!SourceVersion.isName(name())) {
-            throw new IllegalArgumentException(
-                "name() is invalid, must conform to javax.lang.model.SourceVersion#isName");
-        }
-    }
-
-    @Check
-    final void checkDescription() {
-        if (description().isPresent() && description().get().isEmpty()) {
-            throw new IllegalArgumentException("description(), when present, must not be empty");
-        }
-    }
+    /**
+     * An optional description for users who want to improve exploration of an existing application state.
+     */
+    Optional<String> description();
 }

@@ -17,7 +17,7 @@ public abstract class QSTApplication implements ApplicationConfig {
         return ImmutableQSTApplication.of();
     }
 
-    // Note: QST structure undecided
+    // TODO core#1080: QST structure undecided
 
     @Override
     public final <V extends Visitor> V walk(V visitor) {

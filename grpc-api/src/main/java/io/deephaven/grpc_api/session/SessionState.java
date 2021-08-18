@@ -229,7 +229,6 @@ public class SessionState {
      * @param ticket the export ticket
      * @return a future-like object that represents this export
      */
-    //TODO #412 use this or remove it
     public <T> ExportObject<T> getExport(final Flight.Ticket ticket) {
         return getExport(ExportTicketHelper.ticketToExportId(ticket));
     }

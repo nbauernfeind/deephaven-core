@@ -174,7 +174,6 @@ public class ExportTicketHelper {
      * @param ticket the ticket to convert
      * @return a flight descriptor that represents the ticket
      */
-    // TODO #412 use this or remove it
     public static Flight.FlightDescriptor ticketToDescriptor(final Flight.Ticket ticket) {
         return exportIdToDescriptor(ticketToExportId(ticket));
     }
@@ -195,7 +194,6 @@ public class ExportTicketHelper {
      * @param descriptor the descriptor to convert
      * @return a flight ticket that represents the descriptor
      */
-    // TODO #412 use this or remove it
     public static Ticket descriptorToTicket(final Flight.FlightDescriptor descriptor) {
         return exportIdToTicket(descriptorToExportId(descriptor));
     }

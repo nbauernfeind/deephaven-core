@@ -10,6 +10,7 @@ import io.deephaven.db.plot.FigureWidget;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.tables.live.LiveTableMonitor;
 import io.deephaven.db.tables.remote.preview.ColumnPreviewManager;
+import io.deephaven.db.util.DelegatedScriptSession;
 import io.deephaven.db.util.ExportedObjectType;
 import io.deephaven.db.util.NoLanguageDeephavenSession;
 import io.deephaven.db.util.ScriptSession;
@@ -54,6 +55,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     private static final Logger log = LoggerFactory.getLogger(ConsoleServiceGrpcImpl.class);
 
     public static final String WORKER_CONSOLE_TYPE = Configuration.getInstance().getStringWithDefault("io.deephaven.console.type", "python");
+    public static final boolean REMOTE_CONSOLE_DISABLED = Configuration.getInstance().getBooleanWithDefault("io.deephaven.console.disable", false);
 
     private final Map<String, Provider<ScriptSession>> scriptTypes;
     private final TicketRouter ticketRouter;
@@ -90,10 +92,12 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     public void getConsoleTypes(final GetConsoleTypesRequest request,
                                 final StreamObserver<GetConsoleTypesResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-            // TODO (#702): initially show all console types; the first console determines the global console type thereafter
-            responseObserver.onNext(GetConsoleTypesResponse.newBuilder()
-                    .addConsoleTypes(WORKER_CONSOLE_TYPE)
-                    .build());
+            if (!REMOTE_CONSOLE_DISABLED) {
+                // TODO (#702): initially show all console types; the first console determines the global console type thereafter
+                responseObserver.onNext(GetConsoleTypesResponse.newBuilder()
+                        .addConsoleTypes(WORKER_CONSOLE_TYPE)
+                        .build());
+            }
             responseObserver.onCompleted();
         });
     }
@@ -102,6 +106,11 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     public void startConsole(StartConsoleRequest request, StreamObserver<StartConsoleResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             SessionState session = sessionService.getCurrentSession();
+            if (REMOTE_CONSOLE_DISABLED) {
+                responseObserver.onError(GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Remote console disabled"));
+                return;
+            }
+
             // TODO auth hook, ensure the user can do this (owner of worker or admin)
 //            session.getAuthContext().requirePrivilege(CreateConsole);
 
@@ -117,7 +126,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                     .submit(() -> {
                         final ScriptSession scriptSession;
                         if (sessionType.equals(WORKER_CONSOLE_TYPE)) {
-                            scriptSession = globalSessionProvider.getGlobalSession();
+                            scriptSession = new DelegatedScriptSession(globalSessionProvider.getGlobalSession());
                         } else {
                             scriptSession = new NoLanguageDeephavenSession(sessionType);
                             log.error().append("Session type '" + sessionType + "' is disabled." +

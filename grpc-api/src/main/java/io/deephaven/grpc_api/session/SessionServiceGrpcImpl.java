@@ -164,10 +164,11 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
             session.newExport(request.getResultId())
                     .require(source)
                     .onError(responseObserver::onError)
-                    .submit(source::get);
-
-            responseObserver.onNext(ExportResponse.getDefaultInstance());
-            responseObserver.onCompleted();
+                    .submit(() -> {
+                        GrpcUtil.safelyExecute(() -> responseObserver.onNext(ExportResponse.getDefaultInstance()));
+                        GrpcUtil.safelyExecute(responseObserver::onCompleted);
+                        return source.get();
+                    });
         });
     }
 

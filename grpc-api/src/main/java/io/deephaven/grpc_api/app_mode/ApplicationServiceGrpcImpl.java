@@ -1,5 +1,8 @@
 package io.deephaven.grpc_api.app_mode;
 
+import io.deephaven.db.appmode.ApplicationState;
+import io.deephaven.db.appmode.CustomField;
+import io.deephaven.db.appmode.Field;
 import io.deephaven.db.tables.Table;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
 import io.deephaven.grpc_api.console.GlobalSessionProvider;
@@ -26,14 +29,24 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
     private final AppMode mode;
     private final GlobalSessionProvider sessionProvider;
     private final SessionService sessionService;
+    private final ApplicationTicketResolver ticketResolver;
 
     @Inject
     public ApplicationServiceGrpcImpl(final AppMode mode,
                                       final GlobalSessionProvider globalSessionProvider,
-                                      final SessionService sessionService) {
+                                      final SessionService sessionService,
+                                      final ApplicationTicketResolver ticketResolver) {
         this.mode = mode;
         this.sessionProvider = globalSessionProvider;
         this.sessionService = sessionService;
+        this.ticketResolver = ticketResolver;
+    }
+
+    public void validateFields() {
+        // Let's ensure that we can create field info for every exposed field.
+        ticketResolver.visitAllApplications(app -> {
+            app.listFields().forEach(field -> getFieldInfo(app, field));
+        });
     }
 
     @Override
@@ -43,7 +56,9 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
             final FieldsChangeUpdate.Builder responseBuilder = FieldsChangeUpdate.newBuilder();
 
             if (mode.hasVisibilityToAppExports()) {
-                log.warn().append("Skipping request to list application mode exports.").endl();
+                ticketResolver.visitAllApplications(app -> {
+                    app.listFields().forEach(field -> responseBuilder.addFields(getFieldInfo(app, field)));
+                });
             }
             if (mode.hasVisibilityToConsoleExports() && session != null) {
                 sessionProvider.getGlobalSession().getVariables().forEach((var, obj) ->{
@@ -63,6 +78,38 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
         });
     }
 
+    private static FieldInfo getFieldInfo(final ApplicationState app, final Field<?> field) {
+        if (field instanceof CustomField) {
+            return getCustomFieldInfo(app, (CustomField<?>) field);
+        }
+        return getStandardFieldInfo(app, field);
+    }
+
+    private static FieldInfo getCustomFieldInfo(final ApplicationState app, final CustomField<?> field) {
+        return FieldInfo.newBuilder()
+                .setTicket(app.ticketForField(field))
+                .setFieldName(field.name())
+                .setFieldType(fetchFieldType(field.value()))
+                .setFieldDescription(field.description().orElse(""))
+                .build();
+    }
+
+    private static FieldInfo getStandardFieldInfo(final ApplicationState app, final Field<?> field) {
+        // Note that this method accepts any Field and not just StandardField
+        final FieldInfo.FieldType fieldType = fetchFieldType(field.value());
+
+        if (fieldType == null) {
+            throw new IllegalArgumentException("Application Field is not of standard type; use CustomField instead");
+        }
+
+        return FieldInfo.newBuilder()
+                .setTicket(app.ticketForField(field))
+                .setFieldName(field.name())
+                .setFieldType(fieldType)
+                .setFieldDescription(field.description().orElse(""))
+                .build();
+    }
+
     private static FieldInfo.FieldType fetchFieldType(final Object obj) {
         if (obj instanceof Table) {
             final Table table = (Table) obj;
@@ -72,6 +119,7 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
                     .setSize(table.size())
                     .build()).build();
         }
+
         return null;
     }
 }

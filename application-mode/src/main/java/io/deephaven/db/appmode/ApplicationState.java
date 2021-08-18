@@ -1,5 +1,7 @@
 package io.deephaven.db.appmode;
 
+import io.deephaven.proto.backplane.grpc.Ticket;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -50,11 +52,19 @@ public class ApplicationState {
     }
 
     public synchronized <T> void setField(String name, T value) {
-        setField(Field.of(name, value));
+        setField(StandardField.of(name, value));
     }
 
     public synchronized <T> void setField(String name, T value, String description) {
-        setField(Field.of(name, value, description));
+        setField(StandardField.of(name, value, description));
+    }
+
+    public synchronized <T> void setCustomField(String type, String name, T value) {
+        setField(CustomField.builder(type).of(name, value));
+    }
+
+    public synchronized <T> void setCustomField(String type, String name, T value, String description) {
+        setField(CustomField.builder(type).of(name, value, description));
     }
 
     public synchronized void setField(Field<?> field) {
@@ -83,6 +93,10 @@ public class ApplicationState {
         for (String name : names) {
             removeField(name);
         }
+    }
+
+    public Ticket ticketForField(Field<?> field) {
+        return null;
     }
 
     public void shutdown() {
