@@ -16,7 +16,6 @@ import java.io.IOException;
 import static io.deephaven.db.appmode.ApplicationConfigs.testAppDir;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore("cannot predict working directory; tests can't predictably find files")
 public class ApplicationTest {
 
     private final JUnit4QueryTableTestBase base = new JUnit4QueryTableTestBase();

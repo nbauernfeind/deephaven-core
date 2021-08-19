@@ -43,10 +43,7 @@ public class ApplicationConfigs {
     }
 
     static Path testAppDir() {
-        // TODO: figure out why we do this in our top level build.gradle
-        // b/c referring to the checked out directory name "deephaven-core" is very fragile
-        //workingDir = "$rootDir/.."
-        return Paths.get("deephaven-core/grpc-api/src/test/app.d");
+        return Paths.get(System.getProperty("devroot")).resolve("grpc-api/src/test/app.d");
     }
 
     public static class App00 implements Application.Factory {

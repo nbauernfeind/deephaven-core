@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore("cannot predict working directory; tests can't predictably find files")
 public class ApplicationConfigTest {
 
     @Test
