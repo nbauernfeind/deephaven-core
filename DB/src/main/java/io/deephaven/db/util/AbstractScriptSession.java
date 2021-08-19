@@ -152,7 +152,7 @@ public abstract class AbstractScriptSession extends LivenessScope implements Scr
         if (!toType.isDisplayable()) {
             toValue = null;
         }
-        if (fromValue == null && toValue == null) {
+        if (fromValue == toValue) {
             return;
         }
 

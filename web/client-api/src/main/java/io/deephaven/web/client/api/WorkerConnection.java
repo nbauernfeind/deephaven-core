@@ -529,7 +529,7 @@ public class WorkerConnection {
         info.failureHandled(throwable.toString());
     }
 
-    private Promise<JsTable> getTable(JsVariableDefinition varDef) {
+    public Promise<JsTable> getTable(JsVariableDefinition varDef) {
         return whenServerReady("get a table").then(serve -> {
             JsLog.debug("innerGetTable", varDef.getTitle(), " started");
             return newState(info,
@@ -548,7 +548,7 @@ public class WorkerConnection {
         });
     }
 
-    private Promise<JsTable> getPandas(JsVariableDefinition varDef) {
+    public Promise<JsTable> getPandas(JsVariableDefinition varDef) {
         return whenServerReady("get a pandas table").then(serve -> {
             JsLog.debug("innerGetPandasTable", varDef.getTitle(), " started");
             return newState(info,
@@ -598,8 +598,8 @@ public class WorkerConnection {
             fieldsChangeUpdateStream = ResponseStreamWrapper.of(applicationServiceClient.listFields(new ListFieldsRequest(), metadata));
             fieldsChangeUpdateStream.onData(data -> {
                 final JsVariableDefinition[] created = new JsVariableDefinition[0];
-                final JsVariableDefinition[] removed = new JsVariableDefinition[0];
                 final JsVariableDefinition[] updated = new JsVariableDefinition[0];
+                final JsVariableDefinition[] removed = new JsVariableDefinition[0];
 
                 JsArray<FieldInfo> fieldsList = data.getFieldsList();
                 for (int i = 0; i < fieldsList.length; ++i) {
@@ -628,7 +628,7 @@ public class WorkerConnection {
                     }
                 }
 
-                notifyFieldsChangeListeners(new JsVariableChanges(created, removed, updated));
+                notifyFieldsChangeListeners(new JsVariableChanges(created, updated, removed));
             });
             fieldsChangeUpdateStream.onEnd(status -> {
                 //TODO handle reconnect
@@ -688,7 +688,7 @@ public class WorkerConnection {
         tableMaps.put(handle, tableMap);
     }
 
-    private Promise<JsTreeTable> getTreeTable(JsVariableDefinition varDef) {
+    public Promise<JsTreeTable> getTreeTable(JsVariableDefinition varDef) {
         return getTable(varDef).then(t -> {
             Promise<JsTreeTable> result = Promise.resolve(new JsTreeTable(t.state(), this).finishFetch());
             t.close();
@@ -696,7 +696,7 @@ public class WorkerConnection {
         });
     }
 
-    private Promise<JsFigure> getFigure(JsVariableDefinition varDef) {
+    public Promise<JsFigure> getFigure(JsVariableDefinition varDef) {
         return whenServerReady("get a figure")
                 .then(server -> new JsFigure(this, c -> {
                     FetchFigureRequest request = new FetchFigureRequest();

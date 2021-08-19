@@ -17,6 +17,7 @@ import io.deephaven.grpc_api.util.GrpcUtil;
 import io.deephaven.grpc_api.util.Scheduler;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
+import io.deephaven.proto.backplane.grpc.CustomInfo;
 import io.deephaven.proto.backplane.grpc.FieldInfo;
 import io.deephaven.proto.backplane.grpc.ApplicationServiceGrpc;
 import io.deephaven.proto.backplane.grpc.FieldsChangeUpdate;
@@ -28,6 +29,7 @@ import io.deephaven.proto.backplane.grpc.Ticket;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import org.jetbrains.annotations.Nullable;
+import scala.annotation.meta.field;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -57,7 +59,9 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
     /** A schedulable job that flushes pending field changes to all listeners. */
     private final FieldUpdatePropagationJob propagationJob = new FieldUpdatePropagationJob();
 
-    /** Which fields have been updates since we last propagated? */
+    /** Which fields have been removed since we last propagated? */
+    private final Set<FieldId> removedFields = new HashSet<>();
+    /** Which fields have been created/updated since we last propagated? */
     private final Set<FieldId> updatedFields = new HashSet<>();
     /** Which [remaining] fields have we seen? */
     private final Map<FieldId, Field<?>> knownFieldMap = new HashMap<>();
@@ -78,7 +82,8 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
         }
 
         changes.removed.keySet().stream().map(FieldId::fromScopeName).forEach(id -> {
-            updatedFields.add(id);
+            updatedFields.remove(id);
+            removedFields.add(id);
             knownFieldMap.remove(id);
         });
 
@@ -118,10 +123,12 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
             throw new IllegalStateException(String.format("Field information could not be generated for field '%s/%s'", app.id(), field.name()));
         }
 
-        updatedFields.add(id);
         if (fieldInfo.getFieldType().getFieldCase() == FieldInfo.FieldType.FieldCase.REMOVED) {
+            updatedFields.remove(id);
+            removedFields.add(id);
             knownFieldMap.remove(id);
         } else {
+            updatedFields.add(id);
             knownFieldMap.put(id, field);
         }
 
@@ -132,6 +139,8 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
 
     private synchronized void propagateUpdates() {
         final FieldsChangeUpdate.Builder builder = FieldsChangeUpdate.newBuilder();
+        removedFields.forEach(id -> builder.addFields(getRemovedFieldInfo(id)));
+        removedFields.clear();
         updatedFields.forEach(id -> builder.addFields(getFieldInfo(id, knownFieldMap.get(id))));
         updatedFields.clear();
         final FieldsChangeUpdate update = builder.build();
@@ -153,6 +162,13 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
         });
     }
 
+    private static FieldInfo getRemovedFieldInfo(final FieldId id) {
+        return FieldInfo.newBuilder()
+                .setTicket(id.getTicket())
+                .setFieldName(id.fieldName)
+                .setFieldType(FieldInfo.FieldType.newBuilder().setRemoved(RemovedField.getDefaultInstance()).build())
+                .build();
+    }
     private static FieldInfo getFieldInfo(final FieldId id, final Field<?> field) {
         if (field instanceof CustomField) {
             return getCustomFieldInfo(id, (CustomField<?>) field);
@@ -163,8 +179,12 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
     private static FieldInfo getCustomFieldInfo(final FieldId id, final CustomField<?> field) {
         return FieldInfo.newBuilder()
                 .setTicket(id.getTicket())
-                .setFieldName(field.name())
-                .setFieldType(fetchFieldType(field.value()))
+                .setFieldName(id.fieldName)
+                .setFieldType(FieldInfo.FieldType.newBuilder()
+                        .setCustom(CustomInfo.newBuilder()
+                                .setType(field.type())
+                                .build())
+                        .build())
                 .setFieldDescription(field.description().orElse(""))
                 .build();
     }
@@ -179,7 +199,7 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
 
         return FieldInfo.newBuilder()
                 .setTicket(id.getTicket())
-                .setFieldName(field.name())
+                .setFieldName(id.fieldName)
                 .setFieldType(fieldType)
                 .setFieldDescription(field.description().orElse(""))
                 .build();

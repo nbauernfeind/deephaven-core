@@ -11,6 +11,7 @@ import io.deephaven.web.client.api.*;
 import io.deephaven.web.client.api.console.JsCommandResult;
 import io.deephaven.web.client.api.console.JsVariableChanges;
 import io.deephaven.web.client.api.console.JsVariableDefinition;
+import io.deephaven.web.client.api.widget.plot.JsFigure;
 import io.deephaven.web.client.fu.CancellablePromise;
 import io.deephaven.web.client.fu.JsLog;
 import io.deephaven.web.client.fu.LazyPromise;
@@ -50,6 +51,20 @@ public class IdeSession extends HasEventHandling {
         cancelled = new JsSet<>();
         this.connection = connection;
         this.closer = closer;
+    }
+
+    public Promise<JsTable> getTable(String id) {
+        JsVariableDefinition varDef = new JsVariableDefinition(JsVariableChanges.TABLE, "", id, "");
+        final Promise<JsTable> table = connection.getTable(varDef);
+        final CustomEventInit event = CustomEventInit.create();
+        event.setDetail(table);
+        fireEvent(EVENT_TABLE_OPENED, event);
+        return table;
+    }
+
+    public Promise<JsFigure> getFigure(String id) {
+        JsVariableDefinition varDef = new JsVariableDefinition(JsVariableChanges.FIGURE, "", id, "");
+        return connection.getFigure(varDef);
     }
 
     public Promise<Object> getObject(Object definitionObject) {
