@@ -2,6 +2,7 @@ package io.deephaven.parquet;
 
 import io.deephaven.UncheckedDeephavenException;
 import io.deephaven.parquet.utils.SeekableChannelsProvider;
+import io.deephaven.util.FunctionalInterfaces;
 import org.apache.parquet.bytes.BytesInput;
 import org.apache.parquet.column.ColumnDescriptor;
 import org.apache.parquet.column.Dictionary;
@@ -12,6 +13,7 @@ import org.apache.parquet.format.*;
 import org.apache.parquet.hadoop.CodecFactory;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.internal.column.columnindex.OffsetIndex;
+import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.PrimitiveType;
 import org.apache.parquet.schema.Type;
@@ -23,6 +25,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static io.deephaven.parquet.utils.Helpers.readFully;
 import static org.apache.parquet.format.Encoding.PLAIN_DICTIONARY;
@@ -74,11 +77,72 @@ public class ColumnChunkReaderImpl implements ColumnChunkReader {
         return path.getMaxRepetitionLevel();
     }
 
+    private static class LazyDictionary extends Dictionary {
+        private Dictionary delegate = null;
+        private final FunctionalInterfaces.ThrowingSupplier<Dictionary, IOException> doFetchDictionary;
+
+        LazyDictionary(FunctionalInterfaces.ThrowingSupplier<Dictionary, IOException> doFetch) {
+            super(Encoding.PLAIN); // ignore this
+            this.doFetchDictionary = doFetch;
+        }
+
+        private Dictionary get() {
+            try {
+                if (delegate == null) {
+                    delegate = doFetchDictionary.get();
+                }
+            } catch (IOException io) {
+                throw new UncheckedDeephavenException(io);
+            }
+            return delegate;
+        }
+
+        @Override
+        public Encoding getEncoding() {
+            return get().getEncoding();
+        }
+
+        @Override
+        public Binary decodeToBinary(int id) {
+            return get().decodeToBinary(id);
+        }
+
+        @Override
+        public int decodeToInt(int id) {
+            return get().decodeToInt(id);
+        }
+
+        @Override
+        public long decodeToLong(int id) {
+            return get().decodeToLong(id);
+        }
+
+        @Override
+        public float decodeToFloat(int id) {
+            return get().decodeToFloat(id);
+        }
+
+        @Override
+        public double decodeToDouble(int id) {
+            return get().decodeToDouble(id);
+        }
+
+        @Override
+        public boolean decodeToBoolean(int id) {
+            return get().decodeToBoolean(id);
+        }
+
+        @Override
+        public int getMaxId() {
+            return get().getMaxId();
+        }
+    }
+
     @Override
     public ColumnPageReaderIterator getPageIterator() throws IOException {
         final SeekableByteChannel readChannel = channelsProvider.getReadChannel(getPath());
         final long dataPageOffset = columnChunk.meta_data.getData_page_offset();
-        final Dictionary dictionary = getDictionary(readChannel);
+        final Dictionary dictionary = new LazyDictionary(() -> getDictionary(readChannel));
         if (offsetIndex == null) {
             return new ColumnPageReaderIteratorImpl(readChannel,
                     dataPageOffset, columnChunk.getMeta_data().getNum_values(), path,
