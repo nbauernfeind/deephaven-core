@@ -56,6 +56,13 @@ public interface ScriptSession extends ReleasableLivenessManager, LivenessNode {
         public Map<String, ExportedObjectType> created = new HashMap<>();
         public Map<String, ExportedObjectType> updated = new HashMap<>();
         public Map<String, ExportedObjectType> removed = new HashMap<>();
+
+        public boolean isEmpty() {
+            return created.isEmpty() && updated.isEmpty() && removed.isEmpty();
+        }
+    }
+    interface Listener {
+        void onScopeChanges(ScriptSession scriptSession, Changes changes);
     }
 
     /**

@@ -3,6 +3,7 @@ package io.deephaven.grpc_api.app_mode;
 import io.deephaven.db.appmode.ApplicationState;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.session.TicketResolverBase;
+import io.deephaven.proto.backplane.grpc.Ticket;
 import org.apache.arrow.flight.impl.Flight;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +20,10 @@ public class ApplicationTicketResolver extends TicketResolverBase {
     @Inject
     public ApplicationTicketResolver() {
         super((byte)TICKET_PREFIX, FLIGHT_DESCRIPTOR_ROUTE);
+    }
+
+    public static Ticket ticketForName(ApplicationState app, String fieldName) {
+        throw new UnsupportedOperationException("not yet implemented");
     }
 
     public void onApplicationLoad(final ApplicationState app) {

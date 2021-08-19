@@ -947,7 +947,8 @@ public class TableTools {
      * @return a Deephaven ColumnHolder object
      */
     public static ColumnHolder stringCol(String name, String... data) {
-        return new ColumnHolder(name, String.class, null, false, data);
+        // intellij says that casting data to an Object[] is unnecessary; but gradle warns that we are not
+        return new ColumnHolder(name, String.class, null, false, (Object[]) data);
     }
 
     /**
@@ -958,7 +959,8 @@ public class TableTools {
      * @return a Deephaven ColumnHolder object
      */
     public static ColumnHolder dateTimeCol(String name, DBDateTime... data) {
-        return new ColumnHolder(name, DBDateTime.class, null, false, data);
+        // intellij says that casting data to an Object[] is unnecessary; but gradle warns that we are not
+        return new ColumnHolder(name, DBDateTime.class, null, false, (Object[]) data);
     }
 
     /**

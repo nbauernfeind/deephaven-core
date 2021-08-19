@@ -16,15 +16,15 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * The delegated script session delegates all calls to another script session. When evaluating a script
+ * The delegating script session delegates all calls to another script session. When evaluating a script
  * it massages the Changes to the QueryScope so that any modifications that are being seen for the first
  * time by the api-client come across as new entries and not as modified entries.
  */
-public class DelegatedScriptSession implements ScriptSession {
+public class DelegatingScriptSession implements ScriptSession {
     private final ScriptSession delegate;
     private final Set<String> knownVariables = new HashSet<>();
 
-    public DelegatedScriptSession(final ScriptSession delegate) {
+    public DelegatingScriptSession(final ScriptSession delegate) {
         this.delegate = delegate;
     }
 

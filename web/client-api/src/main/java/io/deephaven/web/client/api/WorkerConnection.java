@@ -529,7 +529,7 @@ public class WorkerConnection {
         info.failureHandled(throwable.toString());
     }
 
-    public Promise<JsTable> getTable(JsVariableDefinition varDef) {
+    private Promise<JsTable> getTable(JsVariableDefinition varDef) {
         return whenServerReady("get a table").then(serve -> {
             JsLog.debug("innerGetTable", varDef.getTitle(), " started");
             return newState(info,
@@ -548,7 +548,7 @@ public class WorkerConnection {
         });
     }
 
-    public Promise<JsTable> getPandas(JsVariableDefinition varDef) {
+    private Promise<JsTable> getPandas(JsVariableDefinition varDef) {
         return whenServerReady("get a pandas table").then(serve -> {
             JsLog.debug("innerGetPandasTable", varDef.getTitle(), " started");
             return newState(info,
@@ -570,6 +570,7 @@ public class WorkerConnection {
         });
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Promise<Object> getObject(JsVariableDefinition definition) {
         switch (VariableType.valueOf(definition.getType())) {
             case Table:
@@ -583,9 +584,9 @@ public class WorkerConnection {
 //            case OtherWidget:
 //                return (Promise) getWidget(definition.getName());
 //            case TableMap:
-//                return (Promise) getTableMap(definition.getName(), script);
+//                return (Promise) getTableMap(definition.getName());
             default:
-                return Promise.reject(new Error("Object " + definition.getTitle() + " unknown type " + definition.getType() + " for script."));
+                return Promise.reject(new Error("Object " + definition.getTitle() + " unknown type " + definition.getType() + "."));
         }
     }
 
@@ -687,7 +688,7 @@ public class WorkerConnection {
         tableMaps.put(handle, tableMap);
     }
 
-    public Promise<JsTreeTable> getTreeTable(JsVariableDefinition varDef) {
+    private Promise<JsTreeTable> getTreeTable(JsVariableDefinition varDef) {
         return getTable(varDef).then(t -> {
             Promise<JsTreeTable> result = Promise.resolve(new JsTreeTable(t.state(), this).finishFetch());
             t.close();
@@ -695,7 +696,7 @@ public class WorkerConnection {
         });
     }
 
-    public Promise<JsFigure> getFigure(JsVariableDefinition varDef) {
+    private Promise<JsFigure> getFigure(JsVariableDefinition varDef) {
         return whenServerReady("get a figure")
                 .then(server -> new JsFigure(this, c -> {
                     FetchFigureRequest request = new FetchFigureRequest();

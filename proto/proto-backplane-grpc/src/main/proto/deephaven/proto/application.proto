@@ -99,5 +99,5 @@ message TableInfo {
  * Lightly describes a Figure.
  */
 message FigureInfo {
-    // TODO Implement Figures for AppMode
+  // Intentionally empty and is here for backwards compatibility should this API change.
 }

@@ -15,6 +15,10 @@ public class ApplicationState {
         ApplicationState create();
     }
 
+    public interface Listener {
+        void onFieldChange(ApplicationState app, Field<?> field);
+    }
+
     private final String id;
     private final String name;
     private final Map<String, Field<?>> fields;

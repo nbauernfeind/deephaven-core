@@ -374,11 +374,11 @@ public class SessionState {
      * Remove an on-close callback bound to the life of the session.
      *
      * @param onClose the callback to no longer invoke at end-of-life
-     * @return The item if it was removed, else null
+     * @return true iff the callback was removed
      */
-    public Closeable removeOnCloseCallback(final Closeable onClose) {
+    public boolean removeOnCloseCallback(final Closeable onClose) {
         synchronized (onCloseCallbacks) {
-            return onCloseCallbacks.remove(onClose);
+            return onCloseCallbacks.remove(onClose) != null;
         }
     }
 

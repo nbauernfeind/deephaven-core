@@ -1,100 +1,175 @@
 package io.deephaven.grpc_api.app_mode;
 
+import com.google.common.base.Objects;
+import com.google.rpc.Code;
 import io.deephaven.db.appmode.ApplicationState;
 import io.deephaven.db.appmode.CustomField;
 import io.deephaven.db.appmode.Field;
+import io.deephaven.db.plot.Figure;
 import io.deephaven.db.tables.Table;
+import io.deephaven.db.tables.utils.DBTimeUtils;
+import io.deephaven.db.util.ScriptSession;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
-import io.deephaven.grpc_api.console.GlobalSessionProvider;
 import io.deephaven.grpc_api.console.ScopeTicketResolver;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.util.GrpcUtil;
+import io.deephaven.grpc_api.util.Scheduler;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.proto.backplane.grpc.FieldInfo;
 import io.deephaven.proto.backplane.grpc.ApplicationServiceGrpc;
 import io.deephaven.proto.backplane.grpc.FieldsChangeUpdate;
+import io.deephaven.proto.backplane.grpc.FigureInfo;
 import io.deephaven.proto.backplane.grpc.ListFieldsRequest;
+import io.deephaven.proto.backplane.grpc.RemovedField;
 import io.deephaven.proto.backplane.grpc.TableInfo;
+import io.deephaven.proto.backplane.grpc.Ticket;
+import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.Closeable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Singleton
-public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.ApplicationServiceImplBase {
+public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.ApplicationServiceImplBase
+        implements ScriptSession.Listener, ApplicationState.Listener {
     private static final Logger log = LoggerFactory.getLogger(ApplicationServiceGrpcImpl.class);
 
     private final AppMode mode;
-    private final GlobalSessionProvider sessionProvider;
+    private final Scheduler scheduler;
     private final SessionService sessionService;
-    private final ApplicationTicketResolver ticketResolver;
+
+    /** The list of Field listeners */
+    private final List<Subscription> subscriptions = new CopyOnWriteArrayList<>();
+
+    /** A schedulable job that flushes pending field changes to all listeners. */
+    private final FieldUpdatePropagationJob propagationJob = new FieldUpdatePropagationJob();
+
+    /** Which fields have been updates since we last propagated? */
+    private final Set<FieldId> updatedFields = new HashSet<>();
+    /** Which [remaining] fields have we seen? */
+    private final Map<FieldId, Field<?>> knownFieldMap = new HashMap<>();
 
     @Inject
     public ApplicationServiceGrpcImpl(final AppMode mode,
-                                      final GlobalSessionProvider globalSessionProvider,
-                                      final SessionService sessionService,
-                                      final ApplicationTicketResolver ticketResolver) {
+                                      final Scheduler scheduler,
+                                      final SessionService sessionService) {
         this.mode = mode;
-        this.sessionProvider = globalSessionProvider;
+        this.scheduler = scheduler;
         this.sessionService = sessionService;
-        this.ticketResolver = ticketResolver;
-    }
-
-    public void validateFields() {
-        // Let's ensure that we can create field info for every exposed field.
-        ticketResolver.visitAllApplications(app -> {
-            app.listFields().forEach(field -> getFieldInfo(app, field));
-        });
     }
 
     @Override
-    public void listFields(ListFieldsRequest request, StreamObserver<FieldsChangeUpdate> responseObserver) {
+    public synchronized void onScopeChanges(final ScriptSession scriptSession, final ScriptSession.Changes changes) {
+        if (!mode.hasVisibilityToConsoleExports()) {
+            return;
+        }
+
+        changes.removed.keySet().stream().map(FieldId::fromScopeName).forEach(id -> {
+            updatedFields.add(id);
+            knownFieldMap.remove(id);
+        });
+
+        for (final String name : changes.updated.keySet()) {
+            final FieldId id = FieldId.fromScopeName(name);
+            final ScopeField field = (ScopeField) knownFieldMap.get(id);
+            field.value = scriptSession.getVariable(name);
+            updatedFields.add(id);
+        }
+
+        for (final String name : changes.created.keySet()) {
+            final FieldId id = FieldId.fromScopeName(name);
+            final ScopeField field = new ScopeField(name, scriptSession.getVariable(name));
+            final FieldInfo fieldInfo = getFieldInfo(id, field);
+            if (fieldInfo == null) {
+                // The script session should not have told us about this variable...
+                throw new IllegalStateException(String.format("Field information could not be generated for scope variable '%s'", name));
+            }
+            updatedFields.add(id);
+            knownFieldMap.put(id, field);
+        }
+
+        if (!subscriptions.isEmpty()) {
+            propagationJob.schedulePropagation();
+        }
+    }
+
+    @Override
+    public synchronized void onFieldChange(final ApplicationState app, final Field<?>field) {
+        if (!mode.hasVisibilityToAppExports()) {
+            return;
+        }
+
+        final FieldId id = FieldId.from(app, field.name());
+        final FieldInfo fieldInfo = getFieldInfo(id, field);
+        if (fieldInfo == null) {
+            throw new IllegalStateException(String.format("Field information could not be generated for field '%s/%s'", app.id(), field.name()));
+        }
+
+        updatedFields.add(id);
+        if (fieldInfo.getFieldType().getFieldCase() == FieldInfo.FieldType.FieldCase.REMOVED) {
+            knownFieldMap.remove(id);
+        } else {
+            knownFieldMap.put(id, field);
+        }
+
+        if (!subscriptions.isEmpty()) {
+            propagationJob.schedulePropagation();
+        }
+    }
+
+    private synchronized void propagateUpdates() {
+        final FieldsChangeUpdate.Builder builder = FieldsChangeUpdate.newBuilder();
+        updatedFields.forEach(id -> builder.addFields(getFieldInfo(id, knownFieldMap.get(id))));
+        updatedFields.clear();
+        final FieldsChangeUpdate update = builder.build();
+        subscriptions.forEach(sub -> sub.send(update));
+    }
+
+    @Override
+    public synchronized void listFields(ListFieldsRequest request, StreamObserver<FieldsChangeUpdate> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-            final SessionState session = sessionService.getOptionalSession();
+            final SessionState session = sessionService.getCurrentSession();
             final FieldsChangeUpdate.Builder responseBuilder = FieldsChangeUpdate.newBuilder();
 
-            if (mode.hasVisibilityToAppExports()) {
-                ticketResolver.visitAllApplications(app -> {
-                    app.listFields().forEach(field -> responseBuilder.addFields(getFieldInfo(app, field)));
-                });
-            }
-            if (mode.hasVisibilityToConsoleExports() && session != null) {
-                sessionProvider.getGlobalSession().getVariables().forEach((var, obj) ->{
-                    final FieldInfo.FieldType fieldType = fetchFieldType(obj);
-                    if (fieldType != null) {
-                        responseBuilder.addFields(FieldInfo.newBuilder()
-                                .setTicket(ScopeTicketResolver.ticketForName(var))
-                                .setFieldName(var)
-                                .setFieldType(fieldType)
-                                .setFieldDescription("scope variable")
-                                .build());
-                    }
-                });
-            }
+            knownFieldMap.forEach((fieldId, field) -> {
+                responseBuilder.addFields(getFieldInfo(fieldId, field));
+            });
+
             responseObserver.onNext(responseBuilder.build());
-            // TODO: note we are not closing, because we want to eventually send updates to the client
+            subscriptions.add(new Subscription(session, responseObserver));
         });
     }
 
-    private static FieldInfo getFieldInfo(final ApplicationState app, final Field<?> field) {
+    private static FieldInfo getFieldInfo(final FieldId id, final Field<?> field) {
         if (field instanceof CustomField) {
-            return getCustomFieldInfo(app, (CustomField<?>) field);
+            return getCustomFieldInfo(id, (CustomField<?>) field);
         }
-        return getStandardFieldInfo(app, field);
+        return getStandardFieldInfo(id, field);
     }
 
-    private static FieldInfo getCustomFieldInfo(final ApplicationState app, final CustomField<?> field) {
+    private static FieldInfo getCustomFieldInfo(final FieldId id, final CustomField<?> field) {
         return FieldInfo.newBuilder()
-                .setTicket(app.ticketForField(field))
+                .setTicket(id.getTicket())
                 .setFieldName(field.name())
                 .setFieldType(fetchFieldType(field.value()))
                 .setFieldDescription(field.description().orElse(""))
                 .build();
     }
 
-    private static FieldInfo getStandardFieldInfo(final ApplicationState app, final Field<?> field) {
+    private static FieldInfo getStandardFieldInfo(final FieldId id, final Field<?> field) {
         // Note that this method accepts any Field and not just StandardField
         final FieldInfo.FieldType fieldType = fetchFieldType(field.value());
 
@@ -103,7 +178,7 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
         }
 
         return FieldInfo.newBuilder()
-                .setTicket(app.ticketForField(field))
+                .setTicket(id.getTicket())
                 .setFieldName(field.name())
                 .setFieldType(fieldType)
                 .setFieldDescription(field.description().orElse(""))
@@ -111,6 +186,9 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
     }
 
     private static FieldInfo.FieldType fetchFieldType(final Object obj) {
+        if (obj == null) {
+            return FieldInfo.FieldType.newBuilder().setRemoved(RemovedField.getDefaultInstance()).build();
+        }
         if (obj instanceof Table) {
             final Table table = (Table) obj;
             return FieldInfo.FieldType.newBuilder().setTable(TableInfo.newBuilder()
@@ -119,7 +197,177 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
                     .setSize(table.size())
                     .build()).build();
         }
+        if (obj instanceof Figure) {
+            return FieldInfo.FieldType.newBuilder().setFigure(FigureInfo.getDefaultInstance()).build();
+        }
 
         return null;
+    }
+
+    /**
+     * Our unique identifier for a field. Used to debounce frequent updates and to identify when a field is replaced.
+     */
+    private static class FieldId {
+        /** The application that this field is defined under, or null if this is a fabricated query scope field. */
+        final ApplicationState app;
+        final String fieldName;
+
+        static FieldId from(final ApplicationState app, final String fieldName) {
+            return new FieldId(app, fieldName);
+        }
+        static FieldId fromScopeName(final String fieldName) {
+            return new FieldId(null, fieldName);
+        }
+
+        private FieldId(@Nullable final ApplicationState app, final String fieldName) {
+            this.app = app;
+            this.fieldName = fieldName;
+        }
+
+        Ticket getTicket() {
+            if (app == null) {
+                return ScopeTicketResolver.ticketForName(fieldName);
+            }
+            return ApplicationTicketResolver.ticketForName(app, fieldName);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(app == null ? null : app.id(), fieldName);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final FieldId fid = (FieldId) o;
+            // note instance equality on the app; either both need to be null, or must point to the same instance
+            return app == fid.app && fieldName.equals(fid.fieldName);
+        }
+    }
+
+    private static class ScopeField implements Field<Object> {
+        final String name;
+        Object value;
+
+        ScopeField(String name, Object value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+        @Override
+        public Object value() {
+            return value;
+        }
+
+        @Override
+        public Optional<String> description() {
+            return Optional.of("query scope variable");
+        }
+    }
+
+    private class FieldUpdatePropagationJob implements Runnable {
+        /** This interval is used as a debounce to prevent spamming field changes from a broken application. */
+        private static final long UPDATE_INTERVAL_MS = 250;
+        /** The last time the update propagation job ran. */
+        private volatile long lastUpdateTime = 0;
+
+        private final ReentrantLock runLock = new ReentrantLock();
+        private final AtomicBoolean needsRun = new AtomicBoolean();
+
+        @Override
+        public void run() {
+            needsRun.set(true);
+            while (true) {
+                if (!runLock.tryLock()) {
+                    // if we can't get a lock, the thread that lets it go will check before exiting the method
+                    return;
+                }
+
+                try {
+                    if (needsRun.compareAndSet(true, false)) {
+                        lastUpdateTime = scheduler.currentTime().getMillis();
+                        propagateUpdates();
+                    }
+                } catch (final Exception exception) {
+                    log.error().append("failed to propagate field changes: ").append(exception).endl();
+                } finally {
+                    runLock.unlock();
+                }
+
+                if (!needsRun.get()) {
+                    return;
+                }
+            }
+        }
+
+        public void scheduleImmediately() {
+            if (needsRun.compareAndSet(false, true) && !runLock.isLocked()) {
+                scheduler.runImmediately(this);
+            }
+        }
+
+        public void scheduleAt(final long nextRunTime) {
+            scheduler.runAtTime(DBTimeUtils.millisToTime(nextRunTime), this);
+        }
+
+        public void schedulePropagation() {
+            final long now = scheduler.currentTime().getMillis();
+            final long msSinceLastUpdate = now - lastUpdateTime;
+            if (msSinceLastUpdate < UPDATE_INTERVAL_MS) {
+                // we have updated within the period, so wait until a sufficient gap
+                scheduleAt(lastUpdateTime + UPDATE_INTERVAL_MS);
+            } else {
+                // we have not updated recently, so go for it right away
+                scheduleImmediately();
+            }
+        }
+    }
+
+    /**
+     * Subscription is a small helper class that kills the listener's subscription when its session expires.
+     *
+     * @implNote gRPC observers are not thread safe; we must synchronize around observer communication
+     */
+    private class Subscription implements Closeable {
+        private final SessionState session;
+        private final StreamObserver<FieldsChangeUpdate> observer;
+
+        public Subscription(final SessionState session, final StreamObserver<FieldsChangeUpdate> observer) {
+            this.session = session;
+            this.observer = observer;
+            if (observer instanceof ServerCallStreamObserver) {
+                final ServerCallStreamObserver<FieldsChangeUpdate> serverCall = (ServerCallStreamObserver<FieldsChangeUpdate>) observer;
+                serverCall.setOnCancelHandler(this::onCancel);
+            }
+            session.addOnCloseCallback(this);
+        }
+
+        synchronized void send(FieldsChangeUpdate changes) {
+            try {
+                observer.onNext(changes);
+            } catch (RuntimeException ignored) {
+                onCancel();
+            }
+        }
+
+        void onCancel() {
+            if (session.removeOnCloseCallback(this)) {
+                close();
+            }
+        }
+
+        @Override
+        public synchronized void close() {
+            synchronized (ApplicationServiceGrpcImpl.this) {
+                subscriptions.remove(this);
+            }
+            GrpcUtil.safelyExecute(() -> observer.onError(GrpcUtil.statusRuntimeException(Code.ABORTED, "subscription cancelled")));
+        }
     }
 }

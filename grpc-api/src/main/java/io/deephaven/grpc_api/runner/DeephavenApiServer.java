@@ -123,7 +123,6 @@ public class DeephavenApiServer {
 
         // inject applications before we start the gRPC server
         applicationInjector.run();
-        applicationService.validateFields();
 
         log.info().append("Starting server...").endl();
         server.start();

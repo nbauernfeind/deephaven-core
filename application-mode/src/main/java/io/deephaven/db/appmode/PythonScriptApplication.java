@@ -16,8 +16,11 @@ public abstract class PythonScriptApplication implements ApplicationConfig {
     }
 
     public static PythonScriptApplication parse(Properties properties) {
-        return builder().id(properties.getProperty("id")).name(properties.getProperty("name"))
-            .addFiles(ApplicationUtil.findFilesFrom(properties)).build();
+        return builder()
+                .id(properties.getProperty("id"))
+                .name(properties.getProperty("name"))
+                .addFiles(ApplicationUtil.findFilesFrom(properties))
+                .build();
     }
 
     public abstract String id();

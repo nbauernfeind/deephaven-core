@@ -8,9 +8,7 @@ import com.google.rpc.Code;
 import io.deephaven.configuration.Configuration;
 import io.deephaven.db.plot.FigureWidget;
 import io.deephaven.db.tables.Table;
-import io.deephaven.db.tables.live.LiveTableMonitor;
-import io.deephaven.db.tables.remote.preview.ColumnPreviewManager;
-import io.deephaven.db.util.DelegatedScriptSession;
+import io.deephaven.db.util.DelegatingScriptSession;
 import io.deephaven.db.util.ExportedObjectType;
 import io.deephaven.db.util.NoLanguageDeephavenSession;
 import io.deephaven.db.util.ScriptSession;
@@ -20,7 +18,6 @@ import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.session.SessionState.ExportBuilder;
 import io.deephaven.grpc_api.session.TicketRouter;
-import io.deephaven.grpc_api.table.TableServiceGrpcImpl;
 import io.deephaven.grpc_api.util.GrpcUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.LogBuffer;
@@ -33,8 +30,6 @@ import io.deephaven.lang.generated.ParseException;
 import io.deephaven.lang.parse.LspTools;
 import io.deephaven.lang.parse.ParsedDocument;
 import io.deephaven.lang.parse.api.CompletionParseService;
-import io.deephaven.proto.backplane.grpc.ExportedTableCreationResponse;
-import io.deephaven.proto.backplane.grpc.TableReference;
 import io.deephaven.proto.backplane.script.grpc.*;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
@@ -61,7 +56,6 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     private final TicketRouter ticketRouter;
     private final SessionService sessionService;
     private final LogBuffer logBuffer;
-    private final LiveTableMonitor liveTableMonitor;
 
     private final GlobalSessionProvider globalSessionProvider;
 
@@ -70,13 +64,11 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                                   final TicketRouter ticketRouter,
                                   final SessionService sessionService,
                                   final LogBuffer logBuffer,
-                                  final LiveTableMonitor liveTableMonitor,
                                   final GlobalSessionProvider globalSessionProvider) {
         this.scriptTypes = scriptTypes;
         this.ticketRouter = ticketRouter;
         this.sessionService = sessionService;
         this.logBuffer = logBuffer;
-        this.liveTableMonitor = liveTableMonitor;
         this.globalSessionProvider = globalSessionProvider;
 
         if (!scriptTypes.containsKey(WORKER_CONSOLE_TYPE)) {
@@ -126,7 +118,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                     .submit(() -> {
                         final ScriptSession scriptSession;
                         if (sessionType.equals(WORKER_CONSOLE_TYPE)) {
-                            scriptSession = new DelegatedScriptSession(globalSessionProvider.getGlobalSession());
+                            scriptSession = new DelegatingScriptSession(globalSessionProvider.getGlobalSession());
                         } else {
                             scriptSession = new NoLanguageDeephavenSession(sessionType);
                             log.error().append("Session type '" + sessionType + "' is disabled." +
@@ -148,6 +140,10 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     @Override
     public void subscribeToLogs(LogSubscriptionRequest request, StreamObserver<LogSubscriptionData> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
+            if (REMOTE_CONSOLE_DISABLED) {
+                responseObserver.onError(GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Remote console disabled"));
+                return;
+            }
             SessionState session = sessionService.getCurrentSession();
             // if that didn't fail, we at least are authenticated, but possibly not authorized
             // TODO auth hook, ensure the user can do this (owner of worker or admin). same rights as creating a console
@@ -385,7 +381,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
         }
 
         private void tryClose () {
-            if (session.removeOnCloseCallback(this) != null) {
+            if (session.removeOnCloseCallback(this)) {
                 close();
             }
         }

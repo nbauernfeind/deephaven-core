@@ -2,10 +2,6 @@ package io.deephaven.web.client.api.console;
 
 import elemental2.core.JsArray;
 import elemental2.core.JsObject;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.CustomInfo;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.FigureInfo;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.RemovedField;
-import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.TableInfo;
 import jsinterop.annotations.JsProperty;
 import jsinterop.base.Js;
 

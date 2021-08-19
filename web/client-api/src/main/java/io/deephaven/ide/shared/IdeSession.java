@@ -11,8 +11,6 @@ import io.deephaven.web.client.api.*;
 import io.deephaven.web.client.api.console.JsCommandResult;
 import io.deephaven.web.client.api.console.JsVariableChanges;
 import io.deephaven.web.client.api.console.JsVariableDefinition;
-import io.deephaven.web.client.api.tree.JsTreeTable;
-import io.deephaven.web.client.api.widget.plot.JsFigure;
 import io.deephaven.web.client.fu.CancellablePromise;
 import io.deephaven.web.client.fu.JsLog;
 import io.deephaven.web.client.fu.LazyPromise;
@@ -27,10 +25,6 @@ import jsinterop.base.Any;
 import jsinterop.base.Js;
 import jsinterop.base.JsArrayLike;
 import jsinterop.base.JsPropertyMap;
-import org.apache.xpath.operations.Variable;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
 import static io.deephaven.web.client.api.QueryConnectable.EVENT_TABLE_OPENED;
 
@@ -56,24 +50,6 @@ public class IdeSession extends HasEventHandling {
         cancelled = new JsSet<>();
         this.connection = connection;
         this.closer = closer;
-    }
-
-    public Promise<JsTable> getTable(JsVariableDefinition varDef) {
-        final Promise<JsTable> table = connection.getTable(varDef);
-        final CustomEventInit event = CustomEventInit.create();
-        event.setDetail(table);
-        fireEvent(EVENT_TABLE_OPENED, event);
-        return table;
-    }
-
-    // TODO: #37: Need SmartKey support for this functionality
-    @JsIgnore
-    public Promise<JsTreeTable> getTreeTable(JsVariableDefinition name) {
-        return connection.getTreeTable(name);
-    }
-
-    public Promise<JsFigure> getFigure(JsVariableDefinition name) {
-        return connection.getFigure(name);
     }
 
     public Promise<Object> getObject(Object definitionObject) {
