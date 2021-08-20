@@ -1,6 +1,5 @@
 package io.deephaven.grpc_api.app_mode;
 
-import com.google.common.base.Objects;
 import com.google.rpc.Code;
 import io.deephaven.db.appmode.ApplicationState;
 import io.deephaven.db.appmode.CustomField;
@@ -10,7 +9,6 @@ import io.deephaven.db.tables.Table;
 import io.deephaven.db.tables.utils.DBTimeUtils;
 import io.deephaven.db.util.ScriptSession;
 import io.deephaven.grpc_api.barrage.util.BarrageSchemaUtil;
-import io.deephaven.grpc_api.console.ScopeTicketResolver;
 import io.deephaven.grpc_api.session.SessionService;
 import io.deephaven.grpc_api.session.SessionState;
 import io.deephaven.grpc_api.util.GrpcUtil;
@@ -25,11 +23,8 @@ import io.deephaven.proto.backplane.grpc.FigureInfo;
 import io.deephaven.proto.backplane.grpc.ListFieldsRequest;
 import io.deephaven.proto.backplane.grpc.RemovedField;
 import io.deephaven.proto.backplane.grpc.TableInfo;
-import io.deephaven.proto.backplane.grpc.Ticket;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
-import org.jetbrains.annotations.Nullable;
-import scala.annotation.meta.field;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -60,11 +55,11 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
     private final FieldUpdatePropagationJob propagationJob = new FieldUpdatePropagationJob();
 
     /** Which fields have been removed since we last propagated? */
-    private final Set<FieldId> removedFields = new HashSet<>();
+    private final Set<AppFieldId> removedFields = new HashSet<>();
     /** Which fields have been created/updated since we last propagated? */
-    private final Set<FieldId> updatedFields = new HashSet<>();
+    private final Set<AppFieldId> updatedFields = new HashSet<>();
     /** Which [remaining] fields have we seen? */
-    private final Map<FieldId, Field<?>> knownFieldMap = new HashMap<>();
+    private final Map<AppFieldId, Field<?>> knownFieldMap = new HashMap<>();
 
     @Inject
     public ApplicationServiceGrpcImpl(final AppMode mode,
@@ -81,21 +76,21 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
             return;
         }
 
-        changes.removed.keySet().stream().map(FieldId::fromScopeName).forEach(id -> {
+        changes.removed.keySet().stream().map(AppFieldId::fromScopeName).forEach(id -> {
             updatedFields.remove(id);
             removedFields.add(id);
             knownFieldMap.remove(id);
         });
 
         for (final String name : changes.updated.keySet()) {
-            final FieldId id = FieldId.fromScopeName(name);
+            final AppFieldId id = AppFieldId.fromScopeName(name);
             final ScopeField field = (ScopeField) knownFieldMap.get(id);
             field.value = scriptSession.getVariable(name);
             updatedFields.add(id);
         }
 
         for (final String name : changes.created.keySet()) {
-            final FieldId id = FieldId.fromScopeName(name);
+            final AppFieldId id = AppFieldId.fromScopeName(name);
             final ScopeField field = new ScopeField(name, scriptSession.getVariable(name));
             final FieldInfo fieldInfo = getFieldInfo(id, field);
             if (fieldInfo == null) {
@@ -112,12 +107,24 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
     }
 
     @Override
-    public synchronized void onFieldChange(final ApplicationState app, final Field<?>field) {
+    public synchronized void onRemoveField(ApplicationState app, String name) {
         if (!mode.hasVisibilityToAppExports()) {
             return;
         }
 
-        final FieldId id = FieldId.from(app, field.name());
+        final AppFieldId id = AppFieldId.from(app, name);
+        if (knownFieldMap.remove(id) != null) {
+            removedFields.add(id);
+        }
+    }
+
+    @Override
+    public synchronized void onNewField(final ApplicationState app, final Field<?>field) {
+        if (!mode.hasVisibilityToAppExports()) {
+            return;
+        }
+
+        final AppFieldId id = AppFieldId.from(app, field.name());
         final FieldInfo fieldInfo = getFieldInfo(id, field);
         if (fieldInfo == null) {
             throw new IllegalStateException(String.format("Field information could not be generated for field '%s/%s'", app.id(), field.name()));
@@ -153,30 +160,28 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
             final SessionState session = sessionService.getCurrentSession();
             final FieldsChangeUpdate.Builder responseBuilder = FieldsChangeUpdate.newBuilder();
 
-            knownFieldMap.forEach((fieldId, field) -> {
-                responseBuilder.addFields(getFieldInfo(fieldId, field));
-            });
+            knownFieldMap.forEach((appFieldId, field) -> responseBuilder.addFields(getFieldInfo(appFieldId, field)));
 
             responseObserver.onNext(responseBuilder.build());
             subscriptions.add(new Subscription(session, responseObserver));
         });
     }
 
-    private static FieldInfo getRemovedFieldInfo(final FieldId id) {
+    private static FieldInfo getRemovedFieldInfo(final AppFieldId id) {
         return FieldInfo.newBuilder()
                 .setTicket(id.getTicket())
                 .setFieldName(id.fieldName)
                 .setFieldType(FieldInfo.FieldType.newBuilder().setRemoved(RemovedField.getDefaultInstance()).build())
                 .build();
     }
-    private static FieldInfo getFieldInfo(final FieldId id, final Field<?> field) {
+    private static FieldInfo getFieldInfo(final AppFieldId id, final Field<?> field) {
         if (field instanceof CustomField) {
             return getCustomFieldInfo(id, (CustomField<?>) field);
         }
         return getStandardFieldInfo(id, field);
     }
 
-    private static FieldInfo getCustomFieldInfo(final FieldId id, final CustomField<?> field) {
+    private static FieldInfo getCustomFieldInfo(final AppFieldId id, final CustomField<?> field) {
         return FieldInfo.newBuilder()
                 .setTicket(id.getTicket())
                 .setFieldName(id.fieldName)
@@ -186,10 +191,12 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
                                 .build())
                         .build())
                 .setFieldDescription(field.description().orElse(""))
+                .setApplicationId(id.applicationId())
+                .setApplicationName(id.applicationName())
                 .build();
     }
 
-    private static FieldInfo getStandardFieldInfo(final FieldId id, final Field<?> field) {
+    private static FieldInfo getStandardFieldInfo(final AppFieldId id, final Field<?> field) {
         // Note that this method accepts any Field and not just StandardField
         final FieldInfo.FieldType fieldType = fetchFieldType(field.value());
 
@@ -202,6 +209,8 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
                 .setFieldName(id.fieldName)
                 .setFieldType(fieldType)
                 .setFieldDescription(field.description().orElse(""))
+                .setApplicationId(id.applicationId())
+                .setApplicationName(id.applicationName())
                 .build();
     }
 
@@ -222,48 +231,6 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
         }
 
         return null;
-    }
-
-    /**
-     * Our unique identifier for a field. Used to debounce frequent updates and to identify when a field is replaced.
-     */
-    private static class FieldId {
-        /** The application that this field is defined under, or null if this is a fabricated query scope field. */
-        final ApplicationState app;
-        final String fieldName;
-
-        static FieldId from(final ApplicationState app, final String fieldName) {
-            return new FieldId(app, fieldName);
-        }
-        static FieldId fromScopeName(final String fieldName) {
-            return new FieldId(null, fieldName);
-        }
-
-        private FieldId(@Nullable final ApplicationState app, final String fieldName) {
-            this.app = app;
-            this.fieldName = fieldName;
-        }
-
-        Ticket getTicket() {
-            if (app == null) {
-                return ScopeTicketResolver.ticketForName(fieldName);
-            }
-            return ApplicationTicketResolver.ticketForName(app, fieldName);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(app == null ? null : app.id(), fieldName);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            final FieldId fid = (FieldId) o;
-            // note instance equality on the app; either both need to be null, or must point to the same instance
-            return app == fid.app && fieldName.equals(fid.fieldName);
-        }
     }
 
     private static class ScopeField implements Field<Object> {

@@ -26,8 +26,8 @@ public abstract class DynamicApplication<T extends Factory> implements Applicati
     @Parameter
     public abstract Class<T> clazz();
 
-    public final ApplicationState create() throws InstantiationException, IllegalAccessException {
-        return clazz().newInstance().create();
+    public final ApplicationState create(ApplicationState.Listener appStateListener) throws InstantiationException, IllegalAccessException {
+        return clazz().newInstance().create(appStateListener);
     }
 
     @Override

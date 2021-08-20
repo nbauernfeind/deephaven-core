@@ -55,13 +55,13 @@ public class ScopeTicketResolver extends TicketResolverBase {
             final ScriptSession gss = globalSessionProvider.getGlobalSession();
             Object scopeVar = gss.getVariable(scopeName);
             if (scopeVar == null) {
-                throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Could not resolve: no variable exists with name '" + scopeName + "'");
+                throw GrpcUtil.statusRuntimeException(Code.NOT_FOUND, "Could not resolve: no variable exists with name '" + scopeName + "'");
             }
             if (scopeVar instanceof Table) {
                 return TicketRouter.getFlightInfo((Table) scopeVar, descriptor, flightTicketForName(scopeName));
             }
 
-            throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Could not resolve: no variable exists with name '" + scopeName + "'");
+            throw GrpcUtil.statusRuntimeException(Code.NOT_FOUND, "Could not resolve: no variable exists with name '" + scopeName + "'");
         });
 
         return SessionState.wrapAsExport(flightInfo);

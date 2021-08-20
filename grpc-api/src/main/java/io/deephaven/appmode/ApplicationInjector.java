@@ -19,12 +19,15 @@ public class ApplicationInjector {
 
     private final GlobalSessionProvider globalSessionProvider;
     private final ApplicationTicketResolver ticketResolver;
+    private final ApplicationState.Listener applicationListener;
 
     @Inject
     public ApplicationInjector(final GlobalSessionProvider globalSessionProvider,
-                               final ApplicationTicketResolver ticketResolver) {
+                               final ApplicationTicketResolver ticketResolver,
+                               final ApplicationState.Listener applicationListener) {
         this.globalSessionProvider = Objects.requireNonNull(globalSessionProvider);
         this.ticketResolver = ticketResolver;
+        this.applicationListener = applicationListener;
     }
 
     public void run() throws IOException, ClassNotFoundException {
@@ -49,7 +52,8 @@ public class ApplicationInjector {
     private void loadApplication(final Path applicationDir, final ApplicationConfig config) {
         // Note: if we need to be more specific about which application we are starting, we can print out the path of the application.
         log.info().append("Starting application '").append(config.toString()).append('\'').endl();
-        final ApplicationState app = ApplicationFactory.create(applicationDir, config, globalSessionProvider.getGlobalSession());
+        final ApplicationState app = ApplicationFactory.create(applicationDir, config,
+                globalSessionProvider.getGlobalSession(), applicationListener);
 
         int numExports = app.listFields().size();
         log.info().append("\tfound ").append(numExports).append(" exports").endl();

@@ -1,7 +1,5 @@
 package io.deephaven.db.appmode;
 
-import io.deephaven.proto.backplane.grpc.Ticket;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,19 +10,21 @@ import java.util.Objects;
 public class ApplicationState {
 
     public interface Factory {
-        ApplicationState create();
+        ApplicationState create(Listener appStateListener);
     }
 
     public interface Listener {
-        void onFieldChange(ApplicationState app, Field<?> field);
+        void onNewField(ApplicationState app, Field<?> field);
+        void onRemoveField(ApplicationState app, String name);
     }
 
+    private final Listener listener;
     private final String id;
     private final String name;
     private final Map<String, Field<?>> fields;
-    // todo: listener on updates
 
-    public ApplicationState(String id, String name) {
+    public ApplicationState(Listener listener, String id, String name) {
+        this.listener = listener;
         this.id = Objects.requireNonNull(id);
         this.name = Objects.requireNonNull(name);
         this.fields = new HashMap<>();
@@ -47,6 +47,7 @@ public class ApplicationState {
     }
 
     public synchronized void clearFields() {
+        fields.keySet().forEach(name -> listener.onRemoveField(this, name));
         fields.clear();
     }
 
@@ -73,6 +74,10 @@ public class ApplicationState {
     }
 
     public synchronized void setField(Field<?> field) {
+        if (fields.containsKey(field.name())) {
+            listener.onRemoveField(this, field.name());
+        }
+        listener.onNewField(this, field);
         fields.put(field.name(), field);
     }
 
@@ -87,7 +92,9 @@ public class ApplicationState {
     }
 
     public synchronized void removeField(String name) {
-        fields.remove(name);
+        if (fields.remove(name) != null) {
+            listener.onRemoveField(this, name);
+        }
     }
 
     public synchronized void removeFields(String... names) {
@@ -98,13 +105,5 @@ public class ApplicationState {
         for (String name : names) {
             removeField(name);
         }
-    }
-
-    public Ticket ticketForField(Field<?> field) {
-        return null;
-    }
-
-    public void shutdown() {
-        // todo: listener
     }
 }

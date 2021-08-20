@@ -49,8 +49,8 @@ public abstract class Application {
      */
     public abstract Fields fields();
 
-    public final ApplicationState toState() {
-        final ApplicationState state = new ApplicationState(id(), name());
+    public final ApplicationState toState(final ApplicationState.Listener appStateListener) {
+        final ApplicationState state = new ApplicationState(appStateListener, id(), name());
         state.setFields(fields());
         return state;
     }

@@ -19,17 +19,22 @@ import java.util.Objects;
 
 public class ApplicationFactory implements ApplicationConfig.Visitor {
 
-    public static ApplicationState create(Path applicationDir, ApplicationConfig config, ScriptSession scriptSession) {
-        return config.walk(new ApplicationFactory(applicationDir, scriptSession)).out();
+    public static ApplicationState create(Path applicationDir, ApplicationConfig config, ScriptSession scriptSession, ApplicationState.Listener appStateListener) {
+        return config.walk(new ApplicationFactory(applicationDir, scriptSession, appStateListener)).out();
     }
 
     private final Path applicationDir;
     private final ScriptSession scriptSession;
+    private final ApplicationState.Listener appStateListener;
+
     private ApplicationState out;
 
-    private ApplicationFactory(final Path applicationDir, final ScriptSession scriptSession) {
+    private ApplicationFactory(final Path applicationDir,
+                               final ScriptSession scriptSession,
+                               final ApplicationState.Listener appStateListener) {
         this.applicationDir = Objects.requireNonNull(applicationDir);
         this.scriptSession = scriptSession;
+        this.appStateListener = appStateListener;
     }
 
     public ApplicationState out() {
@@ -43,7 +48,7 @@ public class ApplicationFactory implements ApplicationConfig.Visitor {
                     "Cannot instantiate Groovy application on a %s script session", scriptSession.scriptType()));
         }
 
-        out = new ApplicationState(script.id(), script.name());
+        out = new ApplicationState(appStateListener, script.id(), script.name());
         ApplicationContext.runUnderContext(out, () -> evaluateScripts(script.files()));
     }
 
@@ -54,14 +59,14 @@ public class ApplicationFactory implements ApplicationConfig.Visitor {
                     "Cannot instantiate Python application on a %s script session", scriptSession.scriptType()));
         }
 
-        out = new ApplicationState(script.id(), script.name());
+        out = new ApplicationState(appStateListener, script.id(), script.name());
         ApplicationContext.runUnderContext(out, () -> evaluateScripts(script.files()));
     }
 
     @Override
     public void visit(DynamicApplication<?> advanced) {
         try {
-            out = advanced.create();
+            out = advanced.create(appStateListener);
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -75,7 +80,7 @@ public class ApplicationFactory implements ApplicationConfig.Visitor {
     @Override
     public void visit(StaticClassApplication<?> clazz) {
         try {
-            out = clazz.create().toState();
+            out = clazz.create().toState(appStateListener);
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
