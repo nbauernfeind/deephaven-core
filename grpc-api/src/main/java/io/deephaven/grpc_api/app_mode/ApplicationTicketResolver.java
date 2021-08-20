@@ -193,12 +193,13 @@ public class ApplicationTicketResolver extends TicketResolverBase {
             ticket.limit(initialLimit);
         }
 
-        final int endOfAppId = ticketAsString.indexOf('/');
+        final int endOfRoute = ticketAsString.indexOf('/');
+        final int endOfAppId = ticketAsString.indexOf('/', endOfRoute + 1);
         final int endOfFieldSegment = ticketAsString.indexOf('/', endOfAppId + 1);
         if (endOfAppId == -1 || endOfFieldSegment == -1) {
             throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Ticket does conform to expected format");
         }
-        final String appId = ticketAsString.substring(0, endOfAppId - 1);
+        final String appId = ticketAsString.substring(endOfRoute + 1, endOfAppId);
         final String fieldName = ticketAsString.substring(endOfFieldSegment + 1);
 
         final ApplicationState app = applicationMap.get(appId);
