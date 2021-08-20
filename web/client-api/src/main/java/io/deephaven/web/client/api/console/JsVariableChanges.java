@@ -1,12 +1,9 @@
 package io.deephaven.web.client.api.console;
 
 import elemental2.core.JsArray;
-import io.deephaven.web.shared.ide.VariableChanges;
-import io.deephaven.web.shared.ide.VariableDefinition;
+import elemental2.core.JsObject;
 import jsinterop.annotations.JsProperty;
 import jsinterop.base.Js;
-
-import java.util.Arrays;
 
 public class JsVariableChanges {
     @JsProperty(namespace = "dh.VariableType")
@@ -17,18 +14,37 @@ public class JsVariableChanges {
                                 OTHERWIDGET = "OtherWidget",
                                 PANDAS = "Pandas";
 
-    private JsVariableDefinition[] created;
-    private JsVariableDefinition[] updated;
-    private JsVariableDefinition[] removed;
-
-    private static JsVariableDefinition[] convertDefinitions(VariableDefinition[] definitions) {
-        return Arrays.stream(definitions).map(def -> new JsVariableDefinition(def.getName(), def.getType())).toArray(JsVariableDefinition[]::new);
+    public static String getVariableTypeFromFieldCase(int fieldCase) {
+        if (fieldCase == 2) {
+            return OTHERWIDGET;
+        }
+        if (fieldCase == 3) {
+            return TABLE;
+        }
+        if (fieldCase == 4) {
+            return FIGURE;
+        }
+        if (fieldCase == 5) {
+            return TABLEMAP;
+        }
+        if (fieldCase == 6) {
+            return TREETABLE;
+        }
+        if (fieldCase == 7) {
+            return PANDAS;
+        }
+        // otherwise, no idea what this is yet
+        return OTHERWIDGET;
     }
 
-    public JsVariableChanges(VariableChanges changes) {
-        created = convertDefinitions(changes.created);
-        updated = convertDefinitions(changes.updated);
-        removed = convertDefinitions(changes.removed);
+    private final JsVariableDefinition[] created;
+    private final JsVariableDefinition[] updated;
+    private final JsVariableDefinition[] removed;
+
+    public JsVariableChanges(JsVariableDefinition[] created, JsVariableDefinition[] updated, JsVariableDefinition[] removed) {
+        this.created = JsObject.freeze(created);
+        this.updated = JsObject.freeze(updated);
+        this.removed = JsObject.freeze(removed);
     }
 
     @JsProperty

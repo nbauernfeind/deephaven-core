@@ -25,6 +25,7 @@ import io.deephaven.proto.backplane.grpc.ExactJoinTablesRequest;
 import io.deephaven.proto.backplane.grpc.ExportedTableCreationResponse;
 import io.deephaven.proto.backplane.grpc.ExportedTableUpdateMessage;
 import io.deephaven.proto.backplane.grpc.ExportedTableUpdatesRequest;
+import io.deephaven.proto.backplane.grpc.FetchTableRequest;
 import io.deephaven.proto.backplane.grpc.FilterTableRequest;
 import io.deephaven.proto.backplane.grpc.FlattenRequest;
 import io.deephaven.proto.backplane.grpc.HeadOrTailByRequest;
@@ -218,6 +219,11 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
     }
 
     @Override
+    public void fetchTable(FetchTableRequest request, StreamObserver<ExportedTableCreationResponse> responseObserver) {
+        oneShotOperationWrapper(BatchTableRequest.Operation.OpCase.FETCH_TABLE, request, responseObserver);
+    }
+
+    @Override
     public void batch(final BatchTableRequest request, final StreamObserver<ExportedTableCreationResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState session = sessionService.getCurrentSession();
@@ -299,6 +305,30 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
             ((ServerCallStreamObserver<ExportedTableUpdateMessage>) responseObserver).setOnCancelHandler(() -> {
                 session.removeExportListener(listener);
             });
+        });
+    }
+
+    @Override
+    public void getExportedTableCreationResponse(final Ticket request, final StreamObserver<ExportedTableCreationResponse> responseObserver) {
+        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
+            final SessionState session = sessionService.getCurrentSession();
+
+            final SessionState.ExportObject<Object> export = ticketRouter.resolve(session, request);
+
+            session.nonExport()
+                    .require(export)
+                    .onError(responseObserver::onError)
+                    .submit(() -> {
+                        final Object obj = export.get();
+                        if (!(obj instanceof Table)) {
+                            responseObserver.onError(GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Ticket is not a table"));
+                            return;
+                        }
+
+                        TableReference ref = TableReference.newBuilder().setTicket(request).build();
+                        responseObserver.onNext(buildTableCreationResponse(ref, (Table)obj));
+                        responseObserver.onCompleted();
+                    });
         });
     }
 

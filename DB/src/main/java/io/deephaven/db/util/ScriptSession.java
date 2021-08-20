@@ -12,6 +12,7 @@ import io.deephaven.db.util.scripts.ScriptPathLoaderState;
 import io.deephaven.lang.parse.api.CompletionParseService;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +56,13 @@ public interface ScriptSession extends ReleasableLivenessManager, LivenessNode {
         public Map<String, ExportedObjectType> created = new HashMap<>();
         public Map<String, ExportedObjectType> updated = new HashMap<>();
         public Map<String, ExportedObjectType> removed = new HashMap<>();
+
+        public boolean isEmpty() {
+            return created.isEmpty() && updated.isEmpty() && removed.isEmpty();
+        }
+    }
+    interface Listener {
+        void onScopeChanges(ScriptSession scriptSession, Changes changes);
     }
 
     /**
@@ -78,6 +86,15 @@ public interface ScriptSession extends ReleasableLivenessManager, LivenessNode {
      * @return the changes made to the exportable objects
      */
     Changes evaluateScript(String script, @Nullable String scriptName);
+
+    /**
+     * Evaluates the script and manages liveness of objects that are exported to the user. This method should be called
+     * from the serial executor as it manipulates static state.
+     *
+     * @param scriptPath the path to the script to execute
+     * @return the changes made to the exportable objects
+     */
+    Changes evaluateScript(Path scriptPath);
 
     /**
      * Retrieves all of the variables present in the session's scope (e.g., Groovy binding, Python globals()).

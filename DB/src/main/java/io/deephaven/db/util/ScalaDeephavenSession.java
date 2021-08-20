@@ -80,7 +80,7 @@ public class ScalaDeephavenSession extends AbstractScriptSession implements Scri
     }
 
     public ScalaDeephavenSession(@SuppressWarnings("unused") boolean runInitScripts, boolean isDefaultScriptSession) {
-        super(isDefaultScriptSession);
+        super(null, isDefaultScriptSession);
 
         errorHandler = new ErrorHandler();
         GenericRunnerSettings settings = new GenericRunnerSettings(errorHandler);
@@ -187,6 +187,7 @@ public class ScalaDeephavenSession extends AbstractScriptSession implements Scri
 
     @Override
     public void setVariable(String name, Object value) {
+        super.setVariable(name, value);
         if (value == null) {
             interpreter.beQuietDuring(() -> interpreter.bind(new NamedParamClass(name, Object.class.getCanonicalName(), null)));
         } else {
