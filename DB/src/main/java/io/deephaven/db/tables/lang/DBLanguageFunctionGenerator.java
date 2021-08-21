@@ -363,11 +363,11 @@ public class DBLanguageFunctionGenerator {
         Class classes[] = new Class[]{int.class, double.class, long.class, float.class, char.class, byte.class, short.class};
 
         BinaryExpr.Operator operators[] = new BinaryExpr.Operator[]{
-                BinaryExpr.Operator.plus,
-                BinaryExpr.Operator.minus,
-                BinaryExpr.Operator.times,
-                BinaryExpr.Operator.divide,
-                BinaryExpr.Operator.remainder,
+                BinaryExpr.Operator.PLUS,
+                BinaryExpr.Operator.MINUS,
+                BinaryExpr.Operator.MULTIPLY,
+                BinaryExpr.Operator.DIVIDE,
+                BinaryExpr.Operator.REMAINDER,
         };
 
         // Verbs corresponding to each operator, used in exception messages: "Attempt to _____ two arrays of different length"
@@ -399,9 +399,9 @@ public class DBLanguageFunctionGenerator {
         classes = new Class[]{int.class, long.class, char.class, byte.class, short.class};
 
         operators = new BinaryExpr.Operator[]{
-                BinaryExpr.Operator.binOr,
-                BinaryExpr.Operator.xor,
-                BinaryExpr.Operator.binAnd
+                BinaryExpr.Operator.BINARY_OR,
+                BinaryExpr.Operator.XOR,
+                BinaryExpr.Operator.BINARY_AND
         };
 
         for (BinaryExpr.Operator operator : operators){
@@ -422,39 +422,39 @@ public class DBLanguageFunctionGenerator {
 
                 // handle special cases with float/double arguments (need to handle NaN/precision differently)
                 if(classA.equals(long.class) && classB.equals(double.class)) {
-                    append(buf, longDoubleCompareToFormatter, BinaryExpr.Operator.plus, classA, classB);   //the plus is just to avoid a npe
+                    append(buf, longDoubleCompareToFormatter, BinaryExpr.Operator.PLUS, classA, classB);   //the plus is just to avoid a npe
                 } else if(classA.equals(double.class) && classB.equals(long.class)) {
-                    append(buf, inverseCompareToFormatter, BinaryExpr.Operator.plus, classA, classB);   //the plus is just to avoid a npe
+                    append(buf, inverseCompareToFormatter, BinaryExpr.Operator.PLUS, classA, classB);   //the plus is just to avoid a npe
                 } else if(classA.equals(long.class) && classB.equals(float.class)) {
-                    append(buf, longDoubleCompareToFormatter, BinaryExpr.Operator.plus, classA, classB);   //the plus is just to avoid a npe
+                    append(buf, longDoubleCompareToFormatter, BinaryExpr.Operator.PLUS, classA, classB);   //the plus is just to avoid a npe
                 } else if(classA.equals(float.class) && classB.equals(long.class)) {
-                    append(buf, inverseCompareToFormatter, BinaryExpr.Operator.plus, classA, classB);   //the plus is just to avoid a npe
+                    append(buf, inverseCompareToFormatter, BinaryExpr.Operator.PLUS, classA, classB);   //the plus is just to avoid a npe
                 } else if(classA.equals(double.class) || classB.equals(double.class)) {
                     // if either arg is a double, we promote to double
-                    append(buf, varDoubleCompareToFormatter, BinaryExpr.Operator.plus, classA, classB);   //the plus is just to avoid a npe
+                    append(buf, varDoubleCompareToFormatter, BinaryExpr.Operator.PLUS, classA, classB);   //the plus is just to avoid a npe
                 } else if(classA.equals(float.class) || classB.equals(float.class)) {
                     // if both args can contain a float, use float comparator, otherwise promote to double
                     if(classA.isAssignableFrom(float.class) && classB.isAssignableFrom(float.class)) {
-                        append(buf, varFloatCompareToFormatter, BinaryExpr.Operator.plus, classA, classB);   //the plus is just to avoid a npe
+                        append(buf, varFloatCompareToFormatter, BinaryExpr.Operator.PLUS, classA, classB);   //the plus is just to avoid a npe
                     } else {
-                        append(buf, varDoubleCompareToFormatter, BinaryExpr.Operator.plus, classA, classB);   //the plus is just to avoid a npe
+                        append(buf, varDoubleCompareToFormatter, BinaryExpr.Operator.PLUS, classA, classB);   //the plus is just to avoid a npe
                     }
                 } else {
-                    append(buf, varVarCompareToFormatter, BinaryExpr.Operator.plus, classA, classB);   //the plus is just to avoid a npe
+                    append(buf, varVarCompareToFormatter, BinaryExpr.Operator.PLUS, classA, classB);   //the plus is just to avoid a npe
                 }
 
-                append(buf, varVarEqualsFormatter, BinaryExpr.Operator.plus, classA, classB);      //the plus is just to avoid a npe
-                append(buf, arrayArrayFormatter, BinaryExpr.Operator.equals, "check equality of", classA, classB);
-                append(buf, arrayVarFormatter, BinaryExpr.Operator.equals, classA, classB);
-                append(buf, varArrayFormatter, BinaryExpr.Operator.equals, classA, classB);
+                append(buf, varVarEqualsFormatter, BinaryExpr.Operator.PLUS, classA, classB);      //the plus is just to avoid a npe
+                append(buf, arrayArrayFormatter, BinaryExpr.Operator.EQUALS, "check equality of", classA, classB);
+                append(buf, arrayVarFormatter, BinaryExpr.Operator.EQUALS, classA, classB);
+                append(buf, varArrayFormatter, BinaryExpr.Operator.EQUALS, classA, classB);
             }
         }
 
         operators = new BinaryExpr.Operator[]{
-                BinaryExpr.Operator.less,
-                BinaryExpr.Operator.greater,
-                BinaryExpr.Operator.lessEquals,
-                BinaryExpr.Operator.greaterEquals
+                BinaryExpr.Operator.LESS,
+                BinaryExpr.Operator.GREATER,
+                BinaryExpr.Operator.LESS_EQUALS,
+                BinaryExpr.Operator.GREATER_EQUALS
         };
 
         for (BinaryExpr.Operator operator : operators){
@@ -475,9 +475,9 @@ public class DBLanguageFunctionGenerator {
         //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         operators = new BinaryExpr.Operator[]{
-                BinaryExpr.Operator.binOr,                  //no or and and because we like shortcircuit
-                BinaryExpr.Operator.xor,
-                BinaryExpr.Operator.binAnd,
+                BinaryExpr.Operator.BINARY_OR,                  //no or and and because we like shortcircuit
+                BinaryExpr.Operator.XOR,
+                BinaryExpr.Operator.BINARY_AND,
         };
 
         for (BinaryExpr.Operator operator : operators){
@@ -486,24 +486,24 @@ public class DBLanguageFunctionGenerator {
 
         //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        append(buf, arrayArrayFormatter, BinaryExpr.Operator.equals, "check equality of", Boolean.class, boolean.class);
-        append(buf, arrayArrayFormatter, BinaryExpr.Operator.equals, "check equality of", boolean.class, Boolean.class);
-        append(buf, arrayArrayFormatter, BinaryExpr.Operator.equals, "check equality of", boolean.class, boolean.class);
-        append(buf, arrayArrayFormatter, BinaryExpr.Operator.equals, "check equality of", Object.class, Object.class);
+        append(buf, arrayArrayFormatter, BinaryExpr.Operator.EQUALS, "check equality of", Boolean.class, boolean.class);
+        append(buf, arrayArrayFormatter, BinaryExpr.Operator.EQUALS, "check equality of", boolean.class, Boolean.class);
+        append(buf, arrayArrayFormatter, BinaryExpr.Operator.EQUALS, "check equality of", boolean.class, boolean.class);
+        append(buf, arrayArrayFormatter, BinaryExpr.Operator.EQUALS, "check equality of", Object.class, Object.class);
 
-        append(buf, arrayVarFormatter, BinaryExpr.Operator.equals, boolean.class, Boolean.class);
-        append(buf, arrayVarFormatter, BinaryExpr.Operator.equals, Object.class, Object.class);
+        append(buf, arrayVarFormatter, BinaryExpr.Operator.EQUALS, boolean.class, Boolean.class);
+        append(buf, arrayVarFormatter, BinaryExpr.Operator.EQUALS, Object.class, Object.class);
 
-        append(buf, varArrayFormatter, BinaryExpr.Operator.equals, Boolean.class, boolean.class);
-        append(buf, varArrayFormatter, BinaryExpr.Operator.equals, Object.class, Object.class);
+        append(buf, varArrayFormatter, BinaryExpr.Operator.EQUALS, Boolean.class, boolean.class);
+        append(buf, varArrayFormatter, BinaryExpr.Operator.EQUALS, Object.class, Object.class);
 
         //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         operators = new BinaryExpr.Operator[]{
-                BinaryExpr.Operator.less,
-                BinaryExpr.Operator.greater,
-                BinaryExpr.Operator.lessEquals,
-                BinaryExpr.Operator.greaterEquals
+                BinaryExpr.Operator.LESS,
+                BinaryExpr.Operator.GREATER,
+                BinaryExpr.Operator.LESS_EQUALS,
+                BinaryExpr.Operator.GREATER_EQUALS
         };
 
         for (BinaryExpr.Operator operator : operators) {
@@ -519,13 +519,13 @@ public class DBLanguageFunctionGenerator {
         for (Class classA : classes){ // Functions for null-safe casts between primitive types
             for (Class classB : classes){
                 if(classA != classB) { // don't create functions for redundant casts (e.g. intCast(int))
-                    append(buf, castFormatter, BinaryExpr.Operator.plus, classA, classB);  //the plus is just so we don't get a npe
+                    append(buf, castFormatter, BinaryExpr.Operator.PLUS, classA, classB);  //the plus is just so we don't get a npe
                 }
             }
         }
 
         for (Class c : classes) { // Functions for null-safe casts from Object to primitive types
-            append(buf, castFromObjFormatter, BinaryExpr.Operator.plus, c, Object.class);  //the plus and Object are just so we don't get a npe
+            append(buf, castFromObjFormatter, BinaryExpr.Operator.PLUS, c, Object.class);  //the plus and Object are just so we don't get a npe
         }
 
         //------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -533,7 +533,7 @@ public class DBLanguageFunctionGenerator {
         classes = new Class[]{int.class, double.class, long.class, float.class, char.class, byte.class, short.class};
 
         for (Class clazz : classes){
-            append(buf, negateFormatter, BinaryExpr.Operator.plus, clazz, clazz);  //the plus is just so we don't get a npe
+            append(buf, negateFormatter, BinaryExpr.Operator.PLUS, clazz, clazz);  //the plus is just so we don't get a npe
         }
 
         //------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -579,7 +579,7 @@ public class DBLanguageFunctionGenerator {
     private static void append(StringBuilder buf, MessageFormat messageFormat, BinaryExpr.Operator op, String opDescription, Class type1, Class type2, String literal1, String literal2){
         Class promotedType;
 
-        if (op==BinaryExpr.Operator.equals || op==BinaryExpr.Operator.less || op==BinaryExpr.Operator.greater || op==BinaryExpr.Operator.lessEquals || op==BinaryExpr.Operator.greaterEquals){
+        if (op==BinaryExpr.Operator.EQUALS || op==BinaryExpr.Operator.LESS || op==BinaryExpr.Operator.GREATER || op==BinaryExpr.Operator.LESS_EQUALS || op==BinaryExpr.Operator.GREATER_EQUALS){
             promotedType=boolean.class;
         }
         else if (io.deephaven.util.type.TypeUtils.getBoxedType(type1)==Boolean.class || io.deephaven.util.type.TypeUtils.getBoxedType(type2)==Boolean.class){
@@ -591,23 +591,23 @@ public class DBLanguageFunctionGenerator {
 
         String cast="";
 
-        if (op==BinaryExpr.Operator.divide && DBLanguageParser.isNonFPNumber(type2)){
+        if (op==BinaryExpr.Operator.DIVIDE && DBLanguageParser.isNonFPNumber(type2)){
             cast="(double)";
             promotedType=double.class;
         }
 
         String compareTo="";
 
-        if (op==BinaryExpr.Operator.less){
+        if (op==BinaryExpr.Operator.LESS){
             compareTo="<0";
         }
-        else if (op==BinaryExpr.Operator.greater){
+        else if (op==BinaryExpr.Operator.GREATER){
             compareTo=">0";
         }
-        else if (op==BinaryExpr.Operator.lessEquals){
+        else if (op==BinaryExpr.Operator.LESS_EQUALS){
             compareTo="<=0";
         }
-        else if (op==BinaryExpr.Operator.greaterEquals){
+        else if (op==BinaryExpr.Operator.GREATER_EQUALS){
             compareTo=">=0";
         }
 

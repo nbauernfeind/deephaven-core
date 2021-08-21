@@ -13,22 +13,16 @@ public class ExpressionParser {
     public static Expression parseExpression(String expression) throws ParseException, IOException {
         // nothing static here, so no synchronization needed (javaparser used to create a static-only parser instance)
         StringReader sr = new StringReader(expression);
-        final ASTParser parser = new ASTParser(sr);
-        final Expression expr = parser.Expression();
-
-        Token token = parser.token;
-        while (token.next != null) {
-            if (token.kind == ASTParserConstants.EOF) {
-                return expr;
-            }
-            if (token.next.image.trim().isEmpty()) {
-                token = token.next;
-                continue;
-            }
-            // there was a leftover token; javacc recognizes the token, but there's no valid ast that it can construct.
-            // we don't notice that, however, since we throw it way.
-            throw new IllegalArgumentException("Invalid expression " + expression + " was already terminated after " + expr);
+        ParseResult<Expression> result = new JavaParser().parse(ParseStart.EXPRESSION, Providers.provider(sr));
+        if (!result.isSuccessful()) {
+            throw new IllegalArgumentException("Invalid expression " + expression + ": " + result.getProblems().toString());
         }
+        // a failed parse does not always mean there is no result.
+        Expression expr = null;
+        if (result.getResult().isPresent()) {
+            expr = result.getResult().get();
+        }
+
         // unlikely for there to be tokens left w/out parser.token.next already being non-null (we would already have thrown...)
         int test;
         try {
