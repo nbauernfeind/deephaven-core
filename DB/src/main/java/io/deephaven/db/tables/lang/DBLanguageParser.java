@@ -38,17 +38,17 @@ import java.util.stream.Stream;
 
 import static io.deephaven.db.util.PythonScopeJpyImpl.*;
 
-public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLanguageParser.VisitArgs> {
+public final class DBLanguageParser extends GenericVisitorAdapter<Class<?>, DBLanguageParser.VisitArgs> {
 
     private final Collection<Package> packageImports;
-    private final Collection<Class> classImports;
-    private final Collection<Class> staticImports;
-    private final Map<String, Class> variables;
-    private final Map<String, Class[]> variableParameterizedTypes;
+    private final Collection<Class<?>> classImports;
+    private final Collection<Class<?>> staticImports;
+    private final Map<String, Class<?>> variables;
+    private final Map<String, Class<?>[]> variableParameterizedTypes;
 
     private final HashSet<String> variablesUsed = new HashSet<>();
 
-    private static final Class NULL_CLASS = DBLanguageParser.class;   //I needed some class to represent null. So I chose this one since it won't be used...
+    private static final Class<?> NULL_CLASS = DBLanguageParser.class;   //I needed some class to represent null. So I chose this one since it won't be used...
 
     private static final Set<String> simpleNameWhiteList = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("java.lang", DbArrayBase.class.getPackage().getName())));
 
@@ -57,7 +57,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
      */
     private final Result result;
 
-    private final HashMap<Node, Class> cachedTypes = new HashMap<>();
+    private final HashMap<Node, Class<?>> cachedTypes = new HashMap<>();
     private final boolean unboxArguments;
 
     /**
@@ -75,10 +75,10 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
      */
     public DBLanguageParser(String expression,
                             Collection<Package> packageImports,
-                            Collection<Class> classImports,
-                            Collection<Class> staticImports,
-                            Map<String, Class> variables,
-                            Map<String, Class[]> variableParameterizedTypes) throws QueryLanguageParseException {
+                            Collection<Class<?>> classImports,
+                            Collection<Class<?>> staticImports,
+                            Map<String, Class<?>> variables,
+                            Map<String, Class<?>[]> variableParameterizedTypes) throws QueryLanguageParseException {
         this(expression,packageImports,classImports,staticImports,variables,variableParameterizedTypes,true);
     }
 
@@ -98,10 +98,10 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
      */
     public DBLanguageParser(String expression,
                             Collection<Package> packageImports,
-                            Collection<Class> classImports,
-                            Collection<Class> staticImports,
-                            Map<String, Class> variables,
-                            Map<String, Class[]> variableParameterizedTypes, boolean unboxArguments) throws QueryLanguageParseException {
+                            Collection<Class<?>> classImports,
+                            Collection<Class<?>> staticImports,
+                            Map<String, Class<?>> variables,
+                            Map<String, Class<?>[]> variableParameterizedTypes, boolean unboxArguments) throws QueryLanguageParseException {
         this.packageImports = packageImports==null ? Collections.emptySet() : Require.notContainsNull(packageImports, "packageImports");
         this.classImports = classImports==null ? Collections.emptySet() : Require.notContainsNull(classImports, "classImports");
         this.staticImports = staticImports==null ? Collections.emptySet() : Require.notContainsNull(staticImports, "staticImports");
@@ -119,7 +119,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         try {
             Expression expr = ExpressionParser.parseExpression(expression);
 
-            Class type=expr.accept(this, printer);
+            Class<?> type=expr.accept(this, printer);
 
             if (type==NULL_CLASS){
                 type=Object.class;
@@ -267,8 +267,8 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return ret.toString();
     }
 
-    private Class[] printArguments(Expression arguments[], VisitArgs printer) {
-        ArrayList<Class> types = new ArrayList<>();
+    private Class<?>[] printArguments(Expression[] arguments, VisitArgs printer) {
+        ArrayList<Class<?>> types = new ArrayList<>();
 
         printer.append('(');
         for (int i=0; i<arguments.length; i++) {
@@ -283,7 +283,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return types.toArray(new Class[0]);
     }
 
-    static Class binaryNumericPromotionType(Class type1, Class type2) {
+    static Class<?> binaryNumericPromotionType(Class<?> type1, Class<?> type2) {
         if (type1==double.class || type2 == double.class){
             return double.class;
         }
@@ -317,7 +317,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
      * @param name The name of the class to search for
      * @return The class, if it exists; otherwise, {@code null}.
      */
-    private Class findClass(String name) {
+    private Class<?> findClass(String name) {
         if (name.contains(".")) { // Fully-qualified class name
             try {
                 return Class.forName(name);
@@ -325,7 +325,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
             catch (ClassNotFoundException ignored) {}
         }
         else { // Simple name
-            for (Class classImport : classImports){
+            for (Class<?> classImport : classImports){
                 if (name.equals(classImport.getSimpleName())){
                     return classImport;
                 }
@@ -346,27 +346,26 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
      * @param nestedClassName The simple name of the nested class to search for
      * @return The nested class, if it exists; otherwise, {@code null}}
      */
-    private Class findNestedClass(Class enclosingClass, String nestedClassName) {
+    private Class<?> findNestedClass(Class<?> enclosingClass, String nestedClassName) {
         Map<String, Class<?>> m = Stream
-                .<Class<?>>of(enclosingClass.getDeclaredClasses())
+                .of(enclosingClass.getDeclaredClasses())
                 .filter((cls) -> nestedClassName.equals(cls.getSimpleName()))
                 .collect(Collectors.toMap(Class::getSimpleName, Function.identity()));
         return m.get(nestedClassName);
     }
 
-    @SuppressWarnings({"ConstantConditions"})
-    private Method getMethod(final Class scope, final String methodName, final Class paramTypes[], final Class parameterizedTypes[][]){
+    private Method getMethod(final Class<?> scope, final String methodName, final Class<?>[] paramTypes, final Class<?>[][] parameterizedTypes){
         final ArrayList<Method> acceptableMethods = new ArrayList<>();
 
         if (scope==null){
-            for (final Class classImport : staticImports) {
+            for (final Class<?> classImport : staticImports) {
                 for (Method method : classImport.getDeclaredMethods()) {
                     possiblyAddExecutable(acceptableMethods, method, methodName, paramTypes, parameterizedTypes);
                 }
             }
             // for Python function/Groovy closure call syntax without the explicit 'call' keyword, check if it is defined in Query scope
             if (acceptableMethods.size() == 0) {
-                final Class methodClass = variables.get(methodName);
+                final Class<?> methodClass = variables.get(methodName);
                 if (methodClass != null && isPotentialImplicitCall(methodClass)) {
                     for (Method method : methodClass.getMethods()) {
                         possiblyAddExecutable(acceptableMethods, method, "call", paramTypes, parameterizedTypes);
@@ -410,15 +409,15 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return bestMethod;
     }
 
-    private static boolean isPotentialImplicitCall(Class methodClass) {
+    private static boolean isPotentialImplicitCall(Class<?> methodClass) {
         return CallableWrapper.class.isAssignableFrom(methodClass) || methodClass == groovy.lang.Closure.class;
     }
 
-    private Class getMethodReturnType(Class scope, String methodName, Class paramTypes[], Class parameterizedTypes[][]){
+    private Class<?> getMethodReturnType(Class<?> scope, String methodName, Class<?>[] paramTypes, Class<?>[][] parameterizedTypes){
         return getMethod(scope, methodName, paramTypes, parameterizedTypes).getReturnType();
     }
 
-    private Class calculateMethodReturnTypeUsingGenerics(Method method, Class paramTypes[], Class parameterizedTypes[][]){
+    private Class<?> calculateMethodReturnTypeUsingGenerics(Method method, Class<?>[] paramTypes, Class<?>[][] parameterizedTypes){
         Type genericReturnType = method.getGenericReturnType();
 
         int arrayDimensions=0;
@@ -434,11 +433,11 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
 
         //check for the generic type in a param
 
-        Type genericParameterTypes[] = method.getGenericParameterTypes();
+        Type[] genericParameterTypes = method.getGenericParameterTypes();
 
         for (int i=0; i<genericParameterTypes.length; i++){
             Type genericParamType=genericParameterTypes[i];
-            Class paramType=paramTypes[i];
+            Class<?> paramType=paramTypes[i];
 
             while (genericParamType instanceof GenericArrayType){
                 genericParamType=((GenericArrayType)genericParamType).getGenericComponentType();
@@ -457,7 +456,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
             }
 
             if ((genericParamType instanceof ParameterizedType) && (parameterizedTypes[i]!=null)){
-                Type methodParameterizedTypes[] = ((ParameterizedType) genericParamType).getActualTypeArguments();
+                Type[] methodParameterizedTypes = ((ParameterizedType) genericParamType).getActualTypeArguments();
 
                 for (int j=0; j<methodParameterizedTypes.length; j++){
                     if (genericReturnType.equals(methodParameterizedTypes[j])){
@@ -471,10 +470,10 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
     }
 
     @SuppressWarnings({"ConstantConditions"})
-    private Constructor getConstructor(final Class scope, final Class paramTypes[], final Class parameterizedTypes[][]){
-        final ArrayList<Constructor> acceptableConstructors = new ArrayList<>();
+    private Constructor<?> getConstructor(final Class<?> scope, final Class<?>[] paramTypes, final Class<?>[][] parameterizedTypes){
+        final ArrayList<Constructor<?>> acceptableConstructors = new ArrayList<>();
 
-        for (final Constructor constructor : scope.getConstructors()){
+        for (final Constructor<?> constructor : scope.getConstructors()){
             possiblyAddExecutable(acceptableConstructors, constructor, scope.getName(), paramTypes, parameterizedTypes);
         }
 
@@ -482,9 +481,9 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
             throw new RuntimeException("Cannot find constructor for " + scope.getName() + '(' + paramsTypesToString(paramTypes) + ')' + (scope!=null ? " in "+scope : ""));
         }
 
-        Constructor bestConstructor=null;
+        Constructor<?> bestConstructor=null;
 
-        for (final Constructor constructor : acceptableConstructors){
+        for (final Constructor<?> constructor : acceptableConstructors){
             if (bestConstructor==null || isMoreSpecificConstructor(bestConstructor, constructor)){
                 bestConstructor=constructor;
             }
@@ -493,7 +492,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return bestConstructor;
     }
 
-    private String paramsTypesToString(Class paramTypes[]){
+    private String paramsTypesToString(Class<?>[] paramTypes){
         StringBuilder buf = new StringBuilder();
 
         for (int i=0; i<paramTypes.length; i++){
@@ -509,9 +508,10 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
 
     private static <EXECUTABLE_TYPE extends Executable> void possiblyAddExecutable(final List<EXECUTABLE_TYPE> accepted,
                                                                                    final EXECUTABLE_TYPE candidate,
-                                                                                   final String name, final Class paramTypes[], final Class parameterizedTypes[][]){
+                                                                                   final String name, final Class<?>[] paramTypes,
+                                                                                   final Class<?>[][] parameterizedTypes){
         if (candidate.getName().equals(name)){
-            final Class candidateParamTypes[] = candidate.getParameterTypes();
+            final Class<?>[] candidateParamTypes = candidate.getParameterTypes();
 
             if (candidate.isVarArgs() ? candidateParamTypes.length>paramTypes.length+1 : candidateParamTypes.length!=paramTypes.length){
                 return;
@@ -520,7 +520,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
             boolean acceptable=true;
 
             for (int i=0; i<(candidate.isVarArgs() ? candidateParamTypes.length-1 : candidateParamTypes.length); i++){
-                Class paramType=paramTypes[i];
+                Class<?> paramType=paramTypes[i];
 
                 if (isDbArray(paramType) && candidateParamTypes[i].isArray()){
                     paramType=convertDBArray(paramType, parameterizedTypes[i]==null ? null : parameterizedTypes[i][0]);
@@ -534,7 +534,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
 
             // If the paramTypes includes 1+ varArgs check the classes match -- no need to check if there are 0 varArgs
             if (candidate.isVarArgs() && paramTypes.length >= candidateParamTypes.length){
-                Class paramType=paramTypes[candidateParamTypes.length-1];
+                Class<?> paramType=paramTypes[candidateParamTypes.length-1];
 
                 if (isDbArray(paramType) && candidateParamTypes[candidateParamTypes.length-1].isArray()){
                     paramType=convertDBArray(paramType, parameterizedTypes[candidateParamTypes.length-1]==null ? null : parameterizedTypes[candidateParamTypes.length-1][0]);
@@ -546,7 +546,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
                     }
                 }
                 else{
-                    final Class lastClass = candidateParamTypes[candidateParamTypes.length-1].getComponentType();
+                    final Class<?> lastClass = candidateParamTypes[candidateParamTypes.length-1].getComponentType();
 
                     for (int i=candidateParamTypes.length-1; i<paramTypes.length; i++) {
                         paramType=paramTypes[i];
@@ -569,7 +569,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         }
     }
 
-    private static boolean isMoreSpecificConstructor(final Constructor c1, final Constructor c2) {
+    private static boolean isMoreSpecificConstructor(final Constructor<?> c1, final Constructor<?> c2) {
         final Boolean executableResult = isMoreSpecificExecutable(c1, c2);
         if (executableResult == null) {
             throw new IllegalStateException("Ambiguous comparison between constructors " + c1 + " and " + c2);
@@ -594,8 +594,8 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
             return false;
         }
 
-        final Class[] e1ParamTypes = e1.getParameterTypes();
-        final Class[] e2ParamTypes = e2.getParameterTypes();
+        final Class<?>[] e1ParamTypes = e1.getParameterTypes();
+        final Class<?>[] e2ParamTypes = e2.getParameterTypes();
 
         if (e1.isVarArgs() && e2.isVarArgs()){
             e1ParamTypes[e1ParamTypes.length-1]=e1ParamTypes[e1ParamTypes.length-1].getComponentType();
@@ -615,7 +615,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return null;
     }
 
-    private static boolean isAssignableFrom(Class classA, Class classB){
+    private static boolean isAssignableFrom(Class<?> classA, Class<?> classB){
         if (classA==classB){
             return true;
         }
@@ -630,13 +630,12 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
             classA= io.deephaven.util.type.TypeUtils.getBoxedType(classA);
             classB= io.deephaven.util.type.TypeUtils.getBoxedType(classB);
 
-            //noinspection unchecked
             return classA.isAssignableFrom(classB);
         }
     }
 
-    private Class[][] getParameterizedTypes(Expression... expressions){
-        Class parameterizedTypes[][] = new Class[expressions.length][];
+    private Class<?>[][] getParameterizedTypes(Expression... expressions){
+        Class<?>[][] parameterizedTypes = new Class[expressions.length][];
 
         for (int i=0; i<expressions.length; i++){
             if ((expressions[i] instanceof NameExpr)){
@@ -647,13 +646,14 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return parameterizedTypes;
     }
 
-    private static Class convertDBArray(Class type, Class parameterizedType){
+    private static Class<?> convertDBArray(Class<?> type, Class<?> parameterizedType){
         if (DbArray.class.isAssignableFrom(type)){
             return Array.newInstance(parameterizedType==null ? Object.class : parameterizedType, 0).getClass();
         }
         if (DbIntArray.class.isAssignableFrom(type)){
             return int[].class;
         }
+        //noinspection deprecation
         if (DbBooleanArray.class.isAssignableFrom(type)){
             return Boolean[].class;
         }
@@ -678,9 +678,9 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         throw new RuntimeException("Unknown DBArray type : " + type);
     }
 
-    private Class getTypeWithCaching(Node n){
+    private Class<?> getTypeWithCaching(Node n){
         if (!cachedTypes.containsKey(n)) {
-            Class r = n.accept(this, VisitArgs.WITHOUT_STRING_BUILDER);
+            Class<?> r = n.accept(this, VisitArgs.WITHOUT_STRING_BUILDER);
             cachedTypes.putIfAbsent(n,r);
         }
         return cachedTypes.get(n);
@@ -729,7 +729,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return (op==BinaryExpr.Operator.equals) ? "eq" : op.name();
     }
 
-    static boolean isNonFPNumber(Class type){
+    static boolean isNonFPNumber(Class<?> type){
         type= io.deephaven.util.type.TypeUtils.getUnboxedType(type);
 
         //noinspection SimplifiableIfStatement
@@ -740,7 +740,8 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return type==int.class || type==long.class || type==byte.class || type==short.class || type==char.class;
     }
 
-    public static boolean isDbArray(Class type){
+    public static boolean isDbArray(Class<?> type){
+        //noinspection deprecation
         return DbArray.class.isAssignableFrom(type) ||
                 DbIntArray.class.isAssignableFrom(type) ||
                 DbBooleanArray.class.isAssignableFrom(type) ||
@@ -767,7 +768,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
      * @return An array of new expressions that maintain the 'meaning' of the input {@code expressions} but are appropriate
      * to pass to {@code executable}
      */
-    private Expression[] convertParameters(final Executable executable, final Class argumentTypes[], final Class expressionTypes[], final Class parameterizedTypes[][], Expression expressions[]){
+    private Expression[] convertParameters(final Executable executable, final Class<?>[] argumentTypes, final Class<?>[] expressionTypes, final Class<?>[][] parameterizedTypes, Expression[] expressions){
         final int nArgs = argumentTypes.length; // Number of declared arguments
         for (int ai = 0; ai<(executable.isVarArgs() ? nArgs -1 : nArgs); ai++){
             if (argumentTypes[ai]!=expressionTypes[ai] && argumentTypes[ai].isPrimitive() && expressionTypes[ai].isPrimitive()){
@@ -783,7 +784,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         }
 
         if (executable.isVarArgs()){
-            Class varArgType = argumentTypes[nArgs - 1].getComponentType();
+            Class<?> varArgType = argumentTypes[nArgs - 1].getComponentType();
 
             boolean anyExpressionTypesArePrimitive=true;
 
@@ -808,8 +809,8 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
             }
 
             if (varArgType.isPrimitive() && anyExpressionTypesArePrimitive){        //we have some problems with ambiguous oddities and varargs, so if its primitive lets just box it ourselves
-                Expression temp[]=new Expression[nArgs];
-                Expression varArgExpressions[]=new Expression[nArgExpressions - nArgs +1];
+                Expression[] temp =new Expression[nArgs];
+                Expression[] varArgExpressions =new Expression[nArgExpressions - nArgs +1];
                 System.arraycopy(expressions, 0, temp, 0, temp.length-1);
                 System.arraycopy(expressions, nArgs -1, varArgExpressions, 0, varArgExpressions.length);
 
@@ -824,7 +825,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    public Class visit(NameExpr n, VisitArgs printer) {
+    public Class<?> visit(NameExpr n, VisitArgs printer) {
         /*
         JLS on how to resolve names: https://docs.oracle.com/javase/specs/jls/se8/html/jls-6.html#jls-6.5
 
@@ -844,7 +845,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
          */
         printer.append(n.getName());
 
-        Class ret = variables.get(n.getName());
+        Class<?> ret = variables.get(n.getName());
 
         if (ret!=null){
             variablesUsed.add(n.getName());
@@ -854,7 +855,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
 
         // We don't support static imports of individual fields/methods -- have to check among
         // *all* members of a class.
-        for (Class classImport : staticImports){
+        for (Class<?> classImport : staticImports){
             try {
                 ret=classImport.getField(n.getName()).getType();
                 return ret;
@@ -871,7 +872,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         throw new RuntimeException("Cannot find variable or class " + n.getName());
     }
 
-    public Class visit(PrimitiveType n, VisitArgs printer) {
+    public Class<?> visit(PrimitiveType n, VisitArgs printer) {
         switch (n.getType()) {
             case Boolean:
                 printer.append("boolean");
@@ -902,7 +903,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         throw new RuntimeException("Unknown primitive type : " + n.getType());
     }
 
-    public Class visit(ArrayAccessExpr n, VisitArgs printer) {
+    public Class<?> visit(ArrayAccessExpr n, VisitArgs printer) {
         /*
             ArrayAccessExprs are permitted even when the 'array' is not really an array. The main use of this
             is for DbArrays, such as:
@@ -919,7 +920,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
             As of July 2017, I don't know if anyone uses this, or if it has ever been advertised.
          */
 
-        Class type=n.getName().accept(this, printer);
+        Class<?> type=n.getName().accept(this, printer);
 
         if (type.isArray()){
             printer.append('[');
@@ -930,11 +931,11 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         }
         else{
             printer.append(".get(");
-            Class paramType=n.getIndex().accept(this, printer);
+            Class<?> paramType=n.getIndex().accept(this, printer);
             printer.append(')');
 
             if (DbArray.class.isAssignableFrom(type) && (n.getName() instanceof NameExpr)){
-                Class ret= variableParameterizedTypes.get(((NameExpr)n.getName()).getName())[0];
+                Class<?> ret= variableParameterizedTypes.get(((NameExpr)n.getName()).getName())[0];
 
                 if (ret!=null){
                     return ret;
@@ -945,11 +946,11 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         }
     }
 
-    public Class visit(BinaryExpr n, VisitArgs printer) {
+    public Class<?> visit(BinaryExpr n, VisitArgs printer) {
         BinaryExpr.Operator op = n.getOperator();
 
-        Class lhType=getTypeWithCaching(n.getLeft());
-        Class rhType=getTypeWithCaching(n.getRight());
+        Class<?> lhType=getTypeWithCaching(n.getLeft());
+        Class<?> rhType=getTypeWithCaching(n.getRight());
 
         if ((lhType==String.class || rhType==String.class) && op==BinaryExpr.Operator.plus){
 
@@ -1003,7 +1004,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return getMethodReturnType(null, methodName, new Class[]{lhType, rhType}, getParameterizedTypes(n.getLeft(), n.getRight()));
     }
 
-    public Class visit(UnaryExpr n, VisitArgs printer) {
+    public Class<?> visit(UnaryExpr n, VisitArgs printer) {
         String opName;
 
         if (n.getOperator()==UnaryExpr.Operator.not) {
@@ -1017,23 +1018,23 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         }
 
         printer.append(opName).append('(');
-        Class type=n.getExpr().accept(this, printer);
+        Class<?> type=n.getExpr().accept(this, printer);
         printer.append(')');
 
         return getMethodReturnType(null, opName, new Class[]{type}, getParameterizedTypes(n.getExpr()));
     }
 
-    public Class visit(CastExpr n, VisitArgs printer) {
-        final Class ret = n.getType().accept(this, VisitArgs.WITHOUT_STRING_BUILDER); // the target type
+    public Class<?> visit(CastExpr n, VisitArgs printer) {
+        final Class<?> ret = n.getType().accept(this, VisitArgs.WITHOUT_STRING_BUILDER); // the target type
         final Expression expr = n.getExpr();
 
         final VisitArgs innerArgs = VisitArgs.create().cloneWithCastingContext(ret);
-        final Class exprType = expr.accept(this, innerArgs);
+        final Class<?> exprType = expr.accept(this, innerArgs);
         final String exprPrinted = innerArgs.builder.toString();
 
         final boolean fromPrimitive = exprType.isPrimitive();
         final boolean fromBoxedType = io.deephaven.util.type.TypeUtils.isBoxedType(exprType);
-        final Class unboxedExprType = !fromBoxedType ? null : io.deephaven.util.type.TypeUtils.getUnboxedType(exprType);
+        final Class<?> unboxedExprType = !fromBoxedType ? null : io.deephaven.util.type.TypeUtils.getUnboxedType(exprType);
 
         final boolean toPrimitive = ret.isPrimitive();
         final boolean isWidening;
@@ -1197,17 +1198,17 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         DoublePrimitive(double.class),
         BooleanPrimitive(boolean.class);
 
-        private final Class primitiveClass;
+        private final Class<?> primitiveClass;
 
-        DBLanguageParserPrimitiveType(Class clazz) {
+        DBLanguageParserPrimitiveType(Class<?> clazz) {
             primitiveClass = clazz;
         }
 
-        private Class getPrimitiveClass() {
+        private Class<?> getPrimitiveClass() {
             return primitiveClass;
         }
 
-        private static final Map<Class, DBLanguageParserPrimitiveType> primitiveClassToEnumMap = Stream.of(DBLanguageParserPrimitiveType.values())
+        private static final Map<Class<?>, DBLanguageParserPrimitiveType> primitiveClassToEnumMap = Stream.of(DBLanguageParserPrimitiveType.values())
                 .collect(Collectors.toMap(DBLanguageParserPrimitiveType::getPrimitiveClass, Function.identity()));
 
         private static DBLanguageParserPrimitiveType getPrimitiveType(Class<?> original) {
@@ -1223,8 +1224,8 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         }
     }
 
-    public Class visit(ClassOrInterfaceType n, VisitArgs printer) {
-        Class ret;
+    public Class<?> visit(ClassOrInterfaceType n, VisitArgs printer) {
+        Class<?> ret;
         final ClassOrInterfaceType scope = n.getScope();
         final String className = n.getName();
 
@@ -1240,7 +1241,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
 
         // If not, 'className' should be a nested class of the scope type.
         if (scope != null) {
-            Class scopeClass = scope.accept(this, printer);
+            Class<?> scopeClass = scope.accept(this, printer);
             if(scopeClass != null) {
                 ret = findNestedClass(scopeClass, className);
                 if (ret != null) {
@@ -1254,8 +1255,8 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         throw new RuntimeException("Cannot find class : " + className);
     }
 
-    public Class visit(ReferenceType n, VisitArgs printer) {
-        Class ret = n.getType().accept(this, printer);
+    public Class<?> visit(ReferenceType n, VisitArgs printer) {
+        Class<?> ret = n.getType().accept(this, printer);
 
         for (int i = 0; i < n.getArrayCount(); i++) {
             printer.append("[]");
@@ -1268,9 +1269,9 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return ret;
     }
 
-    public Class visit(ConditionalExpr n, VisitArgs printer) {
-        Class classA=getTypeWithCaching(n.getThenExpr());
-        Class classB=getTypeWithCaching(n.getElseExpr());
+    public Class<?> visit(ConditionalExpr n, VisitArgs printer) {
+        Class<?> classA=getTypeWithCaching(n.getThenExpr());
+        Class<?> classB=getTypeWithCaching(n.getElseExpr());
 
         if (classA==NULL_CLASS && io.deephaven.util.type.TypeUtils.getUnboxedType(classB)!=null){
             n.setThenExpr(new NameExpr("NULL_"+ io.deephaven.util.type.TypeUtils.getUnboxedType(classB).getSimpleName().toUpperCase()));
@@ -1314,15 +1315,15 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         throw new RuntimeException("Incompatible types in condition operation not supported : " + classA + ' ' + classB);
     }
 
-    public Class visit(EnclosedExpr n, VisitArgs printer) {
+    public Class<?> visit(EnclosedExpr n, VisitArgs printer) {
         printer.append('(');
-        Class ret=n.getInner().accept(this, printer);
+        Class<?> ret=n.getInner().accept(this, printer);
         printer.append(')');
 
         return ret;
     }
 
-    public Class visit(FieldAccessExpr n, VisitArgs printer) {
+    public Class<?> visit(FieldAccessExpr n, VisitArgs printer) {
         Class<?> ret; // the result type of this FieldAccessExpr (i.e. the type of the field)
         String exprString = n.toString();
         if((ret = findClass(exprString)) != null) {
@@ -1344,7 +1345,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         // Thus we can use scopeExpr.accept() to find the scope type if the scope is anything other than a class,
         // but we would recurse and eventually fail if the scope name actually is a class. Instead, we must
         // manually check whether the scope is a class.
-        Class scopeType;
+        Class<?> scopeType;
         if (scopeExpr instanceof FieldAccessExpr
                 && (scopeType = findClass(scopeName)) != null) { // 'scope' was a class, and we found it - print 'scopeType' ourselves
             printer.append(scopeName);
@@ -1412,7 +1413,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
 
     //---------- LITERALS: ----------
 
-    public Class visit(CharLiteralExpr n, VisitArgs printer) {
+    public Class<?> visit(CharLiteralExpr n, VisitArgs printer) {
         printer.append('\'');
         printer.append(n.getValue());
         printer.append('\'');
@@ -1420,7 +1421,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return char.class;
     }
 
-    public Class visit(DoubleLiteralExpr n, VisitArgs printer) {
+    public Class<?> visit(DoubleLiteralExpr n, VisitArgs printer) {
         String value = n.getValue();
         printer.append(value);
         if(value.charAt(value.length()-1) == 'f') {
@@ -1430,7 +1431,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return double.class;
     }
 
-    public Class visit(IntegerLiteralExpr n, VisitArgs printer) {
+    public Class<?> visit(IntegerLiteralExpr n, VisitArgs printer) {
         String value=n.getValue();
 
         printer.append(value);
@@ -1470,25 +1471,25 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return int.class;
     }
 
-    public Class visit(LongLiteralExpr n, VisitArgs printer) {
+    public Class<?> visit(LongLiteralExpr n, VisitArgs printer) {
         printer.append(n.getValue());
 
         return long.class;
     }
 
-    public Class visit(IntegerLiteralMinValueExpr n, VisitArgs printer) {
+    public Class<?> visit(IntegerLiteralMinValueExpr n, VisitArgs printer) {
         printer.append(n.getValue());
 
         return int.class;
     }
 
-    public Class visit(LongLiteralMinValueExpr n, VisitArgs printer) {
+    public Class<?> visit(LongLiteralMinValueExpr n, VisitArgs printer) {
         printer.append(n.getValue());
 
         return long.class;
     }
 
-    public Class visit(StringLiteralExpr n, VisitArgs printer) {
+    public Class<?> visit(StringLiteralExpr n, VisitArgs printer) {
         printer.append('"');
         printer.append(n.getValue());
         printer.append('"');
@@ -1496,13 +1497,13 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return String.class;
     }
 
-    public Class visit(BooleanLiteralExpr n, VisitArgs printer) {
+    public Class<?> visit(BooleanLiteralExpr n, VisitArgs printer) {
         printer.append(String.valueOf(n.getValue()));
 
         return boolean.class;
     }
 
-    public Class visit(NullLiteralExpr n, VisitArgs printer) {
+    public Class<?> visit(NullLiteralExpr n, VisitArgs printer) {
         printer.append("null");
 
         return NULL_CLASS;
@@ -1510,8 +1511,8 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
 
     //---------- MISC: ----------
 
-    public Class visit(MethodCallExpr n, VisitArgs printer) {
-        Class scope=null;
+    public Class<?> visit(MethodCallExpr n, VisitArgs printer) {
+        Class<?> scope=null;
         final VisitArgs innerPrinter = VisitArgs.create();
 
         if (n.getScope() != null) {
@@ -1519,19 +1520,19 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
             innerPrinter.append('.');
         }
 
-        Expression expressions[] = n.getArgs()==null ? new Expression[0] : n.getArgs().toArray(new Expression[0]);
+        Expression[] expressions = n.getArgs()==null ? new Expression[0] : n.getArgs().toArray(new Expression[0]);
 
-        Class expressionTypes[] = printArguments(expressions, VisitArgs.WITHOUT_STRING_BUILDER);
+        Class<?>[] expressionTypes = printArguments(expressions, VisitArgs.WITHOUT_STRING_BUILDER);
 
-        Class parameterizedTypes[][] = getParameterizedTypes(expressions);
+        Class<?>[][] parameterizedTypes = getParameterizedTypes(expressions);
 
         Method method = getMethod(scope, n.getName(), expressionTypes, parameterizedTypes);
 
-        Class argumentTypes[] = method.getParameterTypes();
+        Class<?>[] argumentTypes = method.getParameterTypes();
 
         //now do some parameter conversions...
 
-        Class methodClass = variables.get(n.getName());
+        Class<?> methodClass = variables.get(n.getName());
         if (methodClass == NumbaCallableWrapper.class) {
             checkPyNumbaVectorizedFunc(n, expressions, expressionTypes);
         }
@@ -1575,7 +1576,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return calculateMethodReturnTypeUsingGenerics(method, expressionTypes, parameterizedTypes);
     }
 
-    private void checkPyNumbaVectorizedFunc(MethodCallExpr n, Expression[] expressions, Class[] expressionTypes) {
+    private void checkPyNumbaVectorizedFunc(MethodCallExpr n, Expression[] expressions, Class<?>[] expressionTypes) {
         // numba vectorized functions return arrays of primitive types. This will break the generated expression
         // evaluation code that expects singular values. This check makes sure that numba vectorized functions must be
         // used alone (or with cast only) as the entire expression.
@@ -1584,10 +1585,10 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         }
 
         final QueryScope queryScope = QueryScope.getScope();
-        for (Param param : queryScope.getParams(queryScope.getParamNames())) {
+        for (Param<?> param : queryScope.getParams(queryScope.getParamNames())) {
             if (param.getName().equals(n.getName())) {
                 NumbaCallableWrapper numbaCallableWrapper = (NumbaCallableWrapper) param.getValue();
-                List<Class> params = numbaCallableWrapper.getParamTypes();
+                List<Class<?>> params = numbaCallableWrapper.getParamTypes();
                 if (params.size() != expressions.length) {
                     throw new RuntimeException("Numba vectorized function argument count mismatch: " + params.size() + " vs." + expressions.length);
                 }
@@ -1603,32 +1604,32 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         }
     }
 
-    private static boolean isSafelyCoerceable(Class expressionType, Class aClass) {
+    private static boolean isSafelyCoerceable(Class<?> expressionType, Class<?> aClass) {
         // TODO, numba does appear to check for type coercing at runtime, though no explicit rules exist.
         // GH-709 is filed to address this at some point in the future.
         return true;
     }
 
-    public Class visit(ExpressionStmt n, VisitArgs printer) {
-        Class ret=n.getExpression().accept(this, printer);
+    public Class<?> visit(ExpressionStmt n, VisitArgs printer) {
+        Class<?> ret=n.getExpression().accept(this, printer);
         printer.append(';');
         return ret;
     }
 
-    public Class visit(ObjectCreationExpr n, VisitArgs printer) {
+    public Class<?> visit(ObjectCreationExpr n, VisitArgs printer) {
         printer.append("new ");
 
-        Class ret=n.getType().accept(this, printer);
+        Class<?> ret=n.getType().accept(this, printer);
 
-        Expression expressions[] = n.getArgs()==null ? new Expression[0] : n.getArgs().toArray(new Expression[0]);
+        Expression[] expressions = n.getArgs()==null ? new Expression[0] : n.getArgs().toArray(new Expression[0]);
 
-        Class expressionTypes[] = printArguments(expressions, VisitArgs.WITHOUT_STRING_BUILDER);
+        Class<?>[] expressionTypes = printArguments(expressions, VisitArgs.WITHOUT_STRING_BUILDER);
 
-        Class parameterizedTypes[][] = getParameterizedTypes(expressions);
+        Class<?>[][] parameterizedTypes = getParameterizedTypes(expressions);
 
-        Constructor constructor = getConstructor(ret, expressionTypes, parameterizedTypes);
+        Constructor<?> constructor = getConstructor(ret, expressionTypes, parameterizedTypes);
 
-        Class argumentTypes[] = constructor.getParameterTypes();
+        Class<?>[] argumentTypes = constructor.getParameterTypes();
 
         //now do some parameter conversions...
 
@@ -1641,10 +1642,10 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return ret;
     }
 
-    public Class visit(ArrayCreationExpr n, VisitArgs printer) {
+    public Class<?> visit(ArrayCreationExpr n, VisitArgs printer) {
         printer.append("new ");
 
-        Class ret=n.getType().accept(this, printer);
+        Class<?> ret=n.getType().accept(this, printer);
 
         if (n.getDimensions() != null) {
             for (Expression dim : n.getDimensions()) {
@@ -1675,7 +1676,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return ret;
     }
 
-    public Class visit(ArrayInitializerExpr n, VisitArgs printer) {
+    public Class<?> visit(ArrayInitializerExpr n, VisitArgs printer) {
         printer.append('{');
         if (n.getValues() != null) {
             printer.append(' ');
@@ -1693,21 +1694,22 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
         return null;
     }
 
-    public Class visit(ClassExpr n, VisitArgs printer) {
-        Class type = n.getType().accept(this, printer);
+    public Class<?> visit(ClassExpr n, VisitArgs printer) {
+        Class<?> type = n.getType().accept(this, printer);
         printer.append(".class");
-        return type.getClass();
+        // TODO (NATE: NOCOMMIT): VERIFY THIS WAS A BUG
+        return type;
     }
 
     //---------- METHOD REFERENCES: ----------
 
-    public Class visit(TypeExpr n, VisitArgs printer) {
+    public Class<?> visit(TypeExpr n, VisitArgs printer) {
         throw new UnsupportedOperationException("TypeExpr Operation not supported");
 //        return n.getType().accept(this, printer);
     }
 
     @Override
-    public Class visit(MethodReferenceExpr n, VisitArgs printer) {
+    public Class<?> visit(MethodReferenceExpr n, VisitArgs printer) {
         throw new UnsupportedOperationException("MethodReferenceExpr Operation not supported");
 
 //        Expression scope = n.getScope();
@@ -1753,7 +1755,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
 //
 //
 //
-//        // Also...waht to do with the type parameters? n.getTypeParameters()?
+//        // Also...what to do with the type parameters? n.getTypeParameters()?
 //
 //        /* If the method identifier is 'new' (and the scope type has a public constructor),
 //         then the return type is an instance of this object */
@@ -1786,76 +1788,76 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
 
     //---------- UNSUPPORTED: ----------
 
-    public Class visit(AnnotationDeclaration n, VisitArgs printer) { throw new RuntimeException("AnnotationDeclaration Operation not supported"); }
-    public Class visit(AnnotationMemberDeclaration n, VisitArgs printer) { throw new RuntimeException("AnnotationMemberDeclaration Operation not supported"); }
-    public Class visit(AssertStmt n, VisitArgs printer) { throw new RuntimeException("AssertStmt Operation not supported"); }
-    public Class visit(AssignExpr n, VisitArgs printer) { throw new RuntimeException("AssignExpr Operation not supported"); }
-    public Class visit(BlockComment n, VisitArgs printer) { throw new RuntimeException("BlockComment Operation not supported"); }
-    public Class visit(BlockStmt n, VisitArgs printer) { throw new RuntimeException("BlockStmt Operation not supported"); }
-    public Class visit(BreakStmt n, VisitArgs printer) { throw new RuntimeException("BreakStmt Operation not supported"); }
-    public Class visit(CatchClause n, VisitArgs printer) { throw new RuntimeException("CatchClause Operation not supported"); }
-    public Class visit(ClassOrInterfaceDeclaration n, VisitArgs printer) { throw new RuntimeException("ClassOrInterfaceDeclaration Operation not supported"); }
-    public Class visit(CompilationUnit n, VisitArgs printer) { throw new RuntimeException("CompilationUnit Operation not supported"); }
-    public Class visit(ConstructorDeclaration n, VisitArgs printer) { throw new RuntimeException("ConstructorDeclaration Operation not supported"); }
-    public Class visit(ContinueStmt n, VisitArgs printer) { throw new RuntimeException("ContinueStmt Operation not supported"); }
-    public Class visit(DoStmt n, VisitArgs printer) { throw new RuntimeException("DoStmt Operation not supported"); }
-    public Class visit(EmptyMemberDeclaration n, VisitArgs printer) { throw new RuntimeException("EmptyMemberDeclaration Operation not supported"); }
-    public Class visit(EmptyStmt n, VisitArgs printer) { throw new RuntimeException("EmptyStmt Operation not supported"); }
-    public Class visit(EmptyTypeDeclaration n, VisitArgs printer) { throw new RuntimeException("EmptyTypeDeclaration Operation not supported"); }
-    public Class visit(EnumConstantDeclaration n, VisitArgs printer) { throw new RuntimeException("EnumConstantDeclaration Operation not supported"); }
-    public Class visit(EnumDeclaration n, VisitArgs printer) { throw new RuntimeException("EnumDeclaration Operation not supported"); }
-    public Class visit(ExplicitConstructorInvocationStmt n, VisitArgs printer) { throw new RuntimeException("ExplicitConstructorInvocationStmt Operation not supported"); }
-    public Class visit(FieldDeclaration n, VisitArgs printer) { throw new RuntimeException("FieldDeclaration Operation not supported"); }
-    public Class visit(ForeachStmt n, VisitArgs printer) { throw new RuntimeException("ForeachStmt Operation not supported"); }
-    public Class visit(ForStmt n, VisitArgs printer) { throw new RuntimeException("ForStmt Operation not supported"); }
-    public Class visit(IfStmt n, VisitArgs printer) { throw new RuntimeException("IfStmt Operation not supported"); }
-    public Class visit(ImportDeclaration n, VisitArgs printer) { throw new RuntimeException("ImportDeclaration Operation not supported"); }
-    public Class visit(InitializerDeclaration n, VisitArgs printer) { throw new RuntimeException("InitializerDeclaration Operation not supported"); }
-    public Class visit(InstanceOfExpr n, VisitArgs printer) { throw new RuntimeException("InstanceOfExpr Operation not supported"); }
-    public Class visit(JavadocComment n, VisitArgs printer) { throw new RuntimeException("JavadocComment Operation not supported"); }
-    public Class visit(LabeledStmt n, VisitArgs printer) { throw new RuntimeException("LabeledStmt Operation not supported"); }
-    public Class visit(LambdaExpr n, VisitArgs printer) { throw new RuntimeException("LambdaExpr Operation not supported!"); }
-    public Class visit(LineComment n, VisitArgs printer) { throw new RuntimeException("LineComment Operation not supported"); }
-    public Class visit(MarkerAnnotationExpr n, VisitArgs printer) { throw new RuntimeException("MarkerAnnotationExpr Operation not supported"); }
-    public Class visit(MemberValuePair n, VisitArgs printer) { throw new RuntimeException("MemberValuePair Operation not supported"); }
-    public Class visit(MethodDeclaration n, VisitArgs printer) { throw new RuntimeException("MethodDeclaration Operation not supported"); }
-    public Class visit(MultiTypeParameter n, VisitArgs printer) { throw new RuntimeException("MultiTypeParameter Operation not supported"); }
-    public Class visit(NormalAnnotationExpr n, VisitArgs printer) { throw new RuntimeException("NormalAnnotationExpr Operation not supported"); }
-    public Class visit(PackageDeclaration n, VisitArgs printer) { throw new RuntimeException("PackageDeclaration Operation not supported"); }
-    public Class visit(Parameter n, VisitArgs printer) { throw new RuntimeException("Parameter Operation not supported"); }
-    public Class visit(QualifiedNameExpr n, VisitArgs printer) { throw new RuntimeException("QualifiedNameExpr Operation not supported"); }
-    public Class visit(ReturnStmt n, VisitArgs printer) { throw new RuntimeException("ReturnStmt Operation not supported"); }
-    public Class visit(SingleMemberAnnotationExpr n, VisitArgs printer) { throw new RuntimeException("SingleMemberAnnotationExpr Operation not supported"); }
-    public Class visit(SuperExpr n, VisitArgs printer) { throw new RuntimeException("SuperExpr Operation not supported"); }
-    public Class visit(SwitchEntryStmt n, VisitArgs printer) { throw new RuntimeException("SwitchEntryStmt Operation not supported"); }
-    public Class visit(SwitchStmt n, VisitArgs printer) { throw new RuntimeException("SwitchStmt Operation not supported"); }
-    public Class visit(SynchronizedStmt n, VisitArgs printer) { throw new RuntimeException("SynchronizedStmt Operation not supported"); }
-    public Class visit(ThisExpr n, VisitArgs printer) { throw new RuntimeException("ThisExpr Operation not supported"); }
-    public Class visit(ThrowStmt n, VisitArgs printer) { throw new RuntimeException("ThrowStmt Operation not supported"); }
-    public Class visit(TryStmt n, VisitArgs printer) { throw new RuntimeException("TryStmt Operation not supported"); }
-    public Class visit(TypeDeclarationStmt n, VisitArgs printer) { throw new RuntimeException("TypeDeclarationStmt Operation not supported"); }
-    public Class visit(TypeParameter n, VisitArgs printer) { throw new RuntimeException("TypeParameter Operation not supported"); }
-    public Class visit(VariableDeclarationExpr n, VisitArgs printer) { throw new RuntimeException("VariableDeclarationExpr Operation not supported"); }
-    public Class visit(VariableDeclarator n, VisitArgs printer) { throw new RuntimeException("VariableDeclarator Operation not supported"); }
-    public Class visit(VariableDeclaratorId n, VisitArgs printer) { throw new RuntimeException("VariableDeclaratorId Operation not supported"); }
-    public Class visit(VoidType n, VisitArgs printer) { throw new RuntimeException("VoidType Operation not supported"); }
-    public Class visit(WhileStmt n, VisitArgs printer) { throw new RuntimeException("WhileStmt Operation not supported"); }
-    public Class visit(WildcardType n, VisitArgs printer) { throw new RuntimeException("WildcardType Operation not supported"); }
+    public Class<?> visit(AnnotationDeclaration n, VisitArgs printer) { throw new RuntimeException("AnnotationDeclaration Operation not supported"); }
+    public Class<?> visit(AnnotationMemberDeclaration n, VisitArgs printer) { throw new RuntimeException("AnnotationMemberDeclaration Operation not supported"); }
+    public Class<?> visit(AssertStmt n, VisitArgs printer) { throw new RuntimeException("AssertStmt Operation not supported"); }
+    public Class<?> visit(AssignExpr n, VisitArgs printer) { throw new RuntimeException("AssignExpr Operation not supported"); }
+    public Class<?> visit(BlockComment n, VisitArgs printer) { throw new RuntimeException("BlockComment Operation not supported"); }
+    public Class<?> visit(BlockStmt n, VisitArgs printer) { throw new RuntimeException("BlockStmt Operation not supported"); }
+    public Class<?> visit(BreakStmt n, VisitArgs printer) { throw new RuntimeException("BreakStmt Operation not supported"); }
+    public Class<?> visit(CatchClause n, VisitArgs printer) { throw new RuntimeException("CatchClause Operation not supported"); }
+    public Class<?> visit(ClassOrInterfaceDeclaration n, VisitArgs printer) { throw new RuntimeException("ClassOrInterfaceDeclaration Operation not supported"); }
+    public Class<?> visit(CompilationUnit n, VisitArgs printer) { throw new RuntimeException("CompilationUnit Operation not supported"); }
+    public Class<?> visit(ConstructorDeclaration n, VisitArgs printer) { throw new RuntimeException("ConstructorDeclaration Operation not supported"); }
+    public Class<?> visit(ContinueStmt n, VisitArgs printer) { throw new RuntimeException("ContinueStmt Operation not supported"); }
+    public Class<?> visit(DoStmt n, VisitArgs printer) { throw new RuntimeException("DoStmt Operation not supported"); }
+    public Class<?> visit(EmptyMemberDeclaration n, VisitArgs printer) { throw new RuntimeException("EmptyMemberDeclaration Operation not supported"); }
+    public Class<?> visit(EmptyStmt n, VisitArgs printer) { throw new RuntimeException("EmptyStmt Operation not supported"); }
+    public Class<?> visit(EmptyTypeDeclaration n, VisitArgs printer) { throw new RuntimeException("EmptyTypeDeclaration Operation not supported"); }
+    public Class<?> visit(EnumConstantDeclaration n, VisitArgs printer) { throw new RuntimeException("EnumConstantDeclaration Operation not supported"); }
+    public Class<?> visit(EnumDeclaration n, VisitArgs printer) { throw new RuntimeException("EnumDeclaration Operation not supported"); }
+    public Class<?> visit(ExplicitConstructorInvocationStmt n, VisitArgs printer) { throw new RuntimeException("ExplicitConstructorInvocationStmt Operation not supported"); }
+    public Class<?> visit(FieldDeclaration n, VisitArgs printer) { throw new RuntimeException("FieldDeclaration Operation not supported"); }
+    public Class<?> visit(ForeachStmt n, VisitArgs printer) { throw new RuntimeException("ForeachStmt Operation not supported"); }
+    public Class<?> visit(ForStmt n, VisitArgs printer) { throw new RuntimeException("ForStmt Operation not supported"); }
+    public Class<?> visit(IfStmt n, VisitArgs printer) { throw new RuntimeException("IfStmt Operation not supported"); }
+    public Class<?> visit(ImportDeclaration n, VisitArgs printer) { throw new RuntimeException("ImportDeclaration Operation not supported"); }
+    public Class<?> visit(InitializerDeclaration n, VisitArgs printer) { throw new RuntimeException("InitializerDeclaration Operation not supported"); }
+    public Class<?> visit(InstanceOfExpr n, VisitArgs printer) { throw new RuntimeException("InstanceOfExpr Operation not supported"); }
+    public Class<?> visit(JavadocComment n, VisitArgs printer) { throw new RuntimeException("JavadocComment Operation not supported"); }
+    public Class<?> visit(LabeledStmt n, VisitArgs printer) { throw new RuntimeException("LabeledStmt Operation not supported"); }
+    public Class<?> visit(LambdaExpr n, VisitArgs printer) { throw new RuntimeException("LambdaExpr Operation not supported!"); }
+    public Class<?> visit(LineComment n, VisitArgs printer) { throw new RuntimeException("LineComment Operation not supported"); }
+    public Class<?> visit(MarkerAnnotationExpr n, VisitArgs printer) { throw new RuntimeException("MarkerAnnotationExpr Operation not supported"); }
+    public Class<?> visit(MemberValuePair n, VisitArgs printer) { throw new RuntimeException("MemberValuePair Operation not supported"); }
+    public Class<?> visit(MethodDeclaration n, VisitArgs printer) { throw new RuntimeException("MethodDeclaration Operation not supported"); }
+    public Class<?> visit(MultiTypeParameter n, VisitArgs printer) { throw new RuntimeException("MultiTypeParameter Operation not supported"); }
+    public Class<?> visit(NormalAnnotationExpr n, VisitArgs printer) { throw new RuntimeException("NormalAnnotationExpr Operation not supported"); }
+    public Class<?> visit(PackageDeclaration n, VisitArgs printer) { throw new RuntimeException("PackageDeclaration Operation not supported"); }
+    public Class<?> visit(Parameter n, VisitArgs printer) { throw new RuntimeException("Parameter Operation not supported"); }
+    public Class<?> visit(QualifiedNameExpr n, VisitArgs printer) { throw new RuntimeException("QualifiedNameExpr Operation not supported"); }
+    public Class<?> visit(ReturnStmt n, VisitArgs printer) { throw new RuntimeException("ReturnStmt Operation not supported"); }
+    public Class<?> visit(SingleMemberAnnotationExpr n, VisitArgs printer) { throw new RuntimeException("SingleMemberAnnotationExpr Operation not supported"); }
+    public Class<?> visit(SuperExpr n, VisitArgs printer) { throw new RuntimeException("SuperExpr Operation not supported"); }
+    public Class<?> visit(SwitchEntryStmt n, VisitArgs printer) { throw new RuntimeException("SwitchEntryStmt Operation not supported"); }
+    public Class<?> visit(SwitchStmt n, VisitArgs printer) { throw new RuntimeException("SwitchStmt Operation not supported"); }
+    public Class<?> visit(SynchronizedStmt n, VisitArgs printer) { throw new RuntimeException("SynchronizedStmt Operation not supported"); }
+    public Class<?> visit(ThisExpr n, VisitArgs printer) { throw new RuntimeException("ThisExpr Operation not supported"); }
+    public Class<?> visit(ThrowStmt n, VisitArgs printer) { throw new RuntimeException("ThrowStmt Operation not supported"); }
+    public Class<?> visit(TryStmt n, VisitArgs printer) { throw new RuntimeException("TryStmt Operation not supported"); }
+    public Class<?> visit(TypeDeclarationStmt n, VisitArgs printer) { throw new RuntimeException("TypeDeclarationStmt Operation not supported"); }
+    public Class<?> visit(TypeParameter n, VisitArgs printer) { throw new RuntimeException("TypeParameter Operation not supported"); }
+    public Class<?> visit(VariableDeclarationExpr n, VisitArgs printer) { throw new RuntimeException("VariableDeclarationExpr Operation not supported"); }
+    public Class<?> visit(VariableDeclarator n, VisitArgs printer) { throw new RuntimeException("VariableDeclarator Operation not supported"); }
+    public Class<?> visit(VariableDeclaratorId n, VisitArgs printer) { throw new RuntimeException("VariableDeclaratorId Operation not supported"); }
+    public Class<?> visit(VoidType n, VisitArgs printer) { throw new RuntimeException("VoidType Operation not supported"); }
+    public Class<?> visit(WhileStmt n, VisitArgs printer) { throw new RuntimeException("WhileStmt Operation not supported"); }
+    public Class<?> visit(WildcardType n, VisitArgs printer) { throw new RuntimeException("WildcardType Operation not supported"); }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     public static class Result {
-        private final Class type;
+        private final Class<?> type;
         private final String source;
         private final HashSet<String> variablesUsed;
 
-        Result(Class type, String source, HashSet<String> variablesUsed) {
+        Result(Class<?> type, String source, HashSet<String> variablesUsed) {
             this.type = type;
             this.source = source;
             this.variablesUsed = variablesUsed;
         }
 
-        public Class getType() {
+        public Class<?> getType() {
             return type;
         }
 
@@ -1875,7 +1877,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
             return new VisitArgs(new StringBuilder(), null);
         }
 
-        public VisitArgs cloneWithCastingContext(Class pythonCastContext) {
+        public VisitArgs cloneWithCastingContext(Class<?> pythonCastContext) {
             return new VisitArgs(builder, pythonCastContext);
         }
 
@@ -1884,9 +1886,9 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class, DBLangu
          * visitor pattern to calculate a type and don't care about side effects.
          */
         private final StringBuilder builder;
-        private final Class pythonCastContext;
+        private final Class<?> pythonCastContext;
 
-        private VisitArgs(StringBuilder builder, Class pythonCastContext) {
+        private VisitArgs(StringBuilder builder, Class<?> pythonCastContext) {
             this.builder = builder;
             this.pythonCastContext = pythonCastContext;
         }

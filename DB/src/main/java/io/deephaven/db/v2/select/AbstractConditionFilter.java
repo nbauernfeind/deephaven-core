@@ -73,12 +73,12 @@ public abstract class AbstractConditionFilter extends SelectFilterImpl {
             return;
         }
 
-        final Map<String, Class> possibleVariables = new HashMap<>();
+        final Map<String, Class<?>> possibleVariables = new HashMap<>();
         possibleVariables.put("i", int.class);
         possibleVariables.put("ii", long.class);
         possibleVariables.put("k", long.class);
 
-        final Map<String, Class[]> possibleVariableParameterizedTypes = new HashMap<>();
+        final Map<String, Class<?>[]> possibleVariableParameterizedTypes = new HashMap<>();
 
         try {
             final Map<String, Param> possibleParams = new HashMap<>();

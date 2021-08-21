@@ -92,20 +92,20 @@ public class PythonScopeJpyImpl implements PythonScope<PyObject> {
     }
 
     public static final class NumbaCallableWrapper extends CallableWrapper {
-        private List<Class> paramTypes;
-        private Class returnType;
+        private List<Class<?>> paramTypes;
+        private Class<?> returnType;
 
-        public NumbaCallableWrapper(PyObject pyObject, Class returnType, List<Class> paramTypes) {
+        public NumbaCallableWrapper(PyObject pyObject, Class<?> returnType, List<Class<?>> paramTypes) {
             super(pyObject);
             this.returnType = returnType;
             this.paramTypes = paramTypes;
         }
 
-        public Class getReturnType() {
+        public Class<?> getReturnType() {
             return returnType;
         }
 
-        public List<Class> getParamTypes() {
+        public List<Class<?>> getParamTypes() {
             return paramTypes;
         }
     }
@@ -147,10 +147,10 @@ public class PythonScopeJpyImpl implements PythonScope<PyObject> {
             throw new IllegalArgumentException("numba vectorized functions must have an integral, floating point, or boolean return type.");
         }
 
-        List<Class> paramTypes = new ArrayList<>();
+        List<Class<?>> paramTypes = new ArrayList<>();
         for (char numpyTypeChar : numbaFuncTypes.toCharArray()) {
             if (numpyTypeChar != '-') {
-                Class paramType = numpyType2JavaClass.get(numpyTypeChar);
+                Class<?> paramType = numpyType2JavaClass.get(numpyTypeChar);
                 if (paramType == null) {
                     throw new IllegalArgumentException("parameters of numba vectorized functions must be of integral, floating point, or boolean type.");
                 }

@@ -53,7 +53,7 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
 
     private FormulaAnalyzer.Result analyzedFormula;
     private String timeInstanceVariables;
-    private Map<String, Class> timeNewVariables = null;
+    private Map<String, Class<?>> timeNewVariables = null;
 
     public FormulaColumnPython getFormulaColumnPython() {
         return formulaColumnPython;

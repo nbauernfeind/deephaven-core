@@ -23,7 +23,7 @@ public class FormulaAnalyzer {
 
     public static Result analyze(final String rawFormulaString,
                                  final Map<String, ColumnDefinition> columnDefinitionMap,
-                                 Map<String, Class> otherVariables) {
+                                 Map<String, Class<?>> otherVariables) {
         try {
             return analyzeHelper(rawFormulaString, columnDefinitionMap, otherVariables);
         } catch (Exception e) {
@@ -33,7 +33,7 @@ public class FormulaAnalyzer {
 
     private static Result analyzeHelper(final String rawFormulaString,
                                         final Map<String, ColumnDefinition> columnDefinitionMap,
-                                        Map<String, Class> otherVariables) throws Exception {
+                                        Map<String, Class<?>> otherVariables) throws Exception {
         final Map<String, Param> possibleParams = new HashMap<>();
         final QueryScope queryScope = QueryScope.getScope();
         for (Param param : queryScope.getParams(queryScope.getParamNames())) {
@@ -78,13 +78,13 @@ public class FormulaAnalyzer {
 
     public static DBLanguageParser.Result getCompiledFormula(Map<String, ColumnDefinition> availableColumns,
                                                              DBTimeUtils.Result timeConversionResult,
-                                                             Map<String, Class> otherVariables) throws Exception {
-        final Map<String, Class> possibleVariables = new HashMap<>();
+                                                             Map<String, Class<?>> otherVariables) throws Exception {
+        final Map<String, Class<?>> possibleVariables = new HashMap<>();
         possibleVariables.put("i", int.class);
         possibleVariables.put("ii", long.class);
         possibleVariables.put("k", long.class);
 
-        final Map<String, Class[]> possibleVariableParameterizedTypes = new HashMap<>();
+        final Map<String, Class<?>[]> possibleVariableParameterizedTypes = new HashMap<>();
 
         for (ColumnDefinition columnDefinition : availableColumns.values()) {
             final String columnSuffix = DhFormulaColumn.COLUMN_SUFFIX;
@@ -120,7 +120,7 @@ public class FormulaAnalyzer {
             possibleVariables.putAll(otherVariables);
         }
 
-        final Set<Class> classImports = new HashSet<>(QueryLibrary.getClassImports());
+        final Set<Class<?>> classImports = new HashSet<>(QueryLibrary.getClassImports());
         classImports.add(Index.class);
         classImports.add(WritableSource.class);
         return new DBLanguageParser(timeConversionResult.getConvertedFormula(), QueryLibrary.getPackageImports(),

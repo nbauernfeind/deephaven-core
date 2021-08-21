@@ -23,17 +23,17 @@ import static io.deephaven.util.QueryConstants.*;
  */
 @SuppressWarnings("unused")
 public class TypeUtils {
-    private static final Map<Class,Class> primitiveToBoxed;
-    private static final Map<Class,Class> boxedToPrimitive;
+    private static final Map<Class<?>,Class<?>> primitiveToBoxed;
+    private static final Map<Class<?>,Class<?>> boxedToPrimitive;
 
-    public static final Set<Class> PRIMITIVE_TYPES;
-    public static final Set<Class> BOXED_TYPES;
+    public static final Set<Class<?>> PRIMITIVE_TYPES;
+    public static final Set<Class<?>> BOXED_TYPES;
 
-    public static final Map<String, Class> primitiveClassNameToClass;
+    public static final Map<String, Class<?>> primitiveClassNameToClass;
 
     static {
-        LinkedHashMap<Class, Class> primitiveToBoxedTemp = new LinkedHashMap<>();
-        LinkedHashMap<Class, Class> boxedToPrimitiveTemp = new LinkedHashMap<>();
+        LinkedHashMap<Class<?>, Class<?>> primitiveToBoxedTemp = new LinkedHashMap<>();
+        LinkedHashMap<Class<?>, Class<?>> boxedToPrimitiveTemp = new LinkedHashMap<>();
 
         // Note: ordering here matters! Tests in TestDBLanguageParser depend on it.
         primitiveToBoxedTemp.put(byte.class,Byte.class);
@@ -44,7 +44,7 @@ public class TypeUtils {
         primitiveToBoxedTemp.put(float.class,Float.class);
         primitiveToBoxedTemp.put(double.class,Double.class);
         primitiveToBoxedTemp.put(boolean.class,Boolean.class);
-        for (Map.Entry<Class, Class> classClassEntry : primitiveToBoxedTemp.entrySet()) {
+        for (Map.Entry<Class<?>, Class<?>> classClassEntry : primitiveToBoxedTemp.entrySet()) {
             boxedToPrimitiveTemp.put(classClassEntry.getValue(),classClassEntry.getKey());
         }
 

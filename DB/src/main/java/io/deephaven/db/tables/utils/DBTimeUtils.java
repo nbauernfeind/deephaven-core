@@ -1345,7 +1345,7 @@ public class DBTimeUtils {
     public static DBDateTime nanosToTime(long nanos) {
         return nanos == io.deephaven.util.QueryConstants.NULL_LONG ? null : new DBDateTime(nanos);
     }
-    
+
     /** Converts a long offset from Epoch value to a {@link DBDateTime}. This method uses expected date ranges to
      * infer whether the passed value is in milliseconds, microseconds, or nanoseconds. Thresholds used are
      * {@link TimeConstants#MICROTIME_THRESHOLD} divided by 1000 for milliseconds, as-is for microseconds, and
@@ -1368,7 +1368,7 @@ public class DBTimeUtils {
         }
         else if (Math.abs(epoch) > TimeConstants.MICROTIME_THRESHOLD)         // Microseconds
         {
-            return microsToTime(epoch);         
+            return microsToTime(epoch);
         }
         else if (Math.abs(epoch) > TimeConstants.MICROTIME_THRESHOLD / 1000)  // Milliseconds
         {
@@ -1519,7 +1519,7 @@ public class DBTimeUtils {
     // TODO: This should probably be handled in DBLanguageParser.accept(CharLiteralExpr, StringBuilder).
     public static Result convertExpression(String formula) throws Exception {    // TODO: Why throw Exception?
         final StringBuilder instanceVariablesString = new StringBuilder();
-        final HashMap<String, Class> newVariables = new HashMap<>();
+        final HashMap<String, Class<?>> newVariables = new HashMap<>();
 
         final StringBuffer convertedFormula = new StringBuffer();
 
@@ -2091,9 +2091,9 @@ public class DBTimeUtils {
     public static class Result {
         private final String convertedFormula;
         private final String instanceVariablesString;
-        private final HashMap<String, Class> newVariables;
+        private final HashMap<String, Class<?>> newVariables;
 
-        public Result(String convertedFormula, String instanceVariablesString, HashMap<String, Class> newVariables) {
+        public Result(String convertedFormula, String instanceVariablesString, HashMap<String, Class<?>> newVariables) {
             this.convertedFormula = convertedFormula;
             this.instanceVariablesString = instanceVariablesString;
             this.newVariables = newVariables;
@@ -2107,7 +2107,7 @@ public class DBTimeUtils {
             return instanceVariablesString;
         }
 
-        public HashMap<String, Class> getNewVariables() {
+        public HashMap<String, Class<?>> getNewVariables() {
             return newVariables;
         }
     }
