@@ -125,7 +125,7 @@ final public class RedirectionLayer extends SelectAndViewAnalyzer {
     }
 
     @Override
-    public void updateColumnDefinitionsFromTopLayer(Map<String, ColumnDefinition> columnDefinitions) {
+    public void updateColumnDefinitionsFromTopLayer(Map<String, ColumnDefinition<?>> columnDefinitions) {
         inner.updateColumnDefinitionsFromTopLayer(columnDefinitions);
     }
 

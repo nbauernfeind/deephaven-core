@@ -102,11 +102,11 @@ public class QueryLibrary {
         }
     }
 
-    public static void importClass(Class aClass) {
+    public static void importClass(Class<?> aClass) {
         // Any dynamically-added package, class, or static import may alter the meaning of the Java code
         // we are compiling. So when this happens, we dynamically generate a new globally-unique version string.
         final QueryLibrary lql = currLibrary.get();
-        final Class previous = lql.classImports.put(aClass.getCanonicalName(), aClass);
+        final Class<?> previous = lql.classImports.put(aClass.getCanonicalName(), aClass);
         if (aClass.getClassLoader() instanceof GroovyClassLoader) {
             if (aClass != previous) {
                 lql.updateVersionString();
@@ -114,11 +114,11 @@ public class QueryLibrary {
         }
     }
 
-    public static void importStatic(Class aClass) {
+    public static void importStatic(Class<?> aClass) {
         // Any dynamically-added package, class, or static import may alter the meaning of the Java code
         // we are compiling. So when this happens, we dynamically generate a new globally-unique version string.
         final QueryLibrary lql = currLibrary.get();
-        final Class previous = lql.staticImports.put(aClass.getCanonicalName(), aClass);
+        final Class<?> previous = lql.staticImports.put(aClass.getCanonicalName(), aClass);
         if (aClass.getClassLoader() instanceof GroovyClassLoader) {
             if (aClass != previous) {
                 lql.updateVersionString();

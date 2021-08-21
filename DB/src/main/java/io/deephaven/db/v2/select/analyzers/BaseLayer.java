@@ -34,7 +34,7 @@ public class BaseLayer extends SelectAndViewAnalyzer {
     }
 
     @Override
-    public void updateColumnDefinitionsFromTopLayer(Map<String, ColumnDefinition> columnDefinitions) {
+    public void updateColumnDefinitionsFromTopLayer(Map<String, ColumnDefinition<?>> columnDefinitions) {
         for (Map.Entry<String, ColumnSource<?>> entry : sources.entrySet()) {
             final String name = entry.getKey();
             final ColumnSource<?> cs = entry.getValue();

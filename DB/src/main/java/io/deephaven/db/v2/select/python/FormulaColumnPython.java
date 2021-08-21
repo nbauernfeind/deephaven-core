@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import io.deephaven.datastructures.util.CollectionUtil;
-
 import static io.deephaven.datastructures.util.CollectionUtil.ZERO_LENGTH_STRING_ARRAY;
 
 /**
@@ -37,7 +35,7 @@ public class FormulaColumnPython extends AbstractFormulaColumn implements Formul
         this.dcf = Objects.requireNonNull(dcf);
     }
 
-    private void initFromDef(Map<String, ColumnDefinition> columnNameMap) {
+    private void initFromDef() {
         if (initialized) {
             throw new IllegalStateException("Already initialized");
         }
@@ -51,9 +49,9 @@ public class FormulaColumnPython extends AbstractFormulaColumn implements Formul
     }
 
     @Override
-    public final List<String> initDef(Map<String, ColumnDefinition> columnNameMap) {
+    public final List<String> initDef(Map<String, ColumnDefinition<?>> columnNameMap) {
         if (!initialized) {
-            initFromDef(columnNameMap);
+            initFromDef();
             applyUsedVariables(columnNameMap, new LinkedHashSet<>(dcf.getColumnNames()));
         }
         return usedColumns;
@@ -77,7 +75,7 @@ public class FormulaColumnPython extends AbstractFormulaColumn implements Formul
     }
 
     @Override
-    public final FormulaKernel createInstance(DbArrayBase[] arrays, Param[] params) {
+    public final FormulaKernel createInstance(DbArrayBase<?>[] arrays, Param<?>[] params) {
         if (!initialized) {
             throw new IllegalStateException("Must be initialized first");
         }

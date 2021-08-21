@@ -50,7 +50,6 @@ public class ReinterpretedColumn<S,D> implements SelectColumn {
         this.sourceDataType = Require.neqNull(sourceDataType, "sourceDataType");
         this.destName = NameValidator.validateColumnName(destName);
         this.destDataType = Require.neqNull(destDataType, "destDataType");
-        //noinspection ResultOfMethodCallIgnored
         Require.gtZero(destName.length(), "destName.length()");
     }
 
@@ -65,9 +64,9 @@ public class ReinterpretedColumn<S,D> implements SelectColumn {
     }
 
     @Override
-    public List<String> initInputs(Index index, Map<String, ? extends ColumnSource> columnsOfInterest) {
+    public List<String> initInputs(Index index, Map<String, ? extends ColumnSource<?>> columnsOfInterest) {
         //noinspection unchecked
-        final ColumnSource<S> localSourceColumnSource = columnsOfInterest.get(sourceName);
+        final ColumnSource<S> localSourceColumnSource = (ColumnSource<S>) columnsOfInterest.get(sourceName);
         if(localSourceColumnSource == null) {
             throw new NoSuchColumnException(columnsOfInterest.keySet(), sourceName);
         }
@@ -83,9 +82,9 @@ public class ReinterpretedColumn<S,D> implements SelectColumn {
     }
 
     @Override
-    public List<String> initDef(Map<String, ColumnDefinition> columnDefinitionMap) {
+    public List<String> initDef(Map<String, ColumnDefinition<?>> columnDefinitionMap) {
         //noinspection unchecked
-        final ColumnDefinition<S> sourceColumnDefinition = columnDefinitionMap.get(sourceName);
+        final ColumnDefinition<S> sourceColumnDefinition = (ColumnDefinition<S>) columnDefinitionMap.get(sourceName);
         if(sourceColumnDefinition == null) {
             throw new NoSuchColumnException(columnDefinitionMap.keySet(), sourceName);
         }
@@ -96,7 +95,7 @@ public class ReinterpretedColumn<S,D> implements SelectColumn {
     }
 
     @Override
-    public Class getReturnedType() {
+    public Class<?> getReturnedType() {
         return destDataType;
     }
 
@@ -112,7 +111,7 @@ public class ReinterpretedColumn<S,D> implements SelectColumn {
 
     @NotNull
     @Override
-    public ColumnSource getDataView() {
+    public ColumnSource<?> getDataView() {
         final ColumnSource<D> result = sourceColumnSource.reinterpret(destDataType);
         if(!result.getType().equals(destDataType)) {
             throw new IllegalArgumentException("Reinterpreted column from " + sourceName + " has wrong data type " + result.getType() + ", expected " + destDataType);
@@ -122,7 +121,7 @@ public class ReinterpretedColumn<S,D> implements SelectColumn {
 
     @NotNull
     @Override
-    public ColumnSource getLazyView() {
+    public ColumnSource<?> getLazyView() {
         return getDataView();
     }
 
@@ -137,7 +136,7 @@ public class ReinterpretedColumn<S,D> implements SelectColumn {
     }
 
     @Override
-    public WritableSource newDestInstance(long size) {
+    public WritableSource<?> newDestInstance(long size) {
         throw new UnsupportedOperationException();
     }
 

@@ -58,7 +58,7 @@ public interface SelectColumn {
      *
      * @return a list of columns on which the result of this is dependent
      */
-    List<String> initInputs(Index index, Map<String, ? extends ColumnSource> columnsOfInterest);
+    List<String> initInputs(Index index, Map<String, ? extends ColumnSource<?>> columnsOfInterest);
 
     /**
      * Initialize any internal column definitions from the provided initial.
@@ -67,14 +67,14 @@ public interface SelectColumn {
      *
      * @return a list of columns on which the result of this is dependent
      */
-    List<String> initDef(Map<String, ColumnDefinition> columnDefinitionMap);
+    List<String> initDef(Map<String, ColumnDefinition<?>> columnDefinitionMap);
 
     /**
      * Get the data type stored in the resultant column.
      *
      * @return the type
      */
-    Class getReturnedType();
+    Class<?> getReturnedType();
 
     /**
      * Get a list of the names of columns used in this SelectColumn.  Behavior is undefined if none of the init* methods have been called yet.
@@ -94,7 +94,7 @@ public interface SelectColumn {
      * @return a {@link ColumnSource}
      */
     @NotNull
-    ColumnSource getDataView();
+    ColumnSource<?> getDataView();
 
     /**
      * Returns a lazily computed view of this column.
@@ -102,7 +102,7 @@ public interface SelectColumn {
      * @return a lazily computed column source
      */
     @NotNull
-    ColumnSource getLazyView();
+    ColumnSource<?> getLazyView();
 
     /**
      * Get the name of the resultant column.
@@ -113,7 +113,7 @@ public interface SelectColumn {
 
     /**
      * Get a MatchPair for this column, if applicable.
-     * @return
+     * @return the match pair
      */
     MatchPair getMatchPair();
 
@@ -124,7 +124,7 @@ public interface SelectColumn {
      *
      * @return a new {@link WritableSource} with sufficient capacity for 'dataSubset'
      */
-    WritableSource newDestInstance(long size);
+    WritableSource<?> newDestInstance(long size);
 
     /**
      *

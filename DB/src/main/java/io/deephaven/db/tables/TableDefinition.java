@@ -54,7 +54,7 @@ public class TableDefinition implements Externalizable, LogOutputAppendable, Cop
         return new TableDefinition(definitions);
     }
 
-    private transient Map<String, ColumnDefinition> columnNameMap;
+    private transient Map<String, ColumnDefinition<?>> columnNameMap;
 
     public TableDefinition() {
     }
@@ -125,7 +125,7 @@ public class TableDefinition implements Externalizable, LogOutputAppendable, Cop
     /**
      * @return A freshly-allocated, unmodifiable map from column name to column definition.
      */
-    public Map<String, ColumnDefinition> getColumnNameMap() {
+    public Map<String, ColumnDefinition<?>> getColumnNameMap() {
         if (columnNameMap != null) {
             return columnNameMap;
         }
@@ -272,7 +272,7 @@ public class TableDefinition implements Externalizable, LogOutputAppendable, Cop
 
         // TODO: need to compare in order and be less permissive with partitioning -
         final StringBuilder sb = new StringBuilder();
-        final Map<String, ColumnDefinition> myNamesToColumns = getColumnNameMap();
+        final Map<String, ColumnDefinition<?>> myNamesToColumns = getColumnNameMap();
         for (final ColumnDefinition<?> otherColumn : other.columns) {
             if (ignorePartitioningColumns && otherColumn.isPartitioning())
                 continue;
@@ -307,7 +307,7 @@ public class TableDefinition implements Externalizable, LogOutputAppendable, Cop
     public List<String> describeDifferences(@NotNull final TableDefinition other, @NotNull final String lhs, @NotNull final String rhs) {
         final List<String> differences = new ArrayList<>();
 
-        final Map<String, ColumnDefinition> otherColumns = other.getColumnNameMap();
+        final Map<String, ColumnDefinition<?>> otherColumns = other.getColumnNameMap();
         for (final ColumnDefinition<?> thisColumn : columns) {
             final ColumnDefinition<?> otherColumn = otherColumns.get(thisColumn.getName());
             if (otherColumn == null) {
@@ -319,7 +319,7 @@ public class TableDefinition implements Externalizable, LogOutputAppendable, Cop
             // else same
         }
 
-        final Map<String, ColumnDefinition> thisColumns = getColumnNameMap();
+        final Map<String, ColumnDefinition<?>> thisColumns = getColumnNameMap();
         for (final ColumnDefinition<?> otherColumn : other.getColumns()) {
             if (null == thisColumns.get(otherColumn.getName())) {
                 differences.add("column '" + otherColumn.getName() + "' is missing in " + lhs);

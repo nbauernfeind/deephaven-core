@@ -157,14 +157,14 @@ public class TestObjectArraySource {
 
     // region lazy
     private void testGetChunkGenericLazy(Object[] values, int chunkSize, Index index) {
-        final ObjectArraySource sourceOrigin = forArray(values);
+        final ObjectArraySource<?> sourceOrigin = forArray(values);
         final FormulaColumn formulaColumn = FormulaColumn.createFormulaColumn("Foo", "origin");
         final Index.SequentialBuilder sequentialBuilder = Index.FACTORY.getSequentialBuilder();
         if (values.length > 0) {
             sequentialBuilder.appendRange(0, values.length - 1);
         }
         final Index fullRange = sequentialBuilder.getIndex();
-        final Map<String, ObjectArraySource> oneAndOnly = new HashMap<>();
+        final Map<String, ObjectArraySource<?>> oneAndOnly = new HashMap<>();
         oneAndOnly.put("origin", sourceOrigin);
         formulaColumn.initInputs(fullRange, oneAndOnly);
         final ColumnSource<?> source = formulaColumn.getDataView();
@@ -369,17 +369,17 @@ public class TestObjectArraySource {
 
     // region lazygeneric
     private void testFillChunkLazyGeneric(Object[] values, int chunkSize, Index index) {
-        final ObjectArraySource sourceOrigin = forArray(values);
+        final ObjectArraySource<?> sourceOrigin = forArray(values);
         final FormulaColumn formulaColumn = FormulaColumn.createFormulaColumn("Foo", "origin");
         final Index.SequentialBuilder sequentialBuilder = Index.FACTORY.getSequentialBuilder();
         if (values.length > 0) {
             sequentialBuilder.appendRange(0, values.length - 1);
         }
         final Index fullRange = sequentialBuilder.getIndex();
-        final Map<String, ObjectArraySource> oneAndOnly = new HashMap<>();
+        final Map<String, ObjectArraySource<?>> oneAndOnly = new HashMap<>();
         oneAndOnly.put("origin", sourceOrigin);
         formulaColumn.initInputs(fullRange, oneAndOnly);
-        final ColumnSource source = formulaColumn.getDataView();
+        final ColumnSource<?> source = formulaColumn.getDataView();
         final OrderedKeys.Iterator okIterator = index.getOrderedKeysIterator();
         final Index.Iterator it = index.iterator();
         final ColumnSource.FillContext context = source.makeFillContext(chunkSize);

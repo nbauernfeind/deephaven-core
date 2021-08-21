@@ -60,7 +60,7 @@ public class AggregationHelper {
         final ColumnSource[] keyColumnSources;
         {
             final Map<String, ColumnSource> keyColumnSourceMap = new LinkedHashMap<>(keyColumns.length);
-            final Map<String, ColumnSource> fullColumnSourceMap = new LinkedHashMap<>(existingColumnSourceMap);
+            final Map<String, ColumnSource<?>> fullColumnSourceMap = new LinkedHashMap<>(existingColumnSourceMap);
             Arrays.stream(keyColumns).forEachOrdered((final SelectColumn keyColumn) -> {
                 keyColumn.initInputs(inputTable.getIndex(), fullColumnSourceMap);
 

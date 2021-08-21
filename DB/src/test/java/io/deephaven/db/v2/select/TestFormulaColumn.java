@@ -49,7 +49,7 @@ public class TestFormulaColumn {
     }
 
     private final Table testDataTable;
-    private final Map<String, ColumnDefinition> availableColumns;
+    private final Map<String, ColumnDefinition<?>> availableColumns;
     private boolean compilerToolsLogEnabledInitial = false;
     private final boolean useKernelFormulas;
     private boolean kernelFormulasSavedValue;

@@ -24,7 +24,7 @@ public abstract class SelectAndViewAnalyzer {
     public static SelectAndViewAnalyzer create(Mode mode, Map<String, ColumnSource<?>> columnSources,
             Index index, ModifiedColumnSet parentMcs, boolean publishTheseSources, SelectColumn... selectColumns) {
         SelectAndViewAnalyzer analyzer = createBaseLayer(columnSources, publishTheseSources);
-        final Map<String, ColumnDefinition> columnDefinitions = new LinkedHashMap<>();
+        final Map<String, ColumnDefinition<?>> columnDefinitions = new LinkedHashMap<>();
         final RedirectionIndex redirectionIndex;
         if (mode == Mode.SELECT_REDIRECTED_REFRESHING && index.size() < Integer.MAX_VALUE) {
             redirectionIndex = RedirectionIndex.FACTORY.createRedirectionIndex(index.intSize());
@@ -230,7 +230,7 @@ public abstract class SelectAndViewAnalyzer {
 
     public abstract SelectAndViewAnalyzer getInner();
 
-    public abstract void updateColumnDefinitionsFromTopLayer(Map<String, ColumnDefinition> columnDefinitions);
+    public abstract void updateColumnDefinitionsFromTopLayer(Map<String, ColumnDefinition<?>> columnDefinitions);
 
     public abstract void startTrackingPrev();
 }

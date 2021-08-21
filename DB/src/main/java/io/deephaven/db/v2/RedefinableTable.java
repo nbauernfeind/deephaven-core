@@ -30,7 +30,8 @@ public abstract class RedefinableTable extends UncoalescedTable {
         }
         Set<ColumnDefinition> resultColumnsInternal = new HashSet<>();
         Map<String, ColumnDefinition> resultColumnsExternal = new LinkedHashMap<>();
-        Map<String, ColumnDefinition> allColumns = new HashMap<>(definition.getColumnNameMap());
+        //noinspection unchecked
+        Map<String, ColumnDefinition<?>> allColumns = new HashMap<>((Map<String, ? extends ColumnDefinition<?>>) definition.getColumnNameMap());
         Map<String,Set<String>> columnDependency = new HashMap<>();
         boolean simpleRetain = true;
         for(SelectColumn selectColumn : columns) {

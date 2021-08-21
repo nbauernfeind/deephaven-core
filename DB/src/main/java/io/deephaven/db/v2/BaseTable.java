@@ -1423,7 +1423,7 @@ public abstract class BaseTable extends LivenessArtifact implements DynamicTable
     @Override
     public Table withColumnDescription(Map<String, String> descriptions) {
         if(!hasColumns(descriptions.keySet())) {
-            final Map<String, ColumnDefinition> existingColumns = getDefinition().getColumnNameMap();
+            final Map<String, ColumnDefinition<?>> existingColumns = getDefinition().getColumnNameMap();
             throw new IllegalArgumentException("Cannot set column descriptions.  The table does not contain the following columns [ " +
                     descriptions.keySet().stream()
                             .filter(col -> !existingColumns.containsKey(col))
