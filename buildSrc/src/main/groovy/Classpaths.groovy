@@ -26,10 +26,7 @@ class Classpaths {
 
     static final String JAVA_PARSER_GROUP = 'com.github.javaparser'
     static final String JAVA_PARSER_NAME = 'javaparser-core'
-    static final String JAVA_PARSER_VERSION = '2.0.0'
-    // TODO: upgrade to 3.6.23 / latest, so we can use the "most of the work's already done" symbol solver IDS-1517-20
-//    static final String JAVA_PARSER_NAME = 'javaparser-symbol-solver-core'
-//    static final String JAVA_PARSER_VERSION = '3.6.23'
+    static final String JAVA_PARSER_VERSION = '3.22.1'
 
     static final String JAVAX_ANNOTATIONS_GROUP = 'javax.validation'
     static final String JAVAX_ANNOTATIONS_NAME = 'validation-api'

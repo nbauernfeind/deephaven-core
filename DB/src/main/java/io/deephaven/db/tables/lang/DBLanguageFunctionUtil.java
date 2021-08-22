@@ -33,8841 +33,8841 @@ public final class DBLanguageFunctionUtil {
         return a==QueryConstants.NULL_BOOLEAN ? QueryConstants.NULL_BOOLEAN : Boolean.valueOf(!a);
     }
 
-    public static int plus(int a, int b){
+    public static int PLUS(int a, int b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(int a[], int b[]){
+    public static int[] PLUSArray(int a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(int a[], int b){
+    public static int[] PLUSArray(int a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(int a, int b[]){
+    public static int[] PLUSArray(int a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(int a, double b){
+    public static double PLUS(int a, double b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(int a[], double b[]){
+    public static double[] PLUSArray(int a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (int, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(int a[], double b){
+    public static double[] PLUSArray(int a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(int a, double b[]){
+    public static double[] PLUSArray(int a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long plus(int a, long b){
+    public static long PLUS(int a, long b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a+b;
     }
 
-    public static long[] plusArray(int a[], long b[]){
+    public static long[] PLUSArray(int a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (int, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] plusArray(int a[], long b){
+    public static long[] PLUSArray(int a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] plusArray(int a, long b[]){
+    public static long[] PLUSArray(int a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(int a, float b){
+    public static float PLUS(int a, float b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(int a[], float b[]){
+    public static float[] PLUSArray(int a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (int, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(int a[], float b){
+    public static float[] PLUSArray(int a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(int a, float b[]){
+    public static float[] PLUSArray(int a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(int a, char b){
+    public static int PLUS(int a, char b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(int a[], char b[]){
+    public static int[] PLUSArray(int a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (int, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(int a[], char b){
+    public static int[] PLUSArray(int a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(int a, char b[]){
+    public static int[] PLUSArray(int a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(int a, byte b){
+    public static int PLUS(int a, byte b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(int a[], byte b[]){
+    public static int[] PLUSArray(int a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (int, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(int a[], byte b){
+    public static int[] PLUSArray(int a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(int a, byte b[]){
+    public static int[] PLUSArray(int a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(int a, short b){
+    public static int PLUS(int a, short b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(int a[], short b[]){
+    public static int[] PLUSArray(int a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (int, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(int a[], short b){
+    public static int[] PLUSArray(int a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(int a, short b[]){
+    public static int[] PLUSArray(int a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(double a, int b){
+    public static double PLUS(double a, int b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(double a[], int b[]){
+    public static double[] PLUSArray(double a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (double, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(double a[], int b){
+    public static double[] PLUSArray(double a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(double a, int b[]){
+    public static double[] PLUSArray(double a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(double a, double b){
+    public static double PLUS(double a, double b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(double a[], double b[]){
+    public static double[] PLUSArray(double a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (double, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(double a[], double b){
+    public static double[] PLUSArray(double a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(double a, double b[]){
+    public static double[] PLUSArray(double a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(double a, long b){
+    public static double PLUS(double a, long b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(double a[], long b[]){
+    public static double[] PLUSArray(double a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (double, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(double a[], long b){
+    public static double[] PLUSArray(double a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(double a, long b[]){
+    public static double[] PLUSArray(double a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(double a, float b){
+    public static double PLUS(double a, float b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(double a[], float b[]){
+    public static double[] PLUSArray(double a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (double, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(double a[], float b){
+    public static double[] PLUSArray(double a[], float b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(double a, float b[]){
+    public static double[] PLUSArray(double a, float b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(double a, char b){
+    public static double PLUS(double a, char b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(double a[], char b[]){
+    public static double[] PLUSArray(double a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (double, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(double a[], char b){
+    public static double[] PLUSArray(double a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(double a, char b[]){
+    public static double[] PLUSArray(double a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(double a, byte b){
+    public static double PLUS(double a, byte b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(double a[], byte b[]){
+    public static double[] PLUSArray(double a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (double, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(double a[], byte b){
+    public static double[] PLUSArray(double a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(double a, byte b[]){
+    public static double[] PLUSArray(double a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(double a, short b){
+    public static double PLUS(double a, short b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(double a[], short b[]){
+    public static double[] PLUSArray(double a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (double, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(double a[], short b){
+    public static double[] PLUSArray(double a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(double a, short b[]){
+    public static double[] PLUSArray(double a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long plus(long a, int b){
+    public static long PLUS(long a, int b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_INT ? QueryConstants.NULL_LONG : a+b;
     }
 
-    public static long[] plusArray(long a[], int b[]){
+    public static long[] PLUSArray(long a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (long, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] plusArray(long a[], int b){
+    public static long[] PLUSArray(long a[], int b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] plusArray(long a, int b[]){
+    public static long[] PLUSArray(long a, int b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(long a, double b){
+    public static double PLUS(long a, double b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(long a[], double b[]){
+    public static double[] PLUSArray(long a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (long, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(long a[], double b){
+    public static double[] PLUSArray(long a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(long a, double b[]){
+    public static double[] PLUSArray(long a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long plus(long a, long b){
+    public static long PLUS(long a, long b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a+b;
     }
 
-    public static long[] plusArray(long a[], long b[]){
+    public static long[] PLUSArray(long a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] plusArray(long a[], long b){
+    public static long[] PLUSArray(long a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] plusArray(long a, long b[]){
+    public static long[] PLUSArray(long a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(long a, float b){
+    public static float PLUS(long a, float b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(long a[], float b[]){
+    public static float[] PLUSArray(long a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (long, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(long a[], float b){
+    public static float[] PLUSArray(long a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(long a, float b[]){
+    public static float[] PLUSArray(long a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long plus(long a, char b){
+    public static long PLUS(long a, char b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_LONG : a+b;
     }
 
-    public static long[] plusArray(long a[], char b[]){
+    public static long[] PLUSArray(long a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (long, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] plusArray(long a[], char b){
+    public static long[] PLUSArray(long a[], char b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] plusArray(long a, char b[]){
+    public static long[] PLUSArray(long a, char b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long plus(long a, byte b){
+    public static long PLUS(long a, byte b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_LONG : a+b;
     }
 
-    public static long[] plusArray(long a[], byte b[]){
+    public static long[] PLUSArray(long a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (long, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] plusArray(long a[], byte b){
+    public static long[] PLUSArray(long a[], byte b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] plusArray(long a, byte b[]){
+    public static long[] PLUSArray(long a, byte b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long plus(long a, short b){
+    public static long PLUS(long a, short b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_LONG : a+b;
     }
 
-    public static long[] plusArray(long a[], short b[]){
+    public static long[] PLUSArray(long a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (long, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] plusArray(long a[], short b){
+    public static long[] PLUSArray(long a[], short b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] plusArray(long a, short b[]){
+    public static long[] PLUSArray(long a, short b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(float a, int b){
+    public static float PLUS(float a, int b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(float a[], int b[]){
+    public static float[] PLUSArray(float a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (float, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(float a[], int b){
+    public static float[] PLUSArray(float a[], int b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(float a, int b[]){
+    public static float[] PLUSArray(float a, int b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(float a, double b){
+    public static double PLUS(float a, double b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(float a[], double b[]){
+    public static double[] PLUSArray(float a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (float, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(float a[], double b){
+    public static double[] PLUSArray(float a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(float a, double b[]){
+    public static double[] PLUSArray(float a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(float a, long b){
+    public static float PLUS(float a, long b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(float a[], long b[]){
+    public static float[] PLUSArray(float a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (float, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(float a[], long b){
+    public static float[] PLUSArray(float a[], long b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(float a, long b[]){
+    public static float[] PLUSArray(float a, long b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(float a, float b){
+    public static float PLUS(float a, float b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(float a[], float b[]){
+    public static float[] PLUSArray(float a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (float, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(float a[], float b){
+    public static float[] PLUSArray(float a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(float a, float b[]){
+    public static float[] PLUSArray(float a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(float a, char b){
+    public static float PLUS(float a, char b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(float a[], char b[]){
+    public static float[] PLUSArray(float a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (float, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(float a[], char b){
+    public static float[] PLUSArray(float a[], char b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(float a, char b[]){
+    public static float[] PLUSArray(float a, char b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(float a, byte b){
+    public static float PLUS(float a, byte b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(float a[], byte b[]){
+    public static float[] PLUSArray(float a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (float, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(float a[], byte b){
+    public static float[] PLUSArray(float a[], byte b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(float a, byte b[]){
+    public static float[] PLUSArray(float a, byte b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(float a, short b){
+    public static float PLUS(float a, short b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(float a[], short b[]){
+    public static float[] PLUSArray(float a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (float, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(float a[], short b){
+    public static float[] PLUSArray(float a[], short b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(float a, short b[]){
+    public static float[] PLUSArray(float a, short b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(char a, int b){
+    public static int PLUS(char a, int b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(char a[], int b[]){
+    public static int[] PLUSArray(char a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (char, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(char a[], int b){
+    public static int[] PLUSArray(char a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(char a, int b[]){
+    public static int[] PLUSArray(char a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(char a, double b){
+    public static double PLUS(char a, double b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(char a[], double b[]){
+    public static double[] PLUSArray(char a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (char, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(char a[], double b){
+    public static double[] PLUSArray(char a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(char a, double b[]){
+    public static double[] PLUSArray(char a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long plus(char a, long b){
+    public static long PLUS(char a, long b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a+b;
     }
 
-    public static long[] plusArray(char a[], long b[]){
+    public static long[] PLUSArray(char a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (char, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] plusArray(char a[], long b){
+    public static long[] PLUSArray(char a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] plusArray(char a, long b[]){
+    public static long[] PLUSArray(char a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(char a, float b){
+    public static float PLUS(char a, float b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(char a[], float b[]){
+    public static float[] PLUSArray(char a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (char, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(char a[], float b){
+    public static float[] PLUSArray(char a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(char a, float b[]){
+    public static float[] PLUSArray(char a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(char a, char b){
+    public static int PLUS(char a, char b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(char a[], char b[]){
+    public static int[] PLUSArray(char a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(char a[], char b){
+    public static int[] PLUSArray(char a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(char a, char b[]){
+    public static int[] PLUSArray(char a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(char a, byte b){
+    public static int PLUS(char a, byte b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(char a[], byte b[]){
+    public static int[] PLUSArray(char a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (char, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(char a[], byte b){
+    public static int[] PLUSArray(char a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(char a, byte b[]){
+    public static int[] PLUSArray(char a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(char a, short b){
+    public static int PLUS(char a, short b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(char a[], short b[]){
+    public static int[] PLUSArray(char a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (char, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(char a[], short b){
+    public static int[] PLUSArray(char a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(char a, short b[]){
+    public static int[] PLUSArray(char a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(byte a, int b){
+    public static int PLUS(byte a, int b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(byte a[], int b[]){
+    public static int[] PLUSArray(byte a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (byte, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(byte a[], int b){
+    public static int[] PLUSArray(byte a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(byte a, int b[]){
+    public static int[] PLUSArray(byte a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(byte a, double b){
+    public static double PLUS(byte a, double b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(byte a[], double b[]){
+    public static double[] PLUSArray(byte a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (byte, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(byte a[], double b){
+    public static double[] PLUSArray(byte a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(byte a, double b[]){
+    public static double[] PLUSArray(byte a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long plus(byte a, long b){
+    public static long PLUS(byte a, long b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a+b;
     }
 
-    public static long[] plusArray(byte a[], long b[]){
+    public static long[] PLUSArray(byte a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (byte, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] plusArray(byte a[], long b){
+    public static long[] PLUSArray(byte a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] plusArray(byte a, long b[]){
+    public static long[] PLUSArray(byte a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(byte a, float b){
+    public static float PLUS(byte a, float b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(byte a[], float b[]){
+    public static float[] PLUSArray(byte a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (byte, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(byte a[], float b){
+    public static float[] PLUSArray(byte a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(byte a, float b[]){
+    public static float[] PLUSArray(byte a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(byte a, char b){
+    public static int PLUS(byte a, char b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(byte a[], char b[]){
+    public static int[] PLUSArray(byte a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (byte, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(byte a[], char b){
+    public static int[] PLUSArray(byte a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(byte a, char b[]){
+    public static int[] PLUSArray(byte a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(byte a, byte b){
+    public static int PLUS(byte a, byte b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(byte a[], byte b[]){
+    public static int[] PLUSArray(byte a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(byte a[], byte b){
+    public static int[] PLUSArray(byte a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(byte a, byte b[]){
+    public static int[] PLUSArray(byte a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(byte a, short b){
+    public static int PLUS(byte a, short b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(byte a[], short b[]){
+    public static int[] PLUSArray(byte a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (byte, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(byte a[], short b){
+    public static int[] PLUSArray(byte a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(byte a, short b[]){
+    public static int[] PLUSArray(byte a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(short a, int b){
+    public static int PLUS(short a, int b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(short a[], int b[]){
+    public static int[] PLUSArray(short a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (short, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(short a[], int b){
+    public static int[] PLUSArray(short a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(short a, int b[]){
+    public static int[] PLUSArray(short a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double plus(short a, double b){
+    public static double PLUS(short a, double b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a+b;
     }
 
-    public static double[] plusArray(short a[], double b[]){
+    public static double[] PLUSArray(short a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (short, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] plusArray(short a[], double b){
+    public static double[] PLUSArray(short a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] plusArray(short a, double b[]){
+    public static double[] PLUSArray(short a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long plus(short a, long b){
+    public static long PLUS(short a, long b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a+b;
     }
 
-    public static long[] plusArray(short a[], long b[]){
+    public static long[] PLUSArray(short a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (short, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] plusArray(short a[], long b){
+    public static long[] PLUSArray(short a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] plusArray(short a, long b[]){
+    public static long[] PLUSArray(short a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float plus(short a, float b){
+    public static float PLUS(short a, float b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a+b;
     }
 
-    public static float[] plusArray(short a[], float b[]){
+    public static float[] PLUSArray(short a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (short, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] plusArray(short a[], float b){
+    public static float[] PLUSArray(short a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] plusArray(short a, float b[]){
+    public static float[] PLUSArray(short a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(short a, char b){
+    public static int PLUS(short a, char b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(short a[], char b[]){
+    public static int[] PLUSArray(short a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (short, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(short a[], char b){
+    public static int[] PLUSArray(short a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(short a, char b[]){
+    public static int[] PLUSArray(short a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(short a, byte b){
+    public static int PLUS(short a, byte b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(short a[], byte b[]){
+    public static int[] PLUSArray(short a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (short, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(short a[], byte b){
+    public static int[] PLUSArray(short a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(short a, byte b[]){
+    public static int[] PLUSArray(short a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int plus(short a, short b){
+    public static int PLUS(short a, short b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a+b;
     }
 
-    public static int[] plusArray(short a[], short b[]){
+    public static int[] PLUSArray(short a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to add two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b[i]);
+            ret[i] = PLUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] plusArray(short a[], short b){
+    public static int[] PLUSArray(short a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = plus(a[i],b);
+            ret[i] = PLUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] plusArray(short a, short b[]){
+    public static int[] PLUSArray(short a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = plus(a,b[i]);
+            ret[i] = PLUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(int a, int b){
+    public static int MINUS(int a, int b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(int a[], int b[]){
+    public static int[] MINUSArray(int a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(int a[], int b){
+    public static int[] MINUSArray(int a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(int a, int b[]){
+    public static int[] MINUSArray(int a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(int a, double b){
+    public static double MINUS(int a, double b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(int a[], double b[]){
+    public static double[] MINUSArray(int a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (int, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(int a[], double b){
+    public static double[] MINUSArray(int a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(int a, double b[]){
+    public static double[] MINUSArray(int a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long minus(int a, long b){
+    public static long MINUS(int a, long b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a-b;
     }
 
-    public static long[] minusArray(int a[], long b[]){
+    public static long[] MINUSArray(int a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (int, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] minusArray(int a[], long b){
+    public static long[] MINUSArray(int a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] minusArray(int a, long b[]){
+    public static long[] MINUSArray(int a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(int a, float b){
+    public static float MINUS(int a, float b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(int a[], float b[]){
+    public static float[] MINUSArray(int a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (int, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(int a[], float b){
+    public static float[] MINUSArray(int a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(int a, float b[]){
+    public static float[] MINUSArray(int a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(int a, char b){
+    public static int MINUS(int a, char b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(int a[], char b[]){
+    public static int[] MINUSArray(int a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (int, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(int a[], char b){
+    public static int[] MINUSArray(int a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(int a, char b[]){
+    public static int[] MINUSArray(int a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(int a, byte b){
+    public static int MINUS(int a, byte b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(int a[], byte b[]){
+    public static int[] MINUSArray(int a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (int, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(int a[], byte b){
+    public static int[] MINUSArray(int a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(int a, byte b[]){
+    public static int[] MINUSArray(int a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(int a, short b){
+    public static int MINUS(int a, short b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(int a[], short b[]){
+    public static int[] MINUSArray(int a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (int, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(int a[], short b){
+    public static int[] MINUSArray(int a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(int a, short b[]){
+    public static int[] MINUSArray(int a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(double a, int b){
+    public static double MINUS(double a, int b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(double a[], int b[]){
+    public static double[] MINUSArray(double a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (double, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(double a[], int b){
+    public static double[] MINUSArray(double a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(double a, int b[]){
+    public static double[] MINUSArray(double a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(double a, double b){
+    public static double MINUS(double a, double b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(double a[], double b[]){
+    public static double[] MINUSArray(double a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (double, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(double a[], double b){
+    public static double[] MINUSArray(double a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(double a, double b[]){
+    public static double[] MINUSArray(double a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(double a, long b){
+    public static double MINUS(double a, long b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(double a[], long b[]){
+    public static double[] MINUSArray(double a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (double, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(double a[], long b){
+    public static double[] MINUSArray(double a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(double a, long b[]){
+    public static double[] MINUSArray(double a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(double a, float b){
+    public static double MINUS(double a, float b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(double a[], float b[]){
+    public static double[] MINUSArray(double a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (double, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(double a[], float b){
+    public static double[] MINUSArray(double a[], float b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(double a, float b[]){
+    public static double[] MINUSArray(double a, float b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(double a, char b){
+    public static double MINUS(double a, char b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(double a[], char b[]){
+    public static double[] MINUSArray(double a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (double, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(double a[], char b){
+    public static double[] MINUSArray(double a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(double a, char b[]){
+    public static double[] MINUSArray(double a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(double a, byte b){
+    public static double MINUS(double a, byte b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(double a[], byte b[]){
+    public static double[] MINUSArray(double a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (double, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(double a[], byte b){
+    public static double[] MINUSArray(double a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(double a, byte b[]){
+    public static double[] MINUSArray(double a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(double a, short b){
+    public static double MINUS(double a, short b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(double a[], short b[]){
+    public static double[] MINUSArray(double a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (double, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(double a[], short b){
+    public static double[] MINUSArray(double a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(double a, short b[]){
+    public static double[] MINUSArray(double a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long minus(long a, int b){
+    public static long MINUS(long a, int b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_INT ? QueryConstants.NULL_LONG : a-b;
     }
 
-    public static long[] minusArray(long a[], int b[]){
+    public static long[] MINUSArray(long a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (long, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] minusArray(long a[], int b){
+    public static long[] MINUSArray(long a[], int b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] minusArray(long a, int b[]){
+    public static long[] MINUSArray(long a, int b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(long a, double b){
+    public static double MINUS(long a, double b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(long a[], double b[]){
+    public static double[] MINUSArray(long a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (long, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(long a[], double b){
+    public static double[] MINUSArray(long a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(long a, double b[]){
+    public static double[] MINUSArray(long a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long minus(long a, long b){
+    public static long MINUS(long a, long b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a-b;
     }
 
-    public static long[] minusArray(long a[], long b[]){
+    public static long[] MINUSArray(long a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] minusArray(long a[], long b){
+    public static long[] MINUSArray(long a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] minusArray(long a, long b[]){
+    public static long[] MINUSArray(long a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(long a, float b){
+    public static float MINUS(long a, float b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(long a[], float b[]){
+    public static float[] MINUSArray(long a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (long, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(long a[], float b){
+    public static float[] MINUSArray(long a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(long a, float b[]){
+    public static float[] MINUSArray(long a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long minus(long a, char b){
+    public static long MINUS(long a, char b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_LONG : a-b;
     }
 
-    public static long[] minusArray(long a[], char b[]){
+    public static long[] MINUSArray(long a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (long, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] minusArray(long a[], char b){
+    public static long[] MINUSArray(long a[], char b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] minusArray(long a, char b[]){
+    public static long[] MINUSArray(long a, char b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long minus(long a, byte b){
+    public static long MINUS(long a, byte b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_LONG : a-b;
     }
 
-    public static long[] minusArray(long a[], byte b[]){
+    public static long[] MINUSArray(long a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (long, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] minusArray(long a[], byte b){
+    public static long[] MINUSArray(long a[], byte b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] minusArray(long a, byte b[]){
+    public static long[] MINUSArray(long a, byte b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long minus(long a, short b){
+    public static long MINUS(long a, short b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_LONG : a-b;
     }
 
-    public static long[] minusArray(long a[], short b[]){
+    public static long[] MINUSArray(long a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (long, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] minusArray(long a[], short b){
+    public static long[] MINUSArray(long a[], short b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] minusArray(long a, short b[]){
+    public static long[] MINUSArray(long a, short b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(float a, int b){
+    public static float MINUS(float a, int b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(float a[], int b[]){
+    public static float[] MINUSArray(float a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (float, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(float a[], int b){
+    public static float[] MINUSArray(float a[], int b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(float a, int b[]){
+    public static float[] MINUSArray(float a, int b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(float a, double b){
+    public static double MINUS(float a, double b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(float a[], double b[]){
+    public static double[] MINUSArray(float a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (float, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(float a[], double b){
+    public static double[] MINUSArray(float a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(float a, double b[]){
+    public static double[] MINUSArray(float a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(float a, long b){
+    public static float MINUS(float a, long b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(float a[], long b[]){
+    public static float[] MINUSArray(float a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (float, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(float a[], long b){
+    public static float[] MINUSArray(float a[], long b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(float a, long b[]){
+    public static float[] MINUSArray(float a, long b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(float a, float b){
+    public static float MINUS(float a, float b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(float a[], float b[]){
+    public static float[] MINUSArray(float a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (float, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(float a[], float b){
+    public static float[] MINUSArray(float a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(float a, float b[]){
+    public static float[] MINUSArray(float a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(float a, char b){
+    public static float MINUS(float a, char b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(float a[], char b[]){
+    public static float[] MINUSArray(float a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (float, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(float a[], char b){
+    public static float[] MINUSArray(float a[], char b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(float a, char b[]){
+    public static float[] MINUSArray(float a, char b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(float a, byte b){
+    public static float MINUS(float a, byte b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(float a[], byte b[]){
+    public static float[] MINUSArray(float a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (float, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(float a[], byte b){
+    public static float[] MINUSArray(float a[], byte b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(float a, byte b[]){
+    public static float[] MINUSArray(float a, byte b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(float a, short b){
+    public static float MINUS(float a, short b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(float a[], short b[]){
+    public static float[] MINUSArray(float a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (float, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(float a[], short b){
+    public static float[] MINUSArray(float a[], short b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(float a, short b[]){
+    public static float[] MINUSArray(float a, short b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(char a, int b){
+    public static int MINUS(char a, int b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(char a[], int b[]){
+    public static int[] MINUSArray(char a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (char, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(char a[], int b){
+    public static int[] MINUSArray(char a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(char a, int b[]){
+    public static int[] MINUSArray(char a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(char a, double b){
+    public static double MINUS(char a, double b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(char a[], double b[]){
+    public static double[] MINUSArray(char a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (char, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(char a[], double b){
+    public static double[] MINUSArray(char a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(char a, double b[]){
+    public static double[] MINUSArray(char a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long minus(char a, long b){
+    public static long MINUS(char a, long b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a-b;
     }
 
-    public static long[] minusArray(char a[], long b[]){
+    public static long[] MINUSArray(char a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (char, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] minusArray(char a[], long b){
+    public static long[] MINUSArray(char a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] minusArray(char a, long b[]){
+    public static long[] MINUSArray(char a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(char a, float b){
+    public static float MINUS(char a, float b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(char a[], float b[]){
+    public static float[] MINUSArray(char a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (char, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(char a[], float b){
+    public static float[] MINUSArray(char a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(char a, float b[]){
+    public static float[] MINUSArray(char a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(char a, char b){
+    public static int MINUS(char a, char b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(char a[], char b[]){
+    public static int[] MINUSArray(char a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(char a[], char b){
+    public static int[] MINUSArray(char a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(char a, char b[]){
+    public static int[] MINUSArray(char a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(char a, byte b){
+    public static int MINUS(char a, byte b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(char a[], byte b[]){
+    public static int[] MINUSArray(char a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (char, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(char a[], byte b){
+    public static int[] MINUSArray(char a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(char a, byte b[]){
+    public static int[] MINUSArray(char a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(char a, short b){
+    public static int MINUS(char a, short b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(char a[], short b[]){
+    public static int[] MINUSArray(char a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (char, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(char a[], short b){
+    public static int[] MINUSArray(char a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(char a, short b[]){
+    public static int[] MINUSArray(char a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(byte a, int b){
+    public static int MINUS(byte a, int b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(byte a[], int b[]){
+    public static int[] MINUSArray(byte a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (byte, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(byte a[], int b){
+    public static int[] MINUSArray(byte a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(byte a, int b[]){
+    public static int[] MINUSArray(byte a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(byte a, double b){
+    public static double MINUS(byte a, double b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(byte a[], double b[]){
+    public static double[] MINUSArray(byte a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (byte, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(byte a[], double b){
+    public static double[] MINUSArray(byte a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(byte a, double b[]){
+    public static double[] MINUSArray(byte a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long minus(byte a, long b){
+    public static long MINUS(byte a, long b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a-b;
     }
 
-    public static long[] minusArray(byte a[], long b[]){
+    public static long[] MINUSArray(byte a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (byte, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] minusArray(byte a[], long b){
+    public static long[] MINUSArray(byte a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] minusArray(byte a, long b[]){
+    public static long[] MINUSArray(byte a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(byte a, float b){
+    public static float MINUS(byte a, float b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(byte a[], float b[]){
+    public static float[] MINUSArray(byte a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (byte, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(byte a[], float b){
+    public static float[] MINUSArray(byte a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(byte a, float b[]){
+    public static float[] MINUSArray(byte a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(byte a, char b){
+    public static int MINUS(byte a, char b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(byte a[], char b[]){
+    public static int[] MINUSArray(byte a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (byte, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(byte a[], char b){
+    public static int[] MINUSArray(byte a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(byte a, char b[]){
+    public static int[] MINUSArray(byte a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(byte a, byte b){
+    public static int MINUS(byte a, byte b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(byte a[], byte b[]){
+    public static int[] MINUSArray(byte a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(byte a[], byte b){
+    public static int[] MINUSArray(byte a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(byte a, byte b[]){
+    public static int[] MINUSArray(byte a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(byte a, short b){
+    public static int MINUS(byte a, short b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(byte a[], short b[]){
+    public static int[] MINUSArray(byte a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (byte, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(byte a[], short b){
+    public static int[] MINUSArray(byte a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(byte a, short b[]){
+    public static int[] MINUSArray(byte a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(short a, int b){
+    public static int MINUS(short a, int b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(short a[], int b[]){
+    public static int[] MINUSArray(short a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (short, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(short a[], int b){
+    public static int[] MINUSArray(short a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(short a, int b[]){
+    public static int[] MINUSArray(short a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double minus(short a, double b){
+    public static double MINUS(short a, double b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a-b;
     }
 
-    public static double[] minusArray(short a[], double b[]){
+    public static double[] MINUSArray(short a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (short, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] minusArray(short a[], double b){
+    public static double[] MINUSArray(short a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] minusArray(short a, double b[]){
+    public static double[] MINUSArray(short a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long minus(short a, long b){
+    public static long MINUS(short a, long b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a-b;
     }
 
-    public static long[] minusArray(short a[], long b[]){
+    public static long[] MINUSArray(short a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (short, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] minusArray(short a[], long b){
+    public static long[] MINUSArray(short a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] minusArray(short a, long b[]){
+    public static long[] MINUSArray(short a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float minus(short a, float b){
+    public static float MINUS(short a, float b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a-b;
     }
 
-    public static float[] minusArray(short a[], float b[]){
+    public static float[] MINUSArray(short a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (short, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] minusArray(short a[], float b){
+    public static float[] MINUSArray(short a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] minusArray(short a, float b[]){
+    public static float[] MINUSArray(short a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(short a, char b){
+    public static int MINUS(short a, char b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(short a[], char b[]){
+    public static int[] MINUSArray(short a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (short, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(short a[], char b){
+    public static int[] MINUSArray(short a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(short a, char b[]){
+    public static int[] MINUSArray(short a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(short a, byte b){
+    public static int MINUS(short a, byte b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(short a[], byte b[]){
+    public static int[] MINUSArray(short a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (short, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(short a[], byte b){
+    public static int[] MINUSArray(short a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(short a, byte b[]){
+    public static int[] MINUSArray(short a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int minus(short a, short b){
+    public static int MINUS(short a, short b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a-b;
     }
 
-    public static int[] minusArray(short a[], short b[]){
+    public static int[] MINUSArray(short a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to subtract two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b[i]);
+            ret[i] = MINUS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] minusArray(short a[], short b){
+    public static int[] MINUSArray(short a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = minus(a[i],b);
+            ret[i] = MINUS(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] minusArray(short a, short b[]){
+    public static int[] MINUSArray(short a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = minus(a,b[i]);
+            ret[i] = MINUS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(int a, int b){
+    public static int MULTIPLY(int a, int b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(int a[], int b[]){
+    public static int[] MULTIPLYArray(int a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(int a[], int b){
+    public static int[] MULTIPLYArray(int a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(int a, int b[]){
+    public static int[] MULTIPLYArray(int a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(int a, double b){
+    public static double MULTIPLY(int a, double b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(int a[], double b[]){
+    public static double[] MULTIPLYArray(int a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (int, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(int a[], double b){
+    public static double[] MULTIPLYArray(int a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(int a, double b[]){
+    public static double[] MULTIPLYArray(int a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long times(int a, long b){
+    public static long MULTIPLY(int a, long b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a*b;
     }
 
-    public static long[] timesArray(int a[], long b[]){
+    public static long[] MULTIPLYArray(int a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (int, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] timesArray(int a[], long b){
+    public static long[] MULTIPLYArray(int a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] timesArray(int a, long b[]){
+    public static long[] MULTIPLYArray(int a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(int a, float b){
+    public static float MULTIPLY(int a, float b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(int a[], float b[]){
+    public static float[] MULTIPLYArray(int a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (int, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(int a[], float b){
+    public static float[] MULTIPLYArray(int a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(int a, float b[]){
+    public static float[] MULTIPLYArray(int a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(int a, char b){
+    public static int MULTIPLY(int a, char b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(int a[], char b[]){
+    public static int[] MULTIPLYArray(int a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (int, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(int a[], char b){
+    public static int[] MULTIPLYArray(int a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(int a, char b[]){
+    public static int[] MULTIPLYArray(int a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(int a, byte b){
+    public static int MULTIPLY(int a, byte b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(int a[], byte b[]){
+    public static int[] MULTIPLYArray(int a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (int, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(int a[], byte b){
+    public static int[] MULTIPLYArray(int a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(int a, byte b[]){
+    public static int[] MULTIPLYArray(int a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(int a, short b){
+    public static int MULTIPLY(int a, short b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(int a[], short b[]){
+    public static int[] MULTIPLYArray(int a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (int, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(int a[], short b){
+    public static int[] MULTIPLYArray(int a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(int a, short b[]){
+    public static int[] MULTIPLYArray(int a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(double a, int b){
+    public static double MULTIPLY(double a, int b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(double a[], int b[]){
+    public static double[] MULTIPLYArray(double a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (double, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(double a[], int b){
+    public static double[] MULTIPLYArray(double a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(double a, int b[]){
+    public static double[] MULTIPLYArray(double a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(double a, double b){
+    public static double MULTIPLY(double a, double b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(double a[], double b[]){
+    public static double[] MULTIPLYArray(double a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (double, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(double a[], double b){
+    public static double[] MULTIPLYArray(double a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(double a, double b[]){
+    public static double[] MULTIPLYArray(double a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(double a, long b){
+    public static double MULTIPLY(double a, long b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(double a[], long b[]){
+    public static double[] MULTIPLYArray(double a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (double, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(double a[], long b){
+    public static double[] MULTIPLYArray(double a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(double a, long b[]){
+    public static double[] MULTIPLYArray(double a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(double a, float b){
+    public static double MULTIPLY(double a, float b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(double a[], float b[]){
+    public static double[] MULTIPLYArray(double a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (double, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(double a[], float b){
+    public static double[] MULTIPLYArray(double a[], float b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(double a, float b[]){
+    public static double[] MULTIPLYArray(double a, float b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(double a, char b){
+    public static double MULTIPLY(double a, char b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(double a[], char b[]){
+    public static double[] MULTIPLYArray(double a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (double, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(double a[], char b){
+    public static double[] MULTIPLYArray(double a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(double a, char b[]){
+    public static double[] MULTIPLYArray(double a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(double a, byte b){
+    public static double MULTIPLY(double a, byte b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(double a[], byte b[]){
+    public static double[] MULTIPLYArray(double a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (double, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(double a[], byte b){
+    public static double[] MULTIPLYArray(double a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(double a, byte b[]){
+    public static double[] MULTIPLYArray(double a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(double a, short b){
+    public static double MULTIPLY(double a, short b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(double a[], short b[]){
+    public static double[] MULTIPLYArray(double a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (double, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(double a[], short b){
+    public static double[] MULTIPLYArray(double a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(double a, short b[]){
+    public static double[] MULTIPLYArray(double a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long times(long a, int b){
+    public static long MULTIPLY(long a, int b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_INT ? QueryConstants.NULL_LONG : a*b;
     }
 
-    public static long[] timesArray(long a[], int b[]){
+    public static long[] MULTIPLYArray(long a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (long, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] timesArray(long a[], int b){
+    public static long[] MULTIPLYArray(long a[], int b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] timesArray(long a, int b[]){
+    public static long[] MULTIPLYArray(long a, int b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(long a, double b){
+    public static double MULTIPLY(long a, double b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(long a[], double b[]){
+    public static double[] MULTIPLYArray(long a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (long, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(long a[], double b){
+    public static double[] MULTIPLYArray(long a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(long a, double b[]){
+    public static double[] MULTIPLYArray(long a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long times(long a, long b){
+    public static long MULTIPLY(long a, long b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a*b;
     }
 
-    public static long[] timesArray(long a[], long b[]){
+    public static long[] MULTIPLYArray(long a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] timesArray(long a[], long b){
+    public static long[] MULTIPLYArray(long a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] timesArray(long a, long b[]){
+    public static long[] MULTIPLYArray(long a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(long a, float b){
+    public static float MULTIPLY(long a, float b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(long a[], float b[]){
+    public static float[] MULTIPLYArray(long a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (long, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(long a[], float b){
+    public static float[] MULTIPLYArray(long a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(long a, float b[]){
+    public static float[] MULTIPLYArray(long a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long times(long a, char b){
+    public static long MULTIPLY(long a, char b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_LONG : a*b;
     }
 
-    public static long[] timesArray(long a[], char b[]){
+    public static long[] MULTIPLYArray(long a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (long, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] timesArray(long a[], char b){
+    public static long[] MULTIPLYArray(long a[], char b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] timesArray(long a, char b[]){
+    public static long[] MULTIPLYArray(long a, char b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long times(long a, byte b){
+    public static long MULTIPLY(long a, byte b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_LONG : a*b;
     }
 
-    public static long[] timesArray(long a[], byte b[]){
+    public static long[] MULTIPLYArray(long a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (long, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] timesArray(long a[], byte b){
+    public static long[] MULTIPLYArray(long a[], byte b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] timesArray(long a, byte b[]){
+    public static long[] MULTIPLYArray(long a, byte b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long times(long a, short b){
+    public static long MULTIPLY(long a, short b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_LONG : a*b;
     }
 
-    public static long[] timesArray(long a[], short b[]){
+    public static long[] MULTIPLYArray(long a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (long, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] timesArray(long a[], short b){
+    public static long[] MULTIPLYArray(long a[], short b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] timesArray(long a, short b[]){
+    public static long[] MULTIPLYArray(long a, short b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(float a, int b){
+    public static float MULTIPLY(float a, int b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(float a[], int b[]){
+    public static float[] MULTIPLYArray(float a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (float, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(float a[], int b){
+    public static float[] MULTIPLYArray(float a[], int b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(float a, int b[]){
+    public static float[] MULTIPLYArray(float a, int b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(float a, double b){
+    public static double MULTIPLY(float a, double b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(float a[], double b[]){
+    public static double[] MULTIPLYArray(float a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (float, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(float a[], double b){
+    public static double[] MULTIPLYArray(float a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(float a, double b[]){
+    public static double[] MULTIPLYArray(float a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(float a, long b){
+    public static float MULTIPLY(float a, long b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(float a[], long b[]){
+    public static float[] MULTIPLYArray(float a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (float, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(float a[], long b){
+    public static float[] MULTIPLYArray(float a[], long b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(float a, long b[]){
+    public static float[] MULTIPLYArray(float a, long b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(float a, float b){
+    public static float MULTIPLY(float a, float b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(float a[], float b[]){
+    public static float[] MULTIPLYArray(float a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (float, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(float a[], float b){
+    public static float[] MULTIPLYArray(float a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(float a, float b[]){
+    public static float[] MULTIPLYArray(float a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(float a, char b){
+    public static float MULTIPLY(float a, char b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(float a[], char b[]){
+    public static float[] MULTIPLYArray(float a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (float, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(float a[], char b){
+    public static float[] MULTIPLYArray(float a[], char b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(float a, char b[]){
+    public static float[] MULTIPLYArray(float a, char b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(float a, byte b){
+    public static float MULTIPLY(float a, byte b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(float a[], byte b[]){
+    public static float[] MULTIPLYArray(float a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (float, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(float a[], byte b){
+    public static float[] MULTIPLYArray(float a[], byte b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(float a, byte b[]){
+    public static float[] MULTIPLYArray(float a, byte b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(float a, short b){
+    public static float MULTIPLY(float a, short b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(float a[], short b[]){
+    public static float[] MULTIPLYArray(float a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (float, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(float a[], short b){
+    public static float[] MULTIPLYArray(float a[], short b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(float a, short b[]){
+    public static float[] MULTIPLYArray(float a, short b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(char a, int b){
+    public static int MULTIPLY(char a, int b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(char a[], int b[]){
+    public static int[] MULTIPLYArray(char a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (char, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(char a[], int b){
+    public static int[] MULTIPLYArray(char a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(char a, int b[]){
+    public static int[] MULTIPLYArray(char a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(char a, double b){
+    public static double MULTIPLY(char a, double b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(char a[], double b[]){
+    public static double[] MULTIPLYArray(char a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (char, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(char a[], double b){
+    public static double[] MULTIPLYArray(char a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(char a, double b[]){
+    public static double[] MULTIPLYArray(char a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long times(char a, long b){
+    public static long MULTIPLY(char a, long b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a*b;
     }
 
-    public static long[] timesArray(char a[], long b[]){
+    public static long[] MULTIPLYArray(char a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (char, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] timesArray(char a[], long b){
+    public static long[] MULTIPLYArray(char a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] timesArray(char a, long b[]){
+    public static long[] MULTIPLYArray(char a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(char a, float b){
+    public static float MULTIPLY(char a, float b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(char a[], float b[]){
+    public static float[] MULTIPLYArray(char a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (char, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(char a[], float b){
+    public static float[] MULTIPLYArray(char a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(char a, float b[]){
+    public static float[] MULTIPLYArray(char a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(char a, char b){
+    public static int MULTIPLY(char a, char b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(char a[], char b[]){
+    public static int[] MULTIPLYArray(char a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(char a[], char b){
+    public static int[] MULTIPLYArray(char a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(char a, char b[]){
+    public static int[] MULTIPLYArray(char a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(char a, byte b){
+    public static int MULTIPLY(char a, byte b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(char a[], byte b[]){
+    public static int[] MULTIPLYArray(char a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (char, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(char a[], byte b){
+    public static int[] MULTIPLYArray(char a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(char a, byte b[]){
+    public static int[] MULTIPLYArray(char a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(char a, short b){
+    public static int MULTIPLY(char a, short b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(char a[], short b[]){
+    public static int[] MULTIPLYArray(char a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (char, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(char a[], short b){
+    public static int[] MULTIPLYArray(char a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(char a, short b[]){
+    public static int[] MULTIPLYArray(char a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(byte a, int b){
+    public static int MULTIPLY(byte a, int b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(byte a[], int b[]){
+    public static int[] MULTIPLYArray(byte a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (byte, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(byte a[], int b){
+    public static int[] MULTIPLYArray(byte a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(byte a, int b[]){
+    public static int[] MULTIPLYArray(byte a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(byte a, double b){
+    public static double MULTIPLY(byte a, double b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(byte a[], double b[]){
+    public static double[] MULTIPLYArray(byte a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (byte, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(byte a[], double b){
+    public static double[] MULTIPLYArray(byte a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(byte a, double b[]){
+    public static double[] MULTIPLYArray(byte a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long times(byte a, long b){
+    public static long MULTIPLY(byte a, long b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a*b;
     }
 
-    public static long[] timesArray(byte a[], long b[]){
+    public static long[] MULTIPLYArray(byte a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (byte, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] timesArray(byte a[], long b){
+    public static long[] MULTIPLYArray(byte a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] timesArray(byte a, long b[]){
+    public static long[] MULTIPLYArray(byte a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(byte a, float b){
+    public static float MULTIPLY(byte a, float b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(byte a[], float b[]){
+    public static float[] MULTIPLYArray(byte a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (byte, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(byte a[], float b){
+    public static float[] MULTIPLYArray(byte a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(byte a, float b[]){
+    public static float[] MULTIPLYArray(byte a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(byte a, char b){
+    public static int MULTIPLY(byte a, char b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(byte a[], char b[]){
+    public static int[] MULTIPLYArray(byte a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (byte, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(byte a[], char b){
+    public static int[] MULTIPLYArray(byte a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(byte a, char b[]){
+    public static int[] MULTIPLYArray(byte a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(byte a, byte b){
+    public static int MULTIPLY(byte a, byte b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(byte a[], byte b[]){
+    public static int[] MULTIPLYArray(byte a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(byte a[], byte b){
+    public static int[] MULTIPLYArray(byte a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(byte a, byte b[]){
+    public static int[] MULTIPLYArray(byte a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(byte a, short b){
+    public static int MULTIPLY(byte a, short b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(byte a[], short b[]){
+    public static int[] MULTIPLYArray(byte a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (byte, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(byte a[], short b){
+    public static int[] MULTIPLYArray(byte a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(byte a, short b[]){
+    public static int[] MULTIPLYArray(byte a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(short a, int b){
+    public static int MULTIPLY(short a, int b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(short a[], int b[]){
+    public static int[] MULTIPLYArray(short a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (short, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(short a[], int b){
+    public static int[] MULTIPLYArray(short a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(short a, int b[]){
+    public static int[] MULTIPLYArray(short a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double times(short a, double b){
+    public static double MULTIPLY(short a, double b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a*b;
     }
 
-    public static double[] timesArray(short a[], double b[]){
+    public static double[] MULTIPLYArray(short a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (short, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] timesArray(short a[], double b){
+    public static double[] MULTIPLYArray(short a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] timesArray(short a, double b[]){
+    public static double[] MULTIPLYArray(short a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long times(short a, long b){
+    public static long MULTIPLY(short a, long b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a*b;
     }
 
-    public static long[] timesArray(short a[], long b[]){
+    public static long[] MULTIPLYArray(short a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (short, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] timesArray(short a[], long b){
+    public static long[] MULTIPLYArray(short a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] timesArray(short a, long b[]){
+    public static long[] MULTIPLYArray(short a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float times(short a, float b){
+    public static float MULTIPLY(short a, float b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a*b;
     }
 
-    public static float[] timesArray(short a[], float b[]){
+    public static float[] MULTIPLYArray(short a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (short, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] timesArray(short a[], float b){
+    public static float[] MULTIPLYArray(short a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] timesArray(short a, float b[]){
+    public static float[] MULTIPLYArray(short a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(short a, char b){
+    public static int MULTIPLY(short a, char b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(short a[], char b[]){
+    public static int[] MULTIPLYArray(short a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (short, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(short a[], char b){
+    public static int[] MULTIPLYArray(short a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(short a, char b[]){
+    public static int[] MULTIPLYArray(short a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(short a, byte b){
+    public static int MULTIPLY(short a, byte b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(short a[], byte b[]){
+    public static int[] MULTIPLYArray(short a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (short, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(short a[], byte b){
+    public static int[] MULTIPLYArray(short a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(short a, byte b[]){
+    public static int[] MULTIPLYArray(short a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int times(short a, short b){
+    public static int MULTIPLY(short a, short b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a*b;
     }
 
-    public static int[] timesArray(short a[], short b[]){
+    public static int[] MULTIPLYArray(short a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to multiply two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b[i]);
+            ret[i] = MULTIPLY(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] timesArray(short a[], short b){
+    public static int[] MULTIPLYArray(short a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = times(a[i],b);
+            ret[i] = MULTIPLY(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] timesArray(short a, short b[]){
+    public static int[] MULTIPLYArray(short a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = times(a,b[i]);
+            ret[i] = MULTIPLY(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(int a, int b){
+    public static double DIVIDE(int a, int b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(int a[], int b[]){
+    public static double[] DIVIDEArray(int a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(int a[], int b){
+    public static double[] DIVIDEArray(int a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(int a, int b[]){
+    public static double[] DIVIDEArray(int a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(int a, double b){
+    public static double DIVIDE(int a, double b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a/b;
     }
 
-    public static double[] divideArray(int a[], double b[]){
+    public static double[] DIVIDEArray(int a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (int, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(int a[], double b){
+    public static double[] DIVIDEArray(int a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(int a, double b[]){
+    public static double[] DIVIDEArray(int a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(int a, long b){
+    public static double DIVIDE(int a, long b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(int a[], long b[]){
+    public static double[] DIVIDEArray(int a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (int, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(int a[], long b){
+    public static double[] DIVIDEArray(int a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(int a, long b[]){
+    public static double[] DIVIDEArray(int a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float divide(int a, float b){
+    public static float DIVIDE(int a, float b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a/b;
     }
 
-    public static float[] divideArray(int a[], float b[]){
+    public static float[] DIVIDEArray(int a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (int, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] divideArray(int a[], float b){
+    public static float[] DIVIDEArray(int a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] divideArray(int a, float b[]){
+    public static float[] DIVIDEArray(int a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(int a, char b){
+    public static double DIVIDE(int a, char b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(int a[], char b[]){
+    public static double[] DIVIDEArray(int a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (int, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(int a[], char b){
+    public static double[] DIVIDEArray(int a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(int a, char b[]){
+    public static double[] DIVIDEArray(int a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(int a, byte b){
+    public static double DIVIDE(int a, byte b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(int a[], byte b[]){
+    public static double[] DIVIDEArray(int a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (int, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(int a[], byte b){
+    public static double[] DIVIDEArray(int a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(int a, byte b[]){
+    public static double[] DIVIDEArray(int a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(int a, short b){
+    public static double DIVIDE(int a, short b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(int a[], short b[]){
+    public static double[] DIVIDEArray(int a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (int, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(int a[], short b){
+    public static double[] DIVIDEArray(int a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(int a, short b[]){
+    public static double[] DIVIDEArray(int a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(double a, int b){
+    public static double DIVIDE(double a, int b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(double a[], int b[]){
+    public static double[] DIVIDEArray(double a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (double, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(double a[], int b){
+    public static double[] DIVIDEArray(double a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(double a, int b[]){
+    public static double[] DIVIDEArray(double a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(double a, double b){
+    public static double DIVIDE(double a, double b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a/b;
     }
 
-    public static double[] divideArray(double a[], double b[]){
+    public static double[] DIVIDEArray(double a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (double, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(double a[], double b){
+    public static double[] DIVIDEArray(double a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(double a, double b[]){
+    public static double[] DIVIDEArray(double a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(double a, long b){
+    public static double DIVIDE(double a, long b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(double a[], long b[]){
+    public static double[] DIVIDEArray(double a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (double, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(double a[], long b){
+    public static double[] DIVIDEArray(double a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(double a, long b[]){
+    public static double[] DIVIDEArray(double a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(double a, float b){
+    public static double DIVIDE(double a, float b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_DOUBLE : a/b;
     }
 
-    public static double[] divideArray(double a[], float b[]){
+    public static double[] DIVIDEArray(double a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (double, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(double a[], float b){
+    public static double[] DIVIDEArray(double a[], float b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(double a, float b[]){
+    public static double[] DIVIDEArray(double a, float b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(double a, char b){
+    public static double DIVIDE(double a, char b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(double a[], char b[]){
+    public static double[] DIVIDEArray(double a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (double, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(double a[], char b){
+    public static double[] DIVIDEArray(double a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(double a, char b[]){
+    public static double[] DIVIDEArray(double a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(double a, byte b){
+    public static double DIVIDE(double a, byte b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(double a[], byte b[]){
+    public static double[] DIVIDEArray(double a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (double, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(double a[], byte b){
+    public static double[] DIVIDEArray(double a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(double a, byte b[]){
+    public static double[] DIVIDEArray(double a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(double a, short b){
+    public static double DIVIDE(double a, short b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(double a[], short b[]){
+    public static double[] DIVIDEArray(double a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (double, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(double a[], short b){
+    public static double[] DIVIDEArray(double a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(double a, short b[]){
+    public static double[] DIVIDEArray(double a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(long a, int b){
+    public static double DIVIDE(long a, int b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(long a[], int b[]){
+    public static double[] DIVIDEArray(long a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (long, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(long a[], int b){
+    public static double[] DIVIDEArray(long a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(long a, int b[]){
+    public static double[] DIVIDEArray(long a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(long a, double b){
+    public static double DIVIDE(long a, double b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a/b;
     }
 
-    public static double[] divideArray(long a[], double b[]){
+    public static double[] DIVIDEArray(long a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (long, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(long a[], double b){
+    public static double[] DIVIDEArray(long a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(long a, double b[]){
+    public static double[] DIVIDEArray(long a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(long a, long b){
+    public static double DIVIDE(long a, long b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(long a[], long b[]){
+    public static double[] DIVIDEArray(long a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(long a[], long b){
+    public static double[] DIVIDEArray(long a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(long a, long b[]){
+    public static double[] DIVIDEArray(long a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float divide(long a, float b){
+    public static float DIVIDE(long a, float b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a/b;
     }
 
-    public static float[] divideArray(long a[], float b[]){
+    public static float[] DIVIDEArray(long a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (long, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] divideArray(long a[], float b){
+    public static float[] DIVIDEArray(long a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] divideArray(long a, float b[]){
+    public static float[] DIVIDEArray(long a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(long a, char b){
+    public static double DIVIDE(long a, char b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(long a[], char b[]){
+    public static double[] DIVIDEArray(long a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (long, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(long a[], char b){
+    public static double[] DIVIDEArray(long a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(long a, char b[]){
+    public static double[] DIVIDEArray(long a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(long a, byte b){
+    public static double DIVIDE(long a, byte b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(long a[], byte b[]){
+    public static double[] DIVIDEArray(long a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (long, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(long a[], byte b){
+    public static double[] DIVIDEArray(long a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(long a, byte b[]){
+    public static double[] DIVIDEArray(long a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(long a, short b){
+    public static double DIVIDE(long a, short b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(long a[], short b[]){
+    public static double[] DIVIDEArray(long a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (long, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(long a[], short b){
+    public static double[] DIVIDEArray(long a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(long a, short b[]){
+    public static double[] DIVIDEArray(long a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(float a, int b){
+    public static double DIVIDE(float a, int b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(float a[], int b[]){
+    public static double[] DIVIDEArray(float a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (float, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(float a[], int b){
+    public static double[] DIVIDEArray(float a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(float a, int b[]){
+    public static double[] DIVIDEArray(float a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(float a, double b){
+    public static double DIVIDE(float a, double b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a/b;
     }
 
-    public static double[] divideArray(float a[], double b[]){
+    public static double[] DIVIDEArray(float a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (float, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(float a[], double b){
+    public static double[] DIVIDEArray(float a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(float a, double b[]){
+    public static double[] DIVIDEArray(float a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(float a, long b){
+    public static double DIVIDE(float a, long b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(float a[], long b[]){
+    public static double[] DIVIDEArray(float a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (float, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(float a[], long b){
+    public static double[] DIVIDEArray(float a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(float a, long b[]){
+    public static double[] DIVIDEArray(float a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float divide(float a, float b){
+    public static float DIVIDE(float a, float b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a/b;
     }
 
-    public static float[] divideArray(float a[], float b[]){
+    public static float[] DIVIDEArray(float a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (float, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] divideArray(float a[], float b){
+    public static float[] DIVIDEArray(float a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] divideArray(float a, float b[]){
+    public static float[] DIVIDEArray(float a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(float a, char b){
+    public static double DIVIDE(float a, char b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(float a[], char b[]){
+    public static double[] DIVIDEArray(float a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (float, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(float a[], char b){
+    public static double[] DIVIDEArray(float a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(float a, char b[]){
+    public static double[] DIVIDEArray(float a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(float a, byte b){
+    public static double DIVIDE(float a, byte b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(float a[], byte b[]){
+    public static double[] DIVIDEArray(float a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (float, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(float a[], byte b){
+    public static double[] DIVIDEArray(float a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(float a, byte b[]){
+    public static double[] DIVIDEArray(float a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(float a, short b){
+    public static double DIVIDE(float a, short b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(float a[], short b[]){
+    public static double[] DIVIDEArray(float a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (float, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(float a[], short b){
+    public static double[] DIVIDEArray(float a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(float a, short b[]){
+    public static double[] DIVIDEArray(float a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(char a, int b){
+    public static double DIVIDE(char a, int b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(char a[], int b[]){
+    public static double[] DIVIDEArray(char a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (char, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(char a[], int b){
+    public static double[] DIVIDEArray(char a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(char a, int b[]){
+    public static double[] DIVIDEArray(char a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(char a, double b){
+    public static double DIVIDE(char a, double b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a/b;
     }
 
-    public static double[] divideArray(char a[], double b[]){
+    public static double[] DIVIDEArray(char a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (char, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(char a[], double b){
+    public static double[] DIVIDEArray(char a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(char a, double b[]){
+    public static double[] DIVIDEArray(char a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(char a, long b){
+    public static double DIVIDE(char a, long b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(char a[], long b[]){
+    public static double[] DIVIDEArray(char a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (char, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(char a[], long b){
+    public static double[] DIVIDEArray(char a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(char a, long b[]){
+    public static double[] DIVIDEArray(char a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float divide(char a, float b){
+    public static float DIVIDE(char a, float b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a/b;
     }
 
-    public static float[] divideArray(char a[], float b[]){
+    public static float[] DIVIDEArray(char a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (char, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] divideArray(char a[], float b){
+    public static float[] DIVIDEArray(char a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] divideArray(char a, float b[]){
+    public static float[] DIVIDEArray(char a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(char a, char b){
+    public static double DIVIDE(char a, char b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(char a[], char b[]){
+    public static double[] DIVIDEArray(char a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(char a[], char b){
+    public static double[] DIVIDEArray(char a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(char a, char b[]){
+    public static double[] DIVIDEArray(char a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(char a, byte b){
+    public static double DIVIDE(char a, byte b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(char a[], byte b[]){
+    public static double[] DIVIDEArray(char a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (char, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(char a[], byte b){
+    public static double[] DIVIDEArray(char a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(char a, byte b[]){
+    public static double[] DIVIDEArray(char a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(char a, short b){
+    public static double DIVIDE(char a, short b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(char a[], short b[]){
+    public static double[] DIVIDEArray(char a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (char, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(char a[], short b){
+    public static double[] DIVIDEArray(char a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(char a, short b[]){
+    public static double[] DIVIDEArray(char a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(byte a, int b){
+    public static double DIVIDE(byte a, int b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(byte a[], int b[]){
+    public static double[] DIVIDEArray(byte a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (byte, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(byte a[], int b){
+    public static double[] DIVIDEArray(byte a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(byte a, int b[]){
+    public static double[] DIVIDEArray(byte a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(byte a, double b){
+    public static double DIVIDE(byte a, double b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a/b;
     }
 
-    public static double[] divideArray(byte a[], double b[]){
+    public static double[] DIVIDEArray(byte a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (byte, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(byte a[], double b){
+    public static double[] DIVIDEArray(byte a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(byte a, double b[]){
+    public static double[] DIVIDEArray(byte a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(byte a, long b){
+    public static double DIVIDE(byte a, long b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(byte a[], long b[]){
+    public static double[] DIVIDEArray(byte a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (byte, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(byte a[], long b){
+    public static double[] DIVIDEArray(byte a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(byte a, long b[]){
+    public static double[] DIVIDEArray(byte a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float divide(byte a, float b){
+    public static float DIVIDE(byte a, float b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a/b;
     }
 
-    public static float[] divideArray(byte a[], float b[]){
+    public static float[] DIVIDEArray(byte a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (byte, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] divideArray(byte a[], float b){
+    public static float[] DIVIDEArray(byte a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] divideArray(byte a, float b[]){
+    public static float[] DIVIDEArray(byte a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(byte a, char b){
+    public static double DIVIDE(byte a, char b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(byte a[], char b[]){
+    public static double[] DIVIDEArray(byte a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (byte, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(byte a[], char b){
+    public static double[] DIVIDEArray(byte a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(byte a, char b[]){
+    public static double[] DIVIDEArray(byte a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(byte a, byte b){
+    public static double DIVIDE(byte a, byte b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(byte a[], byte b[]){
+    public static double[] DIVIDEArray(byte a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(byte a[], byte b){
+    public static double[] DIVIDEArray(byte a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(byte a, byte b[]){
+    public static double[] DIVIDEArray(byte a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(byte a, short b){
+    public static double DIVIDE(byte a, short b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(byte a[], short b[]){
+    public static double[] DIVIDEArray(byte a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (byte, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(byte a[], short b){
+    public static double[] DIVIDEArray(byte a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(byte a, short b[]){
+    public static double[] DIVIDEArray(byte a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(short a, int b){
+    public static double DIVIDE(short a, int b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(short a[], int b[]){
+    public static double[] DIVIDEArray(short a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (short, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(short a[], int b){
+    public static double[] DIVIDEArray(short a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(short a, int b[]){
+    public static double[] DIVIDEArray(short a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(short a, double b){
+    public static double DIVIDE(short a, double b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a/b;
     }
 
-    public static double[] divideArray(short a[], double b[]){
+    public static double[] DIVIDEArray(short a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (short, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(short a[], double b){
+    public static double[] DIVIDEArray(short a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(short a, double b[]){
+    public static double[] DIVIDEArray(short a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(short a, long b){
+    public static double DIVIDE(short a, long b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(short a[], long b[]){
+    public static double[] DIVIDEArray(short a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (short, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(short a[], long b){
+    public static double[] DIVIDEArray(short a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(short a, long b[]){
+    public static double[] DIVIDEArray(short a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float divide(short a, float b){
+    public static float DIVIDE(short a, float b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a/b;
     }
 
-    public static float[] divideArray(short a[], float b[]){
+    public static float[] DIVIDEArray(short a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (short, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] divideArray(short a[], float b){
+    public static float[] DIVIDEArray(short a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] divideArray(short a, float b[]){
+    public static float[] DIVIDEArray(short a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(short a, char b){
+    public static double DIVIDE(short a, char b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(short a[], char b[]){
+    public static double[] DIVIDEArray(short a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (short, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(short a[], char b){
+    public static double[] DIVIDEArray(short a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(short a, char b[]){
+    public static double[] DIVIDEArray(short a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(short a, byte b){
+    public static double DIVIDE(short a, byte b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(short a[], byte b[]){
+    public static double[] DIVIDEArray(short a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (short, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(short a[], byte b){
+    public static double[] DIVIDEArray(short a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(short a, byte b[]){
+    public static double[] DIVIDEArray(short a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double divide(short a, short b){
+    public static double DIVIDE(short a, short b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a/(double)b;
     }
 
-    public static double[] divideArray(short a[], short b[]){
+    public static double[] DIVIDEArray(short a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to divide two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b[i]);
+            ret[i] = DIVIDE(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] divideArray(short a[], short b){
+    public static double[] DIVIDEArray(short a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = divide(a[i],b);
+            ret[i] = DIVIDE(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] divideArray(short a, short b[]){
+    public static double[] DIVIDEArray(short a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = divide(a,b[i]);
+            ret[i] = DIVIDE(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(int a, int b){
+    public static int REMAINDER(int a, int b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(int a[], int b[]){
+    public static int[] REMAINDERArray(int a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(int a[], int b){
+    public static int[] REMAINDERArray(int a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(int a, int b[]){
+    public static int[] REMAINDERArray(int a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(int a, double b){
+    public static double REMAINDER(int a, double b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(int a[], double b[]){
+    public static double[] REMAINDERArray(int a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (int, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(int a[], double b){
+    public static double[] REMAINDERArray(int a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(int a, double b[]){
+    public static double[] REMAINDERArray(int a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long remainder(int a, long b){
+    public static long REMAINDER(int a, long b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a%b;
     }
 
-    public static long[] remainderArray(int a[], long b[]){
+    public static long[] REMAINDERArray(int a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (int, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] remainderArray(int a[], long b){
+    public static long[] REMAINDERArray(int a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] remainderArray(int a, long b[]){
+    public static long[] REMAINDERArray(int a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(int a, float b){
+    public static float REMAINDER(int a, float b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(int a[], float b[]){
+    public static float[] REMAINDERArray(int a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (int, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(int a[], float b){
+    public static float[] REMAINDERArray(int a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(int a, float b[]){
+    public static float[] REMAINDERArray(int a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(int a, char b){
+    public static int REMAINDER(int a, char b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(int a[], char b[]){
+    public static int[] REMAINDERArray(int a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (int, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(int a[], char b){
+    public static int[] REMAINDERArray(int a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(int a, char b[]){
+    public static int[] REMAINDERArray(int a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(int a, byte b){
+    public static int REMAINDER(int a, byte b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(int a[], byte b[]){
+    public static int[] REMAINDERArray(int a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (int, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(int a[], byte b){
+    public static int[] REMAINDERArray(int a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(int a, byte b[]){
+    public static int[] REMAINDERArray(int a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(int a, short b){
+    public static int REMAINDER(int a, short b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(int a[], short b[]){
+    public static int[] REMAINDERArray(int a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (int, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(int a[], short b){
+    public static int[] REMAINDERArray(int a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(int a, short b[]){
+    public static int[] REMAINDERArray(int a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(double a, int b){
+    public static double REMAINDER(double a, int b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_INT ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(double a[], int b[]){
+    public static double[] REMAINDERArray(double a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (double, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(double a[], int b){
+    public static double[] REMAINDERArray(double a[], int b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(double a, int b[]){
+    public static double[] REMAINDERArray(double a, int b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(double a, double b){
+    public static double REMAINDER(double a, double b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(double a[], double b[]){
+    public static double[] REMAINDERArray(double a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (double, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(double a[], double b){
+    public static double[] REMAINDERArray(double a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(double a, double b[]){
+    public static double[] REMAINDERArray(double a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(double a, long b){
+    public static double REMAINDER(double a, long b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(double a[], long b[]){
+    public static double[] REMAINDERArray(double a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (double, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(double a[], long b){
+    public static double[] REMAINDERArray(double a[], long b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(double a, long b[]){
+    public static double[] REMAINDERArray(double a, long b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(double a, float b){
+    public static double REMAINDER(double a, float b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(double a[], float b[]){
+    public static double[] REMAINDERArray(double a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (double, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(double a[], float b){
+    public static double[] REMAINDERArray(double a[], float b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(double a, float b[]){
+    public static double[] REMAINDERArray(double a, float b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(double a, char b){
+    public static double REMAINDER(double a, char b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(double a[], char b[]){
+    public static double[] REMAINDERArray(double a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (double, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(double a[], char b){
+    public static double[] REMAINDERArray(double a[], char b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(double a, char b[]){
+    public static double[] REMAINDERArray(double a, char b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(double a, byte b){
+    public static double REMAINDER(double a, byte b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(double a[], byte b[]){
+    public static double[] REMAINDERArray(double a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (double, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(double a[], byte b){
+    public static double[] REMAINDERArray(double a[], byte b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(double a, byte b[]){
+    public static double[] REMAINDERArray(double a, byte b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(double a, short b){
+    public static double REMAINDER(double a, short b){
         return a==QueryConstants.NULL_DOUBLE || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(double a[], short b[]){
+    public static double[] REMAINDERArray(double a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (double, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(double a[], short b){
+    public static double[] REMAINDERArray(double a[], short b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(double a, short b[]){
+    public static double[] REMAINDERArray(double a, short b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long remainder(long a, int b){
+    public static long REMAINDER(long a, int b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_INT ? QueryConstants.NULL_LONG : a%b;
     }
 
-    public static long[] remainderArray(long a[], int b[]){
+    public static long[] REMAINDERArray(long a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (long, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] remainderArray(long a[], int b){
+    public static long[] REMAINDERArray(long a[], int b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] remainderArray(long a, int b[]){
+    public static long[] REMAINDERArray(long a, int b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(long a, double b){
+    public static double REMAINDER(long a, double b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(long a[], double b[]){
+    public static double[] REMAINDERArray(long a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (long, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(long a[], double b){
+    public static double[] REMAINDERArray(long a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(long a, double b[]){
+    public static double[] REMAINDERArray(long a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long remainder(long a, long b){
+    public static long REMAINDER(long a, long b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a%b;
     }
 
-    public static long[] remainderArray(long a[], long b[]){
+    public static long[] REMAINDERArray(long a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] remainderArray(long a[], long b){
+    public static long[] REMAINDERArray(long a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] remainderArray(long a, long b[]){
+    public static long[] REMAINDERArray(long a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(long a, float b){
+    public static float REMAINDER(long a, float b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(long a[], float b[]){
+    public static float[] REMAINDERArray(long a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (long, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(long a[], float b){
+    public static float[] REMAINDERArray(long a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(long a, float b[]){
+    public static float[] REMAINDERArray(long a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long remainder(long a, char b){
+    public static long REMAINDER(long a, char b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_LONG : a%b;
     }
 
-    public static long[] remainderArray(long a[], char b[]){
+    public static long[] REMAINDERArray(long a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (long, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] remainderArray(long a[], char b){
+    public static long[] REMAINDERArray(long a[], char b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] remainderArray(long a, char b[]){
+    public static long[] REMAINDERArray(long a, char b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long remainder(long a, byte b){
+    public static long REMAINDER(long a, byte b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_LONG : a%b;
     }
 
-    public static long[] remainderArray(long a[], byte b[]){
+    public static long[] REMAINDERArray(long a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (long, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] remainderArray(long a[], byte b){
+    public static long[] REMAINDERArray(long a[], byte b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] remainderArray(long a, byte b[]){
+    public static long[] REMAINDERArray(long a, byte b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long remainder(long a, short b){
+    public static long REMAINDER(long a, short b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_LONG : a%b;
     }
 
-    public static long[] remainderArray(long a[], short b[]){
+    public static long[] REMAINDERArray(long a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (long, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] remainderArray(long a[], short b){
+    public static long[] REMAINDERArray(long a[], short b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] remainderArray(long a, short b[]){
+    public static long[] REMAINDERArray(long a, short b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(float a, int b){
+    public static float REMAINDER(float a, int b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(float a[], int b[]){
+    public static float[] REMAINDERArray(float a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (float, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(float a[], int b){
+    public static float[] REMAINDERArray(float a[], int b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(float a, int b[]){
+    public static float[] REMAINDERArray(float a, int b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(float a, double b){
+    public static double REMAINDER(float a, double b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(float a[], double b[]){
+    public static double[] REMAINDERArray(float a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (float, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(float a[], double b){
+    public static double[] REMAINDERArray(float a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(float a, double b[]){
+    public static double[] REMAINDERArray(float a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(float a, long b){
+    public static float REMAINDER(float a, long b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(float a[], long b[]){
+    public static float[] REMAINDERArray(float a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (float, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(float a[], long b){
+    public static float[] REMAINDERArray(float a[], long b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(float a, long b[]){
+    public static float[] REMAINDERArray(float a, long b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(float a, float b){
+    public static float REMAINDER(float a, float b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(float a[], float b[]){
+    public static float[] REMAINDERArray(float a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (float, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(float a[], float b){
+    public static float[] REMAINDERArray(float a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(float a, float b[]){
+    public static float[] REMAINDERArray(float a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(float a, char b){
+    public static float REMAINDER(float a, char b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(float a[], char b[]){
+    public static float[] REMAINDERArray(float a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (float, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(float a[], char b){
+    public static float[] REMAINDERArray(float a[], char b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(float a, char b[]){
+    public static float[] REMAINDERArray(float a, char b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(float a, byte b){
+    public static float REMAINDER(float a, byte b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(float a[], byte b[]){
+    public static float[] REMAINDERArray(float a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (float, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(float a[], byte b){
+    public static float[] REMAINDERArray(float a[], byte b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(float a, byte b[]){
+    public static float[] REMAINDERArray(float a, byte b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(float a, short b){
+    public static float REMAINDER(float a, short b){
         return a==QueryConstants.NULL_FLOAT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(float a[], short b[]){
+    public static float[] REMAINDERArray(float a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (float, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(float a[], short b){
+    public static float[] REMAINDERArray(float a[], short b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(float a, short b[]){
+    public static float[] REMAINDERArray(float a, short b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(char a, int b){
+    public static int REMAINDER(char a, int b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(char a[], int b[]){
+    public static int[] REMAINDERArray(char a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (char, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(char a[], int b){
+    public static int[] REMAINDERArray(char a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(char a, int b[]){
+    public static int[] REMAINDERArray(char a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(char a, double b){
+    public static double REMAINDER(char a, double b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(char a[], double b[]){
+    public static double[] REMAINDERArray(char a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (char, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(char a[], double b){
+    public static double[] REMAINDERArray(char a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(char a, double b[]){
+    public static double[] REMAINDERArray(char a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long remainder(char a, long b){
+    public static long REMAINDER(char a, long b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a%b;
     }
 
-    public static long[] remainderArray(char a[], long b[]){
+    public static long[] REMAINDERArray(char a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (char, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] remainderArray(char a[], long b){
+    public static long[] REMAINDERArray(char a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] remainderArray(char a, long b[]){
+    public static long[] REMAINDERArray(char a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(char a, float b){
+    public static float REMAINDER(char a, float b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(char a[], float b[]){
+    public static float[] REMAINDERArray(char a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (char, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(char a[], float b){
+    public static float[] REMAINDERArray(char a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(char a, float b[]){
+    public static float[] REMAINDERArray(char a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(char a, char b){
+    public static int REMAINDER(char a, char b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(char a[], char b[]){
+    public static int[] REMAINDERArray(char a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(char a[], char b){
+    public static int[] REMAINDERArray(char a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(char a, char b[]){
+    public static int[] REMAINDERArray(char a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(char a, byte b){
+    public static int REMAINDER(char a, byte b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(char a[], byte b[]){
+    public static int[] REMAINDERArray(char a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (char, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(char a[], byte b){
+    public static int[] REMAINDERArray(char a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(char a, byte b[]){
+    public static int[] REMAINDERArray(char a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(char a, short b){
+    public static int REMAINDER(char a, short b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(char a[], short b[]){
+    public static int[] REMAINDERArray(char a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (char, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(char a[], short b){
+    public static int[] REMAINDERArray(char a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(char a, short b[]){
+    public static int[] REMAINDERArray(char a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(byte a, int b){
+    public static int REMAINDER(byte a, int b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(byte a[], int b[]){
+    public static int[] REMAINDERArray(byte a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (byte, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(byte a[], int b){
+    public static int[] REMAINDERArray(byte a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(byte a, int b[]){
+    public static int[] REMAINDERArray(byte a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(byte a, double b){
+    public static double REMAINDER(byte a, double b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(byte a[], double b[]){
+    public static double[] REMAINDERArray(byte a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (byte, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(byte a[], double b){
+    public static double[] REMAINDERArray(byte a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(byte a, double b[]){
+    public static double[] REMAINDERArray(byte a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long remainder(byte a, long b){
+    public static long REMAINDER(byte a, long b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a%b;
     }
 
-    public static long[] remainderArray(byte a[], long b[]){
+    public static long[] REMAINDERArray(byte a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (byte, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] remainderArray(byte a[], long b){
+    public static long[] REMAINDERArray(byte a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] remainderArray(byte a, long b[]){
+    public static long[] REMAINDERArray(byte a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(byte a, float b){
+    public static float REMAINDER(byte a, float b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(byte a[], float b[]){
+    public static float[] REMAINDERArray(byte a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (byte, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(byte a[], float b){
+    public static float[] REMAINDERArray(byte a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(byte a, float b[]){
+    public static float[] REMAINDERArray(byte a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(byte a, char b){
+    public static int REMAINDER(byte a, char b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(byte a[], char b[]){
+    public static int[] REMAINDERArray(byte a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (byte, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(byte a[], char b){
+    public static int[] REMAINDERArray(byte a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(byte a, char b[]){
+    public static int[] REMAINDERArray(byte a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(byte a, byte b){
+    public static int REMAINDER(byte a, byte b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(byte a[], byte b[]){
+    public static int[] REMAINDERArray(byte a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(byte a[], byte b){
+    public static int[] REMAINDERArray(byte a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(byte a, byte b[]){
+    public static int[] REMAINDERArray(byte a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(byte a, short b){
+    public static int REMAINDER(byte a, short b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(byte a[], short b[]){
+    public static int[] REMAINDERArray(byte a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (byte, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(byte a[], short b){
+    public static int[] REMAINDERArray(byte a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(byte a, short b[]){
+    public static int[] REMAINDERArray(byte a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(short a, int b){
+    public static int REMAINDER(short a, int b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(short a[], int b[]){
+    public static int[] REMAINDERArray(short a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (short, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(short a[], int b){
+    public static int[] REMAINDERArray(short a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(short a, int b[]){
+    public static int[] REMAINDERArray(short a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static double remainder(short a, double b){
+    public static double REMAINDER(short a, double b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_DOUBLE ? QueryConstants.NULL_DOUBLE : a%b;
     }
 
-    public static double[] remainderArray(short a[], double b[]){
+    public static double[] REMAINDERArray(short a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (short, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static double[] remainderArray(short a[], double b){
+    public static double[] REMAINDERArray(short a[], double b){
         double[] ret = new double[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static double[] remainderArray(short a, double b[]){
+    public static double[] REMAINDERArray(short a, double b[]){
         double[] ret = new double[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long remainder(short a, long b){
+    public static long REMAINDER(short a, long b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a%b;
     }
 
-    public static long[] remainderArray(short a[], long b[]){
+    public static long[] REMAINDERArray(short a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (short, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] remainderArray(short a[], long b){
+    public static long[] REMAINDERArray(short a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] remainderArray(short a, long b[]){
+    public static long[] REMAINDERArray(short a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static float remainder(short a, float b){
+    public static float REMAINDER(short a, float b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_FLOAT ? QueryConstants.NULL_FLOAT : a%b;
     }
 
-    public static float[] remainderArray(short a[], float b[]){
+    public static float[] REMAINDERArray(short a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (short, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static float[] remainderArray(short a[], float b){
+    public static float[] REMAINDERArray(short a[], float b){
         float[] ret = new float[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static float[] remainderArray(short a, float b[]){
+    public static float[] REMAINDERArray(short a, float b[]){
         float[] ret = new float[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(short a, char b){
+    public static int REMAINDER(short a, char b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(short a[], char b[]){
+    public static int[] REMAINDERArray(short a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (short, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(short a[], char b){
+    public static int[] REMAINDERArray(short a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(short a, char b[]){
+    public static int[] REMAINDERArray(short a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(short a, byte b){
+    public static int REMAINDER(short a, byte b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(short a[], byte b[]){
+    public static int[] REMAINDERArray(short a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (short, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(short a[], byte b){
+    public static int[] REMAINDERArray(short a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(short a, byte b[]){
+    public static int[] REMAINDERArray(short a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int remainder(short a, short b){
+    public static int REMAINDER(short a, short b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a%b;
     }
 
-    public static int[] remainderArray(short a[], short b[]){
+    public static int[] REMAINDERArray(short a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to calculate remainder of two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b[i]);
+            ret[i] = REMAINDER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] remainderArray(short a[], short b){
+    public static int[] REMAINDERArray(short a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = remainder(a[i],b);
+            ret[i] = REMAINDER(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] remainderArray(short a, short b[]){
+    public static int[] REMAINDERArray(short a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = remainder(a,b[i]);
+            ret[i] = REMAINDER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int binOr(int a, int b){
+    public static int BINARY_OR(int a, int b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a|b;
     }
 
-    public static int[] binOrArray(int a[], int b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to binOr two arrays (int, int) of different length" +
+    public static int[] BINARY_ORArray(int a[], int b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to BINARY_OR two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binOr(a[i],b[i]);
+            ret[i] = BINARY_OR(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] binOrArray(int a[], int b){
+    public static int[] BINARY_ORArray(int a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binOr(a[i],b);
+            ret[i] = BINARY_OR(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] binOrArray(int a, int b[]){
+    public static int[] BINARY_ORArray(int a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = binOr(a,b[i]);
+            ret[i] = BINARY_OR(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long binOr(long a, long b){
+    public static long BINARY_OR(long a, long b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a|b;
     }
 
-    public static long[] binOrArray(long a[], long b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to binOr two arrays (long, long) of different length" +
+    public static long[] BINARY_ORArray(long a[], long b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to BINARY_OR two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binOr(a[i],b[i]);
+            ret[i] = BINARY_OR(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] binOrArray(long a[], long b){
+    public static long[] BINARY_ORArray(long a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binOr(a[i],b);
+            ret[i] = BINARY_OR(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] binOrArray(long a, long b[]){
+    public static long[] BINARY_ORArray(long a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = binOr(a,b[i]);
+            ret[i] = BINARY_OR(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int binOr(char a, char b){
+    public static int BINARY_OR(char a, char b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a|b;
     }
 
-    public static int[] binOrArray(char a[], char b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to binOr two arrays (char, char) of different length" +
+    public static int[] BINARY_ORArray(char a[], char b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to BINARY_OR two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binOr(a[i],b[i]);
+            ret[i] = BINARY_OR(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] binOrArray(char a[], char b){
+    public static int[] BINARY_ORArray(char a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binOr(a[i],b);
+            ret[i] = BINARY_OR(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] binOrArray(char a, char b[]){
+    public static int[] BINARY_ORArray(char a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = binOr(a,b[i]);
+            ret[i] = BINARY_OR(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int binOr(byte a, byte b){
+    public static int BINARY_OR(byte a, byte b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a|b;
     }
 
-    public static int[] binOrArray(byte a[], byte b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to binOr two arrays (byte, byte) of different length" +
+    public static int[] BINARY_ORArray(byte a[], byte b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to BINARY_OR two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binOr(a[i],b[i]);
+            ret[i] = BINARY_OR(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] binOrArray(byte a[], byte b){
+    public static int[] BINARY_ORArray(byte a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binOr(a[i],b);
+            ret[i] = BINARY_OR(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] binOrArray(byte a, byte b[]){
+    public static int[] BINARY_ORArray(byte a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = binOr(a,b[i]);
+            ret[i] = BINARY_OR(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int binOr(short a, short b){
+    public static int BINARY_OR(short a, short b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a|b;
     }
 
-    public static int[] binOrArray(short a[], short b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to binOr two arrays (short, short) of different length" +
+    public static int[] BINARY_ORArray(short a[], short b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to BINARY_OR two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binOr(a[i],b[i]);
+            ret[i] = BINARY_OR(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] binOrArray(short a[], short b){
+    public static int[] BINARY_ORArray(short a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binOr(a[i],b);
+            ret[i] = BINARY_OR(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] binOrArray(short a, short b[]){
+    public static int[] BINARY_ORArray(short a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = binOr(a,b[i]);
+            ret[i] = BINARY_OR(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int xor(int a, int b){
+    public static int XOR(int a, int b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a^b;
     }
 
-    public static int[] xorArray(int a[], int b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to xor two arrays (int, int) of different length" +
+    public static int[] XORArray(int a[], int b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to XOR two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = xor(a[i],b[i]);
+            ret[i] = XOR(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] xorArray(int a[], int b){
+    public static int[] XORArray(int a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = xor(a[i],b);
+            ret[i] = XOR(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] xorArray(int a, int b[]){
+    public static int[] XORArray(int a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = xor(a,b[i]);
+            ret[i] = XOR(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long xor(long a, long b){
+    public static long XOR(long a, long b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a^b;
     }
 
-    public static long[] xorArray(long a[], long b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to xor two arrays (long, long) of different length" +
+    public static long[] XORArray(long a[], long b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to XOR two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = xor(a[i],b[i]);
+            ret[i] = XOR(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] xorArray(long a[], long b){
+    public static long[] XORArray(long a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = xor(a[i],b);
+            ret[i] = XOR(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] xorArray(long a, long b[]){
+    public static long[] XORArray(long a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = xor(a,b[i]);
+            ret[i] = XOR(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int xor(char a, char b){
+    public static int XOR(char a, char b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a^b;
     }
 
-    public static int[] xorArray(char a[], char b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to xor two arrays (char, char) of different length" +
+    public static int[] XORArray(char a[], char b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to XOR two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = xor(a[i],b[i]);
+            ret[i] = XOR(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] xorArray(char a[], char b){
+    public static int[] XORArray(char a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = xor(a[i],b);
+            ret[i] = XOR(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] xorArray(char a, char b[]){
+    public static int[] XORArray(char a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = xor(a,b[i]);
+            ret[i] = XOR(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int xor(byte a, byte b){
+    public static int XOR(byte a, byte b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a^b;
     }
 
-    public static int[] xorArray(byte a[], byte b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to xor two arrays (byte, byte) of different length" +
+    public static int[] XORArray(byte a[], byte b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to XOR two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = xor(a[i],b[i]);
+            ret[i] = XOR(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] xorArray(byte a[], byte b){
+    public static int[] XORArray(byte a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = xor(a[i],b);
+            ret[i] = XOR(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] xorArray(byte a, byte b[]){
+    public static int[] XORArray(byte a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = xor(a,b[i]);
+            ret[i] = XOR(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int xor(short a, short b){
+    public static int XOR(short a, short b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a^b;
     }
 
-    public static int[] xorArray(short a[], short b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to xor two arrays (short, short) of different length" +
+    public static int[] XORArray(short a[], short b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to XOR two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = xor(a[i],b[i]);
+            ret[i] = XOR(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] xorArray(short a[], short b){
+    public static int[] XORArray(short a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = xor(a[i],b);
+            ret[i] = XOR(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] xorArray(short a, short b[]){
+    public static int[] XORArray(short a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = xor(a,b[i]);
+            ret[i] = XOR(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int binAnd(int a, int b){
+    public static int BINARY_AND(int a, int b){
         return a==QueryConstants.NULL_INT || b==QueryConstants.NULL_INT ? QueryConstants.NULL_INT : a&b;
     }
 
-    public static int[] binAndArray(int a[], int b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to binAnd two arrays (int, int) of different length" +
+    public static int[] BINARY_ANDArray(int a[], int b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to BINARY_AND two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binAnd(a[i],b[i]);
+            ret[i] = BINARY_AND(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] binAndArray(int a[], int b){
+    public static int[] BINARY_ANDArray(int a[], int b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binAnd(a[i],b);
+            ret[i] = BINARY_AND(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] binAndArray(int a, int b[]){
+    public static int[] BINARY_ANDArray(int a, int b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = binAnd(a,b[i]);
+            ret[i] = BINARY_AND(a,b[i]);
         }
 
         return ret;
     }
 
-    public static long binAnd(long a, long b){
+    public static long BINARY_AND(long a, long b){
         return a==QueryConstants.NULL_LONG || b==QueryConstants.NULL_LONG ? QueryConstants.NULL_LONG : a&b;
     }
 
-    public static long[] binAndArray(long a[], long b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to binAnd two arrays (long, long) of different length" +
+    public static long[] BINARY_ANDArray(long a[], long b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to BINARY_AND two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binAnd(a[i],b[i]);
+            ret[i] = BINARY_AND(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static long[] binAndArray(long a[], long b){
+    public static long[] BINARY_ANDArray(long a[], long b){
         long[] ret = new long[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binAnd(a[i],b);
+            ret[i] = BINARY_AND(a[i],b);
         }
 
         return ret;
     }
 
-    public static long[] binAndArray(long a, long b[]){
+    public static long[] BINARY_ANDArray(long a, long b[]){
         long[] ret = new long[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = binAnd(a,b[i]);
+            ret[i] = BINARY_AND(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int binAnd(char a, char b){
+    public static int BINARY_AND(char a, char b){
         return a==QueryConstants.NULL_CHAR || b==QueryConstants.NULL_CHAR ? QueryConstants.NULL_INT : a&b;
     }
 
-    public static int[] binAndArray(char a[], char b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to binAnd two arrays (char, char) of different length" +
+    public static int[] BINARY_ANDArray(char a[], char b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to BINARY_AND two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binAnd(a[i],b[i]);
+            ret[i] = BINARY_AND(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] binAndArray(char a[], char b){
+    public static int[] BINARY_ANDArray(char a[], char b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binAnd(a[i],b);
+            ret[i] = BINARY_AND(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] binAndArray(char a, char b[]){
+    public static int[] BINARY_ANDArray(char a, char b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = binAnd(a,b[i]);
+            ret[i] = BINARY_AND(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int binAnd(byte a, byte b){
+    public static int BINARY_AND(byte a, byte b){
         return a==QueryConstants.NULL_BYTE || b==QueryConstants.NULL_BYTE ? QueryConstants.NULL_INT : a&b;
     }
 
-    public static int[] binAndArray(byte a[], byte b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to binAnd two arrays (byte, byte) of different length" +
+    public static int[] BINARY_ANDArray(byte a[], byte b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to BINARY_AND two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binAnd(a[i],b[i]);
+            ret[i] = BINARY_AND(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] binAndArray(byte a[], byte b){
+    public static int[] BINARY_ANDArray(byte a[], byte b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binAnd(a[i],b);
+            ret[i] = BINARY_AND(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] binAndArray(byte a, byte b[]){
+    public static int[] BINARY_ANDArray(byte a, byte b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = binAnd(a,b[i]);
+            ret[i] = BINARY_AND(a,b[i]);
         }
 
         return ret;
     }
 
-    public static int binAnd(short a, short b){
+    public static int BINARY_AND(short a, short b){
         return a==QueryConstants.NULL_SHORT || b==QueryConstants.NULL_SHORT ? QueryConstants.NULL_INT : a&b;
     }
 
-    public static int[] binAndArray(short a[], short b[]){
-        if (a.length != b.length) throw new IllegalArgumentException("Attempt to binAnd two arrays (short, short) of different length" +
+    public static int[] BINARY_ANDArray(short a[], short b[]){
+        if (a.length != b.length) throw new IllegalArgumentException("Attempt to BINARY_AND two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binAnd(a[i],b[i]);
+            ret[i] = BINARY_AND(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static int[] binAndArray(short a[], short b){
+    public static int[] BINARY_ANDArray(short a[], short b){
         int[] ret = new int[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = binAnd(a[i],b);
+            ret[i] = BINARY_AND(a[i],b);
         }
 
         return ret;
     }
 
-    public static int[] binAndArray(short a, short b[]){
+    public static int[] BINARY_ANDArray(short a, short b[]){
         int[] ret = new int[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = binAnd(a,b[i]);
+            ret[i] = BINARY_AND(a,b[i]);
         }
 
         return ret;
@@ -11541,6695 +11541,6695 @@ public final class DBLanguageFunctionUtil {
         return ret;
     }
 
-    public static boolean less(int a, int b){
+    public static boolean LESS(int a, int b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(int a[], int b[]){
+    public static boolean[] LESSArray(int a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(int a[], int b){
+    public static boolean[] LESSArray(int a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(int a, int b[]){
+    public static boolean[] LESSArray(int a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(int a, double b){
+    public static boolean LESS(int a, double b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(int a[], double b[]){
+    public static boolean[] LESSArray(int a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(int a[], double b){
+    public static boolean[] LESSArray(int a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(int a, double b[]){
+    public static boolean[] LESSArray(int a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(int a, long b){
+    public static boolean LESS(int a, long b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(int a[], long b[]){
+    public static boolean[] LESSArray(int a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(int a[], long b){
+    public static boolean[] LESSArray(int a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(int a, long b[]){
+    public static boolean[] LESSArray(int a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(int a, float b){
+    public static boolean LESS(int a, float b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(int a[], float b[]){
+    public static boolean[] LESSArray(int a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(int a[], float b){
+    public static boolean[] LESSArray(int a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(int a, float b[]){
+    public static boolean[] LESSArray(int a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(int a, char b){
+    public static boolean LESS(int a, char b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(int a[], char b[]){
+    public static boolean[] LESSArray(int a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(int a[], char b){
+    public static boolean[] LESSArray(int a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(int a, char b[]){
+    public static boolean[] LESSArray(int a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(int a, byte b){
+    public static boolean LESS(int a, byte b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(int a[], byte b[]){
+    public static boolean[] LESSArray(int a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(int a[], byte b){
+    public static boolean[] LESSArray(int a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(int a, byte b[]){
+    public static boolean[] LESSArray(int a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(int a, short b){
+    public static boolean LESS(int a, short b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(int a[], short b[]){
+    public static boolean[] LESSArray(int a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(int a[], short b){
+    public static boolean[] LESSArray(int a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(int a, short b[]){
+    public static boolean[] LESSArray(int a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(double a, int b){
+    public static boolean LESS(double a, int b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(double a[], int b[]){
+    public static boolean[] LESSArray(double a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(double a[], int b){
+    public static boolean[] LESSArray(double a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(double a, int b[]){
+    public static boolean[] LESSArray(double a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(double a, double b){
+    public static boolean LESS(double a, double b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(double a[], double b[]){
+    public static boolean[] LESSArray(double a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(double a[], double b){
+    public static boolean[] LESSArray(double a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(double a, double b[]){
+    public static boolean[] LESSArray(double a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(double a, long b){
+    public static boolean LESS(double a, long b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(double a[], long b[]){
+    public static boolean[] LESSArray(double a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(double a[], long b){
+    public static boolean[] LESSArray(double a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(double a, long b[]){
+    public static boolean[] LESSArray(double a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(double a, float b){
+    public static boolean LESS(double a, float b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(double a[], float b[]){
+    public static boolean[] LESSArray(double a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(double a[], float b){
+    public static boolean[] LESSArray(double a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(double a, float b[]){
+    public static boolean[] LESSArray(double a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(double a, char b){
+    public static boolean LESS(double a, char b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(double a[], char b[]){
+    public static boolean[] LESSArray(double a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(double a[], char b){
+    public static boolean[] LESSArray(double a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(double a, char b[]){
+    public static boolean[] LESSArray(double a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(double a, byte b){
+    public static boolean LESS(double a, byte b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(double a[], byte b[]){
+    public static boolean[] LESSArray(double a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(double a[], byte b){
+    public static boolean[] LESSArray(double a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(double a, byte b[]){
+    public static boolean[] LESSArray(double a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(double a, short b){
+    public static boolean LESS(double a, short b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(double a[], short b[]){
+    public static boolean[] LESSArray(double a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(double a[], short b){
+    public static boolean[] LESSArray(double a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(double a, short b[]){
+    public static boolean[] LESSArray(double a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(long a, int b){
+    public static boolean LESS(long a, int b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(long a[], int b[]){
+    public static boolean[] LESSArray(long a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(long a[], int b){
+    public static boolean[] LESSArray(long a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(long a, int b[]){
+    public static boolean[] LESSArray(long a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(long a, double b){
+    public static boolean LESS(long a, double b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(long a[], double b[]){
+    public static boolean[] LESSArray(long a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(long a[], double b){
+    public static boolean[] LESSArray(long a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(long a, double b[]){
+    public static boolean[] LESSArray(long a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(long a, long b){
+    public static boolean LESS(long a, long b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(long a[], long b[]){
+    public static boolean[] LESSArray(long a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(long a[], long b){
+    public static boolean[] LESSArray(long a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(long a, long b[]){
+    public static boolean[] LESSArray(long a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(long a, float b){
+    public static boolean LESS(long a, float b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(long a[], float b[]){
+    public static boolean[] LESSArray(long a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(long a[], float b){
+    public static boolean[] LESSArray(long a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(long a, float b[]){
+    public static boolean[] LESSArray(long a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(long a, char b){
+    public static boolean LESS(long a, char b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(long a[], char b[]){
+    public static boolean[] LESSArray(long a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(long a[], char b){
+    public static boolean[] LESSArray(long a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(long a, char b[]){
+    public static boolean[] LESSArray(long a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(long a, byte b){
+    public static boolean LESS(long a, byte b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(long a[], byte b[]){
+    public static boolean[] LESSArray(long a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(long a[], byte b){
+    public static boolean[] LESSArray(long a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(long a, byte b[]){
+    public static boolean[] LESSArray(long a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(long a, short b){
+    public static boolean LESS(long a, short b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(long a[], short b[]){
+    public static boolean[] LESSArray(long a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(long a[], short b){
+    public static boolean[] LESSArray(long a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(long a, short b[]){
+    public static boolean[] LESSArray(long a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(float a, int b){
+    public static boolean LESS(float a, int b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(float a[], int b[]){
+    public static boolean[] LESSArray(float a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(float a[], int b){
+    public static boolean[] LESSArray(float a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(float a, int b[]){
+    public static boolean[] LESSArray(float a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(float a, double b){
+    public static boolean LESS(float a, double b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(float a[], double b[]){
+    public static boolean[] LESSArray(float a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(float a[], double b){
+    public static boolean[] LESSArray(float a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(float a, double b[]){
+    public static boolean[] LESSArray(float a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(float a, long b){
+    public static boolean LESS(float a, long b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(float a[], long b[]){
+    public static boolean[] LESSArray(float a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(float a[], long b){
+    public static boolean[] LESSArray(float a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(float a, long b[]){
+    public static boolean[] LESSArray(float a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(float a, float b){
+    public static boolean LESS(float a, float b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(float a[], float b[]){
+    public static boolean[] LESSArray(float a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(float a[], float b){
+    public static boolean[] LESSArray(float a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(float a, float b[]){
+    public static boolean[] LESSArray(float a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(float a, char b){
+    public static boolean LESS(float a, char b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(float a[], char b[]){
+    public static boolean[] LESSArray(float a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(float a[], char b){
+    public static boolean[] LESSArray(float a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(float a, char b[]){
+    public static boolean[] LESSArray(float a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(float a, byte b){
+    public static boolean LESS(float a, byte b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(float a[], byte b[]){
+    public static boolean[] LESSArray(float a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(float a[], byte b){
+    public static boolean[] LESSArray(float a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(float a, byte b[]){
+    public static boolean[] LESSArray(float a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(float a, short b){
+    public static boolean LESS(float a, short b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(float a[], short b[]){
+    public static boolean[] LESSArray(float a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(float a[], short b){
+    public static boolean[] LESSArray(float a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(float a, short b[]){
+    public static boolean[] LESSArray(float a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(char a, int b){
+    public static boolean LESS(char a, int b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(char a[], int b[]){
+    public static boolean[] LESSArray(char a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(char a[], int b){
+    public static boolean[] LESSArray(char a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(char a, int b[]){
+    public static boolean[] LESSArray(char a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(char a, double b){
+    public static boolean LESS(char a, double b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(char a[], double b[]){
+    public static boolean[] LESSArray(char a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(char a[], double b){
+    public static boolean[] LESSArray(char a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(char a, double b[]){
+    public static boolean[] LESSArray(char a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(char a, long b){
+    public static boolean LESS(char a, long b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(char a[], long b[]){
+    public static boolean[] LESSArray(char a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(char a[], long b){
+    public static boolean[] LESSArray(char a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(char a, long b[]){
+    public static boolean[] LESSArray(char a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(char a, float b){
+    public static boolean LESS(char a, float b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(char a[], float b[]){
+    public static boolean[] LESSArray(char a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(char a[], float b){
+    public static boolean[] LESSArray(char a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(char a, float b[]){
+    public static boolean[] LESSArray(char a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(char a, char b){
+    public static boolean LESS(char a, char b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(char a[], char b[]){
+    public static boolean[] LESSArray(char a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(char a[], char b){
+    public static boolean[] LESSArray(char a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(char a, char b[]){
+    public static boolean[] LESSArray(char a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(char a, byte b){
+    public static boolean LESS(char a, byte b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(char a[], byte b[]){
+    public static boolean[] LESSArray(char a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(char a[], byte b){
+    public static boolean[] LESSArray(char a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(char a, byte b[]){
+    public static boolean[] LESSArray(char a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(char a, short b){
+    public static boolean LESS(char a, short b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(char a[], short b[]){
+    public static boolean[] LESSArray(char a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(char a[], short b){
+    public static boolean[] LESSArray(char a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(char a, short b[]){
+    public static boolean[] LESSArray(char a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(byte a, int b){
+    public static boolean LESS(byte a, int b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(byte a[], int b[]){
+    public static boolean[] LESSArray(byte a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(byte a[], int b){
+    public static boolean[] LESSArray(byte a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(byte a, int b[]){
+    public static boolean[] LESSArray(byte a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(byte a, double b){
+    public static boolean LESS(byte a, double b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(byte a[], double b[]){
+    public static boolean[] LESSArray(byte a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(byte a[], double b){
+    public static boolean[] LESSArray(byte a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(byte a, double b[]){
+    public static boolean[] LESSArray(byte a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(byte a, long b){
+    public static boolean LESS(byte a, long b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(byte a[], long b[]){
+    public static boolean[] LESSArray(byte a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(byte a[], long b){
+    public static boolean[] LESSArray(byte a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(byte a, long b[]){
+    public static boolean[] LESSArray(byte a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(byte a, float b){
+    public static boolean LESS(byte a, float b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(byte a[], float b[]){
+    public static boolean[] LESSArray(byte a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(byte a[], float b){
+    public static boolean[] LESSArray(byte a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(byte a, float b[]){
+    public static boolean[] LESSArray(byte a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(byte a, char b){
+    public static boolean LESS(byte a, char b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(byte a[], char b[]){
+    public static boolean[] LESSArray(byte a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(byte a[], char b){
+    public static boolean[] LESSArray(byte a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(byte a, char b[]){
+    public static boolean[] LESSArray(byte a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(byte a, byte b){
+    public static boolean LESS(byte a, byte b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(byte a[], byte b[]){
+    public static boolean[] LESSArray(byte a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(byte a[], byte b){
+    public static boolean[] LESSArray(byte a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(byte a, byte b[]){
+    public static boolean[] LESSArray(byte a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(byte a, short b){
+    public static boolean LESS(byte a, short b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(byte a[], short b[]){
+    public static boolean[] LESSArray(byte a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(byte a[], short b){
+    public static boolean[] LESSArray(byte a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(byte a, short b[]){
+    public static boolean[] LESSArray(byte a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(short a, int b){
+    public static boolean LESS(short a, int b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(short a[], int b[]){
+    public static boolean[] LESSArray(short a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(short a[], int b){
+    public static boolean[] LESSArray(short a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(short a, int b[]){
+    public static boolean[] LESSArray(short a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(short a, double b){
+    public static boolean LESS(short a, double b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(short a[], double b[]){
+    public static boolean[] LESSArray(short a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(short a[], double b){
+    public static boolean[] LESSArray(short a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(short a, double b[]){
+    public static boolean[] LESSArray(short a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(short a, long b){
+    public static boolean LESS(short a, long b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(short a[], long b[]){
+    public static boolean[] LESSArray(short a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(short a[], long b){
+    public static boolean[] LESSArray(short a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(short a, long b[]){
+    public static boolean[] LESSArray(short a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(short a, float b){
+    public static boolean LESS(short a, float b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(short a[], float b[]){
+    public static boolean[] LESSArray(short a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(short a[], float b){
+    public static boolean[] LESSArray(short a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(short a, float b[]){
+    public static boolean[] LESSArray(short a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(short a, char b){
+    public static boolean LESS(short a, char b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(short a[], char b[]){
+    public static boolean[] LESSArray(short a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(short a[], char b){
+    public static boolean[] LESSArray(short a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(short a, char b[]){
+    public static boolean[] LESSArray(short a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(short a, byte b){
+    public static boolean LESS(short a, byte b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(short a[], byte b[]){
+    public static boolean[] LESSArray(short a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(short a[], byte b){
+    public static boolean[] LESSArray(short a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(short a, byte b[]){
+    public static boolean[] LESSArray(short a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(short a, short b){
+    public static boolean LESS(short a, short b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean[] lessArray(short a[], short b[]){
+    public static boolean[] LESSArray(short a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(short a[], short b){
+    public static boolean[] LESSArray(short a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(short a, short b[]){
+    public static boolean[] LESSArray(short a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(int a, int b){
+    public static boolean GREATER(int a, int b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(int a[], int b[]){
+    public static boolean[] GREATERArray(int a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(int a[], int b){
+    public static boolean[] GREATERArray(int a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(int a, int b[]){
+    public static boolean[] GREATERArray(int a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(int a, double b){
+    public static boolean GREATER(int a, double b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(int a[], double b[]){
+    public static boolean[] GREATERArray(int a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(int a[], double b){
+    public static boolean[] GREATERArray(int a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(int a, double b[]){
+    public static boolean[] GREATERArray(int a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(int a, long b){
+    public static boolean GREATER(int a, long b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(int a[], long b[]){
+    public static boolean[] GREATERArray(int a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(int a[], long b){
+    public static boolean[] GREATERArray(int a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(int a, long b[]){
+    public static boolean[] GREATERArray(int a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(int a, float b){
+    public static boolean GREATER(int a, float b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(int a[], float b[]){
+    public static boolean[] GREATERArray(int a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(int a[], float b){
+    public static boolean[] GREATERArray(int a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(int a, float b[]){
+    public static boolean[] GREATERArray(int a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(int a, char b){
+    public static boolean GREATER(int a, char b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(int a[], char b[]){
+    public static boolean[] GREATERArray(int a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(int a[], char b){
+    public static boolean[] GREATERArray(int a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(int a, char b[]){
+    public static boolean[] GREATERArray(int a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(int a, byte b){
+    public static boolean GREATER(int a, byte b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(int a[], byte b[]){
+    public static boolean[] GREATERArray(int a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(int a[], byte b){
+    public static boolean[] GREATERArray(int a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(int a, byte b[]){
+    public static boolean[] GREATERArray(int a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(int a, short b){
+    public static boolean GREATER(int a, short b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(int a[], short b[]){
+    public static boolean[] GREATERArray(int a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(int a[], short b){
+    public static boolean[] GREATERArray(int a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(int a, short b[]){
+    public static boolean[] GREATERArray(int a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(double a, int b){
+    public static boolean GREATER(double a, int b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(double a[], int b[]){
+    public static boolean[] GREATERArray(double a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(double a[], int b){
+    public static boolean[] GREATERArray(double a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(double a, int b[]){
+    public static boolean[] GREATERArray(double a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(double a, double b){
+    public static boolean GREATER(double a, double b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(double a[], double b[]){
+    public static boolean[] GREATERArray(double a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(double a[], double b){
+    public static boolean[] GREATERArray(double a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(double a, double b[]){
+    public static boolean[] GREATERArray(double a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(double a, long b){
+    public static boolean GREATER(double a, long b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(double a[], long b[]){
+    public static boolean[] GREATERArray(double a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(double a[], long b){
+    public static boolean[] GREATERArray(double a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(double a, long b[]){
+    public static boolean[] GREATERArray(double a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(double a, float b){
+    public static boolean GREATER(double a, float b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(double a[], float b[]){
+    public static boolean[] GREATERArray(double a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(double a[], float b){
+    public static boolean[] GREATERArray(double a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(double a, float b[]){
+    public static boolean[] GREATERArray(double a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(double a, char b){
+    public static boolean GREATER(double a, char b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(double a[], char b[]){
+    public static boolean[] GREATERArray(double a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(double a[], char b){
+    public static boolean[] GREATERArray(double a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(double a, char b[]){
+    public static boolean[] GREATERArray(double a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(double a, byte b){
+    public static boolean GREATER(double a, byte b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(double a[], byte b[]){
+    public static boolean[] GREATERArray(double a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(double a[], byte b){
+    public static boolean[] GREATERArray(double a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(double a, byte b[]){
+    public static boolean[] GREATERArray(double a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(double a, short b){
+    public static boolean GREATER(double a, short b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(double a[], short b[]){
+    public static boolean[] GREATERArray(double a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(double a[], short b){
+    public static boolean[] GREATERArray(double a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(double a, short b[]){
+    public static boolean[] GREATERArray(double a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(long a, int b){
+    public static boolean GREATER(long a, int b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(long a[], int b[]){
+    public static boolean[] GREATERArray(long a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(long a[], int b){
+    public static boolean[] GREATERArray(long a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(long a, int b[]){
+    public static boolean[] GREATERArray(long a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(long a, double b){
+    public static boolean GREATER(long a, double b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(long a[], double b[]){
+    public static boolean[] GREATERArray(long a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(long a[], double b){
+    public static boolean[] GREATERArray(long a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(long a, double b[]){
+    public static boolean[] GREATERArray(long a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(long a, long b){
+    public static boolean GREATER(long a, long b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(long a[], long b[]){
+    public static boolean[] GREATERArray(long a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(long a[], long b){
+    public static boolean[] GREATERArray(long a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(long a, long b[]){
+    public static boolean[] GREATERArray(long a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(long a, float b){
+    public static boolean GREATER(long a, float b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(long a[], float b[]){
+    public static boolean[] GREATERArray(long a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(long a[], float b){
+    public static boolean[] GREATERArray(long a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(long a, float b[]){
+    public static boolean[] GREATERArray(long a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(long a, char b){
+    public static boolean GREATER(long a, char b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(long a[], char b[]){
+    public static boolean[] GREATERArray(long a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(long a[], char b){
+    public static boolean[] GREATERArray(long a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(long a, char b[]){
+    public static boolean[] GREATERArray(long a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(long a, byte b){
+    public static boolean GREATER(long a, byte b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(long a[], byte b[]){
+    public static boolean[] GREATERArray(long a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(long a[], byte b){
+    public static boolean[] GREATERArray(long a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(long a, byte b[]){
+    public static boolean[] GREATERArray(long a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(long a, short b){
+    public static boolean GREATER(long a, short b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(long a[], short b[]){
+    public static boolean[] GREATERArray(long a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(long a[], short b){
+    public static boolean[] GREATERArray(long a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(long a, short b[]){
+    public static boolean[] GREATERArray(long a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(float a, int b){
+    public static boolean GREATER(float a, int b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(float a[], int b[]){
+    public static boolean[] GREATERArray(float a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(float a[], int b){
+    public static boolean[] GREATERArray(float a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(float a, int b[]){
+    public static boolean[] GREATERArray(float a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(float a, double b){
+    public static boolean GREATER(float a, double b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(float a[], double b[]){
+    public static boolean[] GREATERArray(float a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(float a[], double b){
+    public static boolean[] GREATERArray(float a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(float a, double b[]){
+    public static boolean[] GREATERArray(float a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(float a, long b){
+    public static boolean GREATER(float a, long b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(float a[], long b[]){
+    public static boolean[] GREATERArray(float a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(float a[], long b){
+    public static boolean[] GREATERArray(float a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(float a, long b[]){
+    public static boolean[] GREATERArray(float a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(float a, float b){
+    public static boolean GREATER(float a, float b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(float a[], float b[]){
+    public static boolean[] GREATERArray(float a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(float a[], float b){
+    public static boolean[] GREATERArray(float a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(float a, float b[]){
+    public static boolean[] GREATERArray(float a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(float a, char b){
+    public static boolean GREATER(float a, char b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(float a[], char b[]){
+    public static boolean[] GREATERArray(float a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(float a[], char b){
+    public static boolean[] GREATERArray(float a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(float a, char b[]){
+    public static boolean[] GREATERArray(float a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(float a, byte b){
+    public static boolean GREATER(float a, byte b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(float a[], byte b[]){
+    public static boolean[] GREATERArray(float a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(float a[], byte b){
+    public static boolean[] GREATERArray(float a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(float a, byte b[]){
+    public static boolean[] GREATERArray(float a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(float a, short b){
+    public static boolean GREATER(float a, short b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(float a[], short b[]){
+    public static boolean[] GREATERArray(float a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(float a[], short b){
+    public static boolean[] GREATERArray(float a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(float a, short b[]){
+    public static boolean[] GREATERArray(float a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(char a, int b){
+    public static boolean GREATER(char a, int b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(char a[], int b[]){
+    public static boolean[] GREATERArray(char a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(char a[], int b){
+    public static boolean[] GREATERArray(char a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(char a, int b[]){
+    public static boolean[] GREATERArray(char a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(char a, double b){
+    public static boolean GREATER(char a, double b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(char a[], double b[]){
+    public static boolean[] GREATERArray(char a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(char a[], double b){
+    public static boolean[] GREATERArray(char a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(char a, double b[]){
+    public static boolean[] GREATERArray(char a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(char a, long b){
+    public static boolean GREATER(char a, long b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(char a[], long b[]){
+    public static boolean[] GREATERArray(char a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(char a[], long b){
+    public static boolean[] GREATERArray(char a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(char a, long b[]){
+    public static boolean[] GREATERArray(char a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(char a, float b){
+    public static boolean GREATER(char a, float b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(char a[], float b[]){
+    public static boolean[] GREATERArray(char a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(char a[], float b){
+    public static boolean[] GREATERArray(char a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(char a, float b[]){
+    public static boolean[] GREATERArray(char a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(char a, char b){
+    public static boolean GREATER(char a, char b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(char a[], char b[]){
+    public static boolean[] GREATERArray(char a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(char a[], char b){
+    public static boolean[] GREATERArray(char a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(char a, char b[]){
+    public static boolean[] GREATERArray(char a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(char a, byte b){
+    public static boolean GREATER(char a, byte b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(char a[], byte b[]){
+    public static boolean[] GREATERArray(char a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(char a[], byte b){
+    public static boolean[] GREATERArray(char a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(char a, byte b[]){
+    public static boolean[] GREATERArray(char a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(char a, short b){
+    public static boolean GREATER(char a, short b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(char a[], short b[]){
+    public static boolean[] GREATERArray(char a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(char a[], short b){
+    public static boolean[] GREATERArray(char a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(char a, short b[]){
+    public static boolean[] GREATERArray(char a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(byte a, int b){
+    public static boolean GREATER(byte a, int b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(byte a[], int b[]){
+    public static boolean[] GREATERArray(byte a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a[], int b){
+    public static boolean[] GREATERArray(byte a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a, int b[]){
+    public static boolean[] GREATERArray(byte a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(byte a, double b){
+    public static boolean GREATER(byte a, double b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(byte a[], double b[]){
+    public static boolean[] GREATERArray(byte a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a[], double b){
+    public static boolean[] GREATERArray(byte a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a, double b[]){
+    public static boolean[] GREATERArray(byte a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(byte a, long b){
+    public static boolean GREATER(byte a, long b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(byte a[], long b[]){
+    public static boolean[] GREATERArray(byte a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a[], long b){
+    public static boolean[] GREATERArray(byte a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a, long b[]){
+    public static boolean[] GREATERArray(byte a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(byte a, float b){
+    public static boolean GREATER(byte a, float b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(byte a[], float b[]){
+    public static boolean[] GREATERArray(byte a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a[], float b){
+    public static boolean[] GREATERArray(byte a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a, float b[]){
+    public static boolean[] GREATERArray(byte a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(byte a, char b){
+    public static boolean GREATER(byte a, char b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(byte a[], char b[]){
+    public static boolean[] GREATERArray(byte a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a[], char b){
+    public static boolean[] GREATERArray(byte a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a, char b[]){
+    public static boolean[] GREATERArray(byte a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(byte a, byte b){
+    public static boolean GREATER(byte a, byte b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(byte a[], byte b[]){
+    public static boolean[] GREATERArray(byte a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a[], byte b){
+    public static boolean[] GREATERArray(byte a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a, byte b[]){
+    public static boolean[] GREATERArray(byte a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(byte a, short b){
+    public static boolean GREATER(byte a, short b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(byte a[], short b[]){
+    public static boolean[] GREATERArray(byte a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a[], short b){
+    public static boolean[] GREATERArray(byte a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(byte a, short b[]){
+    public static boolean[] GREATERArray(byte a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(short a, int b){
+    public static boolean GREATER(short a, int b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(short a[], int b[]){
+    public static boolean[] GREATERArray(short a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(short a[], int b){
+    public static boolean[] GREATERArray(short a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(short a, int b[]){
+    public static boolean[] GREATERArray(short a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(short a, double b){
+    public static boolean GREATER(short a, double b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(short a[], double b[]){
+    public static boolean[] GREATERArray(short a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(short a[], double b){
+    public static boolean[] GREATERArray(short a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(short a, double b[]){
+    public static boolean[] GREATERArray(short a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(short a, long b){
+    public static boolean GREATER(short a, long b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(short a[], long b[]){
+    public static boolean[] GREATERArray(short a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(short a[], long b){
+    public static boolean[] GREATERArray(short a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(short a, long b[]){
+    public static boolean[] GREATERArray(short a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(short a, float b){
+    public static boolean GREATER(short a, float b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(short a[], float b[]){
+    public static boolean[] GREATERArray(short a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(short a[], float b){
+    public static boolean[] GREATERArray(short a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(short a, float b[]){
+    public static boolean[] GREATERArray(short a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(short a, char b){
+    public static boolean GREATER(short a, char b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(short a[], char b[]){
+    public static boolean[] GREATERArray(short a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(short a[], char b){
+    public static boolean[] GREATERArray(short a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(short a, char b[]){
+    public static boolean[] GREATERArray(short a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(short a, byte b){
+    public static boolean GREATER(short a, byte b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(short a[], byte b[]){
+    public static boolean[] GREATERArray(short a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(short a[], byte b){
+    public static boolean[] GREATERArray(short a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(short a, byte b[]){
+    public static boolean[] GREATERArray(short a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greater(short a, short b){
+    public static boolean GREATER(short a, short b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean[] greaterArray(short a[], short b[]){
+    public static boolean[] GREATERArray(short a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(short a[], short b){
+    public static boolean[] GREATERArray(short a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(short a, short b[]){
+    public static boolean[] GREATERArray(short a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(int a, int b){
+    public static boolean LESS_EQUALS(int a, int b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(int a[], int b[]){
+    public static boolean[] LESS_EQUALSArray(int a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a[], int b){
+    public static boolean[] LESS_EQUALSArray(int a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a, int b[]){
+    public static boolean[] LESS_EQUALSArray(int a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(int a, double b){
+    public static boolean LESS_EQUALS(int a, double b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(int a[], double b[]){
+    public static boolean[] LESS_EQUALSArray(int a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a[], double b){
+    public static boolean[] LESS_EQUALSArray(int a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a, double b[]){
+    public static boolean[] LESS_EQUALSArray(int a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(int a, long b){
+    public static boolean LESS_EQUALS(int a, long b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(int a[], long b[]){
+    public static boolean[] LESS_EQUALSArray(int a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a[], long b){
+    public static boolean[] LESS_EQUALSArray(int a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a, long b[]){
+    public static boolean[] LESS_EQUALSArray(int a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(int a, float b){
+    public static boolean LESS_EQUALS(int a, float b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(int a[], float b[]){
+    public static boolean[] LESS_EQUALSArray(int a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a[], float b){
+    public static boolean[] LESS_EQUALSArray(int a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a, float b[]){
+    public static boolean[] LESS_EQUALSArray(int a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(int a, char b){
+    public static boolean LESS_EQUALS(int a, char b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(int a[], char b[]){
+    public static boolean[] LESS_EQUALSArray(int a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a[], char b){
+    public static boolean[] LESS_EQUALSArray(int a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a, char b[]){
+    public static boolean[] LESS_EQUALSArray(int a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(int a, byte b){
+    public static boolean LESS_EQUALS(int a, byte b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(int a[], byte b[]){
+    public static boolean[] LESS_EQUALSArray(int a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a[], byte b){
+    public static boolean[] LESS_EQUALSArray(int a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a, byte b[]){
+    public static boolean[] LESS_EQUALSArray(int a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(int a, short b){
+    public static boolean LESS_EQUALS(int a, short b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(int a[], short b[]){
+    public static boolean[] LESS_EQUALSArray(int a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a[], short b){
+    public static boolean[] LESS_EQUALSArray(int a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(int a, short b[]){
+    public static boolean[] LESS_EQUALSArray(int a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(double a, int b){
+    public static boolean LESS_EQUALS(double a, int b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(double a[], int b[]){
+    public static boolean[] LESS_EQUALSArray(double a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a[], int b){
+    public static boolean[] LESS_EQUALSArray(double a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a, int b[]){
+    public static boolean[] LESS_EQUALSArray(double a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(double a, double b){
+    public static boolean LESS_EQUALS(double a, double b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(double a[], double b[]){
+    public static boolean[] LESS_EQUALSArray(double a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a[], double b){
+    public static boolean[] LESS_EQUALSArray(double a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a, double b[]){
+    public static boolean[] LESS_EQUALSArray(double a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(double a, long b){
+    public static boolean LESS_EQUALS(double a, long b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(double a[], long b[]){
+    public static boolean[] LESS_EQUALSArray(double a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a[], long b){
+    public static boolean[] LESS_EQUALSArray(double a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a, long b[]){
+    public static boolean[] LESS_EQUALSArray(double a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(double a, float b){
+    public static boolean LESS_EQUALS(double a, float b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(double a[], float b[]){
+    public static boolean[] LESS_EQUALSArray(double a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a[], float b){
+    public static boolean[] LESS_EQUALSArray(double a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a, float b[]){
+    public static boolean[] LESS_EQUALSArray(double a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(double a, char b){
+    public static boolean LESS_EQUALS(double a, char b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(double a[], char b[]){
+    public static boolean[] LESS_EQUALSArray(double a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a[], char b){
+    public static boolean[] LESS_EQUALSArray(double a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a, char b[]){
+    public static boolean[] LESS_EQUALSArray(double a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(double a, byte b){
+    public static boolean LESS_EQUALS(double a, byte b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(double a[], byte b[]){
+    public static boolean[] LESS_EQUALSArray(double a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a[], byte b){
+    public static boolean[] LESS_EQUALSArray(double a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a, byte b[]){
+    public static boolean[] LESS_EQUALSArray(double a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(double a, short b){
+    public static boolean LESS_EQUALS(double a, short b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(double a[], short b[]){
+    public static boolean[] LESS_EQUALSArray(double a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a[], short b){
+    public static boolean[] LESS_EQUALSArray(double a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(double a, short b[]){
+    public static boolean[] LESS_EQUALSArray(double a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(long a, int b){
+    public static boolean LESS_EQUALS(long a, int b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(long a[], int b[]){
+    public static boolean[] LESS_EQUALSArray(long a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a[], int b){
+    public static boolean[] LESS_EQUALSArray(long a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a, int b[]){
+    public static boolean[] LESS_EQUALSArray(long a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(long a, double b){
+    public static boolean LESS_EQUALS(long a, double b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(long a[], double b[]){
+    public static boolean[] LESS_EQUALSArray(long a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a[], double b){
+    public static boolean[] LESS_EQUALSArray(long a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a, double b[]){
+    public static boolean[] LESS_EQUALSArray(long a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(long a, long b){
+    public static boolean LESS_EQUALS(long a, long b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(long a[], long b[]){
+    public static boolean[] LESS_EQUALSArray(long a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a[], long b){
+    public static boolean[] LESS_EQUALSArray(long a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a, long b[]){
+    public static boolean[] LESS_EQUALSArray(long a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(long a, float b){
+    public static boolean LESS_EQUALS(long a, float b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(long a[], float b[]){
+    public static boolean[] LESS_EQUALSArray(long a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a[], float b){
+    public static boolean[] LESS_EQUALSArray(long a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a, float b[]){
+    public static boolean[] LESS_EQUALSArray(long a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(long a, char b){
+    public static boolean LESS_EQUALS(long a, char b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(long a[], char b[]){
+    public static boolean[] LESS_EQUALSArray(long a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a[], char b){
+    public static boolean[] LESS_EQUALSArray(long a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a, char b[]){
+    public static boolean[] LESS_EQUALSArray(long a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(long a, byte b){
+    public static boolean LESS_EQUALS(long a, byte b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(long a[], byte b[]){
+    public static boolean[] LESS_EQUALSArray(long a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a[], byte b){
+    public static boolean[] LESS_EQUALSArray(long a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a, byte b[]){
+    public static boolean[] LESS_EQUALSArray(long a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(long a, short b){
+    public static boolean LESS_EQUALS(long a, short b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(long a[], short b[]){
+    public static boolean[] LESS_EQUALSArray(long a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a[], short b){
+    public static boolean[] LESS_EQUALSArray(long a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(long a, short b[]){
+    public static boolean[] LESS_EQUALSArray(long a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(float a, int b){
+    public static boolean LESS_EQUALS(float a, int b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(float a[], int b[]){
+    public static boolean[] LESS_EQUALSArray(float a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a[], int b){
+    public static boolean[] LESS_EQUALSArray(float a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a, int b[]){
+    public static boolean[] LESS_EQUALSArray(float a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(float a, double b){
+    public static boolean LESS_EQUALS(float a, double b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(float a[], double b[]){
+    public static boolean[] LESS_EQUALSArray(float a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a[], double b){
+    public static boolean[] LESS_EQUALSArray(float a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a, double b[]){
+    public static boolean[] LESS_EQUALSArray(float a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(float a, long b){
+    public static boolean LESS_EQUALS(float a, long b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(float a[], long b[]){
+    public static boolean[] LESS_EQUALSArray(float a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a[], long b){
+    public static boolean[] LESS_EQUALSArray(float a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a, long b[]){
+    public static boolean[] LESS_EQUALSArray(float a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(float a, float b){
+    public static boolean LESS_EQUALS(float a, float b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(float a[], float b[]){
+    public static boolean[] LESS_EQUALSArray(float a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a[], float b){
+    public static boolean[] LESS_EQUALSArray(float a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a, float b[]){
+    public static boolean[] LESS_EQUALSArray(float a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(float a, char b){
+    public static boolean LESS_EQUALS(float a, char b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(float a[], char b[]){
+    public static boolean[] LESS_EQUALSArray(float a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a[], char b){
+    public static boolean[] LESS_EQUALSArray(float a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a, char b[]){
+    public static boolean[] LESS_EQUALSArray(float a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(float a, byte b){
+    public static boolean LESS_EQUALS(float a, byte b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(float a[], byte b[]){
+    public static boolean[] LESS_EQUALSArray(float a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a[], byte b){
+    public static boolean[] LESS_EQUALSArray(float a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a, byte b[]){
+    public static boolean[] LESS_EQUALSArray(float a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(float a, short b){
+    public static boolean LESS_EQUALS(float a, short b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(float a[], short b[]){
+    public static boolean[] LESS_EQUALSArray(float a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a[], short b){
+    public static boolean[] LESS_EQUALSArray(float a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(float a, short b[]){
+    public static boolean[] LESS_EQUALSArray(float a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(char a, int b){
+    public static boolean LESS_EQUALS(char a, int b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(char a[], int b[]){
+    public static boolean[] LESS_EQUALSArray(char a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a[], int b){
+    public static boolean[] LESS_EQUALSArray(char a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a, int b[]){
+    public static boolean[] LESS_EQUALSArray(char a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(char a, double b){
+    public static boolean LESS_EQUALS(char a, double b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(char a[], double b[]){
+    public static boolean[] LESS_EQUALSArray(char a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a[], double b){
+    public static boolean[] LESS_EQUALSArray(char a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a, double b[]){
+    public static boolean[] LESS_EQUALSArray(char a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(char a, long b){
+    public static boolean LESS_EQUALS(char a, long b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(char a[], long b[]){
+    public static boolean[] LESS_EQUALSArray(char a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a[], long b){
+    public static boolean[] LESS_EQUALSArray(char a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a, long b[]){
+    public static boolean[] LESS_EQUALSArray(char a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(char a, float b){
+    public static boolean LESS_EQUALS(char a, float b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(char a[], float b[]){
+    public static boolean[] LESS_EQUALSArray(char a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a[], float b){
+    public static boolean[] LESS_EQUALSArray(char a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a, float b[]){
+    public static boolean[] LESS_EQUALSArray(char a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(char a, char b){
+    public static boolean LESS_EQUALS(char a, char b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(char a[], char b[]){
+    public static boolean[] LESS_EQUALSArray(char a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a[], char b){
+    public static boolean[] LESS_EQUALSArray(char a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a, char b[]){
+    public static boolean[] LESS_EQUALSArray(char a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(char a, byte b){
+    public static boolean LESS_EQUALS(char a, byte b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(char a[], byte b[]){
+    public static boolean[] LESS_EQUALSArray(char a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a[], byte b){
+    public static boolean[] LESS_EQUALSArray(char a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a, byte b[]){
+    public static boolean[] LESS_EQUALSArray(char a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(char a, short b){
+    public static boolean LESS_EQUALS(char a, short b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(char a[], short b[]){
+    public static boolean[] LESS_EQUALSArray(char a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a[], short b){
+    public static boolean[] LESS_EQUALSArray(char a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(char a, short b[]){
+    public static boolean[] LESS_EQUALSArray(char a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(byte a, int b){
+    public static boolean LESS_EQUALS(byte a, int b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], int b[]){
+    public static boolean[] LESS_EQUALSArray(byte a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], int b){
+    public static boolean[] LESS_EQUALSArray(byte a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a, int b[]){
+    public static boolean[] LESS_EQUALSArray(byte a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(byte a, double b){
+    public static boolean LESS_EQUALS(byte a, double b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], double b[]){
+    public static boolean[] LESS_EQUALSArray(byte a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], double b){
+    public static boolean[] LESS_EQUALSArray(byte a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a, double b[]){
+    public static boolean[] LESS_EQUALSArray(byte a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(byte a, long b){
+    public static boolean LESS_EQUALS(byte a, long b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], long b[]){
+    public static boolean[] LESS_EQUALSArray(byte a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], long b){
+    public static boolean[] LESS_EQUALSArray(byte a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a, long b[]){
+    public static boolean[] LESS_EQUALSArray(byte a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(byte a, float b){
+    public static boolean LESS_EQUALS(byte a, float b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], float b[]){
+    public static boolean[] LESS_EQUALSArray(byte a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], float b){
+    public static boolean[] LESS_EQUALSArray(byte a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a, float b[]){
+    public static boolean[] LESS_EQUALSArray(byte a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(byte a, char b){
+    public static boolean LESS_EQUALS(byte a, char b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], char b[]){
+    public static boolean[] LESS_EQUALSArray(byte a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], char b){
+    public static boolean[] LESS_EQUALSArray(byte a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a, char b[]){
+    public static boolean[] LESS_EQUALSArray(byte a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(byte a, byte b){
+    public static boolean LESS_EQUALS(byte a, byte b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], byte b[]){
+    public static boolean[] LESS_EQUALSArray(byte a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], byte b){
+    public static boolean[] LESS_EQUALSArray(byte a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a, byte b[]){
+    public static boolean[] LESS_EQUALSArray(byte a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(byte a, short b){
+    public static boolean LESS_EQUALS(byte a, short b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], short b[]){
+    public static boolean[] LESS_EQUALSArray(byte a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a[], short b){
+    public static boolean[] LESS_EQUALSArray(byte a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(byte a, short b[]){
+    public static boolean[] LESS_EQUALSArray(byte a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(short a, int b){
+    public static boolean LESS_EQUALS(short a, int b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(short a[], int b[]){
+    public static boolean[] LESS_EQUALSArray(short a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a[], int b){
+    public static boolean[] LESS_EQUALSArray(short a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a, int b[]){
+    public static boolean[] LESS_EQUALSArray(short a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(short a, double b){
+    public static boolean LESS_EQUALS(short a, double b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(short a[], double b[]){
+    public static boolean[] LESS_EQUALSArray(short a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a[], double b){
+    public static boolean[] LESS_EQUALSArray(short a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a, double b[]){
+    public static boolean[] LESS_EQUALSArray(short a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(short a, long b){
+    public static boolean LESS_EQUALS(short a, long b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(short a[], long b[]){
+    public static boolean[] LESS_EQUALSArray(short a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a[], long b){
+    public static boolean[] LESS_EQUALSArray(short a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a, long b[]){
+    public static boolean[] LESS_EQUALSArray(short a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(short a, float b){
+    public static boolean LESS_EQUALS(short a, float b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(short a[], float b[]){
+    public static boolean[] LESS_EQUALSArray(short a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a[], float b){
+    public static boolean[] LESS_EQUALSArray(short a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a, float b[]){
+    public static boolean[] LESS_EQUALSArray(short a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(short a, char b){
+    public static boolean LESS_EQUALS(short a, char b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(short a[], char b[]){
+    public static boolean[] LESS_EQUALSArray(short a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a[], char b){
+    public static boolean[] LESS_EQUALSArray(short a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a, char b[]){
+    public static boolean[] LESS_EQUALSArray(short a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(short a, byte b){
+    public static boolean LESS_EQUALS(short a, byte b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(short a[], byte b[]){
+    public static boolean[] LESS_EQUALSArray(short a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a[], byte b){
+    public static boolean[] LESS_EQUALSArray(short a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a, byte b[]){
+    public static boolean[] LESS_EQUALSArray(short a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean lessEquals(short a, short b){
+    public static boolean LESS_EQUALS(short a, short b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean[] lessEqualsArray(short a[], short b[]){
+    public static boolean[] LESS_EQUALSArray(short a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a[], short b){
+    public static boolean[] LESS_EQUALSArray(short a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(short a, short b[]){
+    public static boolean[] LESS_EQUALSArray(short a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(int a, int b){
+    public static boolean GREATER_EQUALS(int a, int b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], int b[]){
+    public static boolean[] GREATER_EQUALSArray(int a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], int b){
+    public static boolean[] GREATER_EQUALSArray(int a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a, int b[]){
+    public static boolean[] GREATER_EQUALSArray(int a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(int a, double b){
+    public static boolean GREATER_EQUALS(int a, double b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], double b[]){
+    public static boolean[] GREATER_EQUALSArray(int a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], double b){
+    public static boolean[] GREATER_EQUALSArray(int a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a, double b[]){
+    public static boolean[] GREATER_EQUALSArray(int a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(int a, long b){
+    public static boolean GREATER_EQUALS(int a, long b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], long b[]){
+    public static boolean[] GREATER_EQUALSArray(int a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], long b){
+    public static boolean[] GREATER_EQUALSArray(int a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a, long b[]){
+    public static boolean[] GREATER_EQUALSArray(int a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(int a, float b){
+    public static boolean GREATER_EQUALS(int a, float b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], float b[]){
+    public static boolean[] GREATER_EQUALSArray(int a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], float b){
+    public static boolean[] GREATER_EQUALSArray(int a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a, float b[]){
+    public static boolean[] GREATER_EQUALSArray(int a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(int a, char b){
+    public static boolean GREATER_EQUALS(int a, char b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], char b[]){
+    public static boolean[] GREATER_EQUALSArray(int a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], char b){
+    public static boolean[] GREATER_EQUALSArray(int a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a, char b[]){
+    public static boolean[] GREATER_EQUALSArray(int a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(int a, byte b){
+    public static boolean GREATER_EQUALS(int a, byte b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], byte b[]){
+    public static boolean[] GREATER_EQUALSArray(int a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], byte b){
+    public static boolean[] GREATER_EQUALSArray(int a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a, byte b[]){
+    public static boolean[] GREATER_EQUALSArray(int a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(int a, short b){
+    public static boolean GREATER_EQUALS(int a, short b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], short b[]){
+    public static boolean[] GREATER_EQUALSArray(int a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (int, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a[], short b){
+    public static boolean[] GREATER_EQUALSArray(int a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(int a, short b[]){
+    public static boolean[] GREATER_EQUALSArray(int a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(double a, int b){
+    public static boolean GREATER_EQUALS(double a, int b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], int b[]){
+    public static boolean[] GREATER_EQUALSArray(double a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], int b){
+    public static boolean[] GREATER_EQUALSArray(double a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a, int b[]){
+    public static boolean[] GREATER_EQUALSArray(double a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(double a, double b){
+    public static boolean GREATER_EQUALS(double a, double b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], double b[]){
+    public static boolean[] GREATER_EQUALSArray(double a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], double b){
+    public static boolean[] GREATER_EQUALSArray(double a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a, double b[]){
+    public static boolean[] GREATER_EQUALSArray(double a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(double a, long b){
+    public static boolean GREATER_EQUALS(double a, long b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], long b[]){
+    public static boolean[] GREATER_EQUALSArray(double a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], long b){
+    public static boolean[] GREATER_EQUALSArray(double a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a, long b[]){
+    public static boolean[] GREATER_EQUALSArray(double a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(double a, float b){
+    public static boolean GREATER_EQUALS(double a, float b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], float b[]){
+    public static boolean[] GREATER_EQUALSArray(double a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], float b){
+    public static boolean[] GREATER_EQUALSArray(double a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a, float b[]){
+    public static boolean[] GREATER_EQUALSArray(double a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(double a, char b){
+    public static boolean GREATER_EQUALS(double a, char b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], char b[]){
+    public static boolean[] GREATER_EQUALSArray(double a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], char b){
+    public static boolean[] GREATER_EQUALSArray(double a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a, char b[]){
+    public static boolean[] GREATER_EQUALSArray(double a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(double a, byte b){
+    public static boolean GREATER_EQUALS(double a, byte b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], byte b[]){
+    public static boolean[] GREATER_EQUALSArray(double a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], byte b){
+    public static boolean[] GREATER_EQUALSArray(double a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a, byte b[]){
+    public static boolean[] GREATER_EQUALSArray(double a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(double a, short b){
+    public static boolean GREATER_EQUALS(double a, short b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], short b[]){
+    public static boolean[] GREATER_EQUALSArray(double a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (double, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a[], short b){
+    public static boolean[] GREATER_EQUALSArray(double a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(double a, short b[]){
+    public static boolean[] GREATER_EQUALSArray(double a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(long a, int b){
+    public static boolean GREATER_EQUALS(long a, int b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], int b[]){
+    public static boolean[] GREATER_EQUALSArray(long a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], int b){
+    public static boolean[] GREATER_EQUALSArray(long a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a, int b[]){
+    public static boolean[] GREATER_EQUALSArray(long a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(long a, double b){
+    public static boolean GREATER_EQUALS(long a, double b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], double b[]){
+    public static boolean[] GREATER_EQUALSArray(long a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], double b){
+    public static boolean[] GREATER_EQUALSArray(long a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a, double b[]){
+    public static boolean[] GREATER_EQUALSArray(long a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(long a, long b){
+    public static boolean GREATER_EQUALS(long a, long b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], long b[]){
+    public static boolean[] GREATER_EQUALSArray(long a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], long b){
+    public static boolean[] GREATER_EQUALSArray(long a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a, long b[]){
+    public static boolean[] GREATER_EQUALSArray(long a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(long a, float b){
+    public static boolean GREATER_EQUALS(long a, float b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], float b[]){
+    public static boolean[] GREATER_EQUALSArray(long a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], float b){
+    public static boolean[] GREATER_EQUALSArray(long a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a, float b[]){
+    public static boolean[] GREATER_EQUALSArray(long a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(long a, char b){
+    public static boolean GREATER_EQUALS(long a, char b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], char b[]){
+    public static boolean[] GREATER_EQUALSArray(long a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], char b){
+    public static boolean[] GREATER_EQUALSArray(long a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a, char b[]){
+    public static boolean[] GREATER_EQUALSArray(long a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(long a, byte b){
+    public static boolean GREATER_EQUALS(long a, byte b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], byte b[]){
+    public static boolean[] GREATER_EQUALSArray(long a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], byte b){
+    public static boolean[] GREATER_EQUALSArray(long a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a, byte b[]){
+    public static boolean[] GREATER_EQUALSArray(long a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(long a, short b){
+    public static boolean GREATER_EQUALS(long a, short b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], short b[]){
+    public static boolean[] GREATER_EQUALSArray(long a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (long, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a[], short b){
+    public static boolean[] GREATER_EQUALSArray(long a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(long a, short b[]){
+    public static boolean[] GREATER_EQUALSArray(long a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(float a, int b){
+    public static boolean GREATER_EQUALS(float a, int b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], int b[]){
+    public static boolean[] GREATER_EQUALSArray(float a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], int b){
+    public static boolean[] GREATER_EQUALSArray(float a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a, int b[]){
+    public static boolean[] GREATER_EQUALSArray(float a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(float a, double b){
+    public static boolean GREATER_EQUALS(float a, double b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], double b[]){
+    public static boolean[] GREATER_EQUALSArray(float a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], double b){
+    public static boolean[] GREATER_EQUALSArray(float a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a, double b[]){
+    public static boolean[] GREATER_EQUALSArray(float a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(float a, long b){
+    public static boolean GREATER_EQUALS(float a, long b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], long b[]){
+    public static boolean[] GREATER_EQUALSArray(float a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], long b){
+    public static boolean[] GREATER_EQUALSArray(float a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a, long b[]){
+    public static boolean[] GREATER_EQUALSArray(float a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(float a, float b){
+    public static boolean GREATER_EQUALS(float a, float b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], float b[]){
+    public static boolean[] GREATER_EQUALSArray(float a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], float b){
+    public static boolean[] GREATER_EQUALSArray(float a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a, float b[]){
+    public static boolean[] GREATER_EQUALSArray(float a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(float a, char b){
+    public static boolean GREATER_EQUALS(float a, char b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], char b[]){
+    public static boolean[] GREATER_EQUALSArray(float a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], char b){
+    public static boolean[] GREATER_EQUALSArray(float a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a, char b[]){
+    public static boolean[] GREATER_EQUALSArray(float a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(float a, byte b){
+    public static boolean GREATER_EQUALS(float a, byte b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], byte b[]){
+    public static boolean[] GREATER_EQUALSArray(float a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], byte b){
+    public static boolean[] GREATER_EQUALSArray(float a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a, byte b[]){
+    public static boolean[] GREATER_EQUALSArray(float a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(float a, short b){
+    public static boolean GREATER_EQUALS(float a, short b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], short b[]){
+    public static boolean[] GREATER_EQUALSArray(float a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (float, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a[], short b){
+    public static boolean[] GREATER_EQUALSArray(float a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(float a, short b[]){
+    public static boolean[] GREATER_EQUALSArray(float a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(char a, int b){
+    public static boolean GREATER_EQUALS(char a, int b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], int b[]){
+    public static boolean[] GREATER_EQUALSArray(char a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], int b){
+    public static boolean[] GREATER_EQUALSArray(char a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a, int b[]){
+    public static boolean[] GREATER_EQUALSArray(char a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(char a, double b){
+    public static boolean GREATER_EQUALS(char a, double b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], double b[]){
+    public static boolean[] GREATER_EQUALSArray(char a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], double b){
+    public static boolean[] GREATER_EQUALSArray(char a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a, double b[]){
+    public static boolean[] GREATER_EQUALSArray(char a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(char a, long b){
+    public static boolean GREATER_EQUALS(char a, long b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], long b[]){
+    public static boolean[] GREATER_EQUALSArray(char a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], long b){
+    public static boolean[] GREATER_EQUALSArray(char a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a, long b[]){
+    public static boolean[] GREATER_EQUALSArray(char a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(char a, float b){
+    public static boolean GREATER_EQUALS(char a, float b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], float b[]){
+    public static boolean[] GREATER_EQUALSArray(char a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], float b){
+    public static boolean[] GREATER_EQUALSArray(char a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a, float b[]){
+    public static boolean[] GREATER_EQUALSArray(char a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(char a, char b){
+    public static boolean GREATER_EQUALS(char a, char b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], char b[]){
+    public static boolean[] GREATER_EQUALSArray(char a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], char b){
+    public static boolean[] GREATER_EQUALSArray(char a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a, char b[]){
+    public static boolean[] GREATER_EQUALSArray(char a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(char a, byte b){
+    public static boolean GREATER_EQUALS(char a, byte b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], byte b[]){
+    public static boolean[] GREATER_EQUALSArray(char a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], byte b){
+    public static boolean[] GREATER_EQUALSArray(char a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a, byte b[]){
+    public static boolean[] GREATER_EQUALSArray(char a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(char a, short b){
+    public static boolean GREATER_EQUALS(char a, short b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], short b[]){
+    public static boolean[] GREATER_EQUALSArray(char a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (char, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a[], short b){
+    public static boolean[] GREATER_EQUALSArray(char a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(char a, short b[]){
+    public static boolean[] GREATER_EQUALSArray(char a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(byte a, int b){
+    public static boolean GREATER_EQUALS(byte a, int b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], int b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], int b){
+    public static boolean[] GREATER_EQUALSArray(byte a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a, int b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(byte a, double b){
+    public static boolean GREATER_EQUALS(byte a, double b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], double b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], double b){
+    public static boolean[] GREATER_EQUALSArray(byte a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a, double b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(byte a, long b){
+    public static boolean GREATER_EQUALS(byte a, long b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], long b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], long b){
+    public static boolean[] GREATER_EQUALSArray(byte a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a, long b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(byte a, float b){
+    public static boolean GREATER_EQUALS(byte a, float b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], float b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], float b){
+    public static boolean[] GREATER_EQUALSArray(byte a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a, float b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(byte a, char b){
+    public static boolean GREATER_EQUALS(byte a, char b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], char b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], char b){
+    public static boolean[] GREATER_EQUALSArray(byte a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a, char b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(byte a, byte b){
+    public static boolean GREATER_EQUALS(byte a, byte b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], byte b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], byte b){
+    public static boolean[] GREATER_EQUALSArray(byte a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a, byte b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(byte a, short b){
+    public static boolean GREATER_EQUALS(byte a, short b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], short b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (byte, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a[], short b){
+    public static boolean[] GREATER_EQUALSArray(byte a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(byte a, short b[]){
+    public static boolean[] GREATER_EQUALSArray(byte a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(short a, int b){
+    public static boolean GREATER_EQUALS(short a, int b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], int b[]){
+    public static boolean[] GREATER_EQUALSArray(short a[], int b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, int) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], int b){
+    public static boolean[] GREATER_EQUALSArray(short a[], int b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a, int b[]){
+    public static boolean[] GREATER_EQUALSArray(short a, int b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(short a, double b){
+    public static boolean GREATER_EQUALS(short a, double b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], double b[]){
+    public static boolean[] GREATER_EQUALSArray(short a[], double b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, double) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], double b){
+    public static boolean[] GREATER_EQUALSArray(short a[], double b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a, double b[]){
+    public static boolean[] GREATER_EQUALSArray(short a, double b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(short a, long b){
+    public static boolean GREATER_EQUALS(short a, long b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], long b[]){
+    public static boolean[] GREATER_EQUALSArray(short a[], long b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, long) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], long b){
+    public static boolean[] GREATER_EQUALSArray(short a[], long b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a, long b[]){
+    public static boolean[] GREATER_EQUALSArray(short a, long b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(short a, float b){
+    public static boolean GREATER_EQUALS(short a, float b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], float b[]){
+    public static boolean[] GREATER_EQUALSArray(short a[], float b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, float) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], float b){
+    public static boolean[] GREATER_EQUALSArray(short a[], float b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a, float b[]){
+    public static boolean[] GREATER_EQUALSArray(short a, float b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(short a, char b){
+    public static boolean GREATER_EQUALS(short a, char b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], char b[]){
+    public static boolean[] GREATER_EQUALSArray(short a[], char b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, char) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], char b){
+    public static boolean[] GREATER_EQUALSArray(short a[], char b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a, char b[]){
+    public static boolean[] GREATER_EQUALSArray(short a, char b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(short a, byte b){
+    public static boolean GREATER_EQUALS(short a, byte b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], byte b[]){
+    public static boolean[] GREATER_EQUALSArray(short a[], byte b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, byte) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], byte b){
+    public static boolean[] GREATER_EQUALSArray(short a[], byte b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a, byte b[]){
+    public static boolean[] GREATER_EQUALSArray(short a, byte b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean greaterEquals(short a, short b){
+    public static boolean GREATER_EQUALS(short a, short b){
         return compareTo(a,b)>=0;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], short b[]){
+    public static boolean[] GREATER_EQUALSArray(short a[], short b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (short, short) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a[], short b){
+    public static boolean[] GREATER_EQUALSArray(short a[], short b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(short a, short b[]){
+    public static boolean[] GREATER_EQUALSArray(short a, short b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean less(Comparable a, Comparable b){
+    public static boolean LESS(Comparable a, Comparable b){
         return compareTo(a,b)<0;
     }
 
-    public static boolean greater(Comparable a, Comparable b){
+    public static boolean GREATER(Comparable a, Comparable b){
         return compareTo(a,b)>0;
     }
 
-    public static boolean lessEquals(Comparable a, Comparable b){
+    public static boolean LESS_EQUALS(Comparable a, Comparable b){
         return compareTo(a,b)<=0;
     }
 
-    public static boolean greaterEquals(Comparable a, Comparable b){
+    public static boolean GREATER_EQUALS(Comparable a, Comparable b){
         return compareTo(a,b)>=0;
     }
 
-    public static Boolean binOr(Boolean a, Boolean b){
+    public static Boolean BINARY_OR(Boolean a, Boolean b){
         return a==QueryConstants.NULL_BOOLEAN || b==QueryConstants.NULL_BOOLEAN ? QueryConstants.NULL_BOOLEAN : Boolean.valueOf(a|b);
     }
 
-    public static Boolean xor(Boolean a, Boolean b){
+    public static Boolean XOR(Boolean a, Boolean b){
         return a==QueryConstants.NULL_BOOLEAN || b==QueryConstants.NULL_BOOLEAN ? QueryConstants.NULL_BOOLEAN : Boolean.valueOf(a^b);
     }
 
-    public static Boolean binAnd(Boolean a, Boolean b){
+    public static Boolean BINARY_AND(Boolean a, Boolean b){
         return a==QueryConstants.NULL_BOOLEAN || b==QueryConstants.NULL_BOOLEAN ? QueryConstants.NULL_BOOLEAN : Boolean.valueOf(a&b);
     }
 
@@ -18317,121 +18317,121 @@ public final class DBLanguageFunctionUtil {
         return ret;
     }
 
-    public static boolean[] lessArray(Comparable a[], Comparable b[]){
+    public static boolean[] LESSArray(Comparable a[], Comparable b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (Comparable, Comparable) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b[i]);
+            ret[i] = LESS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessArray(Comparable a[], Comparable b){
+    public static boolean[] LESSArray(Comparable a[], Comparable b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = less(a[i],b);
+            ret[i] = LESS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessArray(Comparable a, Comparable b[]){
+    public static boolean[] LESSArray(Comparable a, Comparable b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = less(a,b[i]);
+            ret[i] = LESS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(Comparable a[], Comparable b[]){
+    public static boolean[] GREATERArray(Comparable a[], Comparable b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (Comparable, Comparable) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b[i]);
+            ret[i] = GREATER(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterArray(Comparable a[], Comparable b){
+    public static boolean[] GREATERArray(Comparable a[], Comparable b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greater(a[i],b);
+            ret[i] = GREATER(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterArray(Comparable a, Comparable b[]){
+    public static boolean[] GREATERArray(Comparable a, Comparable b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greater(a,b[i]);
+            ret[i] = GREATER(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(Comparable a[], Comparable b[]){
+    public static boolean[] LESS_EQUALSArray(Comparable a[], Comparable b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (Comparable, Comparable) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b[i]);
+            ret[i] = LESS_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(Comparable a[], Comparable b){
+    public static boolean[] LESS_EQUALSArray(Comparable a[], Comparable b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = lessEquals(a[i],b);
+            ret[i] = LESS_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] lessEqualsArray(Comparable a, Comparable b[]){
+    public static boolean[] LESS_EQUALSArray(Comparable a, Comparable b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = lessEquals(a,b[i]);
+            ret[i] = LESS_EQUALS(a,b[i]);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(Comparable a[], Comparable b[]){
+    public static boolean[] GREATER_EQUALSArray(Comparable a[], Comparable b[]){
         if (a.length != b.length) throw new IllegalArgumentException("Attempt to compare two arrays (Comparable, Comparable) of different length" +
                 " (a.length=" + a.length + ", b.length=" + b.length + ')');
         
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b[i]);
+            ret[i] = GREATER_EQUALS(a[i],b[i]);
         }
         
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(Comparable a[], Comparable b){
+    public static boolean[] GREATER_EQUALSArray(Comparable a[], Comparable b){
         boolean[] ret = new boolean[a.length];
         for (int i = 0; i < a.length; i++) {
-            ret[i] = greaterEquals(a[i],b);
+            ret[i] = GREATER_EQUALS(a[i],b);
         }
 
         return ret;
     }
 
-    public static boolean[] greaterEqualsArray(Comparable a, Comparable b[]){
+    public static boolean[] GREATER_EQUALSArray(Comparable a, Comparable b[]){
         boolean[] ret = new boolean[b.length];
         for (int i = 0; i < b.length; i++) {
-            ret[i] = greaterEquals(a,b[i]);
+            ret[i] = GREATER_EQUALS(a,b[i]);
         }
 
         return ret;

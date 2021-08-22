@@ -8,6 +8,7 @@ import io.deephaven.base.log.LogOutput;
 import io.deephaven.base.log.LogOutputAppendable;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.configuration.Configuration;
+import io.deephaven.db.tables.lang.DBLanguageFunctionUtil;
 import io.deephaven.io.log.impl.LogOutputStringImpl;
 import io.deephaven.io.logger.Logger;
 
@@ -29,8 +30,8 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.deephaven.db.tables.lang.DBLanguageFunctionUtil.minus;
-import static io.deephaven.db.tables.lang.DBLanguageFunctionUtil.plus;
+import static io.deephaven.db.tables.lang.DBLanguageFunctionUtil.MINUS;
+import static io.deephaven.db.tables.lang.DBLanguageFunctionUtil.PLUS;
 
 /**
  * This tool is meant to track periodic update events that take place in a LiveTableMonitor.  This generally includes
@@ -205,9 +206,9 @@ public class UpdatePerformanceTracker {
                 aggregatedSmallUpdatesEntry.intervalInvocationCount += entry.intervalInvocationCount;
 
                 aggregatedSmallUpdatesEntry.intervalCpuNanos =
-                        plus(aggregatedSmallUpdatesEntry.intervalCpuNanos, entry.intervalCpuNanos);
+                        DBLanguageFunctionUtil.PLUS(aggregatedSmallUpdatesEntry.intervalCpuNanos, entry.intervalCpuNanos);
                 aggregatedSmallUpdatesEntry.intervalUserCpuNanos =
-                        plus(aggregatedSmallUpdatesEntry.intervalUserCpuNanos, entry.intervalUserCpuNanos);
+                        DBLanguageFunctionUtil.PLUS(aggregatedSmallUpdatesEntry.intervalUserCpuNanos, entry.intervalUserCpuNanos);
 
                 aggregatedSmallUpdatesEntry.intervalAdded += entry.intervalAdded;
                 aggregatedSmallUpdatesEntry.intervalRemoved += entry.intervalRemoved;
@@ -215,9 +216,9 @@ public class UpdatePerformanceTracker {
                 aggregatedSmallUpdatesEntry.intervalShifted += entry.intervalShifted;
 
                 aggregatedSmallUpdatesEntry.intervalAllocatedBytes =
-                        plus(aggregatedSmallUpdatesEntry.intervalAllocatedBytes, entry.intervalAllocatedBytes);
+                        DBLanguageFunctionUtil.PLUS(aggregatedSmallUpdatesEntry.intervalAllocatedBytes, entry.intervalAllocatedBytes);
                 aggregatedSmallUpdatesEntry.intervalPoolAllocatedBytes =
-                        plus(aggregatedSmallUpdatesEntry.intervalPoolAllocatedBytes, entry.intervalPoolAllocatedBytes);
+                        DBLanguageFunctionUtil.PLUS(aggregatedSmallUpdatesEntry.intervalPoolAllocatedBytes, entry.intervalPoolAllocatedBytes);
             }
             entry.reset();
         }
@@ -345,16 +346,16 @@ public class UpdatePerformanceTracker {
         }
 
         public final void onUpdateEnd() {
-            intervalUserCpuNanos = plus(intervalUserCpuNanos,
-                    minus(ThreadProfiler.DEFAULT.getCurrentThreadUserTime(), startUserCpuNanos));
-            intervalCpuNanos = plus(intervalCpuNanos, minus(ThreadProfiler.DEFAULT.getCurrentThreadCpuTime(), startCpuNanos));
+            intervalUserCpuNanos = DBLanguageFunctionUtil.PLUS(intervalUserCpuNanos,
+                    DBLanguageFunctionUtil.MINUS(ThreadProfiler.DEFAULT.getCurrentThreadUserTime(), startUserCpuNanos));
+            intervalCpuNanos = DBLanguageFunctionUtil.PLUS(intervalCpuNanos, DBLanguageFunctionUtil.MINUS(ThreadProfiler.DEFAULT.getCurrentThreadCpuTime(), startCpuNanos));
 
             intervalUsageNanos += System.nanoTime() - startTimeNanos;
 
-            intervalPoolAllocatedBytes = plus(intervalPoolAllocatedBytes,
-                    minus(QueryPerformanceRecorder.getPoolAllocatedBytesForCurrentThread(), startPoolAllocatedBytes));
-            intervalAllocatedBytes = plus(intervalAllocatedBytes,
-                    minus(ThreadProfiler.DEFAULT.getCurrentThreadAllocatedBytes(), startAllocatedBytes));
+            intervalPoolAllocatedBytes = DBLanguageFunctionUtil.PLUS(intervalPoolAllocatedBytes,
+                    DBLanguageFunctionUtil.MINUS(QueryPerformanceRecorder.getPoolAllocatedBytesForCurrentThread(), startPoolAllocatedBytes));
+            intervalAllocatedBytes = DBLanguageFunctionUtil.PLUS(intervalAllocatedBytes,
+                    DBLanguageFunctionUtil.MINUS(ThreadProfiler.DEFAULT.getCurrentThreadAllocatedBytes(), startAllocatedBytes));
 
             startAllocatedBytes = 0;
             startPoolAllocatedBytes = 0;

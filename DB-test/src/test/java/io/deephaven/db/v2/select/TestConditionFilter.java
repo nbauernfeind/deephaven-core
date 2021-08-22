@@ -131,35 +131,35 @@ public class TestConditionFilter extends PythonTest {
 
         {   // LESS THAN
             expression = "myShortObj < ShortCol";
-            test = (colValues) -> DBLanguageFunctionUtil.less(
+            test = (colValues) -> DBLanguageFunctionUtil.LESS(
                     DBLanguageFunctionUtil.shortCast(QUERYSCOPE_OBJ_BASE_VALUE),
                     DBLanguageFunctionUtil.shortCast(colValues.get("ShortCol"))
             );
             check(expression, test, true,false);
 
             expression = "myIntObj < IntCol";
-            test = (colValues) -> DBLanguageFunctionUtil.less(
+            test = (colValues) -> DBLanguageFunctionUtil.LESS(
                     QUERYSCOPE_OBJ_BASE_VALUE,
                     DBLanguageFunctionUtil.intCast(colValues.get("IntCol"))
             );
             check(expression, test, true);
 
             expression = "myLongObj < LongCol";
-            test = (colValues) -> DBLanguageFunctionUtil.less(
+            test = (colValues) -> DBLanguageFunctionUtil.LESS(
                     DBLanguageFunctionUtil.longCast(QUERYSCOPE_OBJ_BASE_VALUE),
                     DBLanguageFunctionUtil.longCast(colValues.get("LongCol"))
             );
             check(expression, test, true);
 
             expression = "myFloatObj < FloatCol";
-            test = (colValues) -> DBLanguageFunctionUtil.less(
+            test = (colValues) -> DBLanguageFunctionUtil.LESS(
                     DBLanguageFunctionUtil.floatCast(QUERYSCOPE_OBJ_BASE_VALUE),
                     DBLanguageFunctionUtil.floatCast(colValues.get("FloatCol"))
             );
             check(expression, test, true);
 
             expression = "myDoubleObj < DoubleCol";
-            test = (colValues) -> DBLanguageFunctionUtil.less(
+            test = (colValues) -> DBLanguageFunctionUtil.LESS(
                     DBLanguageFunctionUtil.doubleCast(QUERYSCOPE_OBJ_BASE_VALUE),
                     DBLanguageFunctionUtil.doubleCast(colValues.get("DoubleCol"))
             );
@@ -168,35 +168,35 @@ public class TestConditionFilter extends PythonTest {
 
         {   // GREATER THAN
             expression = "myShortObj > ShortCol";
-            test = (colValues) -> DBLanguageFunctionUtil.greater(
+            test = (colValues) -> DBLanguageFunctionUtil.GREATER(
                     DBLanguageFunctionUtil.shortCast(QUERYSCOPE_OBJ_BASE_VALUE),
                     DBLanguageFunctionUtil.shortCast(colValues.get("ShortCol"))
             );
             check(expression, test, true);
 
             expression = "myIntObj > IntCol";
-            test = (colValues) -> DBLanguageFunctionUtil.greater(
+            test = (colValues) -> DBLanguageFunctionUtil.GREATER(
                     QUERYSCOPE_OBJ_BASE_VALUE,
                     DBLanguageFunctionUtil.intCast(colValues.get("IntCol"))
             );
             check(expression, test, true);
 
             expression = "myLongObj > LongCol";
-            test = (colValues) -> DBLanguageFunctionUtil.greater(
+            test = (colValues) -> DBLanguageFunctionUtil.GREATER(
                     DBLanguageFunctionUtil.longCast(QUERYSCOPE_OBJ_BASE_VALUE),
                     DBLanguageFunctionUtil.longCast(colValues.get("LongCol"))
             );
             check(expression, test, true);
 
             expression = "myFloatObj > FloatCol";
-            test = (colValues) -> DBLanguageFunctionUtil.greater(
+            test = (colValues) -> DBLanguageFunctionUtil.GREATER(
                     DBLanguageFunctionUtil.floatCast(QUERYSCOPE_OBJ_BASE_VALUE),
                     DBLanguageFunctionUtil.floatCast(colValues.get("FloatCol"))
             );
             check(expression, test, true);
 
             expression = "myDoubleObj > DoubleCol";
-            test = (colValues) -> DBLanguageFunctionUtil.greater(
+            test = (colValues) -> DBLanguageFunctionUtil.GREATER(
                     DBLanguageFunctionUtil.doubleCast(QUERYSCOPE_OBJ_BASE_VALUE),
                     DBLanguageFunctionUtil.doubleCast(colValues.get("DoubleCol"))
             );

@@ -4,13 +4,14 @@
 
 package io.deephaven.db.tables.utils;
 
+import io.deephaven.db.tables.lang.DBLanguageFunctionUtil;
 import io.deephaven.db.v2.utils.RuntimeMemory;
 import io.deephaven.util.QueryConstants;
 import io.deephaven.util.profiling.ThreadProfiler;
 
 import java.io.Serializable;
 
-import static io.deephaven.db.tables.lang.DBLanguageFunctionUtil.minus;
+import static io.deephaven.db.tables.lang.DBLanguageFunctionUtil.MINUS;
 import static io.deephaven.util.QueryConstants.*;
 
 /**
@@ -188,8 +189,8 @@ public class QueryPerformanceNugget implements Serializable, AutoCloseable {
                 return false;
             }
 
-            diffUserCpuNanos = minus(currentThreadUserTime, startUserCpuNanos);
-            diffCpuNanos = minus(currentThreadCpuTime, startCpuNanos);
+            diffUserCpuNanos = DBLanguageFunctionUtil.MINUS(currentThreadUserTime, startUserCpuNanos);
+            diffCpuNanos = DBLanguageFunctionUtil.MINUS(currentThreadCpuTime, startCpuNanos);
 
             totalTimeNanos = System.nanoTime() - startTimeNanos;
 
@@ -199,8 +200,8 @@ public class QueryPerformanceNugget implements Serializable, AutoCloseable {
             diffFreeMemory = totalFreeMemory - startFreeMemory;
             diffTotalMemory = totalUsedMemory - startTotalMemory;
 
-            diffPoolAllocatedBytes = minus(QueryPerformanceRecorder.getPoolAllocatedBytesForCurrentThread(), startPoolAllocatedBytes);
-            diffAllocatedBytes = minus(ThreadProfiler.DEFAULT.getCurrentThreadAllocatedBytes(), startAllocatedBytes);
+            diffPoolAllocatedBytes = DBLanguageFunctionUtil.MINUS(QueryPerformanceRecorder.getPoolAllocatedBytesForCurrentThread(), startPoolAllocatedBytes);
+            diffAllocatedBytes = DBLanguageFunctionUtil.MINUS(ThreadProfiler.DEFAULT.getCurrentThreadAllocatedBytes(), startAllocatedBytes);
 
             state = closingState;
             return recorderToNotify.releaseNugget(this);

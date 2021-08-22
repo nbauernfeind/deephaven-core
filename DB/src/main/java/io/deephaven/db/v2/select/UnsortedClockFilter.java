@@ -81,15 +81,15 @@ public class UnsortedClockFilter extends ClockFilter {
         long activeRangeFirstKey = selectionIterator.nextLong();
         long activeRangeLastKey = activeRangeFirstKey;
         long previousValue = nanosColumnSource.getLong(activeRangeFirstKey);
-        boolean activeRangeIsDeferred = DBLanguageFunctionUtil.greater(previousValue, nowNanos);
+        boolean activeRangeIsDeferred = DBLanguageFunctionUtil.GREATER(previousValue, nowNanos);
 
         while (selectionIterator.hasNext()) {
             final long currentKey = selectionIterator.nextLong();
             final long currentValue = nanosColumnSource.getLong(currentKey);
-            final boolean currentIsDeferred = DBLanguageFunctionUtil.greater(currentValue, nowNanos);
+            final boolean currentIsDeferred = DBLanguageFunctionUtil.GREATER(currentValue, nowNanos);
 
             // If we observe a change in deferral status, a discontinuity in the keys, or a decrease in the values, we have entered a new range
-            if (currentIsDeferred != activeRangeIsDeferred || currentKey != activeRangeLastKey + 1 || DBLanguageFunctionUtil.less(currentValue, previousValue)) {
+            if (currentIsDeferred != activeRangeIsDeferred || currentKey != activeRangeLastKey + 1 || DBLanguageFunctionUtil.LESS(currentValue, previousValue)) {
                 // Add the current range, as appropriate
                 if (activeRangeIsDeferred) {
                     rangesByNextTime.add(new Range(activeRangeFirstKey, activeRangeLastKey));

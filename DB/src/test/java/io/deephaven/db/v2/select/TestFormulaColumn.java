@@ -37,7 +37,7 @@ import static junit.framework.TestCase.*;
  * Create a simple formula column.
  */
 @SuppressWarnings("SameParameterValue")
-@RunWith(Parameterized.class)
+//@RunWith(Parameterized.class)
 @Category(OutOfBandTest.class)
 public class TestFormulaColumn {
 
@@ -58,8 +58,8 @@ public class TestFormulaColumn {
         setUpQueryScope();
     }
 
-    public TestFormulaColumn(boolean useKernelFormulas) {
-        this.useKernelFormulas = useKernelFormulas;
+    public TestFormulaColumn() { //boolean useKernelFormulas) {
+        this.useKernelFormulas = true;
         testDataTable = getTestDataTable();
         availableColumns = testDataTable.getDefinition().getColumnNameMap();
     }

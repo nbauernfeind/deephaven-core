@@ -11,6 +11,7 @@ import io.deephaven.configuration.Configuration;
 import io.deephaven.datastructures.util.CollectionUtil;
 import io.deephaven.db.exceptions.QueryCancellationException;
 import io.deephaven.db.tables.Table;
+import io.deephaven.db.tables.lang.DBLanguageFunctionUtil;
 import io.deephaven.util.QueryConstants;
 import io.deephaven.util.profiling.ThreadProfiler;
 import org.apache.commons.lang3.mutable.MutableLong;
@@ -22,8 +23,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import static io.deephaven.db.tables.lang.DBLanguageFunctionUtil.minus;
-import static io.deephaven.db.tables.lang.DBLanguageFunctionUtil.plus;
+import static io.deephaven.db.tables.lang.DBLanguageFunctionUtil.MINUS;
+import static io.deephaven.db.tables.lang.DBLanguageFunctionUtil.PLUS;
 
 /**
  * Query performance instrumentation tools. Manages a hierarchy of {@link QueryPerformanceNugget} instances.
@@ -319,7 +320,7 @@ public class QueryPerformanceRecorder implements Serializable {
         } finally {
             final long endThreadAllocatedBytes = ThreadProfiler.DEFAULT.getCurrentThreadAllocatedBytes();
             final MutableLong poolAllocatedBytesForCurrentThread = poolAllocatedBytes.get();
-            poolAllocatedBytesForCurrentThread.setValue(plus(poolAllocatedBytesForCurrentThread.longValue(), minus(endThreadAllocatedBytes, startThreadAllocatedBytes)));
+            poolAllocatedBytesForCurrentThread.setValue(DBLanguageFunctionUtil.PLUS(poolAllocatedBytesForCurrentThread.longValue(), DBLanguageFunctionUtil.MINUS(endThreadAllocatedBytes, startThreadAllocatedBytes)));
         }
     }
 

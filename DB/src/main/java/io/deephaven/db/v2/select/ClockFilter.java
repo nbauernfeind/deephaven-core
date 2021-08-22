@@ -145,7 +145,7 @@ public abstract class ClockFilter extends SelectFilterLivenessArtifactImpl imple
                                                                 @Nullable Index.RandomBuilder addedBuilder) {
             final long firstKeyAdded = nextKey;
             long lastKeyAdded = -1L;
-            while (nextKey <= lastKey && DBLanguageFunctionUtil.lessEquals(nanosColumnSource.getLong(nextKey), nowNanos)) {
+            while (nextKey <= lastKey && DBLanguageFunctionUtil.LESS_EQUALS(nanosColumnSource.getLong(nextKey), nowNanos)) {
                 lastKeyAdded = nextKey++;
             }
             if (lastKeyAdded == -1L) {

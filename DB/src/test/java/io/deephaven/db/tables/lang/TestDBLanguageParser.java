@@ -5,6 +5,7 @@
 package io.deephaven.db.tables.lang;
 
 import io.deephaven.base.Pair;
+import io.deephaven.base.verify.Assert;
 import io.deephaven.base.verify.Require;
 import io.deephaven.base.testing.BaseArrayTestCase;
 import io.deephaven.db.tables.Table;
@@ -40,7 +41,11 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
     public void setUp() throws Exception {
         packageImports = new HashSet<>();
         packageImports.add(Package.getPackage("java.lang"));
-        packageImports.add(Package.getPackage("io.deephaven.db.tables"));
+
+        // Package.getPackage returns null if the class loader has yet to see a class from that package; force a load
+        Package tablePackage = Table.class.getPackage();
+        Assert.equals(tablePackage.getName(), "tablePackage.getName()", "io.deephaven.db.tables");
+        packageImports.add(tablePackage);
 
         classImports = new HashSet<>();
         classImports.add(Color.class);
@@ -116,19 +121,19 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
 
     public void testSimpleCalculations() throws Exception{
         String expression="1+1";
-        String resultExpression="plus(1, 1)";
+        String resultExpression="PLUS(1, 1)";
         check(expression, resultExpression, int.class, new String[]{});
 
         expression="1*1.0";
-        resultExpression="times(1, 1.0)";
+        resultExpression="MULTIPLY(1, 1.0)";
         check(expression, resultExpression, double.class, new String[]{});
 
         expression="1/1L";
-        resultExpression="divide(1, 1L)";
+        resultExpression="DIVIDE(1, 1L)";
         check(expression, resultExpression, double.class, new String[]{});
 
         expression="1.0+2L+3*4";
-        resultExpression="plus(plus(1.0, 2L), times(3, 4))";
+        resultExpression="PLUS(PLUS(1.0, 2L), MULTIPLY(3, 4))";
         check(expression, resultExpression, double.class, new String[]{});
 
         expression="1==1";
@@ -140,15 +145,15 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, boolean.class, new String[]{});
 
         expression="false | true";
-        resultExpression="binOr(false, true)";
+        resultExpression="BINARY_OR(false, true)";
         check(expression, resultExpression, Boolean.class, new String[]{});
 
         expression="1>1+2*3/4 || true";
-        resultExpression="greater(1, plus(1, divide(times(2, 3), 4)))||true";
+        resultExpression="GREATER(1, PLUS(1, DIVIDE(MULTIPLY(2, 3), 4)))||true";
         check(expression, resultExpression, boolean.class, new String[]{});
 
         expression="(1>1+2*3/4) | true";
-        resultExpression="binOr((greater(1, plus(1, divide(times(2, 3), 4)))), true)";
+        resultExpression="BINARY_OR((GREATER(1, PLUS(1, DIVIDE(MULTIPLY(2, 3), 4)))), true)";
         check(expression, resultExpression, Boolean.class, new String[]{});
 
         expression="1+\"test\"";
@@ -156,7 +161,7 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, String.class, new String[]{});
 
         expression="1==1 ? 1+1 : 1.0";
-        resultExpression="eq(1, 1) ? plus(1, 1) : 1.0";
+        resultExpression="eq(1, 1) ? PLUS(1, 1) : 1.0";
         check(expression, resultExpression, double.class, new String[]{});
 
         expression="(double)1";
@@ -172,19 +177,19 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, new double[0][0].getClass(), new String[]{"myObject"});
 
         expression="1<2";
-        resultExpression="less(1, 2)";
+        resultExpression="LESS(1, 2)";
         check(expression, resultExpression, boolean.class, new String[]{});
 
         expression="1>2";
-        resultExpression="greater(1, 2)";
+        resultExpression="GREATER(1, 2)";
         check(expression, resultExpression, boolean.class, new String[]{});
 
         expression="1<=2";
-        resultExpression="lessEquals(1, 2)";
+        resultExpression="LESS_EQUALS(1, 2)";
         check(expression, resultExpression, boolean.class, new String[]{});
 
         expression="1>=2";
-        resultExpression="greaterEquals(1, 2)";
+        resultExpression="GREATER_EQUALS(1, 2)";
         check(expression, resultExpression, boolean.class, new String[]{});
 
         expression="-1";
@@ -858,19 +863,19 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
 
     public void testVariables() throws Exception{
         String expression="1+myInt";
-        String resultExpression="plus(1, myInt)";
+        String resultExpression="PLUS(1, myInt)";
         check(expression, resultExpression, int.class, new String[]{"myInt"});
 
         expression="1*myDouble";
-        resultExpression="times(1, myDouble)";
+        resultExpression="MULTIPLY(1, myDouble)";
         check(expression, resultExpression, double.class, new String[]{"myDouble"});
 
         expression="myInt/myLong";
-        resultExpression="divide(myInt, myLong)";
+        resultExpression="DIVIDE(myInt, myLong)";
         check(expression, resultExpression, double.class, new String[]{"myInt", "myLong"});
 
         expression="myDouble+myLong+3*4";
-        resultExpression="plus(plus(myDouble, myLong), times(3, 4))";
+        resultExpression="PLUS(PLUS(myDouble, myLong), MULTIPLY(3, 4))";
         check(expression, resultExpression, double.class, new String[]{"myDouble", "myLong"});
 
         expression="1==myInt";
@@ -878,11 +883,11 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, boolean.class, new String[]{"myInt"});
 
         expression="myInt>1+2*myInt/4 || myBoolean";
-        resultExpression="greater(myInt, plus(1, divide(times(2, myInt), 4)))||myBoolean";
+        resultExpression="GREATER(myInt, PLUS(1, DIVIDE(MULTIPLY(2, myInt), 4)))||myBoolean";
         check(expression, resultExpression, boolean.class, new String[]{"myBoolean", "myInt"});
 
         expression="myInt>1+2*myInt/4 | myBoolean";
-        resultExpression="binOr(greater(myInt, plus(1, divide(times(2, myInt), 4))), myBoolean)";
+        resultExpression="BINARY_OR(GREATER(myInt, PLUS(1, DIVIDE(MULTIPLY(2, myInt), 4))), myBoolean)";
         check(expression, resultExpression, Boolean.class, new String[]{"myBoolean", "myInt"});
 
         expression="myInt+myString";
@@ -940,29 +945,29 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
 
     public void testOperatorOverloading() throws Exception{
         String expression="myTestClass+1";
-        String resultExpression="plus(myTestClass, 1)";
+        String resultExpression="PLUS(myTestClass, 1)";
         check(expression, resultExpression, int.class, new String[]{"myTestClass"});
 
         expression="myTestClass*1.0";
-        resultExpression="times(myTestClass, 1.0)";
+        resultExpression="MULTIPLY(myTestClass, 1.0)";
         check(expression, resultExpression, char.class, new String[]{"myTestClass"});
 
         expression="myTestClass-'c'";
-        resultExpression="minus(myTestClass, 'c')";
+        resultExpression="MINUS(myTestClass, 'c')";
         check(expression, resultExpression, String.class, new String[]{"myTestClass"});
     }
 
     public void testArrayOperatorOverloading() throws Exception{
         String expression="myIntArray+myDoubleArray";
-        String resultExpression="plusArray(myIntArray, myDoubleArray)";
+        String resultExpression="PLUSArray(myIntArray, myDoubleArray)";
         check(expression, resultExpression, new double[0].getClass(), new String[]{"myDoubleArray", "myIntArray"});
 
         expression="myIntArray+1";
-        resultExpression="plusArray(myIntArray, 1)";
+        resultExpression="PLUSArray(myIntArray, 1)";
         check(expression, resultExpression, new int[0].getClass(), new String[]{"myIntArray"});
 
         expression="1.0+myIntArray";
-        resultExpression="plusArray(1.0, myIntArray)";
+        resultExpression="PLUSArray(1.0, myIntArray)";
         check(expression, resultExpression, new double[0].getClass(), new String[]{"myIntArray"});
 
         expression="myArrayList[15]";
@@ -1280,7 +1285,7 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, double.class, new String[]{"myDoubleArray"});
 
         expression="myDoubleArray[myDoubleArray.length-1]";
-        resultExpression="myDoubleArray[minus(myDoubleArray.length, 1)]";
+        resultExpression="myDoubleArray[MINUS(myDoubleArray.length, 1)]";
         check(expression, resultExpression, double.class, new String[]{"myDoubleArray"});
 
         expression="myTestClassArray[0].var";
@@ -1379,7 +1384,7 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
             // supporting customers in the past when the scope type was unclear.)
             try {
                 expression = "myTable[myTable.length-1]";
-                resultExpression = "myTable[minus(myTable.length, 1)]";
+                resultExpression = "myTable[MINUS(myTable.length, 1)]";
                 check(expression, resultExpression, String.class, new String[]{});
                 fail("Should have thrown a DBLanguageParser.QueryLanguageParseException");
             } catch (DBLanguageParser.QueryLanguageParseException ex) {
@@ -1440,11 +1445,11 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
 
     public void testBoxing() throws Exception{
         String expression="1+myIntObj";
-        String resultExpression="plus(1, myIntObj.intValue())";
+        String resultExpression="PLUS(1, myIntObj.intValue())";
         check(expression, resultExpression, int.class, new String[]{"myIntObj"});
 
         expression="1*myDoubleObj";
-        resultExpression="times(1, myDoubleObj.doubleValue())";
+        resultExpression="MULTIPLY(1, myDoubleObj.doubleValue())";
         check(expression, resultExpression, double.class, new String[]{"myDoubleObj"});
 
         expression="myInt/myLongObj";
@@ -1456,7 +1461,7 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, double.class, new String[]{"myIntObj", "myLong"});
 
         expression="myDoubleObj+myLongObj+3*4";
-        resultExpression="plus(plus(myDoubleObj.doubleValue(), myLongObj.longValue()), times(3, 4))";
+        resultExpression="PLUS(PLUS(myDoubleObj.doubleValue(), myLongObj.longValue()), MULTIPLY(3, 4))";
         check(expression, resultExpression, double.class, new String[]{"myDoubleObj", "myLongObj"});
 
         expression="1==myIntObj";
@@ -1464,7 +1469,7 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, boolean.class, new String[]{"myIntObj"});
 
         expression="myInt>1+2*myIntObj/4 || myBooleanObj";
-        resultExpression="greater(myInt, plus(1, divide(times(2, myIntObj.intValue()), 4)))||myBooleanObj";
+        resultExpression="greater(myInt, PLUS(1, divide(MULTIPLY(2, myIntObj.intValue()), 4)))||myBooleanObj";
         check(expression, resultExpression, boolean.class, new String[]{"myBooleanObj", "myInt", "myIntObj"});
 
         expression="myIntObj+myString";
@@ -1490,10 +1495,10 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         assertEquals("eq(1, 1)||eq(2, 2)&&(eq(3, 3)&&eq(4, 4))", result.getConvertedExpression());
 
         result = new DBLanguageParser("1<=1", null, null, staticImports, null, null).getResult();
-        assertEquals("lessEquals(1, 1)", result.getConvertedExpression());
+        assertEquals("LESS_EQUALS(1, 1)", result.getConvertedExpression());
 
         result = new DBLanguageParser("1>=1", null, null, staticImports, null, null).getResult();
-        assertEquals("greaterEquals(1, 1)", result.getConvertedExpression());
+        assertEquals("GREATER_EQUALS(1, 1)", result.getConvertedExpression());
 
         result = new DBLanguageParser("1!=1", null, null, staticImports, null, null).getResult();
         assertEquals("!eq(1, 1)", result.getConvertedExpression());
@@ -1509,7 +1514,7 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, boolean.class, new String[]{"myIntObj", "myTestClass"});
 
         expression="myTestClass>=myIntObj";
-        resultExpression="greaterEquals(myTestClass, myIntObj.intValue())";
+        resultExpression="GREATER_EQUALS(myTestClass, myIntObj.intValue())";
         check(expression, resultExpression, boolean.class, new String[]{"myIntObj", "myTestClass"});
 
         expression="myTestClass<myIntObj";
@@ -1517,7 +1522,7 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, boolean.class, new String[]{"myIntObj", "myTestClass"});
 
         expression="myTestClass<=myIntObj";
-        resultExpression="lessEquals(myTestClass, myIntObj.intValue())";
+        resultExpression="LESS_EQUALS(myTestClass, myIntObj.intValue())";
         check(expression, resultExpression, boolean.class, new String[]{"myIntObj", "myTestClass"});
 
         expression="myTestClass>myTestClass";
@@ -1525,7 +1530,7 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, boolean.class, new String[]{"myTestClass"});
 
         expression="myTestClass>=myTestClass";
-        resultExpression="greaterEquals(myTestClass, myTestClass)";
+        resultExpression="GREATER_EQUALS(myTestClass, myTestClass)";
         check(expression, resultExpression, boolean.class, new String[]{"myTestClass"});
 
         expression="myTestClass<myTestClass";
@@ -1533,7 +1538,7 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         check(expression, resultExpression, boolean.class, new String[]{"myTestClass"});
 
         expression="myTestClass<=myTestClass";
-        resultExpression="lessEquals(myTestClass, myTestClass)";
+        resultExpression="LESS_EQUALS(myTestClass, myTestClass)";
         check(expression, resultExpression, boolean.class, new String[]{"myTestClass"});
 
         expression="myTestClass==myTestClass";
@@ -1653,11 +1658,11 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
 
     public void testIntToLongConverstion() throws Exception{
         String expression="1+1283209200466";
-        String resultExpression="plus(1, 1283209200466L)";
+        String resultExpression="PLUS(1, 1283209200466L)";
         check(expression, resultExpression, long.class, new String[]{});
 
         expression="1 + -1283209200466";
-        resultExpression="plus(1, negate(1283209200466L))";
+        resultExpression="PLUS(1, negate(1283209200466L))";
         check(expression, resultExpression, long.class, new String[]{});
     }
 
@@ -1988,18 +1993,18 @@ public class TestDBLanguageParser extends BaseArrayTestCase {
         expression="('a'+'b'";
         expectFailure(expression, int.class);
 
-        expression="plus('1', '2') * '1' -- = 3;"; // we are parsing expressions, not statements.
+        expression="PLUS('1', '2') * '1' -- = 3;"; // we are parsing expressions, not statements.
         expectFailure(expression, int.class);
 
-        expression="plus(1, 2) minus(2, 1) plus(0)";
+        expression="PLUS(1, 2) MINUS(2, 1) PLUS(0)";
         expectFailure(expression, int.class);
 
-        expression="plus(1, 2))";
+        expression="PLUS(1, 2))";
         expectFailure(expression, int.class);
 
         // this was getting picked up as invalid, so we're ensuring here that it is not an error.
-        expression="23 >= plus(System.currentTimeMillis(), 12)";
-        check(expression, "greaterEquals(23, plus(System.currentTimeMillis(), 12))", boolean.class, new String[0]);
+        expression="23 >= PLUS(System.currentTimeMillis(), 12)";
+        check(expression, "GREATER_EQUALS(23, PLUS(System.currentTimeMillis(), 12))", boolean.class, new String[0]);
     }
 
     private void expectFailure(String expression, Class<?> resultType) throws Exception {
