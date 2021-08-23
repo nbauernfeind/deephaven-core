@@ -48,7 +48,7 @@ public class ApplicationFactory implements ApplicationConfig.Visitor {
                     "Cannot instantiate Groovy application on a %s script session", scriptSession.scriptType()));
         }
 
-        out = new ApplicationState(appStateListener, script.id(), script.name());
+        out = new ScriptApplicationState(scriptSession, appStateListener, script.id(), script.name());
         ApplicationContext.runUnderContext(out, () -> evaluateScripts(script.files()));
     }
 
@@ -59,7 +59,7 @@ public class ApplicationFactory implements ApplicationConfig.Visitor {
                     "Cannot instantiate Python application on a %s script session", scriptSession.scriptType()));
         }
 
-        out = new ApplicationState(appStateListener, script.id(), script.name());
+        out = new ScriptApplicationState(scriptSession, appStateListener, script.id(), script.name());
         ApplicationContext.runUnderContext(out, () -> evaluateScripts(script.files()));
     }
 

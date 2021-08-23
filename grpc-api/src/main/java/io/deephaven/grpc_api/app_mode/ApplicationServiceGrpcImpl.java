@@ -5,6 +5,7 @@ import io.deephaven.db.appmode.ApplicationState;
 import io.deephaven.db.appmode.CustomField;
 import io.deephaven.db.appmode.Field;
 import io.deephaven.db.plot.Figure;
+import io.deephaven.db.plot.FigureWidget;
 import io.deephaven.db.tables.Table;
 import io.deephaven.db.tables.utils.DBTimeUtils;
 import io.deephaven.db.util.ScriptSession;
@@ -85,13 +86,14 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
         for (final String name : changes.updated.keySet()) {
             final AppFieldId id = AppFieldId.fromScopeName(name);
             final ScopeField field = (ScopeField) knownFieldMap.get(id);
-            field.value = scriptSession.getVariable(name);
+            field.value = scriptSession.unwrapObject(scriptSession.getVariable(name));
             updatedFields.add(id);
         }
 
         for (final String name : changes.created.keySet()) {
             final AppFieldId id = AppFieldId.fromScopeName(name);
-            final ScopeField field = new ScopeField(name, scriptSession.getVariable(name));
+            final Object value = scriptSession.unwrapObject(scriptSession.getVariable(name));
+            final ScopeField field = new ScopeField(name, value);
             final FieldInfo fieldInfo = getFieldInfo(id, field);
             if (fieldInfo == null) {
                 // The script session should not have told us about this variable...
@@ -226,7 +228,7 @@ public class ApplicationServiceGrpcImpl extends ApplicationServiceGrpc.Applicati
                     .setSize(table.size())
                     .build()).build();
         }
-        if (obj instanceof Figure) {
+        if (obj instanceof FigureWidget) {
             return FieldInfo.FieldType.newBuilder().setFigure(FigureInfo.getDefaultInstance()).build();
         }
 

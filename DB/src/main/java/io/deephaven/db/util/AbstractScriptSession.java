@@ -144,10 +144,12 @@ public abstract class AbstractScriptSession extends LivenessScope implements Scr
     }
 
     private void applyVariableChangeToDiff(final Changes diff, String name, Object fromValue, Object toValue) {
+        fromValue = unwrapObject(fromValue);
         final ExportedObjectType fromType = ExportedObjectType.fromObject(fromValue);
         if (!fromType.isDisplayable()) {
             fromValue = null;
         }
+        toValue = unwrapObject(toValue);
         final ExportedObjectType toType = ExportedObjectType.fromObject(toValue);
         if (!toType.isDisplayable()) {
             toValue = null;

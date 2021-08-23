@@ -91,7 +91,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
         final T export = LiveTableMonitor.DEFAULT.sharedLock().computeLocked(() -> {
             final ScriptSession gss = globalSessionProvider.getGlobalSession();
             //noinspection unchecked
-            T scopeVar = (T) gss.getVariable(scopeName);
+            T scopeVar = (T) gss.unwrapObject(gss.getVariable(scopeName));
             if (scopeVar == null) {
                 throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Could not resolve: no variable exists with name '" + scopeName + "'");
             }
