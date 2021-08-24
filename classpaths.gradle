@@ -114,11 +114,9 @@ dependencies {
             'com.jcraft:jsch:0.1.51',
             "org.eclipse.jgit:org.eclipse.jgit:$Classpaths.JGIT_VERSION",
             "org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:$Classpaths.JGIT_VERSION",
-            'org.scala-lang:scala-library-all:2.12.2',
-            'org.scala-lang:scala-compiler:2.12.2',
             'org.yaml:snakeyaml:1.22',
-            'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8',
-            'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8',
+            'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.4',
+            'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.12.4',
             'com.tdunning:t-digest:3.2'
 
     // https://mvnrepository.com/artifact/com.univocity/univocity-parsers

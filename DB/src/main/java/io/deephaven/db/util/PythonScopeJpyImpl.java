@@ -1,5 +1,6 @@
 package io.deephaven.db.util;
 
+import io.deephaven.db.tables.lang.DBLanguageParser;
 import org.jpy.PyDictWrapper;
 import org.jpy.PyLib;
 import org.jpy.PyModule;
@@ -75,8 +76,8 @@ public class PythonScopeJpyImpl implements PythonScope<PyObject> {
      * When given a pyObject that is a callable, we stick it inside the callable wrapper, which implements a call()
      * varargs method, so that we can call it using __call__ without all of the JPy nastiness.
      */
-    public static class CallableWrapper {
-        private final PyObject pyObject;
+    public static class CallableWrapper implements DBLanguageParser.ImplicitCallable {
+        private PyObject pyObject;
 
         public CallableWrapper(PyObject pyObject) {
             this.pyObject = pyObject;

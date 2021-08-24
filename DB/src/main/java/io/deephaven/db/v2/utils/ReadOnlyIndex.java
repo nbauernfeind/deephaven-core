@@ -40,6 +40,9 @@ public interface ReadOnlyIndex extends OrderedKeys, SafeCloseable {
 
     Index clone();
 
+    default Index makeClone() {
+        return clone();
+    }
 
     /**
      * Returns an Index with the positions of <i>keys</i> in this Index.

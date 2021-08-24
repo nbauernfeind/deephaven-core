@@ -4,6 +4,8 @@
 
 package io.deephaven.db.tables.lang;
 
+import io.deephaven.UncheckedDeephavenException;
+import io.deephaven.base.StringUtils;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.base.verify.Require;
 import io.deephaven.configuration.Configuration;
@@ -38,6 +40,38 @@ import java.util.stream.Stream;
 import static io.deephaven.db.util.PythonScopeJpyImpl.*;
 
 public final class DBLanguageParser extends GenericVisitorAdapter<Class<?>, DBLanguageParser.VisitArgs> {
+    public interface ImplicitCallable {
+        Object call(Object... args);
+    }
+    public static class ImplicitMethod implements ImplicitCallable {
+        final Object instance;
+        final Method[] methods;
+
+        public ImplicitMethod(final Object instance, final Method[] methods) {
+            this.instance = instance;
+            this.methods = methods;
+        }
+
+        @Override
+        public Object call(Object... args) {
+            NextMethod: for (final Method method : methods) {
+                Class<?>[] params = method.getParameterTypes();
+                if (params.length != args.length) {
+                    continue;
+                }
+                for (int i = 0; i < params.length; ++i) {
+                    if (args[i] != null && !params[i].isAssignableFrom(args[i].getClass())) {
+                        continue NextMethod;
+                    }
+                }
+                try {
+                    return method.invoke(instance, args);
+                } catch (final IllegalAccessException | InvocationTargetException ignored) {
+                }
+            }
+            throw new IllegalArgumentException("Could not find method that match provided arguments");
+        }
+    }
 
     private final Collection<Package> packageImports;
     private final Collection<Class<?>> classImports;
@@ -422,7 +456,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class<?>, DBLa
     }
 
     private static boolean isPotentialImplicitCall(Class<?> methodClass) {
-        return CallableWrapper.class.isAssignableFrom(methodClass) || methodClass == groovy.lang.Closure.class;
+        return ImplicitCallable.class.isAssignableFrom(methodClass) || methodClass == groovy.lang.Closure.class;
     }
 
     private Class<?> getMethodReturnType(Class<?> scope, String methodName, Class<?>[] paramTypes,
@@ -1608,7 +1642,7 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class<?>, DBLa
                 printer.append(innerPrinter);
                 printer.append(n.getNameAsString());
                 printer.append(".call");
-            } else {
+            } else if (CallableWrapper.class.isAssignableFrom(method.getDeclaringClass())) {
                 /*
                  * python method call 1. need to reference the method with PyObject.getAttribute(); 2. wrap the method
                  * reference in CallableWrapper() 3. the method will be called via CallableWrapper.call()
@@ -1623,10 +1657,12 @@ public final class DBLanguageParser extends GenericVisitorAdapter<Class<?>, DBLa
                     printer.append(innerPrinter);
                 }
                 printer.append("call");
+            } else {
+                throw new UnsupportedOperationException("Do not know how to invoke implicit call: " + method);
             }
         } else { // Groovy or Java method call
             printer.append(innerPrinter);
-            printer.append(n.getNameAsString());
+            printer.append(n.getName().getIdentifier());
         }
 
         if (printer.hasStringBuilder()) {

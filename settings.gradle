@@ -112,6 +112,9 @@ project(':grpc-api-client-console').projectDir = file('grpc-api-client/console')
 include(':classgraph-extension')
 project(':classgraph-extension').projectDir = file('extensions/classgraph')
 
+include(':deephaven-scala')
+project(':deephaven-scala').projectDir = file('extensions/deephaven-scala')
+
 include(':suanshu-extension')
 project(':suanshu-extension').projectDir = file('extensions/suanshu')
 

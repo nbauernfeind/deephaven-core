@@ -1,0 +1,20 @@
+plugins {
+    id 'scala'
+}
+
+configurations {
+    compile.extendsFrom irisDb
+    testCompile.extendsFrom irisDbTest
+}
+
+dependencies {
+    compile project(':Base'),
+            project(':DB')
+
+    implementation 'org.scala-lang:scala-library:2.13.6',
+            'org.scala-lang:scala-compiler:2.13.6',
+            'com.lihaoyi:ammonite_2.13.6:2.4.0-19-f4790b61'
+
+    testCompile TestTools.projectDependency(project, 'DB'),
+            TestTools.projectDependency(project, 'Util')
+}
