@@ -5,15 +5,15 @@ package io.deephaven.kafka.ingest;
 
 import io.deephaven.db.v2.sources.chunk.Attributes;
 import io.deephaven.db.v2.sources.chunk.ObjectChunk;
-import io.deephaven.db.v2.sources.chunk.WritableFloatChunk;
+import io.deephaven.db.v2.sources.chunk.WritableDoubleChunk;
 import io.deephaven.db.v2.sources.chunk.WritableChunk;
 import io.deephaven.util.type.TypeUtils;
 import org.apache.avro.generic.GenericRecord;
 
-public class GenericRecordFloatFieldCopier implements FieldCopier {
+public class GenericRecordDoubleFieldCopier implements FieldCopier {
     private final String fieldName;
 
-    public GenericRecordFloatFieldCopier(String fieldName) {
+    public GenericRecordDoubleFieldCopier(final String fieldName) {
         this.fieldName = fieldName;
     }
 
@@ -24,10 +24,10 @@ public class GenericRecordFloatFieldCopier implements FieldCopier {
             final int sourceOffset,
             final int destOffset,
             final int length) {
-        final WritableFloatChunk<Attributes.Values> output = publisherChunk.asWritableFloatChunk();
+        final WritableDoubleChunk<Attributes.Values> output = publisherChunk.asWritableDoubleChunk();
         for (int ii = 0; ii < length; ++ii) {
             final GenericRecord genericRecord = (GenericRecord) inputChunk.get(ii + sourceOffset);
-            final Float value = genericRecord == null ? null : (Float) genericRecord.get(fieldName);
+            final Double value = genericRecord == null ? null : (Double) genericRecord.get(fieldName);
             output.set(ii + destOffset, TypeUtils.unbox(value));
         }
     }
