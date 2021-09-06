@@ -12,8 +12,15 @@ dependencies {
             project(':DB')
 
     implementation 'org.scala-lang:scala-library:2.13.6',
-            'org.scala-lang:scala-compiler:2.13.6',
-            'com.lihaoyi:ammonite_2.13.6:2.4.0-19-f4790b61'
+            'org.scala-lang:scala-compiler:2.13.6'
+
+    implementation('com.lihaoyi:ammonite_2.13.6:2.4.0-19-f4790b61') {
+        exclude group: 'com.lihaoyi', module: 'pprint_3'
+        exclude group: 'com.lihaoyi', module: 'fansi_3'
+        exclude group: 'org.scala-lang', module: 'scala3-library_3'
+    }
+    implementation 'com.lihaoyi:pprint_2.13:0.6.6'
+    implementation 'com.lihaoyi:fansi_2.13:0.2.14'
 
     testCompile TestTools.projectDependency(project, 'DB'),
             TestTools.projectDependency(project, 'Util')
