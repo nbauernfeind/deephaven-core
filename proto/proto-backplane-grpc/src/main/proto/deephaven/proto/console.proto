@@ -45,6 +45,11 @@ service ConsoleService {
     rpc NextAutoCompleteStream(AutoCompleteRequest) returns (BrowserNextResponse) {}
 
     rpc FetchFigure(FetchFigureRequest) returns (FetchFigureResponse) {}
+
+    /*
+     * Fetch a data string from the server
+     */
+    rpc FetchDataString(FetchDataStringRequest) returns (FetchDataStringResponse) {}
 }
 
 
@@ -218,6 +223,13 @@ message FetchFigureRequest {
 }
 message FetchFigureResponse {
     FigureDescriptor figure_descriptor = 1;
+}
+
+message FetchDataStringRequest {
+    io.deephaven.proto.backplane.grpc.Ticket source_id = 1;
+}
+message FetchDataStringResponse {
+    string value = 1;
 }
 
 message FigureDescriptor {

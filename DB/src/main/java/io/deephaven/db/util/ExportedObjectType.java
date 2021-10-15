@@ -15,6 +15,7 @@ public enum ExportedObjectType {
     Figure,
     OtherWidget,
     Pandas,
+    DataString,
     NonDisplayable;
 
     public static ExportedObjectType fromObject(Object value) {
@@ -38,6 +39,8 @@ public enum ExportedObjectType {
             }
         } else if (value instanceof TableMap) {
             return ExportedObjectType.TableMap;
+        } else if (value instanceof String) {
+            return ExportedObjectType.DataString;
         }
         return NonDisplayable;
     }

@@ -680,6 +680,8 @@ public class WorkerConnection {
                 return (Promise) getFigure(definition);
             case Pandas:
                 return (Promise) getPandas(definition);
+//            case DataString:
+//                return (Promise) getDataString(definition);
             // case OtherWidget:
             // return (Promise) getWidget(definition.getName());
             // case TableMap:
