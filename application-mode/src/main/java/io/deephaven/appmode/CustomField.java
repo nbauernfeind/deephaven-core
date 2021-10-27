@@ -1,9 +1,11 @@
 package io.deephaven.appmode;
 
 import io.deephaven.annotations.BuildableStyle;
+import io.deephaven.proto.backplane.grpc.Ticket;
 import org.immutables.value.Value.Check;
 import org.immutables.value.Value.Immutable;
 
+import java.util.List;
 import java.util.Optional;
 
 @Immutable
@@ -20,6 +22,10 @@ public abstract class CustomField<T> implements Field<T> {
 
     public abstract String type();
 
+    public abstract Optional<byte[]> data();
+
+    public abstract List<Ticket> nestedTickets();
+
     public abstract Optional<String> description();
 
     @Check
@@ -31,8 +37,8 @@ public abstract class CustomField<T> implements Field<T> {
 
     @Check
     final void checkType() {
-        if (!ApplicationUtil.isAsciiPrintable(name())) {
-            throw new IllegalArgumentException("name() is invalid, must be printable ascii");
+        if (!ApplicationUtil.isAsciiPrintable(type())) {
+            throw new IllegalArgumentException("type() is invalid, must be printable ascii");
         }
     }
 
@@ -57,6 +63,12 @@ public abstract class CustomField<T> implements Field<T> {
         Builder<T> value(T value);
 
         Builder<T> description(String description);
+
+        Builder<T> data(byte[] data);
+
+        Builder<T> addNestedTickets(Ticket ticket);
+
+        Builder<T> addNestedTickets(Ticket... tickets);
 
         CustomField<T> build();
     }

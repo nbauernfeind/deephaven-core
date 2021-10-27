@@ -79,7 +79,12 @@ message RemovedField {
  * Alternatively, one can extend FieldType and re-build with custom types of their own structure.
  */
 message CustomInfo {
-  string type = 1; // application-specific type to identify the purpose of this custom field reference
+  // application-specific type to identify the purpose of this custom field reference
+  string type = 1;
+  // application-specific data (perhaps a serialized form)
+  bytes data = 2;
+  // application-specific set of tickets (in an expected order based on their specification and data)
+  repeated Ticket nested_tickets = 3;
 }
 
 /*
