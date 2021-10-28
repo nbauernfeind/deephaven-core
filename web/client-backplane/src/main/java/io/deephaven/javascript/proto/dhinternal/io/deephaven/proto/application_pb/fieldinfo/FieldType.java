@@ -1,5 +1,6 @@
 package io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.fieldinfo;
 
+import elemental2.core.JsArray;
 import elemental2.core.Uint8Array;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.CustomInfo;
 import io.deephaven.javascript.proto.dhinternal.io.deephaven.proto.application_pb.FigureInfo;
@@ -20,13 +21,132 @@ public class FieldType {
     public interface ToObjectReturnType {
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
         public interface CustomFieldType {
+            @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
+            public interface GetDataUnionType {
+                @JsOverlay
+                static FieldType.ToObjectReturnType.CustomFieldType.GetDataUnionType of(Object o) {
+                    return Js.cast(o);
+                }
+
+                @JsOverlay
+                default String asString() {
+                    return Js.asString(this);
+                }
+
+                @JsOverlay
+                default Uint8Array asUint8Array() {
+                    return Js.cast(this);
+                }
+
+                @JsOverlay
+                default boolean isString() {
+                    return (Object) this instanceof String;
+                }
+
+                @JsOverlay
+                default boolean isUint8Array() {
+                    return (Object) this instanceof Uint8Array;
+                }
+            }
+
+            @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
+            public interface NestedTicketsListFieldType {
+                @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
+                public interface GetTicketUnionType {
+                    @JsOverlay
+                    static FieldType.ToObjectReturnType.CustomFieldType.NestedTicketsListFieldType.GetTicketUnionType of(
+                            Object o) {
+                        return Js.cast(o);
+                    }
+
+                    @JsOverlay
+                    default String asString() {
+                        return Js.asString(this);
+                    }
+
+                    @JsOverlay
+                    default Uint8Array asUint8Array() {
+                        return Js.cast(this);
+                    }
+
+                    @JsOverlay
+                    default boolean isString() {
+                        return (Object) this instanceof String;
+                    }
+
+                    @JsOverlay
+                    default boolean isUint8Array() {
+                        return (Object) this instanceof Uint8Array;
+                    }
+                }
+
+                @JsOverlay
+                static FieldType.ToObjectReturnType.CustomFieldType.NestedTicketsListFieldType create() {
+                    return Js.uncheckedCast(JsPropertyMap.of());
+                }
+
+                @JsProperty
+                FieldType.ToObjectReturnType.CustomFieldType.NestedTicketsListFieldType.GetTicketUnionType getTicket();
+
+                @JsProperty
+                void setTicket(
+                        FieldType.ToObjectReturnType.CustomFieldType.NestedTicketsListFieldType.GetTicketUnionType ticket);
+
+                @JsOverlay
+                default void setTicket(String ticket) {
+                    setTicket(
+                            Js.<FieldType.ToObjectReturnType.CustomFieldType.NestedTicketsListFieldType.GetTicketUnionType>uncheckedCast(
+                                    ticket));
+                }
+
+                @JsOverlay
+                default void setTicket(Uint8Array ticket) {
+                    setTicket(
+                            Js.<FieldType.ToObjectReturnType.CustomFieldType.NestedTicketsListFieldType.GetTicketUnionType>uncheckedCast(
+                                    ticket));
+                }
+            }
+
             @JsOverlay
             static FieldType.ToObjectReturnType.CustomFieldType create() {
                 return Js.uncheckedCast(JsPropertyMap.of());
             }
 
             @JsProperty
+            FieldType.ToObjectReturnType.CustomFieldType.GetDataUnionType getData();
+
+            @JsProperty
+            JsArray<FieldType.ToObjectReturnType.CustomFieldType.NestedTicketsListFieldType> getNestedTicketsList();
+
+            @JsProperty
             String getType();
+
+            @JsProperty
+            void setData(FieldType.ToObjectReturnType.CustomFieldType.GetDataUnionType data);
+
+            @JsOverlay
+            default void setData(String data) {
+                setData(
+                        Js.<FieldType.ToObjectReturnType.CustomFieldType.GetDataUnionType>uncheckedCast(data));
+            }
+
+            @JsOverlay
+            default void setData(Uint8Array data) {
+                setData(
+                        Js.<FieldType.ToObjectReturnType.CustomFieldType.GetDataUnionType>uncheckedCast(data));
+            }
+
+            @JsProperty
+            void setNestedTicketsList(
+                    JsArray<FieldType.ToObjectReturnType.CustomFieldType.NestedTicketsListFieldType> nestedTicketsList);
+
+            @JsOverlay
+            default void setNestedTicketsList(
+                    FieldType.ToObjectReturnType.CustomFieldType.NestedTicketsListFieldType[] nestedTicketsList) {
+                setNestedTicketsList(
+                        Js.<JsArray<FieldType.ToObjectReturnType.CustomFieldType.NestedTicketsListFieldType>>uncheckedCast(
+                                nestedTicketsList));
+            }
 
             @JsProperty
             void setType(String type);
@@ -129,13 +249,132 @@ public class FieldType {
     public interface ToObjectReturnType0 {
         @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
         public interface CustomFieldType {
+            @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
+            public interface GetDataUnionType {
+                @JsOverlay
+                static FieldType.ToObjectReturnType0.CustomFieldType.GetDataUnionType of(Object o) {
+                    return Js.cast(o);
+                }
+
+                @JsOverlay
+                default String asString() {
+                    return Js.asString(this);
+                }
+
+                @JsOverlay
+                default Uint8Array asUint8Array() {
+                    return Js.cast(this);
+                }
+
+                @JsOverlay
+                default boolean isString() {
+                    return (Object) this instanceof String;
+                }
+
+                @JsOverlay
+                default boolean isUint8Array() {
+                    return (Object) this instanceof Uint8Array;
+                }
+            }
+
+            @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
+            public interface NestedTicketsListFieldType {
+                @JsType(isNative = true, name = "?", namespace = JsPackage.GLOBAL)
+                public interface GetTicketUnionType {
+                    @JsOverlay
+                    static FieldType.ToObjectReturnType0.CustomFieldType.NestedTicketsListFieldType.GetTicketUnionType of(
+                            Object o) {
+                        return Js.cast(o);
+                    }
+
+                    @JsOverlay
+                    default String asString() {
+                        return Js.asString(this);
+                    }
+
+                    @JsOverlay
+                    default Uint8Array asUint8Array() {
+                        return Js.cast(this);
+                    }
+
+                    @JsOverlay
+                    default boolean isString() {
+                        return (Object) this instanceof String;
+                    }
+
+                    @JsOverlay
+                    default boolean isUint8Array() {
+                        return (Object) this instanceof Uint8Array;
+                    }
+                }
+
+                @JsOverlay
+                static FieldType.ToObjectReturnType0.CustomFieldType.NestedTicketsListFieldType create() {
+                    return Js.uncheckedCast(JsPropertyMap.of());
+                }
+
+                @JsProperty
+                FieldType.ToObjectReturnType0.CustomFieldType.NestedTicketsListFieldType.GetTicketUnionType getTicket();
+
+                @JsProperty
+                void setTicket(
+                        FieldType.ToObjectReturnType0.CustomFieldType.NestedTicketsListFieldType.GetTicketUnionType ticket);
+
+                @JsOverlay
+                default void setTicket(String ticket) {
+                    setTicket(
+                            Js.<FieldType.ToObjectReturnType0.CustomFieldType.NestedTicketsListFieldType.GetTicketUnionType>uncheckedCast(
+                                    ticket));
+                }
+
+                @JsOverlay
+                default void setTicket(Uint8Array ticket) {
+                    setTicket(
+                            Js.<FieldType.ToObjectReturnType0.CustomFieldType.NestedTicketsListFieldType.GetTicketUnionType>uncheckedCast(
+                                    ticket));
+                }
+            }
+
             @JsOverlay
             static FieldType.ToObjectReturnType0.CustomFieldType create() {
                 return Js.uncheckedCast(JsPropertyMap.of());
             }
 
             @JsProperty
+            FieldType.ToObjectReturnType0.CustomFieldType.GetDataUnionType getData();
+
+            @JsProperty
+            JsArray<FieldType.ToObjectReturnType0.CustomFieldType.NestedTicketsListFieldType> getNestedTicketsList();
+
+            @JsProperty
             String getType();
+
+            @JsProperty
+            void setData(FieldType.ToObjectReturnType0.CustomFieldType.GetDataUnionType data);
+
+            @JsOverlay
+            default void setData(String data) {
+                setData(
+                        Js.<FieldType.ToObjectReturnType0.CustomFieldType.GetDataUnionType>uncheckedCast(data));
+            }
+
+            @JsOverlay
+            default void setData(Uint8Array data) {
+                setData(
+                        Js.<FieldType.ToObjectReturnType0.CustomFieldType.GetDataUnionType>uncheckedCast(data));
+            }
+
+            @JsProperty
+            void setNestedTicketsList(
+                    JsArray<FieldType.ToObjectReturnType0.CustomFieldType.NestedTicketsListFieldType> nestedTicketsList);
+
+            @JsOverlay
+            default void setNestedTicketsList(
+                    FieldType.ToObjectReturnType0.CustomFieldType.NestedTicketsListFieldType[] nestedTicketsList) {
+                setNestedTicketsList(
+                        Js.<JsArray<FieldType.ToObjectReturnType0.CustomFieldType.NestedTicketsListFieldType>>uncheckedCast(
+                                nestedTicketsList));
+            }
 
             @JsProperty
             void setType(String type);
