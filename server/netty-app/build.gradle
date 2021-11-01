@@ -28,6 +28,7 @@ def extraJvmArgs = [
         '-XX:MaxGCPauseMillis=100',
         '-XX:+UseStringDeduplication',
         '-XshowSettings:vm',
+        '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005',
 ]
 
 if (hasProperty('groovy')) {
