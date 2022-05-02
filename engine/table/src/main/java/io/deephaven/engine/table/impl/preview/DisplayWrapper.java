@@ -1,6 +1,7 @@
 package io.deephaven.engine.table.impl.preview;
 
 import io.deephaven.configuration.Configuration;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.io.Serializable;
  * Wraps Objects that cannot be displayed (e.g. not serializable or an unknown class) and allows them to be displayed as
  * a String.
  */
-public class DisplayWrapper implements Serializable {
+public class DisplayWrapper implements Serializable, Comparable<DisplayWrapper> {
     private static final int MAX_CHARACTERS =
             Configuration.getInstance().getIntegerWithDefault("DisplayWrapper.maxCharacters", 10000);
     private final String displayString;
@@ -46,5 +47,10 @@ public class DisplayWrapper implements Serializable {
         }
 
         return false;
+    }
+
+    @Override
+    public int compareTo(@NotNull DisplayWrapper o) {
+        return toString().compareTo(o.toString());
     }
 }
