@@ -9,6 +9,7 @@ import io.deephaven.api.agg.spec.AggSpec;
 import io.deephaven.api.filter.Filter;
 import io.deephaven.api.updateby.UpdateByOperation;
 import io.deephaven.api.updateby.UpdateByControl;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.liveness.LivenessArtifact;
 import io.deephaven.engine.table.ColumnDefinition;
 import io.deephaven.engine.table.MatchPair;
@@ -127,9 +128,19 @@ class PartitionedTableProxyImpl extends LivenessArtifact implements PartitionedT
         return sanityCheckJoins;
     }
 
+    private static ExecutionContext getOrCreateExecutionContext() {
+        ExecutionContext context = ExecutionContext.getContextToRecord();
+        if (context == null) {
+            context = ExecutionContext.newBuilder()
+                    .captureCompilerContext()
+                    .build();
+        }
+        return context;
+    }
+
     private PartitionedTable.Proxy basicTransform(@NotNull final UnaryOperator<Table> transformer) {
         return new PartitionedTableProxyImpl(
-                target.transform(null, transformer),
+                target.transform(getOrCreateExecutionContext(), transformer),
                 requireMatchingKeys,
                 sanityCheckJoins);
     }
@@ -138,13 +149,14 @@ class PartitionedTableProxyImpl extends LivenessArtifact implements PartitionedT
             @NotNull final TableOperations<?, ?> other,
             @NotNull final BinaryOperator<Table> transformer,
             @Nullable final Collection<? extends JoinMatch> joinMatches) {
+        final ExecutionContext context = getOrCreateExecutionContext();
         if (other instanceof Table) {
             final Table otherTable = (Table) other;
             if ((target.table().isRefreshing() || otherTable.isRefreshing()) && joinMatches != null) {
                 UpdateGraphProcessor.DEFAULT.checkInitiateTableOperation();
             }
             return new PartitionedTableProxyImpl(
-                    target.transform(null, ct -> transformer.apply(ct, otherTable)),
+                    target.transform(context, ct -> transformer.apply(ct, otherTable)),
                     requireMatchingKeys,
                     sanityCheckJoins);
         }

@@ -197,7 +197,7 @@ public class QueryTable extends BaseTable {
      * For unit tests, we do want to force the column parallel select and update at times.
      */
     static boolean FORCE_PARALLEL_SELECT_AND_UPDATE =
-            Configuration.getInstance().getBooleanWithDefault("QueryTable.forceParallelSelectAndUpdate", false);
+            Configuration.getInstance().getBooleanWithDefault("QueryTable.forceParallelSelectAndUpdate", true);
 
     // Whether we should track the entire RowSet of firstBy and lastBy operations
     @VisibleForTesting

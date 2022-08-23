@@ -2,6 +2,7 @@
 # Copyright (c) 2016-2022 Deephaven Data Labs and Patent Pending
 #
 
+import jpy
 import unittest
 from types import SimpleNamespace
 from typing import List, Any
@@ -394,7 +395,14 @@ class TableTestCase(BaseTestCase):
             ),
         ]
 
+        _JExecutionContext = jpy.get_type("io.deephaven.engine.context.ExecutionContext")
+        context = _JExecutionContext.newBuilder() \
+                .captureCompilerContext()         \
+                .captureQueryLibrary()            \
+                .emptyQueryScope()                \
+                .build().open()
         result_table = self.test_table.agg_by(aggs=aggs, by=["a"])
+        context.close()
         self.assertEqual(result_table.size, num_distinct_a)
 
     def test_agg_by_2(self):

@@ -2,6 +2,7 @@
 # Copyright (c) 2016-2022 Deephaven Data Labs and Patent Pending
 #
 
+import jpy
 import unittest
 
 from deephaven import read_csv, empty_table, SortDirection, AsOfMatchRule, DHError, time_table, ugp
@@ -130,7 +131,14 @@ class PartitionedTableProxyTestCase(BaseTestCase):
                     self.assertLessEqual(rct.size, ct.size)
 
     def test_select_distinct(self):
+        _JExecutionContext = jpy.get_type("io.deephaven.engine.context.ExecutionContext")
+        context = _JExecutionContext.newBuilder() \
+                .captureCompilerContext()         \
+                .captureQueryLibrary()            \
+                .emptyQueryScope()                \
+                .build().open()
         unique_pt_proxy = self.pt_proxy.select_distinct(formulas=["a"])
+        context.close()
         for uct, ct in zip(unique_pt_proxy.target.constituent_tables, self.pt_proxy.target.constituent_tables):
             self.assertLessEqual(uct.size, ct.size)
         unique_pt_proxy = self.pt_proxy.select_distinct()
@@ -292,7 +300,14 @@ class PartitionedTableProxyTestCase(BaseTestCase):
             ),
         ]
 
+        _JExecutionContext = jpy.get_type("io.deephaven.engine.context.ExecutionContext")
+        context = _JExecutionContext.newBuilder() \
+                .captureCompilerContext()         \
+                .captureQueryLibrary()            \
+                .emptyQueryScope()                \
+                .build().open()
         agg_pt_proxy = self.pt_proxy.agg_by(aggs=aggs, by=["a"])
+        context.close()
         for gct, ct in zip(agg_pt_proxy.target.constituent_tables, self.pt_proxy.target.constituent_tables):
             self.assertLessEqual(gct.size, ct.size)
             self.assertEqual(len(gct.columns), 8)
