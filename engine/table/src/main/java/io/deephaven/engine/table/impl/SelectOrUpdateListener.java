@@ -29,7 +29,6 @@ class SelectOrUpdateListener extends BaseTable.ListenerImpl {
     private final ModifiedColumnSet.Transformer transformer;
     private final SelectAndViewAnalyzer analyzer;
 
-    private volatile Exception exception;
     private volatile boolean updateInProgress = false;
     private final BitSet completedColumns = new BitSet();
     private final BitSet allNewColumns = new BitSet();
@@ -100,17 +99,11 @@ class SelectOrUpdateListener extends BaseTable.ListenerImpl {
                         handleException(error);
                     }
                 });
-        // if the analyzer failed we should rethrow the exception to notify the user
-        if (exception != null) {
-            final Exception localException = exception;
-            exception = null;
-            throw new UncheckedTableException(localException);
-        }
     }
 
     private void handleException(Exception e) {
-        exception = e;
         dependent.notifyListenersOnError(e, getEntry());
+        getParent().removeUpdateListener(this);
         try {
             if (SystemicObjectTracker.isSystemic(dependent)) {
                 AsyncClientErrorNotifier.reportError(e);
