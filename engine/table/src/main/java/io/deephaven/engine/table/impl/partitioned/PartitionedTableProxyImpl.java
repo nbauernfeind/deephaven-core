@@ -128,20 +128,29 @@ class PartitionedTableProxyImpl extends LivenessArtifact implements PartitionedT
         return sanityCheckJoins;
     }
 
-    private static ExecutionContext getOrCreateExecutionContext() {
+    private static ExecutionContext getOrCreateExecutionContext(final boolean requiresFullContext) {
         ExecutionContext context = ExecutionContext.getContextToRecord();
         if (context == null) {
-            context = ExecutionContext.newBuilder()
+            final ExecutionContext.Builder builder = ExecutionContext.newBuilder()
                     .captureCompilerContext()
-                    .markSystemic()
-                    .build();
+                    .markSystemic();
+            if (requiresFullContext) {
+                builder.newQueryLibrary();
+                builder.emptyQueryScope();
+            }
+            context = builder.build();
         }
         return context;
     }
 
     private PartitionedTable.Proxy basicTransform(@NotNull final UnaryOperator<Table> transformer) {
+        return basicTransform(false, transformer);
+    }
+
+    private PartitionedTable.Proxy basicTransform(
+            final boolean requiresFullContext, @NotNull final UnaryOperator<Table> transformer) {
         return new PartitionedTableProxyImpl(
-                target.transform(getOrCreateExecutionContext(), transformer),
+                target.transform(getOrCreateExecutionContext(requiresFullContext), transformer),
                 requireMatchingKeys,
                 sanityCheckJoins);
     }
@@ -150,7 +159,15 @@ class PartitionedTableProxyImpl extends LivenessArtifact implements PartitionedT
             @NotNull final TableOperations<?, ?> other,
             @NotNull final BinaryOperator<Table> transformer,
             @Nullable final Collection<? extends JoinMatch> joinMatches) {
-        final ExecutionContext context = getOrCreateExecutionContext();
+        return complexTransform(false, other, transformer, joinMatches);
+    }
+
+    private PartitionedTable.Proxy complexTransform(
+            final boolean requiresFullContext,
+            @NotNull final TableOperations<?, ?> other,
+            @NotNull final BinaryOperator<Table> transformer,
+            @Nullable final Collection<? extends JoinMatch> joinMatches) {
+        final ExecutionContext context = getOrCreateExecutionContext(requiresFullContext);
         if (other instanceof Table) {
             final Table otherTable = (Table) other;
             if ((target.table().isRefreshing() || otherTable.isRefreshing()) && joinMatches != null) {
@@ -495,16 +512,16 @@ class PartitionedTableProxyImpl extends LivenessArtifact implements PartitionedT
 
     @Override
     public PartitionedTable.Proxy aggAllBy(AggSpec spec, ColumnName... groupByColumns) {
-        return basicTransform(ct -> ct.aggAllBy(spec, groupByColumns));
+        return basicTransform(true, ct -> ct.aggAllBy(spec, groupByColumns));
     }
 
     @Override
     public PartitionedTable.Proxy aggBy(Collection<? extends Aggregation> aggregations, boolean preserveEmpty,
             TableOperations<?, ?> initialGroups, Collection<? extends ColumnName> groupByColumns) {
         if (initialGroups == null) {
-            return basicTransform(ct -> ct.aggBy(aggregations, preserveEmpty, null, groupByColumns));
+            return basicTransform(true, ct -> ct.aggBy(aggregations, preserveEmpty, null, groupByColumns));
         }
-        return complexTransform(initialGroups, (ct, ot) -> ct.aggBy(aggregations, preserveEmpty, ot, groupByColumns),
+        return complexTransform(true, initialGroups, (ct, ot) -> ct.aggBy(aggregations, preserveEmpty, ot, groupByColumns),
                 null);
     }
 
