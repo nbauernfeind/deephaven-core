@@ -41,4 +41,9 @@ public class FuzzerPrintListener extends InstrumentedTableUpdateListener {
         System.out.println("Error for: " + description);
         originalException.printStackTrace();
     }
+
+    @Override
+    protected void deregisterOnFailure() {
+        table.removeUpdateListener(this);
+    }
 }

@@ -3004,6 +3004,11 @@ public class QueryTableAggregationTest {
                         public void onFailureInternal(Throwable originalException, Entry sourceEntry) {
                             exception = originalException;
                         }
+
+                        @Override
+                        protected void deregisterOnFailure() {
+                            originalValue.removeUpdateListener(this);
+                        }
                     });
         }
 

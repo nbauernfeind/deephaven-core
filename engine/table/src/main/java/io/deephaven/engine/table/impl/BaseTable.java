@@ -972,6 +972,11 @@ public abstract class BaseTable extends LivenessArtifact
         }
 
         @Override
+        protected void deregisterOnFailure() {
+            parent.removeUpdateListener(this);
+        }
+
+        @Override
         public boolean canExecute(final long step) {
             return parent.satisfied(step);
         }
@@ -1031,6 +1036,11 @@ public abstract class BaseTable extends LivenessArtifact
         @Override
         public void onFailureInternal(Throwable originalException, Entry sourceEntry) {
             onFailureInternalWithDependent(dependent, originalException, sourceEntry);
+        }
+
+        @Override
+        protected void deregisterOnFailure() {
+            parent.removeUpdateListener(this);
         }
 
         @Override

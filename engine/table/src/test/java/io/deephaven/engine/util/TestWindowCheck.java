@@ -174,6 +174,11 @@ public class TestWindowCheck {
                 originalException.printStackTrace(new PrintWriter(errors));
                 TestCase.fail(errors.toString());
             }
+
+            @Override
+            protected void deregisterOnFailure() {
+                // this listener is for testing only
+            }
         }
 
         TableUpdateListener windowedFailureListener = new FailureListener();

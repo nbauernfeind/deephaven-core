@@ -227,6 +227,11 @@ public class BarrageSubscriptionImpl extends ReferenceCountedLivenessNode implem
                 }
 
                 @Override
+                protected void deregisterOnFailure() {
+                    resultTable.removeUpdateListener(this);
+                }
+
+                @Override
                 public void onUpdate(final TableUpdate upstream) {
                     boolean isComplete = false;
 

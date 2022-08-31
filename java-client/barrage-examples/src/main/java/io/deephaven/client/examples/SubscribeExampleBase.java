@@ -90,6 +90,11 @@ abstract class SubscribeExampleBase extends BarrageClientExampleBase {
                 }
 
                 @Override
+                protected void deregisterOnFailure() {
+                    tableRef.removeUpdateListener(this);
+                }
+
+                @Override
                 public void onUpdate(final TableUpdate upstream) {
                     System.out.println("Received table update:");
                     System.out.println(upstream);

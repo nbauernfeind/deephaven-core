@@ -19,4 +19,9 @@ public class FailureListener extends InstrumentedTableUpdateListener {
         originalException.printStackTrace();
         TestCase.fail(originalException.getMessage());
     }
+
+    @Override
+    protected void deregisterOnFailure() {
+        // this listener is for testing only
+    }
 }

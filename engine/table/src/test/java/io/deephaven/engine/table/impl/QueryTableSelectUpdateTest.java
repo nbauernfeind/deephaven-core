@@ -273,8 +273,11 @@ public class QueryTableSelectUpdateTest {
     private abstract static class PartialEvalNugget extends EvalNugget {
         // We listen to table updates, so we know what to compare.
         static class UpdateListener extends ShiftObliviousInstrumentedListener {
-            UpdateListener() {
+            private final Table source;
+
+            UpdateListener(final Table source) {
                 super("Update RefreshProcedure");
+                this.source = source;
             }
 
             RowSet added, removed, modified;
@@ -290,6 +293,11 @@ public class QueryTableSelectUpdateTest {
             @Override
             public void onFailureInternal(Throwable originalException, Entry sourceEntry) {
                 exception = originalException;
+            }
+
+            @Override
+            protected void deregisterOnFailure() {
+                source.removeUpdateListener(this);
             }
 
             void close() {
@@ -314,10 +322,10 @@ public class QueryTableSelectUpdateTest {
 
         PartialEvalNugget(Table sourceTable, boolean indexPositionChangesAllowed) {
             this.sourceTable = sourceTable;
-            listener1 = new UpdateListener();
+            listener1 = new UpdateListener(sourceTable);
             sourceTable.listenForUpdates(listener1);
 
-            listener2 = new UpdateListener();
+            listener2 = new UpdateListener(originalValue);
             originalValue.listenForUpdates(listener2);
 
             this.indexPositionChangesAllowed = indexPositionChangesAllowed;

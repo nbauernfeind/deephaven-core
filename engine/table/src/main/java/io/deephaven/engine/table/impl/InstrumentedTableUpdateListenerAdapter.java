@@ -88,6 +88,11 @@ public abstract class InstrumentedTableUpdateListenerAdapter extends Instrumente
     }
 
     @Override
+    protected void deregisterOnFailure() {
+        source.removeUpdateListener(this);
+    }
+
+    @Override
     public boolean canExecute(final long step) {
         return source.satisfied(step);
     }

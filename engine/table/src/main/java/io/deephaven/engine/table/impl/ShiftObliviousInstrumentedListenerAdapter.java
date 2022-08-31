@@ -86,6 +86,11 @@ public abstract class ShiftObliviousInstrumentedListenerAdapter extends ShiftObl
     }
 
     @Override
+    protected void deregisterOnFailure() {
+        source.removeUpdateListener(this);
+    }
+
+    @Override
     public boolean canExecute(final long step) {
         return source.satisfied(step);
     }

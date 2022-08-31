@@ -73,6 +73,11 @@ public abstract class EvalNugget implements EvalNuggetInterface {
             showResult("Incremental Table at Failure State:", originalValue);
             TestCase.fail(errors.toString());
         }
+
+        @Override
+        protected void deregisterOnFailure() {
+            // this listener is for testing only
+        }
     }
 
     private final TableUpdateListener failureListener = new FailureListener();

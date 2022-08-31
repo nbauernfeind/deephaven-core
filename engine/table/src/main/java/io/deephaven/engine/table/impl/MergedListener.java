@@ -46,6 +46,7 @@ public abstract class MergedListener extends LivenessArtifact implements Notific
     private long notificationStep = -1;
     private long queuedNotificationStep = -1;
     private long lastCompletedStep;
+    private boolean hasDeregisteredOnFailure = false;
     private Throwable upstreamError;
     private TableListener.Entry errorSourceEntry;
 
@@ -72,6 +73,14 @@ public abstract class MergedListener extends LivenessArtifact implements Notific
     public final void notifyOnUpstreamError(
             @NotNull final Throwable upstreamError, @Nullable final TableListener.Entry errorSourceEntry) {
         notifyInternal(upstreamError, errorSourceEntry);
+    }
+
+    public final void deregisterOnFailure() {
+        if (hasDeregisteredOnFailure) {
+            return;
+        }
+        hasDeregisteredOnFailure = true;
+        recorders.forEach(ListenerRecorder::deregisterOnFailure);
     }
 
     public void notifyChanges() {

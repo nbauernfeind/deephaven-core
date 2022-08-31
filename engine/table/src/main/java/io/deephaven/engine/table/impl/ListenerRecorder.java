@@ -29,6 +29,7 @@ public class ListenerRecorder extends InstrumentedTableUpdateListener {
     private MergedListener mergedListener;
 
     private long notificationStep = -1;
+    private boolean hasDeregisteredOnFailure = false;
     private TableUpdate update;
 
     public ListenerRecorder(
@@ -80,6 +81,19 @@ public class ListenerRecorder extends InstrumentedTableUpdateListener {
             throw new IllegalStateException("Merged listener not set");
         }
         mergedListener.notifyOnUpstreamError(originalException, sourceEntry);
+    }
+
+    @Override
+    protected void deregisterOnFailure() {
+        if (hasDeregisteredOnFailure) {
+            return;
+        }
+        hasDeregisteredOnFailure = true;
+        parent.removeUpdateListener(this);
+        if (mergedListener == null) {
+            throw new IllegalStateException("Merged listener not set");
+        }
+        mergedListener.deregisterOnFailure();
     }
 
     @Override
