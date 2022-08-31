@@ -2,7 +2,6 @@
 # Copyright (c) 2016-2022 Deephaven Data Labs and Patent Pending
 #
 
-import jpy
 import unittest
 
 from deephaven import read_csv, empty_table, SortDirection, AsOfMatchRule, DHError, time_table, ugp
@@ -293,14 +292,7 @@ class PartitionedTableProxyTestCase(BaseTestCase):
             ),
         ]
 
-        _JExecutionContext = jpy.get_type("io.deephaven.engine.context.ExecutionContext")
-        context = _JExecutionContext.newBuilder() \
-                .captureCompilerContext()         \
-                .captureQueryLibrary()            \
-                .emptyQueryScope()                \
-                .build().open()
         agg_pt_proxy = self.pt_proxy.agg_by(aggs=aggs, by=["a"])
-        context.close()
         for gct, ct in zip(agg_pt_proxy.target.constituent_tables, self.pt_proxy.target.constituent_tables):
             self.assertLessEqual(gct.size, ct.size)
             self.assertEqual(len(gct.columns), 8)

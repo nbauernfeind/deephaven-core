@@ -186,7 +186,7 @@ class PartitionedTableProxyImpl extends LivenessArtifact implements PartitionedT
             final PartitionedTable rhsToUse = maybeRewrap(validatedRhsTable, otherTarget);
 
             return new PartitionedTableProxyImpl(
-                    lhsToUse.partitionedTransform(rhsToUse, null, transformer),
+                    lhsToUse.partitionedTransform(rhsToUse, context, transformer),
                     requireMatchingKeys,
                     sanityCheckJoins);
         }

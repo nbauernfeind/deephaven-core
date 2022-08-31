@@ -403,7 +403,7 @@ public class CharacterSparseArraySource extends SparseArrayColumnSource<Characte
     }
 
     @Override
-    public void ensurePrevious(RowSet changedRows) {
+    public void prepareForParallelPopulation(RowSet changedRows) {
         final long currentStep = LogicalClock.DEFAULT.currentStep();
         if (ensurePreviousClockCycle == currentStep) {
             throw new IllegalStateException("May not call ensurePrevious twice on one clock cycle!");
@@ -414,14 +414,12 @@ public class CharacterSparseArraySource extends SparseArrayColumnSource<Characte
             return;
         }
 
-        // Note that this method is used to precondition the column source before processing an update in parallel. So,
-        // even if we are not tracking previous values, we need to allocate those blocks.
         if (prevFlusher != null) {
             prevFlusher.maybeActivate();
         }
 
         try (final RowSequence.Iterator it = changedRows.getRowSequenceIterator()) {
-            while (it.hasMore()) {
+            do {
                 final long firstKey = it.peekNextKey();
                 final long maxKeyInCurrentBlock = firstKey | INDEX_MASK;
 
@@ -447,7 +445,7 @@ public class CharacterSparseArraySource extends SparseArrayColumnSource<Characte
                     prevBlock[indexWithinBlock] = block[indexWithinBlock];
                     inUse[indexWithinInUse] |= maskWithinInUse;
                 });
-            }
+            } while (it.hasMore());
         }
     }
 
