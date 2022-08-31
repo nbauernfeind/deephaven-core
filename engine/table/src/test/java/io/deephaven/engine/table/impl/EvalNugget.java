@@ -74,10 +74,6 @@ public abstract class EvalNugget implements EvalNuggetInterface {
             TestCase.fail(errors.toString());
         }
 
-        @Override
-        protected void deregisterOnFailure() {
-            // this listener is for testing only
-        }
     }
 
     private final TableUpdateListener failureListener = new FailureListener();

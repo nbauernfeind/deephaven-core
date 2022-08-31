@@ -3005,10 +3005,6 @@ public class QueryTableAggregationTest {
                             exception = originalException;
                         }
 
-                        @Override
-                        protected void deregisterOnFailure() {
-                            originalValue.removeUpdateListener(this);
-                        }
                     });
         }
 

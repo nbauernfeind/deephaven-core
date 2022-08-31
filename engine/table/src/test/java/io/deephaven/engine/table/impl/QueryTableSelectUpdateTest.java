@@ -295,11 +295,6 @@ public class QueryTableSelectUpdateTest {
                 exception = originalException;
             }
 
-            @Override
-            protected void deregisterOnFailure() {
-                source.removeUpdateListener(this);
-            }
-
             void close() {
                 if (this.added != null) {
                     this.added.close();

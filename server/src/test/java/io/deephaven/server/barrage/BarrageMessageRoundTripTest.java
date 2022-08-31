@@ -148,10 +148,6 @@ public class BarrageMessageRoundTripTest extends RefreshingTableTestCase {
             TestCase.fail(errors.toString());
         }
 
-        @Override
-        protected void deregisterOnFailure() {
-            // this listener is for testing only
-        }
     }
 
     private class RemoteClient {

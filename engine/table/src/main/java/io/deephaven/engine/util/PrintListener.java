@@ -74,11 +74,6 @@ public class PrintListener extends InstrumentedTableUpdateListener {
         originalException.printStackTrace();
     }
 
-    @Override
-    protected void deregisterOnFailure() {
-        table.removeUpdateListener(this);
-    }
-
     /**
      * Remove this listener from the table.
      */

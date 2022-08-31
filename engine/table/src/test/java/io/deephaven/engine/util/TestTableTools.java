@@ -939,10 +939,6 @@ public class TestTableTools extends TestCase implements UpdateErrorReporter {
             @Override
             protected void onFailureInternal(Throwable originalException, Entry sourceEntry) {}
 
-            @Override
-            protected void deregisterOnFailure() {
-                result.removeUpdateListener(this);
-            }
         });
 
         for (int ii = 1; ii < 100; ++ii) {

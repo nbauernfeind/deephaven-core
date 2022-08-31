@@ -46,10 +46,6 @@ public class UpdateValidatorNugget implements EvalNuggetInterface {
                     TestCase.fail(errors.toString());
                 }
 
-                @Override
-                protected void deregisterOnFailure() {
-                    // this listener is for testing only
-                }
             };
 
     public void validate(final String msg) {

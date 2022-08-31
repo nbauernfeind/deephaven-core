@@ -20,8 +20,4 @@ public class FailureListener extends InstrumentedTableUpdateListener {
         TestCase.fail(originalException.getMessage());
     }
 
-    @Override
-    protected void deregisterOnFailure() {
-        // this listener is for testing only
-    }
 }

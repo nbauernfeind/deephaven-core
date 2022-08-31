@@ -152,11 +152,9 @@ public abstract class InstrumentedTableListenerBase extends LivenessArtifact
 
     @Override
     public void onFailure(Throwable originalException, Entry sourceEntry) {
-        deregisterOnFailure();
+        forceReferenceCountToZero();
         onFailureInternal(originalException, sourceEntry == null ? entry : sourceEntry);
     }
-
-    protected abstract void deregisterOnFailure();
 
     protected abstract void onFailureInternal(Throwable originalException, Entry sourceEntry);
 

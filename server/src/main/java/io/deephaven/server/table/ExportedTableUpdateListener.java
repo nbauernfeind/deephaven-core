@@ -203,10 +203,6 @@ public class ExportedTableUpdateListener implements StreamObserver<ExportNotific
             sendUpdateMessage(ExportTicketHelper.wrapExportIdInTicket(exportId), table.size(), error);
         }
 
-        @Override
-        protected void deregisterOnFailure() {
-            table.removeUpdateListener(this);
-        }
     }
 
     private static final KeyedLongObjectKey<ListenerImpl> EXPORT_KEY =
