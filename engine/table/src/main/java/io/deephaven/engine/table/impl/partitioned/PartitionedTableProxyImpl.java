@@ -521,7 +521,8 @@ class PartitionedTableProxyImpl extends LivenessArtifact implements PartitionedT
         if (initialGroups == null) {
             return basicTransform(true, ct -> ct.aggBy(aggregations, preserveEmpty, null, groupByColumns));
         }
-        return complexTransform(true, initialGroups, (ct, ot) -> ct.aggBy(aggregations, preserveEmpty, ot, groupByColumns),
+        return complexTransform(true, initialGroups,
+                (ct, ot) -> ct.aggBy(aggregations, preserveEmpty, ot, groupByColumns),
                 null);
     }
 
