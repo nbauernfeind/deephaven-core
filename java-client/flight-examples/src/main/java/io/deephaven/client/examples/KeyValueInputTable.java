@@ -8,6 +8,7 @@ import io.deephaven.client.impl.ScopeId;
 import io.deephaven.client.impl.TableHandle;
 import io.deephaven.client.impl.TableHandle.TableHandleException;
 import io.deephaven.qst.column.header.ColumnHeader;
+import io.deephaven.qst.table.EmptyTable;
 import io.deephaven.qst.table.InMemoryKeyBackedInputTable;
 import io.deephaven.qst.table.NewTable;
 import io.deephaven.qst.table.TableHeader;
@@ -70,7 +71,8 @@ class KeyValueInputTable extends FlightExampleBase {
     private void createKeyBackedInputTable(FlightSession flight)
             throws InterruptedException, ExecutionException, TimeoutException, TableHandleException {
         final TableHeader header = TableHeader.of(KEY_HEADER, VALUE_HEADER);
-        final TableSpec spec = InMemoryKeyBackedInputTable.of(header, Collections.singletonList(KEY_HEADER.name()));
+//        final TableSpec spec = InMemoryKeyBackedInputTable.of(header, Collections.singletonList(KEY_HEADER.name()));
+        final TableSpec spec = EmptyTable.of(0);
         try (final TableHandle handle = flight.session().execute(spec)) {
             // publicly expose
             flight.session().publish(scopedTableName, handle).get(5, TimeUnit.SECONDS);
