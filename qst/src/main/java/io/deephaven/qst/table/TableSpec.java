@@ -104,6 +104,8 @@ public interface TableSpec extends TableOperations<TableSpec, TableSpec>, TableS
 
         void visit(NewTable newTable);
 
+        void visit(MetaTable metaTable);
+
         void visit(TimeTable timeTable);
 
         void visit(MergeTable mergeTable);

@@ -20,6 +20,8 @@ public class OperationHelper {
             case EMPTY_TABLE:
             case TIME_TABLE:
                 return Stream.empty();
+            case META_TABLE:
+                return Stream.of(op.getMetaTable().getSourceId());
             case DROP_COLUMNS:
                 return Stream.of(op.getDropColumns().getSourceId());
             case UPDATE:

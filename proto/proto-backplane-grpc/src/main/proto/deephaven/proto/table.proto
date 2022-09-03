@@ -38,6 +38,11 @@ service TableService {
   rpc EmptyTable(EmptyTableRequest) returns (ExportedTableCreationResponse) {}
 
   /*
+   * Create an empty table with the given column names and types.
+   */
+  rpc MetaTable(MetaTableRequest) returns (ExportedTableCreationResponse) {}
+
+  /*
    * Create a time table with the given start time and period.
    */
   rpc TimeTable(TimeTableRequest) returns (ExportedTableCreationResponse) {}
@@ -259,6 +264,11 @@ message ExportedTableUpdateMessage {
 message EmptyTableRequest {
   Ticket result_id = 1;
   sint64 size = 2 [jstype=JS_STRING];
+}
+
+message MetaTableRequest {
+  Ticket result_id = 1;
+  TableReference source_id = 2;
 }
 
 message TimeTableRequest {
@@ -797,6 +807,7 @@ message BatchTableRequest {
       ApplyPreviewColumnsRequest apply_preview_columns = 30;
       CreateInputTableRequest create_input_table = 31;
       UpdateByRequest update_by = 32;
+      MetaTableRequest meta_table = 33;
     }
   }
 }

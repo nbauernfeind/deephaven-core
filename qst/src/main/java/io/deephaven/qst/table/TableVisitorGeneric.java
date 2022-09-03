@@ -18,6 +18,11 @@ public abstract class TableVisitorGeneric implements TableSpec.Visitor {
     }
 
     @Override
+    public void visit(MetaTable metaTable) {
+        accept(metaTable);
+    }
+
+    @Override
     public void visit(TimeTable timeTable) {
         accept(timeTable);
     }

@@ -39,6 +39,11 @@ public abstract class TableBase implements TableSpec {
     }
 
     @Override
+    public MetaTable getMeta() {
+        return MetaTable.of(this);
+    }
+
+    @Override
     public final HeadTable head(long size) {
         return HeadTable.of(this, size);
     }

@@ -30,6 +30,11 @@ public abstract class TableOperationsAdapter<TOPS_1 extends TableOperations<TOPS
     }
 
     @Override
+    public final TOPS_1 getMeta() {
+        return adapt(delegate.getMeta());
+    }
+
+    @Override
     public final TOPS_1 head(long size) {
         return adapt(delegate.head(size));
     }

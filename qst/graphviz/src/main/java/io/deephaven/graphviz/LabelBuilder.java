@@ -17,6 +17,7 @@ import io.deephaven.qst.table.InputTable;
 import io.deephaven.qst.table.Join;
 import io.deephaven.qst.table.JoinTable;
 import io.deephaven.qst.table.LazyUpdateTable;
+import io.deephaven.qst.table.MetaTable;
 import io.deephaven.qst.table.NaturalJoinTable;
 import io.deephaven.qst.table.ReverseAsOfJoinTable;
 import io.deephaven.qst.table.SelectDistinctTable;
@@ -66,6 +67,11 @@ public class LabelBuilder extends TableVisitorGeneric {
     @Override
     public void visit(EmptyTable emptyTable) {
         sb.append("empty(").append(emptyTable.size()).append(')');
+    }
+
+    @Override
+    public void visit(MetaTable metaTable) {
+        sb.append("getMeta()");
     }
 
     @Override

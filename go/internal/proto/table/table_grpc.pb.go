@@ -33,6 +33,8 @@ type TableServiceClient interface {
 	ApplyPreviewColumns(ctx context.Context, in *ApplyPreviewColumnsRequest, opts ...grpc.CallOption) (*ExportedTableCreationResponse, error)
 	// Create an empty table with the given column names and types.
 	EmptyTable(ctx context.Context, in *EmptyTableRequest, opts ...grpc.CallOption) (*ExportedTableCreationResponse, error)
+	// Create an empty table with the given column names and types.
+	MetaTable(ctx context.Context, in *MetaTableRequest, opts ...grpc.CallOption) (*ExportedTableCreationResponse, error)
 	// Create a time table with the given start time and period.
 	TimeTable(ctx context.Context, in *TimeTableRequest, opts ...grpc.CallOption) (*ExportedTableCreationResponse, error)
 	// Drop columns from the parent table.
@@ -157,6 +159,15 @@ func (c *tableServiceClient) ApplyPreviewColumns(ctx context.Context, in *ApplyP
 func (c *tableServiceClient) EmptyTable(ctx context.Context, in *EmptyTableRequest, opts ...grpc.CallOption) (*ExportedTableCreationResponse, error) {
 	out := new(ExportedTableCreationResponse)
 	err := c.cc.Invoke(ctx, "/io.deephaven.proto.backplane.grpc.TableService/EmptyTable", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tableServiceClient) MetaTable(ctx context.Context, in *MetaTableRequest, opts ...grpc.CallOption) (*ExportedTableCreationResponse, error) {
+	out := new(ExportedTableCreationResponse)
+	err := c.cc.Invoke(ctx, "/io.deephaven.proto.backplane.grpc.TableService/MetaTable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -493,6 +504,8 @@ type TableServiceServer interface {
 	ApplyPreviewColumns(context.Context, *ApplyPreviewColumnsRequest) (*ExportedTableCreationResponse, error)
 	// Create an empty table with the given column names and types.
 	EmptyTable(context.Context, *EmptyTableRequest) (*ExportedTableCreationResponse, error)
+	// Create an empty table with the given column names and types.
+	MetaTable(context.Context, *MetaTableRequest) (*ExportedTableCreationResponse, error)
 	// Create a time table with the given start time and period.
 	TimeTable(context.Context, *TimeTableRequest) (*ExportedTableCreationResponse, error)
 	// Drop columns from the parent table.
@@ -589,6 +602,9 @@ func (UnimplementedTableServiceServer) ApplyPreviewColumns(context.Context, *App
 }
 func (UnimplementedTableServiceServer) EmptyTable(context.Context, *EmptyTableRequest) (*ExportedTableCreationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EmptyTable not implemented")
+}
+func (UnimplementedTableServiceServer) MetaTable(context.Context, *MetaTableRequest) (*ExportedTableCreationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MetaTable not implemented")
 }
 func (UnimplementedTableServiceServer) TimeTable(context.Context, *TimeTableRequest) (*ExportedTableCreationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TimeTable not implemented")
@@ -779,6 +795,24 @@ func _TableService_EmptyTable_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TableServiceServer).EmptyTable(ctx, req.(*EmptyTableRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TableService_MetaTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MetaTableRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TableServiceServer).MetaTable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/io.deephaven.proto.backplane.grpc.TableService/MetaTable",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TableServiceServer).MetaTable(ctx, req.(*MetaTableRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1355,6 +1389,10 @@ var TableService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EmptyTable",
 			Handler:    _TableService_EmptyTable_Handler,
+		},
+		{
+			MethodName: "MetaTable",
+			Handler:    _TableService_MetaTable_Handler,
 		},
 		{
 			MethodName: "TimeTable",

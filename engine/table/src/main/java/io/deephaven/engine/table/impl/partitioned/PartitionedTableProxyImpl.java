@@ -382,6 +382,11 @@ class PartitionedTableProxyImpl extends LivenessArtifact implements PartitionedT
     // region TableOperations Implementation
 
     @Override
+    public PartitionedTable.Proxy getMeta() {
+        return basicTransform(Table::getMeta);
+    }
+
+    @Override
     public PartitionedTable.Proxy head(long size) {
         return basicTransform(ct -> ct.head(size));
     }

@@ -49,6 +49,7 @@ import io.deephaven.proto.backplane.grpc.HeadOrTailRequest;
 import io.deephaven.proto.backplane.grpc.IsNullCondition;
 import io.deephaven.proto.backplane.grpc.Literal;
 import io.deephaven.proto.backplane.grpc.MergeTablesRequest;
+import io.deephaven.proto.backplane.grpc.MetaTableRequest;
 import io.deephaven.proto.backplane.grpc.NaturalJoinTablesRequest;
 import io.deephaven.proto.backplane.grpc.NotCondition;
 import io.deephaven.proto.backplane.grpc.OrCondition;
@@ -79,6 +80,7 @@ import io.deephaven.qst.table.InputTable;
 import io.deephaven.qst.table.JoinTable;
 import io.deephaven.qst.table.LazyUpdateTable;
 import io.deephaven.qst.table.MergeTable;
+import io.deephaven.qst.table.MetaTable;
 import io.deephaven.qst.table.NaturalJoinTable;
 import io.deephaven.qst.table.NewTable;
 import io.deephaven.qst.table.ReverseAsOfJoinTable;
@@ -182,6 +184,12 @@ class BatchTableRequestBuilder {
         public void visit(NewTable newTable) {
             throw new UnsupportedOperationException(
                     "TODO(deephaven-core#992): TableService implementation of NewTable, https://github.com/deephaven/deephaven-core/issues/992");
+        }
+
+        @Override
+        public void visit(MetaTable metaTable) {
+            out = op(Builder::setMetaTable, MetaTableRequest.newBuilder().setResultId(ticket)
+                    .setSourceId(ref(metaTable.parent())));
         }
 
         @Override

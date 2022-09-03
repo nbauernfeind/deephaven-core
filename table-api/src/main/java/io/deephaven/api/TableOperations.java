@@ -20,6 +20,14 @@ import java.util.Collection;
  */
 public interface TableOperations<TOPS extends TableOperations<TOPS, TABLE>, TABLE> {
 
+    /**
+     * Provides column metadata in Table form.
+     *
+     * @return A TableOperations of metadata about this TableOperation's columns.
+     */
+    @ConcurrentMethod
+    TOPS getMeta();
+
     // -------------------------------------------------------------------------------------------
 
     @ConcurrentMethod

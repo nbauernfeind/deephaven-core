@@ -148,6 +148,11 @@ public class ParentsVisitor implements Visitor {
     }
 
     @Override
+    public void visit(MetaTable metaTable) {
+        out = single(metaTable);
+    }
+
+    @Override
     public void visit(TimeTable timeTable) {
         out = none();
     }

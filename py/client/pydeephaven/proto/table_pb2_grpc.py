@@ -40,6 +40,11 @@ class TableServiceStub(object):
                 request_serializer=deephaven_dot_proto_dot_table__pb2.EmptyTableRequest.SerializeToString,
                 response_deserializer=deephaven_dot_proto_dot_table__pb2.ExportedTableCreationResponse.FromString,
                 )
+        self.MetaTable = channel.unary_unary(
+                '/io.deephaven.proto.backplane.grpc.TableService/MetaTable',
+                request_serializer=deephaven_dot_proto_dot_table__pb2.MetaTableRequest.SerializeToString,
+                response_deserializer=deephaven_dot_proto_dot_table__pb2.ExportedTableCreationResponse.FromString,
+                )
         self.TimeTable = channel.unary_unary(
                 '/io.deephaven.proto.backplane.grpc.TableService/TimeTable',
                 request_serializer=deephaven_dot_proto_dot_table__pb2.TimeTableRequest.SerializeToString,
@@ -228,6 +233,14 @@ class TableServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def EmptyTable(self, request, context):
+        """
+        Create an empty table with the given column names and types.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def MetaTable(self, request, context):
         """
         Create an empty table with the given column names and types.
         """
@@ -516,6 +529,11 @@ def add_TableServiceServicer_to_server(servicer, server):
                     request_deserializer=deephaven_dot_proto_dot_table__pb2.EmptyTableRequest.FromString,
                     response_serializer=deephaven_dot_proto_dot_table__pb2.ExportedTableCreationResponse.SerializeToString,
             ),
+            'MetaTable': grpc.unary_unary_rpc_method_handler(
+                    servicer.MetaTable,
+                    request_deserializer=deephaven_dot_proto_dot_table__pb2.MetaTableRequest.FromString,
+                    response_serializer=deephaven_dot_proto_dot_table__pb2.ExportedTableCreationResponse.SerializeToString,
+            ),
             'TimeTable': grpc.unary_unary_rpc_method_handler(
                     servicer.TimeTable,
                     request_deserializer=deephaven_dot_proto_dot_table__pb2.TimeTableRequest.FromString,
@@ -757,6 +775,23 @@ class TableService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/io.deephaven.proto.backplane.grpc.TableService/EmptyTable',
             deephaven_dot_proto_dot_table__pb2.EmptyTableRequest.SerializeToString,
+            deephaven_dot_proto_dot_table__pb2.ExportedTableCreationResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def MetaTable(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/io.deephaven.proto.backplane.grpc.TableService/MetaTable',
+            deephaven_dot_proto_dot_table__pb2.MetaTableRequest.SerializeToString,
             deephaven_dot_proto_dot_table__pb2.ExportedTableCreationResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
