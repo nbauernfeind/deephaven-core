@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation project(':Integrations')
+    implementation project(':engine-updategraph')
 
     Classpaths.inheritImmutables(project)
 

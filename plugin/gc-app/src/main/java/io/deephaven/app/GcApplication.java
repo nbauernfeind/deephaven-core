@@ -48,14 +48,12 @@ public final class GcApplication implements ApplicationState.Factory, Notificati
     private static final String POOLS = "pools";
     private static final String POOLS_STATS = "pools_stats";
 
-    private static final String ENABLED = "io.deephaven.app.GcApplication.enabled";
-    private static final String NOTIFICATION_INFO_ENABLED = "io.deephaven.app.GcApplication.notification_info.enabled";
-    private static final String NOTIFICATION_INFO_STATS_ENABLED =
-            "io.deephaven.app.GcApplication.notification_info_stats.enabled";
-    private static final String NOTIFICATION_INFO_RING_ENABLED =
-            "io.deephaven.app.GcApplication.notification_info_ring.enabled";
-    private static final String POOLS_ENABLED = "io.deephaven.app.GcApplication.pools.enabled";
-    private static final String POOLS_STATS_ENABLED = "io.deephaven.app.GcApplication.pools_stats.enabled";
+    private static final String ENABLED = APP_ID + ".enabled";
+    private static final String NOTIFICATION_INFO_ENABLED = APP_ID + ".notification_info.enabled";
+    private static final String NOTIFICATION_INFO_STATS_ENABLED = APP_ID + ".notification_info_stats.enabled";
+    private static final String NOTIFICATION_INFO_RING_ENABLED = APP_ID + ".notification_info_ring.enabled";
+    private static final String POOLS_ENABLED = APP_ID + ".pools.enabled";
+    private static final String POOLS_STATS_ENABLED = APP_ID + ".pools_stats.enabled";
 
     /**
      * Looks up the system property {@value ENABLED}, defaults to {@code false}.
@@ -115,8 +113,6 @@ public final class GcApplication implements ApplicationState.Factory, Notificati
 
     private GcNotificationPublisher notificationInfoPublisher;
     private GcPoolsPublisher poolsPublisher;
-    @SuppressWarnings("FieldCanBeLocal")
-    private LivenessScope scope;
 
     @Override
     public void handleNotification(Notification notification, Object handback) {
@@ -148,14 +144,11 @@ public final class GcApplication implements ApplicationState.Factory, Notificati
         if (!notificationInfoEnabled() && !poolsEnabled()) {
             return state;
         }
-        scope = new LivenessScope();
-        try (final SafeCloseable ignored = LivenessScopeStack.open(scope, false)) {
-            if (notificationInfoEnabled) {
-                setNotificationInfo(state);
-            }
-            if (poolsEnabled) {
-                setPools(state);
-            }
+        if (notificationInfoEnabled) {
+            setNotificationInfo(state);
+        }
+        if (poolsEnabled) {
+            setPools(state);
         }
         install();
         return state;

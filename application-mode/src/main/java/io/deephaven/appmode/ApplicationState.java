@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
+import io.deephaven.engine.liveness.LivenessScope;
 
-public class ApplicationState {
+public class ApplicationState extends LivenessScope {
 
     public interface Factory {
 

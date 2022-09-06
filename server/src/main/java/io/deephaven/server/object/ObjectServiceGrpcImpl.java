@@ -63,6 +63,7 @@ public class ObjectServiceGrpcImpl extends ObjectServiceGrpc.ObjectServiceImplBa
             final SessionState.ExportObject<Object> object = ticketRouter.resolve(
                     session, request.getSourceId().getTicket(), "sourceId");
             session.nonExport()
+                    .description("ObjectService#fetchObject")
                     .require(object)
                     .onError(responseObserver)
                     .submit(() -> {
@@ -160,7 +161,7 @@ public class ObjectServiceGrpcImpl extends ObjectServiceGrpc.ObjectServiceImplBa
             if (!allowUnknownType && type == null) {
                 return Optional.empty();
             }
-            final ExportObject<?> exportObject = sessionState.newServerSideExport(object);
+            final ExportObject<?> exportObject = sessionState.newServerSideExport(object, "ObjectService#reference");
             final ReferenceImpl ref = new ReferenceImpl(references.size(), type, exportObject);
             references.add(ref);
             return Optional.of(ref);

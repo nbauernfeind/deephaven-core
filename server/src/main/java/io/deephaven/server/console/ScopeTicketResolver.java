@@ -8,6 +8,7 @@ import com.google.rpc.Code;
 import io.deephaven.base.string.EncodingInfo;
 import io.deephaven.engine.context.QueryScope;
 import io.deephaven.engine.liveness.LivenessReferent;
+import io.deephaven.engine.liveness.LivenessStateException;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.updategraph.DynamicNode;
 import io.deephaven.engine.updategraph.UpdateGraphProcessor;
@@ -71,7 +72,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
                     "Could not resolve '" + logId + "': no variable exists with name '" + scopeName + "'");
         });
 
-        return SessionState.wrapAsExport(flightInfo);
+        return SessionState.wrapAsExport(flightInfo, "ScopeTicketResolver#flightInfoFor");
     }
 
     @Override
@@ -103,8 +104,11 @@ public class ScopeTicketResolver extends TicketResolverBase {
             final ScriptSession gss = scriptSessionProvider.get();
             T scopeVar = null;
             try {
-                // noinspection unchecked
-                scopeVar = (T) gss.unwrapObject(gss.getVariable(scopeName));
+                //noinspection SynchronizationOnLocalVariableOrMethodParameter
+                synchronized (gss) {
+                    // noinspection unchecked
+                    scopeVar = (T) gss.unwrapObject(gss.getVariable(scopeName));
+                }
             } catch (QueryScope.MissingVariableException ignored) {
             }
             return scopeVar;
@@ -115,7 +119,21 @@ public class ScopeTicketResolver extends TicketResolverBase {
                     "Could not resolve '" + logId + "': no variable exists with name '" + scopeName + "'"));
         }
 
-        return SessionState.wrapAsExport(export);
+        if (export instanceof SessionState.ExportObject) {
+            //noinspection unchecked
+            final SessionState.ExportObject<T> asExportObject = (SessionState.ExportObject<T>) export;
+            // ensure the result is live until the caller uses it; if it is not live, we will fetch from the
+            // script session again as the variable may now be the result of this ExportObject.
+            try {
+                asExportObject.manageWithCurrentScope();
+                return asExportObject;
+            } catch (LivenessStateException ignored) {
+                return SessionState.wrapAsFailedExport(GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION,
+                        "Could not resolve '" + logId + "': no variable exists with name '" + scopeName + "'"));
+            }
+        }
+
+        return SessionState.wrapAsExport(export, "ScopeTicketResolver#resolve");
     }
 
     @Override
@@ -138,18 +156,29 @@ public class ScopeTicketResolver extends TicketResolverBase {
         final SessionState.ExportObject<T> resultExport = resultBuilder.getExport();
         final SessionState.ExportBuilder<T> publishTask = session.nonExport();
 
+        // if we receive requests to read from this variable before the client has finished publishing, we will
+        // give the user the result export object to wait on as a dependency.
+        final ScriptSession gss = scriptSessionProvider.get();
+        synchronized (gss) {
+            gss.setVariable(varName, resultExport);
+        }
+
         publishTask
+                .description("ScopeTicketResolver#publish(" + varName + ")")
                 .requiresSerialQueue()
                 .require(resultExport)
                 .submit(() -> {
-                    final ScriptSession gss = scriptSessionProvider.get();
                     T value = resultExport.get();
                     if (value instanceof LivenessReferent && DynamicNode.notDynamicOrIsRefreshing(value)) {
                         gss.manage((LivenessReferent) value);
                     }
-                    gss.setVariable(varName, value);
+                    synchronized (gss) {
+                        gss.setVariable(varName, value);
+                    }
                 });
 
+        publishTask.setStateToPublishing();
+        resultBuilder.setStateToPublishing();
         return resultBuilder;
     }
 
