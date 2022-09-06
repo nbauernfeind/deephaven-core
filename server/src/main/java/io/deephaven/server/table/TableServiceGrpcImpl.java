@@ -375,6 +375,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
             final SessionState.ExportObject<Object> export = ticketRouter.resolve(session, request, "request");
 
             session.nonExport()
+                    .description("TableService#getExportedTableCreationResponse")
                     .require(export)
                     .onError(responseObserver)
                     .submit(() -> {
@@ -415,6 +416,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
                     .collect(Collectors.toList());
 
             session.newExport(resultId, "resultId")
+                    .description("TableService#" + op.name())
                     .require(dependencies)
                     .onError(responseObserver)
                     .submit(() -> {
@@ -460,6 +462,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
         final Ticket resultId = operation.getResultTicket(request);
         final ExportBuilder<Table> exportBuilder =
                 resultId.getTicket().isEmpty() ? session.nonExport() : session.newExport(resultId, "resultId");
+        exportBuilder.description("TableService#" + op.getOpCase().name() + "(batch)");
         return new BatchExportBuilder<>(operation, request, exportBuilder);
     }
 

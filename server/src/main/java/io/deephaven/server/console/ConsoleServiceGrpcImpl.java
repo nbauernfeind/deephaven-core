@@ -116,6 +116,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
             }
 
             session.newExport(request.getResultId(), "resultId")
+                    .description("ConsoleService#startConsole")
                     .onError(responseObserver)
                     .submit(() -> {
                         final ScriptSession scriptSession = new DelegatingScriptSession(scriptSessionProvider.get());
@@ -162,6 +163,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
             SessionState.ExportObject<ScriptSession> exportedConsole =
                     ticketRouter.resolve(session, consoleId, "consoleId");
             session.nonExport()
+                    .description("ConsoleService#executeCommand")
                     .requiresSerialQueue()
                     .require(exportedConsole)
                     .onError(responseObserver)
@@ -234,6 +236,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
             final SessionState.ExportObject<ScriptSession> exportedConsole;
 
             ExportBuilder<?> exportBuilder = session.nonExport()
+                    .description("ConsoleService#bindTableToVariable")
                     .requiresSerialQueue()
                     .onError(responseObserver);
 
@@ -299,6 +302,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                             SessionState.ExportObject<ScriptSession> exportedConsole =
                                     session.getExport(request.getConsoleId(), "consoleId");
                             session.nonExport()
+                                    .description("ConsoleService#getAutoCompleteItems")
                                     .require(exportedConsole)
                                     .onError(responseObserver)
                                     .submit(() -> {

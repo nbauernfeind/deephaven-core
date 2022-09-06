@@ -39,6 +39,7 @@ public class ExportTicketResolver extends TicketResolverBase {
 
         final SessionState.ExportObject<?> export = resolve(session, descriptor, logId);
         return session.<Flight.FlightInfo>nonExport()
+                .description("ExportTicketResolver#flightInfoFor")
                 .require(export)
                 .submit(() -> {
                     if (export.get() instanceof Table) {
@@ -81,12 +82,16 @@ public class ExportTicketResolver extends TicketResolverBase {
     @Override
     public <T> SessionState.ExportBuilder<T> publish(
             final SessionState session, final ByteBuffer ticket, final String logId) {
-        return session.newExport(ExportTicketHelper.ticketToExportId(ticket, logId));
+        SessionState.ExportBuilder<T> export = session.newExport(ExportTicketHelper.ticketToExportId(ticket, logId));
+        export.setStateToPublishing();
+        return export;
     }
 
     @Override
     public <T> SessionState.ExportBuilder<T> publish(
             final SessionState session, final Flight.FlightDescriptor descriptor, final String logId) {
-        return session.newExport(FlightExportTicketHelper.descriptorToExportId(descriptor, logId));
+        SessionState.ExportBuilder<T> export = session.newExport(FlightExportTicketHelper.descriptorToExportId(descriptor, logId));
+        export.setStateToPublishing();
+        return export;
     }
 }

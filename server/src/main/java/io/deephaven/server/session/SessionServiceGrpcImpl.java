@@ -171,6 +171,7 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
             final SessionState.ExportObject<Object> source = ticketRouter.resolve(
                     session, request.getSourceId(), "sourceId");
             session.newExport(request.getResultId(), "resultId")
+                    .description("SessionService#exportFromTicket")
                     .require(source)
                     .onError(responseObserver)
                     .submit(() -> {

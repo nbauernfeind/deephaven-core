@@ -80,7 +80,7 @@ public class ApplicationTicketResolver extends TicketResolverBase implements App
                     "Could not resolve '" + logId + "': field '" + getLogNameFor(id) + "' not found");
         }
         // noinspection unchecked
-        return SessionState.wrapAsExport((T) field.value());
+        return SessionState.wrapAsExport((T) field.value(), "ApplicationTicketResolver#resolve");
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ApplicationTicketResolver extends TicketResolverBase implements App
             }
         }
 
-        return SessionState.wrapAsExport(info);
+        return SessionState.wrapAsExport(info, "ApplicationTicketResolver#flightInfoFor");
     }
 
     @Override

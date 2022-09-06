@@ -47,6 +47,7 @@ public class InputTableServiceGrpcImpl extends InputTableServiceGrpc.InputTableS
                     ticketRouter.resolve(session, request.getTableToAdd(), "tableToAdd");
 
             session.nonExport()
+                    .description("InputTableServiceGrpcImpl#addTableToInputTable")
                     .requiresSerialQueue()
                     .onError(responseObserver)
                     .require(targetTable, tableToAdd)
@@ -94,6 +95,7 @@ public class InputTableServiceGrpcImpl extends InputTableServiceGrpc.InputTableS
                     ticketRouter.resolve(session, request.getTableToRemove(), "tableToDelete");
 
             session.nonExport()
+                    .description("InputTableServiceGrpcImpl#deleteTableFromInputTable")
                     .requiresSerialQueue()
                     .onError(responseObserver)
                     .require(targetTable, tableToDeleteExport)
