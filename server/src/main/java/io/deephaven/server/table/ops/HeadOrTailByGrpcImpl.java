@@ -4,8 +4,10 @@
 package io.deephaven.server.table.ops;
 
 import com.google.rpc.Code;
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.datastructures.util.CollectionUtil;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.impl.select.SelectColumn;
 import io.deephaven.engine.table.impl.select.SelectColumnFactory;
@@ -32,10 +34,11 @@ public abstract class HeadOrTailByGrpcImpl extends GrpcTableOperation<HeadOrTail
     private final UpdateGraphProcessor updateGraphProcessor;
 
     protected HeadOrTailByGrpcImpl(
+            final PermissionFunction<HeadOrTailByRequest> permission,
             final Function<BatchTableRequest.Operation, HeadOrTailByRequest> getRequest,
             final RealTableOperation realTableOperation,
             final UpdateGraphProcessor updateGraphProcessor) {
-        super(getRequest, HeadOrTailByRequest::getResultId, HeadOrTailByRequest::getSourceId);
+        super(permission, getRequest, HeadOrTailByRequest::getResultId, HeadOrTailByRequest::getSourceId);
         this.realTableOperation = realTableOperation;
         this.updateGraphProcessor = updateGraphProcessor;
     }
@@ -49,9 +52,10 @@ public abstract class HeadOrTailByGrpcImpl extends GrpcTableOperation<HeadOrTail
     }
 
     @Override
-    public Table create(final HeadOrTailByRequest request, final List<SessionState.ExportObject<Table>> sourceTables) {
+    public Table create(final HeadOrTailByRequest request,
+            final List<SessionState.ExportObject<Table>> sourceTables) {
         Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
-
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
         final Table parent = sourceTables.get(0).get();
         final String[] columnSpecs =
                 request.getGroupByColumnSpecsList().toArray(CollectionUtil.ZERO_LENGTH_STRING_ARRAY);
@@ -70,16 +74,22 @@ public abstract class HeadOrTailByGrpcImpl extends GrpcTableOperation<HeadOrTail
     @Singleton
     public static class HeadByGrpcImpl extends HeadOrTailByGrpcImpl {
         @Inject
-        public HeadByGrpcImpl(final UpdateGraphProcessor updateGraphProcessor) {
-            super(BatchTableRequest.Operation::getHeadBy, Table::headBy, updateGraphProcessor);
+        public HeadByGrpcImpl(
+                final TableServiceContextualAuthWiring authWiring,
+                final UpdateGraphProcessor updateGraphProcessor) {
+            super(authWiring::checkPermissionHeadBy, BatchTableRequest.Operation::getHeadBy, Table::headBy,
+                    updateGraphProcessor);
         }
     }
 
     @Singleton
     public static class TailByGrpcImpl extends HeadOrTailByGrpcImpl {
         @Inject
-        public TailByGrpcImpl(final UpdateGraphProcessor updateGraphProcessor) {
-            super(BatchTableRequest.Operation::getTailBy, Table::tailBy, updateGraphProcessor);
+        public TailByGrpcImpl(
+                final TableServiceContextualAuthWiring authWiring,
+                final UpdateGraphProcessor updateGraphProcessor) {
+            super(authWiring::checkPermissionTailBy, BatchTableRequest.Operation::getTailBy, Table::tailBy,
+                    updateGraphProcessor);
         }
     }
 }

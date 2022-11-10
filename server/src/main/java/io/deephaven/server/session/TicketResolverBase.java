@@ -3,11 +3,23 @@
  */
 package io.deephaven.server.session;
 
+import io.deephaven.engine.table.Table;
+
 public abstract class TicketResolverBase implements TicketResolver {
+
+    @FunctionalInterface
+    public interface AuthTableTransformation {
+       Table transform(Table sourceTable);
+    }
+
+    protected final AuthTableTransformation authTableTransformation;
     private final byte ticketPrefix;
     private final String flightDescriptorRoute;
 
-    public TicketResolverBase(final byte ticketPrefix, final String flightDescriptorRoute) {
+    public TicketResolverBase(
+            final AuthTableTransformation authTableTransformation,
+            final byte ticketPrefix, final String flightDescriptorRoute) {
+        this.authTableTransformation = authTableTransformation;
         this.ticketPrefix = ticketPrefix;
         this.flightDescriptorRoute = flightDescriptorRoute;
     }

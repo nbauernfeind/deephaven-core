@@ -10,9 +10,6 @@ import io.deephaven.io.log.impl.LogOutputStringImpl;
 public abstract class AuthContext implements LogOutputAppendable {
 
     @Override
-    public abstract LogOutput append(LogOutput logOutput);
-
-    @Override
     public final String toString() {
         return new LogOutputStringImpl().append(this).toString();
     }
@@ -31,6 +28,33 @@ public abstract class AuthContext implements LogOutputAppendable {
         @Override
         public LogOutput append(LogOutput logOutput) {
             return logOutput.append("Anonymous");
+        }
+    }
+
+//    public static class ConfiguredAuthContext extends AuthContext {
+//        private final String username;
+//        private final AuthorizationSource authorizationSource;
+//
+//        public ConfiguredAuthContext(final String username, final AuthorizationSource authorizationSource) {
+//            this.authorizationSource = authorizationSource;
+//            this.username = username;
+//        }
+//
+//        @Override
+//        public LogOutput append(LogOutput logOutput) {
+//            return logOutput.append("AuthContext{username=").append(username).append('}');
+//        }
+//
+//        @Override
+//        public AuthorizationResult hasPrivilege(final Privilege privilege) {
+//            return authorizationSource.hasPrivilege(privilege);
+//        }
+//    }
+
+    public static class BlockAllAuthContext extends AuthContext {
+        @Override
+        public LogOutput append(LogOutput logOutput) {
+            return logOutput.append("NoAuthorization");
         }
     }
 }

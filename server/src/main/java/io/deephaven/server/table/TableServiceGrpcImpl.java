@@ -47,7 +47,6 @@ import io.deephaven.server.session.SessionState;
 import io.deephaven.server.session.SessionState.ExportBuilder;
 import io.deephaven.server.session.TicketRouter;
 import io.deephaven.server.table.ops.GrpcTableOperation;
-import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
@@ -398,7 +397,9 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
      * @param responseObserver the observer that needs to know the result of this rpc
      * @param <T> the protobuf type that configures the behavior of the operation
      */
-    private <T> void oneShotOperationWrapper(final BatchTableRequest.Operation.OpCase op, final T request,
+    private <T> void oneShotOperationWrapper(
+            final BatchTableRequest.Operation.OpCase op,
+            final T request,
             final StreamObserver<ExportedTableCreationResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState session = sessionService.getCurrentSession();

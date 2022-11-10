@@ -7,6 +7,7 @@ import com.google.protobuf.ByteString;
 import com.google.rpc.Code;
 import io.deephaven.auth.AuthContext;
 import io.deephaven.auth.AuthenticationException;
+import io.deephaven.auth.ServiceAuthWiring;
 import io.deephaven.extensions.barrage.util.GrpcUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
@@ -25,6 +26,7 @@ import io.deephaven.proto.backplane.grpc.TerminationNotificationResponse;
 import io.grpc.Context;
 import io.grpc.Contexts;
 import io.grpc.ForwardingServerCall.SimpleForwardingServerCall;
+import io.grpc.ForwardingServerCallListener;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
@@ -37,7 +39,10 @@ import org.apache.arrow.flight.auth2.Auth2Constants;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -57,7 +62,9 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
     private final TicketRouter ticketRouter;
 
     @Inject()
-    public SessionServiceGrpcImpl(final SessionService service, final TicketRouter ticketRouter) {
+    public SessionServiceGrpcImpl(
+            final SessionService service,
+            final TicketRouter ticketRouter) {
         this.service = service;
         this.ticketRouter = ticketRouter;
     }
@@ -126,6 +133,7 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
     public void release(final ReleaseRequest request, final StreamObserver<ReleaseResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState session = service.getCurrentSession();
+
             if (!request.hasId()) {
                 responseObserver
                         .onError(GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "Release ticket not supplied"));
@@ -157,6 +165,7 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
     public void exportFromTicket(ExportRequest request, StreamObserver<ExportResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState session = service.getCurrentSession();
+
             if (!request.hasSourceId()) {
                 responseObserver
                         .onError(GrpcUtil.statusRuntimeException(Code.INVALID_ARGUMENT, "Source ticket not supplied"));
@@ -272,9 +281,14 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
     public static class AuthServerInterceptor implements ServerInterceptor {
         private final SessionService service;
 
+        private final Map<String, ServiceAuthWiring> authWiringMap;
+
         @Inject()
-        public AuthServerInterceptor(final SessionService service) {
+        public AuthServerInterceptor(
+                final SessionService service,
+                final Map<String, ServiceAuthWiring> authWiringMap) {
             this.service = service;
+            this.authWiringMap = authWiringMap;
         }
 
         @Override
@@ -282,6 +296,17 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
                 final Metadata metadata,
                 final ServerCallHandler<ReqT, RespT> serverCallHandler) {
             SessionState session = null;
+            final Provider<ServerCall.Listener<ReqT>> onFailure = () -> {
+                try {
+                    call.close(Status.UNAUTHENTICATED, new Metadata());
+                } catch (IllegalStateException ignored) {
+                    // could be thrown if the call was already closed. As an interceptor, we can't throw,
+                    // so ignoring this and just returning the no-op listener.
+                }
+                return new ServerCall.Listener<>() {};
+            };
+
+            // Lookup the session using Flight Auth 1.0 token.
             final byte[] altToken = metadata.get(AuthConstants.TOKEN_KEY);
             if (altToken != null) {
                 try {
@@ -290,24 +315,91 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
                 }
             }
 
+            // Lookup the session using Flight Auth 2.0 token.
             final String token = metadata.get(SESSION_HEADER_KEY);
             if (session == null && token != null) {
                 try {
                     session = service.getSessionForAuthToken(token);
                 } catch (AuthenticationException e) {
-                    try {
-                        call.close(Status.UNAUTHENTICATED, new Metadata());
-                    } catch (IllegalStateException ignored) {
-                        // could be thrown if the call was already closed. As an interceptor, we can't throw,
-                        // so ignoring this and just returning the no-op listener.
-                    }
-                    return new ServerCall.Listener<>() {};
+                    return onFailure.get();
                 }
             }
+
+            // find the auth method
+            final String serviceName = call.getMethodDescriptor().getServiceName();
+            final String methodName = call.getMethodDescriptor().getBareMethodName();
+            final ServiceAuthWiring authWiring = authWiringMap.get(serviceName);
+            if (authWiring == null) {
+                log.error().append("Could not find authorization wiring for service: ").append(serviceName)
+                        .append(" method: ").append(methodName).endl();
+                return onFailure.get();
+            }
+
+            final Provider<Method> authMethodLookup = () -> {
+                final String authMethodName = "checkPermission" + methodName;
+                final Method[] authMethods = authWiring.getClass().getDeclaredMethods();
+
+                int authMethodIndex = 0;
+                for (; authMethodIndex < authMethods.length; ++authMethodIndex) {
+                    if (authMethods[authMethodIndex].getName().equals(authMethodName)) {
+                        break;
+                    }
+                }
+
+                if (authMethodIndex == authMethods.length) {
+                    log.error().append("Could not find auth method for service: ").append(serviceName)
+                            .append(" method: ").append(methodName).endl();
+                    return null;
+                }
+
+                return authMethods[authMethodIndex];
+            };
+            final Method authMethod = authMethodLookup.get();
+            if (authMethod == null) {
+                return onFailure.get();
+            }
+            final boolean isClientStreaming = !call.getMethodDescriptor().getType().clientSendsOneMessage();
+
+            // Create a final reference to the auth context for the innerHandler
+            final AuthContext authContext = session == null ? null : session.getAuthContext();
+
+            // On the inner half of the call we'll validate that the request is authorized.
+            final ServerCallHandler<ReqT, RespT> innerHandler = (innerCall, headers) -> {
+                // client streaming calls allow for zero messages, so we check authorization now
+                if (isClientStreaming) {
+                    try {
+                        authMethod.invoke(authWiring, authContext);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        log.error().append("Failed to invoke auth method: ").append(e).endl();
+                        throw Status.UNAUTHENTICATED.asRuntimeException();
+                    }
+                }
+
+                final ServerCall.Listener<ReqT> delegate = serverCallHandler.startCall(innerCall, headers);
+                return new ForwardingServerCallListener.SimpleForwardingServerCallListener<>(delegate) {
+                    @Override
+                    public void onMessage(ReqT message) {
+                        // authorize requests now if the client was required to send a single request
+                        if (!isClientStreaming) {
+                            try {
+                                authMethod.invoke(authWiring, authContext, message);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                log.error().append("Failed to invoke auth method: ").append(e).endl();
+                                throw Status.UNAUTHENTICATED.asRuntimeException();
+                            }
+                        }
+
+                        // if we're still here, then it is safe to continue with the request
+                        delegate().onMessage(message);
+                    }
+                };
+            };
+
+            // On the outer half of the call we'll install the context that includes our session.
             final InterceptedCall<ReqT, RespT> serverCall = new InterceptedCall<>(service, call, session);
-            final Context newContext = Context.current().withValues(
+            final Context context = Context.current().withValues(
                     SESSION_CONTEXT_KEY, session, SESSION_CALL_KEY, serverCall);
-            return Contexts.interceptCall(newContext, serverCall, metadata, serverCallHandler);
+            return Contexts.interceptCall(context, serverCall, metadata, innerHandler);
         }
     }
 }

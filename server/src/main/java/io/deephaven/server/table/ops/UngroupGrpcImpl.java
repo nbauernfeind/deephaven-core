@@ -4,7 +4,9 @@
 package io.deephaven.server.table.ops;
 
 import io.deephaven.api.ColumnName;
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.proto.backplane.grpc.BatchTableRequest;
@@ -22,14 +24,19 @@ public class UngroupGrpcImpl extends GrpcTableOperation<UngroupRequest> {
     private final UpdateGraphProcessor updateGraphProcessor;
 
     @Inject
-    public UngroupGrpcImpl(final UpdateGraphProcessor updateGraphProcessor) {
-        super(BatchTableRequest.Operation::getUngroup, UngroupRequest::getResultId, UngroupRequest::getSourceId);
+    public UngroupGrpcImpl(
+            final TableServiceContextualAuthWiring authWiring,
+            final UpdateGraphProcessor updateGraphProcessor) {
+        super(authWiring::checkPermissionUngroup, BatchTableRequest.Operation::getUngroup,
+                UngroupRequest::getResultId, UngroupRequest::getSourceId);
         this.updateGraphProcessor = updateGraphProcessor;
     }
 
     @Override
-    public Table create(final UngroupRequest request, final List<SessionState.ExportObject<Table>> sourceTables) {
+    public Table create(final UngroupRequest request,
+            final List<SessionState.ExportObject<Table>> sourceTables) {
         Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
         final Table parent = sourceTables.get(0).get();
         final List<ColumnName> columnsToUngroup = request.getColumnsToUngroupList()
                 .stream()

@@ -7,7 +7,9 @@ import com.google.rpc.Code;
 import io.deephaven.api.ColumnName;
 import io.deephaven.api.agg.Aggregation;
 import io.deephaven.api.util.NameValidator;
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.ColumnDefinition;
 import io.deephaven.engine.table.Table;
 import io.deephaven.extensions.barrage.util.GrpcUtil;
@@ -32,9 +34,9 @@ import static io.deephaven.api.agg.Aggregation.*;
 public class ComboAggregateGrpcImpl extends GrpcTableOperation<ComboAggregateRequest> {
 
     @Inject
-    public ComboAggregateGrpcImpl() {
-        super(BatchTableRequest.Operation::getComboAggregate, ComboAggregateRequest::getResultId,
-                ComboAggregateRequest::getSourceId);
+    public ComboAggregateGrpcImpl(final TableServiceContextualAuthWiring authWiring) {
+        super(authWiring::checkPermissionComboAggregate, BatchTableRequest.Operation::getComboAggregate,
+                ComboAggregateRequest::getResultId, ComboAggregateRequest::getSourceId);
     }
 
     @Override
@@ -112,6 +114,7 @@ public class ComboAggregateGrpcImpl extends GrpcTableOperation<ComboAggregateReq
     public Table create(final ComboAggregateRequest request,
             final List<SessionState.ExportObject<Table>> sourceTables) {
         Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
         final Table parent = sourceTables.get(0).get();
         final ColumnName[] groupByColumns = request.getGroupByColumnsList()
                 .stream()

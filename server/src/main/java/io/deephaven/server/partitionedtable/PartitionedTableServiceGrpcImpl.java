@@ -4,7 +4,6 @@ import com.google.rpc.Code;
 import io.deephaven.engine.table.PartitionedTable;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.updategraph.UpdateGraphProcessor;
-import io.deephaven.extensions.barrage.util.ExportUtil;
 import io.deephaven.extensions.barrage.util.GrpcUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
@@ -20,8 +19,6 @@ import io.deephaven.server.session.TicketRouter;
 import io.grpc.stub.StreamObserver;
 
 import javax.inject.Inject;
-
-import java.util.function.Supplier;
 
 import static io.deephaven.extensions.barrage.util.ExportUtil.buildTableCreationResponse;
 import static io.deephaven.extensions.barrage.util.GrpcUtil.safelyExecute;

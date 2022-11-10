@@ -36,8 +36,9 @@ public class ApplicationTicketResolver extends TicketResolverBase implements App
     private final Map<String, ApplicationState> applicationMap = new ConcurrentHashMap<>();
 
     @Inject
-    public ApplicationTicketResolver() {
-        super((byte) ApplicationTicketHelper.TICKET_PREFIX, ApplicationTicketHelper.FLIGHT_DESCRIPTOR_ROUTE);
+    public ApplicationTicketResolver(final AuthTableTransformation authTableTransformation) {
+        super(authTableTransformation, (byte) ApplicationTicketHelper.TICKET_PREFIX,
+                ApplicationTicketHelper.FLIGHT_DESCRIPTOR_ROUTE);
     }
 
     @Override
@@ -79,8 +80,12 @@ public class ApplicationTicketResolver extends TicketResolverBase implements App
             throw GrpcUtil.statusRuntimeException(Code.NOT_FOUND,
                     "Could not resolve '" + logId + "': field '" + getLogNameFor(id) + "' not found");
         }
+        Object value = field.value();
+        if (value instanceof Table) {
+            value = authTableTransformation.transform((Table) value);
+        }
         // noinspection unchecked
-        return SessionState.wrapAsExport((T) field.value());
+        return SessionState.wrapAsExport((T) value);
     }
 
     @Override
@@ -101,6 +106,7 @@ public class ApplicationTicketResolver extends TicketResolverBase implements App
             }
             Object value = field.value();
             if (value instanceof Table) {
+                value = authTableTransformation.transform((Table) value);
                 info = TicketRouter.getFlightInfo((Table) value, descriptor, flightTicketForName(id.app, id.fieldName));
             } else {
                 throw GrpcUtil.statusRuntimeException(Code.NOT_FOUND,
@@ -140,6 +146,7 @@ public class ApplicationTicketResolver extends TicketResolverBase implements App
             app.listFields().forEach(field -> {
                 Object value = field.value();
                 if (value instanceof Table) {
+                    value = authTableTransformation.transform((Table) value);
                     final Flight.FlightInfo info = TicketRouter.getFlightInfo((Table) value,
                             descriptorForName(app, field.name()), flightTicketForName(app, field.name()));
                     visitor.accept(info);

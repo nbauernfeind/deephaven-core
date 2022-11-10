@@ -3,7 +3,9 @@
  */
 package io.deephaven.server.table.ops;
 
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.impl.preview.ColumnPreviewManager;
 import io.deephaven.proto.backplane.grpc.ApplyPreviewColumnsRequest;
@@ -17,14 +19,16 @@ import java.util.List;
 @Singleton
 public class ApplyPreviewColumnsGrpcImpl extends GrpcTableOperation<ApplyPreviewColumnsRequest> {
     @Inject
-    protected ApplyPreviewColumnsGrpcImpl() {
-        super(BatchTableRequest.Operation::getApplyPreviewColumns, ApplyPreviewColumnsRequest::getResultId,
-                ApplyPreviewColumnsRequest::getSourceId);
+    protected ApplyPreviewColumnsGrpcImpl(final TableServiceContextualAuthWiring authWiring) {
+        super(authWiring::checkPermissionApplyPreviewColumns, BatchTableRequest.Operation::getApplyPreviewColumns,
+                ApplyPreviewColumnsRequest::getResultId, ApplyPreviewColumnsRequest::getSourceId);
     }
 
     @Override
-    public Table create(ApplyPreviewColumnsRequest request, List<SessionState.ExportObject<Table>> sourceTables) {
+    public Table create(final ApplyPreviewColumnsRequest request,
+            final List<SessionState.ExportObject<Table>> sourceTables) {
         Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
         return ColumnPreviewManager.applyPreview(sourceTables.get(0).get());
     }
 }

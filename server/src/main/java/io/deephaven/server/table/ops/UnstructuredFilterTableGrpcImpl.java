@@ -3,8 +3,10 @@
  */
 package io.deephaven.server.table.ops;
 
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.datastructures.util.CollectionUtil;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.impl.select.WhereFilter;
 import io.deephaven.proto.backplane.grpc.BatchTableRequest;
@@ -20,15 +22,17 @@ import java.util.List;
 public class UnstructuredFilterTableGrpcImpl extends GrpcTableOperation<UnstructuredFilterTableRequest> {
 
     @Inject
-    public UnstructuredFilterTableGrpcImpl() {
-        super(BatchTableRequest.Operation::getUnstructuredFilter, UnstructuredFilterTableRequest::getResultId,
-                UnstructuredFilterTableRequest::getSourceId);
+    public UnstructuredFilterTableGrpcImpl(final TableServiceContextualAuthWiring authWiring) {
+        super(authWiring::checkPermissionUnstructuredFilter, BatchTableRequest.Operation::getUnstructuredFilter,
+                UnstructuredFilterTableRequest::getResultId, UnstructuredFilterTableRequest::getSourceId);
     }
 
     @Override
     public Table create(final UnstructuredFilterTableRequest request,
             final List<SessionState.ExportObject<Table>> sourceTables) {
         Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
+
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
 
         final Table parent = sourceTables.get(0).get();
         final String[] filters = request.getFiltersList().toArray(CollectionUtil.ZERO_LENGTH_STRING_ARRAY);

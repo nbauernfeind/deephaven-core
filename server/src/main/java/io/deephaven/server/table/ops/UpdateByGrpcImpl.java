@@ -15,8 +15,10 @@ import io.deephaven.api.updateby.spec.EmaSpec;
 import io.deephaven.api.updateby.spec.FillBySpec;
 import io.deephaven.api.updateby.spec.TimeScale;
 import io.deephaven.api.updateby.spec.UpdateBySpec;
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
+import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.extensions.barrage.util.GrpcUtil;
 import io.deephaven.proto.backplane.grpc.BatchTableRequest;
 import io.deephaven.proto.backplane.grpc.UpdateByRequest;
@@ -29,9 +31,6 @@ import io.deephaven.proto.backplane.grpc.UpdateByRequest.UpdateByOperation.Updat
 import io.deephaven.proto.backplane.grpc.UpdateByRequest.UpdateByOperation.UpdateByColumn.UpdateBySpec.UpdateByEma.UpdateByEmaOptions;
 import io.deephaven.proto.backplane.grpc.UpdateByRequest.UpdateByOperation.UpdateByColumn.UpdateBySpec.UpdateByFill;
 import io.deephaven.proto.backplane.grpc.UpdateByRequest.UpdateByOptions;
-import io.deephaven.qst.TableCreator;
-import io.deephaven.qst.table.UpdateByTable;
-import io.deephaven.qst.table.UpdateByTable.Builder;
 import io.deephaven.server.session.SessionState;
 import io.grpc.StatusRuntimeException;
 
@@ -46,8 +45,9 @@ import java.util.stream.Collectors;
 public final class UpdateByGrpcImpl extends GrpcTableOperation<UpdateByRequest> {
 
     @Inject
-    public UpdateByGrpcImpl() {
-        super(BatchTableRequest.Operation::getUpdateBy, UpdateByRequest::getResultId, UpdateByRequest::getSourceId);
+    public UpdateByGrpcImpl(final TableServiceContextualAuthWiring authWiring) {
+        super(authWiring::checkPermissionUpdateBy, BatchTableRequest.Operation::getUpdateBy,
+                UpdateByRequest::getResultId, UpdateByRequest::getSourceId);
     }
 
     public void validateRequest(final UpdateByRequest request) throws StatusRuntimeException {
@@ -72,7 +72,12 @@ public final class UpdateByGrpcImpl extends GrpcTableOperation<UpdateByRequest> 
     }
 
     @Override
-    public Table create(UpdateByRequest request, List<SessionState.ExportObject<Table>> sourceTables) {
+    public Table create(final UpdateByRequest request,
+            final List<SessionState.ExportObject<Table>> sourceTables) {
+        Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
+
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
+
         final Table parent = sourceTables.get(0).get();
         final UpdateByControl control = request.hasOptions() ? adaptOptions(request.getOptions()) : null;
         final List<UpdateByOperation> operations =

@@ -3,7 +3,9 @@
  */
 package io.deephaven.server.table.ops;
 
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
 import io.deephaven.proto.backplane.grpc.BatchTableRequest;
 import io.deephaven.proto.backplane.grpc.FlattenRequest;
@@ -15,14 +17,16 @@ import java.util.List;
 public class FlattenTableGrpcImpl extends GrpcTableOperation<FlattenRequest> {
 
     @Inject
-    public FlattenTableGrpcImpl() {
-        super(BatchTableRequest.Operation::getFlatten, FlattenRequest::getResultId, FlattenRequest::getSourceId);
+    public FlattenTableGrpcImpl(final TableServiceContextualAuthWiring authWiring) {
+        super(authWiring::checkPermissionFlatten, BatchTableRequest.Operation::getFlatten,
+                FlattenRequest::getResultId, FlattenRequest::getSourceId);
     }
 
     @Override
-    public Table create(FlattenRequest request, List<SessionState.ExportObject<Table>> sourceTables) {
+    public Table create(final FlattenRequest request,
+            final List<SessionState.ExportObject<Table>> sourceTables) {
         Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
-
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
         final Table parent = sourceTables.get(0).get();
         return parent.flatten();
     }

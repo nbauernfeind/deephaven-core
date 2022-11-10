@@ -80,6 +80,8 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     public void getConsoleTypes(final GetConsoleTypesRequest request,
             final StreamObserver<GetConsoleTypesResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
+            // for legacy reasons, this method is used before the session is created
+            // TODO: how do we authorize these calls; can we fix the ordering of requests?
             if (!REMOTE_CONSOLE_DISABLED) {
                 // TODO (#702): initially show all console types; the first console determines the global console type
                 // thereafter
@@ -102,9 +104,6 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                         .onError(GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "Remote console disabled"));
                 return;
             }
-
-            // TODO auth hook, ensure the user can do this (owner of worker or admin)
-            // session.getAuthContext().requirePrivilege(CreateConsole);
 
             // TODO (#702): initially global session will be null; set it here if applicable
 
@@ -140,10 +139,6 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                 return;
             }
             SessionState session = sessionService.getCurrentSession();
-            // if that didn't fail, we at least are authenticated, but possibly not authorized
-            // TODO auth hook, ensure the user can do this (owner of worker or admin). same rights as creating a console
-            // session.getAuthContext().requirePrivilege(LogBuffer);
-
             logBuffer.subscribe(new LogBufferStreamAdapter(session, request, responseObserver));
         });
     }
@@ -152,7 +147,6 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     public void executeCommand(ExecuteCommandRequest request, StreamObserver<ExecuteCommandResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState session = sessionService.getCurrentSession();
-
             final Ticket consoleId = request.getConsoleId();
             if (consoleId.getTicket().isEmpty()) {
                 throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "No consoleId supplied");
@@ -184,9 +178,6 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     @Override
     public void getHeapInfo(GetHeapInfoRequest request, StreamObserver<GetHeapInfoResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
-            // Only authenticated users can query this
-            sessionService.getCurrentSession();
-
             final RuntimeMemory runtimeMemory = RuntimeMemory.getInstance();
             final Sample sample = new Sample();
             runtimeMemory.read(sample);
@@ -219,8 +210,10 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
 
     @Override
     public void cancelCommand(CancelCommandRequest request, StreamObserver<CancelCommandResponse> responseObserver) {
-        // TODO not yet implemented, need a way to handle stopping a command in a consistent way
-        super.cancelCommand(request, responseObserver);
+        GrpcUtil.rpcWrapper(log, responseObserver, () -> {
+            // TODO (#53): consider task cancellation
+            responseObserver.onError(GrpcUtil.statusRuntimeException(Code.UNIMPLEMENTED, "Not yet implemented"));
+        });
     }
 
     @Override
@@ -228,6 +221,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
             StreamObserver<BindTableToVariableResponse> responseObserver) {
         GrpcUtil.rpcWrapper(log, responseObserver, () -> {
             final SessionState session = sessionService.getCurrentSession();
+
             Ticket tableId = request.getTableId();
             if (tableId.getTicket().isEmpty()) {
                 throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "No source tableId supplied");

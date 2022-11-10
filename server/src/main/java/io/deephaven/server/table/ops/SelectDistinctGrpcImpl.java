@@ -4,7 +4,9 @@
 package io.deephaven.server.table.ops;
 
 import com.google.rpc.Code;
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
 import io.deephaven.extensions.barrage.util.GrpcUtil;
 import io.deephaven.proto.backplane.grpc.BatchTableRequest;
@@ -20,15 +22,17 @@ import java.util.Set;
 @Singleton
 public class SelectDistinctGrpcImpl extends GrpcTableOperation<SelectDistinctRequest> {
     @Inject
-    public SelectDistinctGrpcImpl() {
-        super(BatchTableRequest.Operation::getSelectDistinct, SelectDistinctRequest::getResultId,
-                SelectDistinctRequest::getSourceId);
+    public SelectDistinctGrpcImpl(final TableServiceContextualAuthWiring authWiring) {
+        super(authWiring::checkPermissionSelectDistinct, BatchTableRequest.Operation::getSelectDistinct,
+                SelectDistinctRequest::getResultId, SelectDistinctRequest::getSourceId);
     }
 
     @Override
     public Table create(final SelectDistinctRequest request,
             final List<SessionState.ExportObject<Table>> sourceTables) {
         Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
+
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
 
         final Table parent = sourceTables.get(0).get();
 

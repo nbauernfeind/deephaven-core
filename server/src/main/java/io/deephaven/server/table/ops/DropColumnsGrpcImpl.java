@@ -3,7 +3,9 @@
  */
 package io.deephaven.server.table.ops;
 
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
 import io.deephaven.proto.backplane.grpc.BatchTableRequest;
 import io.deephaven.proto.backplane.grpc.DropColumnsRequest;
@@ -17,14 +19,16 @@ import java.util.List;
 public class DropColumnsGrpcImpl extends GrpcTableOperation<DropColumnsRequest> {
 
     @Inject
-    public DropColumnsGrpcImpl() {
-        super(BatchTableRequest.Operation::getDropColumns, DropColumnsRequest::getResultId,
-                DropColumnsRequest::getSourceId);
+    public DropColumnsGrpcImpl(final TableServiceContextualAuthWiring authWiring) {
+        super(authWiring::checkPermissionDropColumns, BatchTableRequest.Operation::getDropColumns,
+                DropColumnsRequest::getResultId, DropColumnsRequest::getSourceId);
     }
 
     @Override
-    public Table create(final DropColumnsRequest request, final List<SessionState.ExportObject<Table>> sourceTables) {
+    public Table create(final DropColumnsRequest request,
+            final List<SessionState.ExportObject<Table>> sourceTables) {
         Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
         return sourceTables.get(0).get().dropColumns(request.getColumnNamesList());
     }
 }

@@ -3,7 +3,9 @@
  */
 package io.deephaven.server.table.ops;
 
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.impl.select.WhereFilter;
 import io.deephaven.proto.backplane.grpc.AndCondition;
@@ -27,15 +29,19 @@ import java.util.List;
 public class FilterTableGrpcImpl extends GrpcTableOperation<FilterTableRequest> {
 
     @Inject
-    public FilterTableGrpcImpl() {
-        super(BatchTableRequest.Operation::getFilter, FilterTableRequest::getResultId, FilterTableRequest::getSourceId);
+    public FilterTableGrpcImpl(final TableServiceContextualAuthWiring authWiring) {
+        super(authWiring::checkPermissionFilter, BatchTableRequest.Operation::getFilter,
+                FilterTableRequest::getResultId, FilterTableRequest::getSourceId);
     }
 
     @Override
-    public Table create(final FilterTableRequest request, final List<SessionState.ExportObject<Table>> sourceTables) {
+    public Table create(final FilterTableRequest request,
+            final List<SessionState.ExportObject<Table>> sourceTables) {
         Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
-        Table sourceTable = sourceTables.get(0).get();
 
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
+
+        Table sourceTable = sourceTables.get(0).get();
         List<Condition> filters = request.getFiltersList();
         if (filters.isEmpty()) {
             return sourceTable;

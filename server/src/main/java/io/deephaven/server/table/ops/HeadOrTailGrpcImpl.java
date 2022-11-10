@@ -4,7 +4,9 @@
 package io.deephaven.server.table.ops;
 
 import com.google.rpc.Code;
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
 import io.deephaven.extensions.barrage.util.GrpcUtil;
 import io.deephaven.proto.backplane.grpc.BatchTableRequest;
@@ -26,9 +28,10 @@ public abstract class HeadOrTailGrpcImpl extends GrpcTableOperation<HeadOrTailRe
     private final RealTableOperation realTableOperation;
 
     protected HeadOrTailGrpcImpl(
+            final PermissionFunction<HeadOrTailRequest> permission,
             final Function<BatchTableRequest.Operation, HeadOrTailRequest> getRequest,
             final RealTableOperation realTableOperation) {
-        super(getRequest, HeadOrTailRequest::getResultId, HeadOrTailRequest::getSourceId);
+        super(permission, getRequest, HeadOrTailRequest::getResultId, HeadOrTailRequest::getSourceId);
         this.realTableOperation = realTableOperation;
     }
 
@@ -41,24 +44,26 @@ public abstract class HeadOrTailGrpcImpl extends GrpcTableOperation<HeadOrTailRe
     }
 
     @Override
-    public Table create(final HeadOrTailRequest request, final List<SessionState.ExportObject<Table>> sourceTables) {
+    public Table create(final HeadOrTailRequest request,
+            final List<SessionState.ExportObject<Table>> sourceTables) {
         Assert.eq(sourceTables.size(), "sourceTables.size()", 1);
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
         return realTableOperation.apply(sourceTables.get(0).get(), request.getNumRows());
     }
 
     @Singleton
     public static class HeadGrpcImpl extends HeadOrTailGrpcImpl {
         @Inject
-        public HeadGrpcImpl() {
-            super(BatchTableRequest.Operation::getHead, Table::head);
+        public HeadGrpcImpl(final TableServiceContextualAuthWiring authWiring) {
+            super(authWiring::checkPermissionHead, BatchTableRequest.Operation::getHead, Table::head);
         }
     }
 
     @Singleton
     public static class TailGrpcImpl extends HeadOrTailGrpcImpl {
         @Inject
-        public TailGrpcImpl() {
-            super(BatchTableRequest.Operation::getTail, Table::tail);
+        public TailGrpcImpl(final TableServiceContextualAuthWiring authWiring) {
+            super(authWiring::checkPermissionTail, BatchTableRequest.Operation::getTail, Table::tail);
         }
     }
 }

@@ -16,12 +16,16 @@ import javax.inject.Singleton;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
+/**
+ * Note that the export ticket resolver does not run the export results through the auth table transformation. This is
+ * because any source tables will be transformed as they are initially exported to the session.
+ */
 @Singleton
 public class ExportTicketResolver extends TicketResolverBase {
 
     @Inject
-    public ExportTicketResolver() {
-        super(ExportTicketHelper.TICKET_PREFIX, ExportTicketHelper.FLIGHT_DESCRIPTOR_ROUTE);
+    public ExportTicketResolver(final AuthTableTransformation authTableTransformation) {
+        super(authTableTransformation, ExportTicketHelper.TICKET_PREFIX, ExportTicketHelper.FLIGHT_DESCRIPTOR_ROUTE);
     }
 
     @Override

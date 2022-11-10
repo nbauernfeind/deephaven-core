@@ -11,6 +11,7 @@ import io.deephaven.chunk.util.pools.MultiChunkPool;
 import io.deephaven.configuration.Configuration;
 import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.engine.util.ScriptSession;
+import io.deephaven.server.auth.CommunityAuthenticationModule;
 import io.deephaven.server.config.ConfigServiceModule;
 import io.deephaven.server.notebook.FilesystemStorageServiceModule;
 import io.deephaven.server.healthcheck.HealthCheckModule;
@@ -64,6 +65,7 @@ import java.util.concurrent.TimeUnit;
         FilesystemStorageServiceModule.class,
         HealthCheckModule.class,
         ConfigServiceModule.class,
+        CommunityAuthenticationModule.class,
 })
 public class DeephavenApiServerModule {
 

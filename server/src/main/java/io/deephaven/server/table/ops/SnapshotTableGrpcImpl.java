@@ -3,8 +3,10 @@
  */
 package io.deephaven.server.table.ops;
 
+import io.deephaven.auth.codegen.impl.TableServiceContextualAuthWiring;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.datastructures.util.CollectionUtil;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.impl.select.SelectColumn;
 import io.deephaven.engine.table.impl.select.SelectColumnFactory;
@@ -36,13 +38,17 @@ public class SnapshotTableGrpcImpl extends GrpcTableOperation<SnapshotTableReque
             };
 
     @Inject
-    public SnapshotTableGrpcImpl(final UpdateGraphProcessor updateGraphProcessor) {
-        super(BatchTableRequest.Operation::getSnapshot, SnapshotTableRequest::getResultId, EXTRACT_DEPS);
+    public SnapshotTableGrpcImpl(
+            final TableServiceContextualAuthWiring authWiring,
+            final UpdateGraphProcessor updateGraphProcessor) {
+        super(authWiring::checkPermissionSnapshot, BatchTableRequest.Operation::getSnapshot,
+                SnapshotTableRequest::getResultId, EXTRACT_DEPS);
         this.updateGraphProcessor = updateGraphProcessor;
     }
 
     @Override
-    public Table create(final SnapshotTableRequest request, final List<SessionState.ExportObject<Table>> sourceTables) {
+    public Table create(final SnapshotTableRequest request,
+            final List<SessionState.ExportObject<Table>> sourceTables) {
         final Table lhs;
         final Table rhs;
         if (sourceTables.size() == 1) {
@@ -54,6 +60,8 @@ public class SnapshotTableGrpcImpl extends GrpcTableOperation<SnapshotTableReque
         } else {
             throw Assert.statementNeverExecuted("Unexpected sourceTables size " + sourceTables.size());
         }
+
+        permission.check(ExecutionContext.getContext().getAuthContext(), request, toTables(sourceTables));
 
         final String[] stampColumns = request.getStampColumnsList().toArray(CollectionUtil.ZERO_LENGTH_STRING_ARRAY);
         final SelectColumn[] stampExpressions = SelectColumnFactory.getExpressions(request.getStampColumnsList());

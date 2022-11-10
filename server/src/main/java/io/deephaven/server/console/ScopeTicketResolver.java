@@ -40,8 +40,10 @@ public class ScopeTicketResolver extends TicketResolverBase {
     private final Provider<ScriptSession> scriptSessionProvider;
 
     @Inject
-    public ScopeTicketResolver(final Provider<ScriptSession> globalSessionProvider) {
-        super((byte) TICKET_PREFIX, FLIGHT_DESCRIPTOR_ROUTE);
+    public ScopeTicketResolver(
+            final AuthTableTransformation authTableTransformation,
+            final Provider<ScriptSession> globalSessionProvider) {
+        super(authTableTransformation, (byte) TICKET_PREFIX, FLIGHT_DESCRIPTOR_ROUTE);
         this.scriptSessionProvider = globalSessionProvider;
     }
 
@@ -64,6 +66,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
                         "Could not resolve '" + logId + ": no variable exists with name '" + scopeName + "'");
             }
             if (scopeVar instanceof Table) {
+                scopeVar = authTableTransformation.transform((Table) scopeVar);
                 return TicketRouter.getFlightInfo((Table) scopeVar, descriptor, flightTicketForName(scopeName));
             }
 
@@ -99,7 +102,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
     private <T> SessionState.ExportObject<T> resolve(
             @Nullable final SessionState session, final String scopeName, final String logId) {
         // fetch the variable from the scope right now
-        final T export = UpdateGraphProcessor.DEFAULT.sharedLock().computeLocked(() -> {
+        T export = UpdateGraphProcessor.DEFAULT.sharedLock().computeLocked(() -> {
             final ScriptSession gss = scriptSessionProvider.get();
             T scopeVar = null;
             try {
@@ -109,6 +112,11 @@ public class ScopeTicketResolver extends TicketResolverBase {
             }
             return scopeVar;
         });
+
+        if (export instanceof Table) {
+            //noinspection unchecked
+            export = (T) authTableTransformation.transform((Table) export);
+        }
 
         if (export == null) {
             return SessionState.wrapAsFailedExport(GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION,
