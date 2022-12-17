@@ -6,5 +6,6 @@ FROM deephaven/server-base:local-build
 
 COPY wheels/ /wheels
 RUN set -eux; \
+    python -m pip install pyarrow==10.0.1; \
     python -m pip install -q --no-index --no-cache-dir /wheels/*.whl; \
     rm -r /wheels
