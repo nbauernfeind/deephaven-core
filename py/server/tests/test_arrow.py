@@ -18,7 +18,7 @@ class ArrowTestCase(BaseTestCase):
     def test_round_trip(self):
         arrow_table = papq.read_table("tests/data/day_trades.parquet")
 
-        dh_table = dharrow.to_table(arrow_table).tail(1)
+        dh_table = dharrow.to_table(arrow_table)
         pa_table = dharrow.to_arrow(dh_table)
 
         dh_table_rt = dharrow.to_table(pa_table)
@@ -42,7 +42,9 @@ class ArrowTestCase(BaseTestCase):
         dh_table = new_table(cols=cols)
         pa_table = dharrow.to_arrow(dh_table)
         dh_table_rt = dharrow.to_table(pa_table)
+        pa_table_rt = dharrow.to_arrow(dh_table_rt)
         self.assert_table_equals(dh_table, dh_table_rt)
+        self.assertTrue(pa_table_rt, pa_table)
 
     def test_round_trip_empty(self):
         cols = [
