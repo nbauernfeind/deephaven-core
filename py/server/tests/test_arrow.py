@@ -79,7 +79,7 @@ class ArrowTestCase(BaseTestCase):
         self.assert_table_equals(dh_table_1, dh_table)
 
     def test_crypto_data(self):
-        arrow_table = papq.read_table("tests/data/crypto_trades_1000.parquet")
+        arrow_table = papq.read_table("tests/data/crypto_trades.parquet")
 
         with self.assertRaises(DHError) as cm:
             dh_table = dharrow.to_table(arrow_table)
