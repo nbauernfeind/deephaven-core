@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 import pyarrow.parquet as papq
 
-from deephaven import arrow as dharrow, dtypes, new_table
+from deephaven import arrow as dharrow, dtypes, new_table, DHError, time_table
 from deephaven.column import byte_col, char_col, short_col, int_col, long_col, float_col, double_col, \
     string_col, datetime_col
 from deephaven.table import Table
@@ -42,9 +42,7 @@ class ArrowTestCase(BaseTestCase):
 
         dh_table = dharrow.to_table(arrow_table)
         pa_table = dharrow.to_arrow(dh_table)
-
         dh_table_rt = dharrow.to_table(pa_table)
-
         self.assert_table_equals(dh_table, dh_table_rt)
 
     def test_round_trip_types(self):
@@ -79,6 +77,21 @@ class ArrowTestCase(BaseTestCase):
         dh_table = dharrow.to_table(pa_table, cols=cols)
         dh_table_1 = dharrow.to_table(pa_table_cols)
         self.assert_table_equals(dh_table_1, dh_table)
+
+    def test_crypto_data(self):
+        arrow_table = papq.read_table("tests/data/crypto_trades.parquet")
+
+        with self.assertRaises(DHError) as cm:
+            dh_table = dharrow.to_table(arrow_table)
+        self.assertRegex(str(cm.exception), r"RuntimeError: java.lang.IllegalStateException: offset buffer is too "
+                                            r"short for the expected number of elements")
+
+    def test_ticking_table(self):
+        table = time_table("00:00:00.001").update(["X = i", "Y = String.valueOf(i)"])
+        self.wait_ticking_table_update(table, row_count=100, timeout=5)
+        pa_table = dharrow.to_arrow(table)
+        self.assertEqual(len(pa_table.columns), 3)
+        self.assertGreaterEqual(pa_table.num_rows, 100)
 
 
 if __name__ == '__main__':
