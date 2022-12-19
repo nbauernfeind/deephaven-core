@@ -113,7 +113,7 @@ def to_arrow(table: Table, cols: List[str] = None) -> pa.Table:
 
     Args:
         table (Table): the source table
-        cols (List[str]): the source column names, default is None which means include all columns
+        cols (List[str]): the source column names, default is None which means including all columns
 
     Returns:
         pandas.DataFrame
@@ -122,6 +122,9 @@ def to_arrow(table: Table, cols: List[str] = None) -> pa.Table:
         DHError
     """
     try:
+        if cols:
+            table = table.view(formulas=cols)
+
         j_arrow_builder = _JTableToArrowConverter(table.j_table);
 
         pa_schema_buffer = j_arrow_builder.getSchema()

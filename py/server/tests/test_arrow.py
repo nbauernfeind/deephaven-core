@@ -6,26 +6,18 @@ import unittest
 import numpy as np
 import pyarrow.parquet as papq
 
-from deephaven.column import byte_col, char_col, short_col, bool_col, int_col, long_col, float_col, double_col, \
-    string_col, datetime_col, pyobj_col, jobj_col
-
 from deephaven import arrow as dharrow, dtypes, new_table
+from deephaven.column import byte_col, char_col, short_col, int_col, long_col, float_col, double_col, \
+    string_col, datetime_col
+from deephaven.table import Table
 from tests.testbase import BaseTestCase
 
 
 class ArrowTestCase(BaseTestCase):
+    test_table: Table
 
-    def test_round_trip(self):
-        arrow_table = papq.read_table("tests/data/day_trades.parquet")
-
-        dh_table = dharrow.to_table(arrow_table)
-        pa_table = dharrow.to_arrow(dh_table)
-
-        dh_table_rt = dharrow.to_table(pa_table)
-
-        self.assert_table_equals(dh_table, dh_table_rt)
-
-    def test_round_trip_types(self):
+    @classmethod
+    def setUpClass(cls) -> None:
         cols = [
             # bool_col(name="Boolean", data=[True, False]),
             byte_col(name="Byte", data=(1, -1)),
@@ -39,11 +31,27 @@ class ArrowTestCase(BaseTestCase):
             string_col(name="String", data=["foo", "bar"]),
             datetime_col(name="Datetime", data=[dtypes.DateTime(1), dtypes.DateTime(-1)]),
         ]
-        dh_table = new_table(cols=cols)
+        cls.test_table = new_table(cols=cols)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        del cls.test_table
+
+    def test_round_trip(self):
+        arrow_table = papq.read_table("tests/data/day_trades.parquet")
+
+        dh_table = dharrow.to_table(arrow_table)
         pa_table = dharrow.to_arrow(dh_table)
+
+        dh_table_rt = dharrow.to_table(pa_table)
+
+        self.assert_table_equals(dh_table, dh_table_rt)
+
+    def test_round_trip_types(self):
+        pa_table = dharrow.to_arrow(self.test_table)
         dh_table_rt = dharrow.to_table(pa_table)
         pa_table_rt = dharrow.to_arrow(dh_table_rt)
-        self.assert_table_equals(dh_table, dh_table_rt)
+        self.assert_table_equals(self.test_table, dh_table_rt)
         self.assertTrue(pa_table_rt, pa_table)
 
     def test_round_trip_empty(self):
@@ -63,6 +71,14 @@ class ArrowTestCase(BaseTestCase):
         pa_table = dharrow.to_arrow(dh_table)
         dh_table_rt = dharrow.to_table(pa_table)
         self.assert_table_equals(dh_table, dh_table_rt)
+
+    def test_round_trip_cols(self):
+        cols = ["Byte", "Short", "Long", "String", "Datetime"]
+        pa_table = dharrow.to_arrow(self.test_table)
+        pa_table_cols = dharrow.to_arrow(self.test_table, cols=cols)
+        dh_table = dharrow.to_table(pa_table, cols=cols)
+        dh_table_1 = dharrow.to_table(pa_table_cols)
+        self.assert_table_equals(dh_table_1, dh_table)
 
 
 if __name__ == '__main__':
