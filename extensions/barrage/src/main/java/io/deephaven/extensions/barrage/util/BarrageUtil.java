@@ -12,7 +12,6 @@ import io.deephaven.base.ClassUtil;
 import io.deephaven.engine.table.ColumnDefinition;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.TableDefinition;
-import io.deephaven.engine.table.MatchPair;
 import io.deephaven.extensions.barrage.chunk.vector.VectorExpansionKernel;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
@@ -143,30 +142,6 @@ public class BarrageUtil {
             }
         }
 
-        // copy rollup details
-        // TODO-RWC: Delete me
-        // if (attributes.containsKey(Table.HIERARCHICAL_SOURCE_INFO_ATTRIBUTE)) {
-        // unsentAttributes.remove(Table.HIERARCHICAL_SOURCE_INFO_ATTRIBUTE);
-        // final HierarchicalTableInfo hierarchicalTableInfo =
-        // (HierarchicalTableInfo) attributes.remove(Table.HIERARCHICAL_SOURCE_INFO_ATTRIBUTE);
-        // final String hierarchicalSourceKeyPrefix =
-        // ATTR_ATTR_TAG + "." + Table.HIERARCHICAL_SOURCE_INFO_ATTRIBUTE + ".";
-        // putMetadata(schemaMetadata, hierarchicalSourceKeyPrefix + "hierarchicalColumnName",
-        // hierarchicalTableInfo.getHierarchicalColumnName());
-        // if (hierarchicalTableInfo instanceof RollupInfo) {
-        // final RollupInfo rollupInfo = (RollupInfo) hierarchicalTableInfo;
-        // putMetadata(schemaMetadata, hierarchicalSourceKeyPrefix + "byColumns",
-        // String.join(",", rollupInfo.byColumnNames));
-        // putMetadata(schemaMetadata, hierarchicalSourceKeyPrefix + "leafType", rollupInfo.getLeafType().name());
-        //
-        // // mark columns to indicate their sources
-        // for (final MatchPair matchPair : rollupInfo.getMatchPairs()) {
-        // putMetadata(getExtraMetadata.apply(matchPair.leftColumn()), "rollup.sourceColumn",
-        // matchPair.rightColumn());
-        // }
-        // }
-        // }
-
         // note which attributes have a value we couldn't send
         for (String unsentAttribute : unsentAttributes) {
             putMetadata(schemaMetadata, "unsent." + ATTR_ATTR_TAG + "." + unsentAttribute, "");
@@ -189,8 +164,6 @@ public class BarrageUtil {
                 putMetadata(extraMetadata, "dateFormatColumn", colName + ColumnFormattingValues.TABLE_DATE_FORMAT_NAME);
             }
 
-            // TODO-RWC: Add constituent=true metadata for secondary definition
-            // TODO-RWC: Remember to reinterpret to primitive when chunk filling.
             fields.add(arrowFieldFor(colName, column, descriptions.get(colName), inputTable, extraMetadata));
         }
 
