@@ -64,11 +64,12 @@ import static io.deephaven.proto.flight.util.MessageHelper.toIpcBytes;
 public class BarrageStreamGenerator implements
         BarrageMessageProducer.StreamGenerator<BarrageStreamGenerator.View> {
     /**
-     * This sub-generator is used by the TableToArrowConverter to write data in plain Arrow Ipc format without wrapping
+     * This sub-generator is used by the TableToArrowConverter to write data in plain Arrow Ipc format without
      * decorating them with Arrow Flight metadata first
      */
-    public static class ArrowStreamGeneratr extends BarrageStreamGenerator {
-        public ArrowStreamGeneratr(BarrageMessage message, BarragePerformanceLog.WriteMetricsConsumer metricsConsumer) {
+    public static class ArrowStreamGenerator extends BarrageStreamGenerator {
+        public ArrowStreamGenerator(BarrageMessage message,
+                BarragePerformanceLog.WriteMetricsConsumer metricsConsumer) {
             super(message, metricsConsumer);
         }
 

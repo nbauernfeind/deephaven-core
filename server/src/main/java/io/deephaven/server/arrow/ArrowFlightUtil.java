@@ -40,7 +40,7 @@ import io.deephaven.proto.flight.util.MessageHelper;
 import io.deephaven.proto.util.ExportTicketHelper;
 import io.deephaven.server.barrage.BarrageMessageProducer;
 import io.deephaven.server.barrage.BarrageStreamGenerator;
-import io.deephaven.server.barrage.BarrageStreamGenerator.ArrowStreamGeneratr;
+import io.deephaven.server.barrage.BarrageStreamGenerator.ArrowStreamGenerator;
 import io.deephaven.server.session.SessionState;
 import io.deephaven.server.session.TicketRouter;
 import io.deephaven.util.datastructures.LongSizedDataStructure;
@@ -1038,7 +1038,7 @@ public class ArrowFlightUtil {
                         new BarragePerformanceLog.SnapshotMetricsHelper();
                 arrowBuilderObserver = new ArrowBuilderObserver();
                 createAndSendSnapshot(table, null, null, false, DEFAULT_SNAPSHOT_DESER_OPTIONS, arrowBuilderObserver,
-                        metrics, ArrowStreamGeneratr::new);
+                        metrics, ArrowStreamGenerator::new);
             }
         }
 

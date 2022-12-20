@@ -38,9 +38,9 @@ class ArrowTestCase(BaseTestCase):
         del cls.test_table
 
     def test_round_trip(self):
-        arrow_table = papq.read_table("tests/data/day_trades.parquet")
+        arrow_table = papq.read_table("tests/data/crypto_trades.parquet")
 
-        dh_table = dharrow.to_table(arrow_table)
+        dh_table = dharrow.to_table(arrow_table, cols=["t_ts", "t_instrument", "t_price"])
         pa_table = dharrow.to_arrow(dh_table)
         dh_table_rt = dharrow.to_table(pa_table)
         self.assert_table_equals(dh_table, dh_table_rt)
@@ -50,7 +50,7 @@ class ArrowTestCase(BaseTestCase):
         dh_table_rt = dharrow.to_table(pa_table)
         pa_table_rt = dharrow.to_arrow(dh_table_rt)
         self.assert_table_equals(self.test_table, dh_table_rt)
-        self.assertTrue(pa_table_rt, pa_table)
+        self.assertTrue(pa_table_rt.equals(pa_table))
 
     def test_round_trip_empty(self):
         cols = [
@@ -78,13 +78,16 @@ class ArrowTestCase(BaseTestCase):
         dh_table_1 = dharrow.to_table(pa_table_cols)
         self.assert_table_equals(dh_table_1, dh_table)
 
-    def test_crypto_data(self):
+    def test_for_a_potential_bug(self):
         arrow_table = papq.read_table("tests/data/crypto_trades.parquet")
 
         with self.assertRaises(DHError) as cm:
-            dh_table = dharrow.to_table(arrow_table)
-        self.assertRegex(str(cm.exception), r"RuntimeError: java.lang.IllegalStateException: offset buffer is too "
-                                            r"short for the expected number of elements")
+            dh_table = dharrow.to_table(arrow_table, cols=["t_date"])
+        ex_msg = r"RuntimeError: java.util.NoSuchElementException"
+        r"*gnu.trove.list.array.TLongArrayList$TLongArrayIterator.next"
+        r"*io.deephaven.extensions.barrage.chunk.VarBinaryChunkInputStreamGenerator.extractChunkFromInputStream"
+        r"*io.deephaven.extensions.barrage.chunk.ChunkInputStreamGenerator.extractChunkFromInputStream"
+        self.assertRegex(str(cm.exception), ex_msg)
 
     def test_ticking_table(self):
         table = time_table("00:00:00.001").update(["X = i", "Y = String.valueOf(i)"])

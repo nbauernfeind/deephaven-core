@@ -2,23 +2,21 @@
 #     Copyright (c) 2016-2022 Deephaven Data Labs and Patent Pending
 #
 """This module supports conversions between Arrow tables and Deephaven tables."""
-
-from typing import Union, List
+import typing
+from typing import List
 
 import jpy
 import pyarrow as pa
 
 from deephaven import DHError
-from deephaven.column import Column
-from deephaven.numpy import column_to_numpy_array
-from deephaven.pandas import to_pandas
 from deephaven.table import Table
 
 _JArrowToTableConverter = jpy.get_type("io.deephaven.server.arrow.ArrowFlightUtil$ArrowToTableConverter")
 _JTableToArrowConverter = jpy.get_type("io.deephaven.server.arrow.ArrowFlightUtil$TableToArrowConverter")
 
 
-def _map_arrow_type(arrow_type):
+def _map_arrow_type(arrow_type) -> typing.Dict[str, str]:
+    """Maps an Arrow type to the corresponding Deephaven column data type."""
     arrow_to_dh = {
         pa.null(): '',
         pa.bool_(): '',
