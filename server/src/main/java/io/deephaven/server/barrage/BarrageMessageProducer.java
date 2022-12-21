@@ -297,6 +297,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
     private final BitSet objectColumns = new BitSet();
     /** internally, booleans are reinterpretted to bytes; however we need to be packed bitsets over Arrow */
     private final Class<?>[] realColumnType;
+    private final Class<?>[] realColumnComponentType;
 
     // We keep this RowSet in-sync with deltas being propagated to subscribers.
     private final WritableRowSet propagationRowSet;
@@ -417,6 +418,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         sourceColumns = parent.getColumnSources().toArray(ColumnSource.ZERO_LENGTH_COLUMN_SOURCE_ARRAY);
         deltaColumns = new WritableColumnSource[sourceColumns.length];
         realColumnType = new Class<?>[sourceColumns.length];
+        realColumnComponentType = new Class<?>[sourceColumns.length];
 
         // we start off with initial sizes of zero, because its quite possible no one will ever look at this table
         final int capacity = 0;
@@ -424,6 +426,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         for (int ci = 0; ci < sourceColumns.length; ++ci) {
             // avoid silly reinterpretations during ser/deser by using primitive types when possible
             realColumnType[ci] = sourceColumns[ci].getType();
+            realColumnComponentType[ci] = sourceColumns[ci].getComponentType();
             sourceColumns[ci] = ReinterpretUtils.maybeConvertToPrimitive(sourceColumns[ci]);
             deltaColumns[ci] = ArrayBackedColumnSource.getMemoryColumnSource(
                     capacity, sourceColumns[ci].getType(), sourceColumns[ci].getComponentType());
@@ -1730,7 +1733,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
                 }
 
                 adds.type = realColumnType[ci];
-                adds.componentType = deltaColumn.getComponentType();
+                adds.componentType = realColumnComponentType[ci];
             }
 
             for (int ci = 0; ci < downstream.modColumnData.length; ++ci) {
@@ -1761,7 +1764,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
                 }
 
                 mods.type = realColumnType[ci];
-                mods.componentType = deltaColumn.getComponentType();
+                mods.componentType = realColumnComponentType[ci];
             }
         } else {
             // We must coalesce these updates.
@@ -1940,7 +1943,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
                 }
 
                 adds.type = realColumnType[ci];
-                adds.componentType = deltaColumn.getComponentType();
+                adds.componentType = realColumnComponentType[ci];
             }
 
             int numActualModCols = 0;
@@ -1968,7 +1971,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
                 }
 
                 mods.type = realColumnType[ci];
-                mods.componentType = sourceColumn.getComponentType();
+                mods.componentType = realColumnComponentType[ci];
             }
         }
 
