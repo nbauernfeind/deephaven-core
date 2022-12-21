@@ -63,22 +63,6 @@ import static io.deephaven.proto.flight.util.MessageHelper.toIpcBytes;
 
 public class BarrageStreamGenerator implements
         BarrageMessageProducer.StreamGenerator<BarrageStreamGenerator.View> {
-    /**
-     * This sub-generator is used by the TableToArrowConverter to write data in plain Arrow Ipc format without
-     * decorating them with Arrow Flight metadata first
-     */
-    public static class ArrowStreamGenerator extends BarrageStreamGenerator {
-        public ArrowStreamGenerator(BarrageMessage message,
-                BarragePerformanceLog.WriteMetricsConsumer metricsConsumer) {
-            super(message, metricsConsumer);
-        }
-
-        @Override
-        void flushFlatBufferHeader(ByteBuffer metadata, MutableInt size, FlatBufferBuilder header,
-                ExposedByteArrayOutputStream baos) throws IOException {
-            baos.write(toIpcBytes(header));
-        }
-    }
 
     private static final Logger log = LoggerFactory.getLogger(BarrageStreamGenerator.class);
     // NB: This should likely be something smaller, such as 1<<16, but since the js api is not yet able
@@ -128,6 +112,25 @@ public class BarrageStreamGenerator implements
             builder.finish(MessageHelper.wrapInMessage(builder, schemaOffset,
                     org.apache.arrow.flatbuf.MessageHeader.Schema));
             return new SchemaView(builder.dataBuffer());
+        }
+    }
+
+    /**
+     * This sub-generator factory is used by the TableToArrowConverter to write data in plain Arrow Ipc format without
+     * decorating them with Arrow Flight metadata first
+     */
+    public static class ArrowFactory extends Factory {
+        @Override
+        public BarrageMessageProducer.StreamGenerator<View> newGenerator(
+                BarrageMessage message, BarragePerformanceLog.WriteMetricsConsumer metricsConsumer) {
+            return new BarrageStreamGenerator(message, metricsConsumer) {
+                @Override
+                protected void writeHeader(ByteBuffer metadata, MutableInt size, FlatBufferBuilder header,
+                        ExposedByteArrayOutputStream baos) throws IOException {
+                    // This implementation prepares the IPC header (which has no field for metadata).
+                    baos.write(toIpcBytes(header));
+                }
+            };
         }
     }
 
@@ -721,7 +724,7 @@ public class BarrageStreamGenerator implements
 
         // now create the proto header
         try (final ExposedByteArrayOutputStream baos = new ExposedByteArrayOutputStream()) {
-            flushFlatBufferHeader(metadata, size, header, baos);
+            writeHeader(metadata, size, header, baos);
             streams.addFirst(new DrainableByteArrayInputStream(baos.peekBuffer(), 0, baos.size()));
 
             return new ConsecutiveDrainableStreams(streams.toArray(new InputStream[0]));
@@ -730,8 +733,9 @@ public class BarrageStreamGenerator implements
         }
     }
 
-    void flushFlatBufferHeader(ByteBuffer metadata, MutableInt size, FlatBufferBuilder header,
+    protected void writeHeader(ByteBuffer metadata, MutableInt size, FlatBufferBuilder header,
             ExposedByteArrayOutputStream baos) throws IOException {
+        // This implementation prepares the protobuf FlightData header.
         final CodedOutputStream cos = CodedOutputStream.newInstance(baos);
 
         cos.writeByteBuffer(Flight.FlightData.DATA_HEADER_FIELD_NUMBER, header.dataBuffer().slice());
