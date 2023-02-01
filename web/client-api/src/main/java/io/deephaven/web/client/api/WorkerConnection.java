@@ -797,7 +797,7 @@ public class WorkerConnection {
                     .then(this::getObject);
         } else if (hasId) {
             String id = definitionObject.getAsAny("id").asString();
-            return getObject(new JsVariableDefinition(type, null, id, null));
+            return getObject(new JsVariableDefinition(type, id));
         } else {
             throw new IllegalArgumentException("no name/id field; could not construct getObject");
         }

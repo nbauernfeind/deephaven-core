@@ -38,6 +38,10 @@ import io.deephaven.server.hierarchicaltable.HierarchicalTableView;
 import io.deephaven.server.hierarchicaltable.HierarchicalTableViewSubscription;
 import io.deephaven.server.session.SessionState;
 import io.deephaven.server.session.TicketRouter;
+import io.deephaven.server.util.TerminalAsATable;
+import io.deephaven.util.datastructures.LongSizedDataStructure;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import org.apache.arrow.flatbuf.MessageHeader;
@@ -593,7 +597,13 @@ public class ArrowFlightUtil {
                 final Object export = parent.get();
                 if (export instanceof QueryTable) {
                     final QueryTable table = (QueryTable) export;
-                    bmp = table.getResult(bmpOperationFactory.create(table, minUpdateIntervalMs));
+
+                    if (table instanceof TerminalAsATable) {
+                        bmp = ((TerminalAsATable) table).getBarrageMessageProducer();
+                    } else {
+                        bmp = table.getResult(bmpOperationFactory.create(table, minUpdateIntervalMs));
+                    }
+
                     if (bmp.isRefreshing()) {
                         manage(bmp);
                     }

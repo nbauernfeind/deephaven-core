@@ -13,6 +13,7 @@ import io.deephaven.engine.util.DelegatingScriptSession;
 import io.deephaven.engine.util.ScriptSession;
 import io.deephaven.extensions.barrage.util.GrpcUtil;
 import io.deephaven.integrations.python.PythonDeephavenSession;
+import io.deephaven.server.util.TerminalAsATable;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.LogBuffer;
 import io.deephaven.io.logger.LogBufferRecord;
@@ -59,16 +60,22 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     private final LogBuffer logBuffer;
 
     private final Provider<ScriptSession> scriptSessionProvider;
+    private final TerminalAsATable terminalAsATable;
 
     @Inject
-    public ConsoleServiceGrpcImpl(final TicketRouter ticketRouter,
+    public ConsoleServiceGrpcImpl(
+            final TicketRouter ticketRouter,
             final SessionService sessionService,
             final LogBuffer logBuffer,
-            final Provider<ScriptSession> scriptSessionProvider) {
+            final Provider<ScriptSession> scriptSessionProvider,
+            final TerminalAsATable.Factory terminalAsATableFactory) {
         this.ticketRouter = ticketRouter;
         this.sessionService = sessionService;
         this.logBuffer = logBuffer;
         this.scriptSessionProvider = scriptSessionProvider;
+        this.terminalAsATable = terminalAsATableFactory.create(24, 120);
+        // TODO: this should be implemented as an optional Application
+        scriptSessionProvider.get().setVariable("terminalAsATable", this.terminalAsATable);
     }
 
     @Override
@@ -141,17 +148,40 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
                 throw GrpcUtil.statusRuntimeException(Code.FAILED_PRECONDITION, "No consoleId supplied");
             }
 
+            final TerminalAsATable.InputEntry inputEntry = terminalAsATable.newInputEntry(request.getCode());
+
             SessionState.ExportObject<ScriptSession> exportedConsole =
                     ticketRouter.resolve(session, consoleId, "consoleId");
+
+            // don't wait for the serial queue to set the request language
+            session.nonExport()
+                    .require(exportedConsole)
+                    .submit(() -> {
+                        ScriptSession scriptSession = exportedConsole.get();
+                        inputEntry.setLanguage(scriptSession.scriptType());
+                        inputEntry.scheduleUpdate();
+                    });
+
             session.nonExport()
                     .requiresSerialQueue()
                     .require(exportedConsole)
                     .onError(responseObserver)
                     .submit(() -> {
                         ScriptSession scriptSession = exportedConsole.get();
+                        // set the language here, too; why not?
+                        inputEntry.setLanguage(scriptSession.scriptType());
+                        inputEntry.onRunStart();
+                        inputEntry.scheduleUpdate();
+
                         ScriptSession.Changes changes = scriptSession.evaluateScript(request.getCode());
                         ExecuteCommandResponse.Builder diff = ExecuteCommandResponse.newBuilder();
                         FieldsChangeUpdate.Builder fieldChanges = FieldsChangeUpdate.newBuilder();
+                        inputEntry.onRunFinish();
+                        inputEntry.setCreatedVars(changes.created);
+                        inputEntry.setUpdatedVars(changes.updated);
+                        inputEntry.setRemovedVars(changes.removed);
+                        inputEntry.scheduleUpdate();
+
                         changes.created.entrySet()
                                 .forEach(entry -> fieldChanges.addCreated(makeVariableDefinition(entry)));
                         changes.updated.entrySet()

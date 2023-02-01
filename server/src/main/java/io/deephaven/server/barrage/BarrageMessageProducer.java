@@ -41,6 +41,7 @@ import io.deephaven.extensions.barrage.util.StreamReader;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.server.util.Scheduler;
+import io.deephaven.server.util.UpdatePropagationHelper;
 import io.deephaven.time.DateTime;
 import io.deephaven.util.SafeCloseable;
 import io.deephaven.util.SafeCloseableArray;
@@ -53,12 +54,12 @@ import org.HdrHistogram.Histogram;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Lock;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.LongSupplier;
 import java.util.stream.Stream;
 
 import static io.deephaven.engine.table.impl.remote.ConstructSnapshot.SNAPSHOT_CHUNK_SIZE;
@@ -163,8 +164,9 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         @Override
         public Result<BarrageMessageProducer<MessageView>> initialize(final boolean usePrev,
                 final long beforeClock) {
-            final BarrageMessageProducer<MessageView> result = new BarrageMessageProducer<MessageView>(
-                    scheduler, streamGeneratorFactory, parent, updateIntervalMs, onGetSnapshot);
+            final BarrageMessageProducer<MessageView> result = new BarrageMessageProducer<>(
+                    scheduler, streamGeneratorFactory, parent, updateIntervalMs,
+                    LogicalClock.DEFAULT::currentStep, null, onGetSnapshot);
             return new Result<>(result, result.constructListener());
         }
     }
@@ -197,9 +199,6 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
     private final BarrageStreamGenerator.Factory<MessageView> streamGeneratorFactory;
 
     private final BaseTable<?> parent;
-    private final long updateIntervalMs;
-    private volatile long lastUpdateTime = 0;
-    private volatile long lastScheduledUpdateTime = 0;
 
     private final boolean isStreamTable;
     private long lastStreamTableUpdateSize = 0;
@@ -271,7 +270,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         }
     }
 
-    private final UpdatePropagationJob updatePropagationJob = new UpdatePropagationJob();
+    private final UpdatePropagationHelper updatePropagationJob;
 
     /**
      * Subscription updates accumulate in pendingSubscriptions until the next time our update propagation job runs. See
@@ -297,17 +296,28 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
 
     private final boolean parentIsRefreshing;
 
-    public BarrageMessageProducer(final Scheduler scheduler,
+    private final Lock updateLock;
+    private final LongSupplier clockSupplier;
+
+    public BarrageMessageProducer(
+            final Scheduler scheduler,
             final BarrageStreamGenerator.Factory<MessageView> streamGeneratorFactory,
             final BaseTable parent,
             final long updateIntervalMs,
+            final LongSupplier clockSupplier,
+            @Nullable final Lock updateLock,
             final Runnable onGetSnapshot) {
         this.logPrefix = "BarrageMessageProducer(" + Integer.toHexString(System.identityHashCode(this)) + "): ";
 
         this.scheduler = scheduler;
+        this.updateLock = updateLock;
+        this.clockSupplier = clockSupplier;
         this.streamGeneratorFactory = streamGeneratorFactory;
         this.parent = parent;
         this.isStreamTable = parent.isStream();
+
+        this.updatePropagationJob = new UpdatePropagationHelper(
+                scheduler, this::onPropagation, this::onPropagationError, updateIntervalMs);
 
         final String tableKey = BarragePerformanceLog.getKeyFor(parent);
         if (scheduler.inTestMode() || tableKey == null) {
@@ -318,7 +328,6 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         }
 
         this.propagationRowSet = RowSetFactory.empty();
-        this.updateIntervalMs = updateIntervalMs;
         this.onGetSnapshot = onGetSnapshot;
 
         this.parentTableSize = parent.size();
@@ -569,7 +578,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         return parentIsRefreshing ? new DeltaListener() : null;
     }
 
-    private class DeltaListener extends InstrumentedTableUpdateListener {
+    public class DeltaListener extends InstrumentedTableUpdateListener {
 
         DeltaListener() {
             super("BarrageMessageProducer");
@@ -581,9 +590,9 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         @Override
         public void onUpdate(final TableUpdate upstream) {
             synchronized (BarrageMessageProducer.this) {
-                if (lastIndexClockStep >= LogicalClock.DEFAULT.currentStep()) {
+                if (lastIndexClockStep >= clockSupplier.getAsLong()) {
                     throw new IllegalStateException(logPrefix + "lastIndexClockStep=" + lastIndexClockStep
-                            + " >= notification on " + LogicalClock.DEFAULT.currentStep());
+                            + " >= notification on " + clockSupplier.getAsLong());
                 }
 
                 final boolean shouldEnqueueDelta = !activeSubscriptions.isEmpty();
@@ -591,12 +600,12 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
                     final long startTm = System.nanoTime();
                     enqueueUpdate(upstream);
                     recordMetric(stats -> stats.enqueue, System.nanoTime() - startTm);
-                    schedulePropagation();
+                    updatePropagationJob.schedulePropagation();
                 }
                 parentTableSize = parent.size();
 
                 // mark when the last indices are from, so that terminal notifications can make use of them if required
-                lastIndexClockStep = LogicalClock.DEFAULT.currentStep();
+                lastIndexClockStep = clockSupplier.getAsLong();
                 if (log.isDebugEnabled()) {
                     try (final RowSet prevRowSet = parent.getRowSet().copyPrev()) {
                         log.debug().append(logPrefix)
@@ -616,7 +625,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
             synchronized (BarrageMessageProducer.this) {
                 if (pendingError != null) {
                     pendingError = originalException;
-                    schedulePropagation();
+                    updatePropagationJob.schedulePropagation();
                 }
             }
         }
@@ -798,7 +807,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         }
 
         if (log.isDebugEnabled()) {
-            log.debug().append(logPrefix).append("step=").append(LogicalClock.DEFAULT.currentStep())
+            log.debug().append(logPrefix).append("step=").append(clockSupplier.getAsLong())
                     .append(", upstream=").append(upstream).append(", activeSubscriptions=")
                     .append(activeSubscriptions.size())
                     .append(", numFullSubscriptions=").append(numFullSubscriptions)
@@ -877,102 +886,32 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
 
         if (log.isDebugEnabled()) {
             log.debug().append(logPrefix).append("update accumulation complete for step=")
-                    .append(LogicalClock.DEFAULT.currentStep()).endl();
+                    .append(clockSupplier.getAsLong()).endl();
         }
 
-        pendingDeltas.add(new Delta(LogicalClock.DEFAULT.currentStep(), deltaColumnOffset, upstream, addsToRecord,
+        pendingDeltas.add(new Delta(clockSupplier.getAsLong(), deltaColumnOffset, upstream, addsToRecord,
                 modsToRecord, (BitSet) activeColumns.clone(), modifiedColumns));
-    }
-
-    private void schedulePropagation() {
-        Assert.holdsLock(this, "schedulePropagation must hold lock!");
-
-        // copy lastUpdateTime so we are not duped by the re-read
-        final long localLastUpdateTime = lastUpdateTime;
-        final long now = scheduler.currentTimeMillis();
-        final long msSinceLastUpdate = now - localLastUpdateTime;
-        if (lastScheduledUpdateTime != 0 && lastScheduledUpdateTime > lastUpdateTime) {
-            // an already scheduled update is coming up
-            if (log.isDebugEnabled()) {
-                log.debug().append(logPrefix)
-                        .append("Not scheduling update, because last update was ").append(localLastUpdateTime)
-                        .append(" and now is ").append(now).append(" msSinceLastUpdate=").append(msSinceLastUpdate)
-                        .append(" interval=").append(updateIntervalMs).append(" already scheduled to run at ")
-                        .append(lastScheduledUpdateTime).endl();
-            }
-        } else if (msSinceLastUpdate < localLastUpdateTime) {
-            // we have updated within the period, so wait until a sufficient gap
-            final long nextRunTime = localLastUpdateTime + updateIntervalMs;
-            if (log.isDebugEnabled()) {
-                log.debug().append(logPrefix).append("Last Update Time: ").append(localLastUpdateTime)
-                        .append(" next run: ")
-                        .append(nextRunTime).endl();
-            }
-            lastScheduledUpdateTime = nextRunTime;
-            updatePropagationJob.scheduleAt(nextRunTime);
-        } else {
-            // we have not updated recently, so go for it right away
-            if (log.isDebugEnabled()) {
-                log.debug().append(logPrefix)
-                        .append("Scheduling update immediately, because last update was ").append(localLastUpdateTime)
-                        .append(" and now is ").append(now).append(" msSinceLastUpdate=").append(msSinceLastUpdate)
-                        .append(" interval=").append(updateIntervalMs).endl();
-            }
-            updatePropagationJob.scheduleImmediately();
-        }
     }
 
     ///////////////////////////////////////////
     // Propagation and Serialization Methods //
     ///////////////////////////////////////////
 
-    private class UpdatePropagationJob implements Runnable {
-        private final ReentrantLock runLock = new ReentrantLock();
-        private final AtomicBoolean needsRun = new AtomicBoolean();
+    private void onPropagation() {
+        final long startTm = System.nanoTime();
+        updateSubscriptionsSnapshotAndPropagate();
+        recordMetric(stats -> stats.updateJob, System.nanoTime() - startTm);
+    }
 
-        @Override
-        public void run() {
-            needsRun.set(true);
-            while (true) {
-                if (!runLock.tryLock()) {
-                    // if we can't get a lock, the thread that lets it go will check before exiting the method
-                    return;
-                }
+    private void onPropagationError(Exception exception) {
+        synchronized (BarrageMessageProducer.this) {
+            final StatusRuntimeException apiError = GrpcUtil.securelyWrapError(log, exception);
 
-                try {
-                    if (needsRun.compareAndSet(true, false)) {
-                        final long startTm = System.nanoTime();
-                        updateSubscriptionsSnapshotAndPropagate();
-                        recordMetric(stats -> stats.updateJob, System.nanoTime() - startTm);
-                    }
-                } catch (final Exception exception) {
-                    synchronized (BarrageMessageProducer.this) {
-                        final StatusRuntimeException apiError = GrpcUtil.securelyWrapError(log, exception);
+            Stream.concat(activeSubscriptions.stream(), pendingSubscriptions.stream()).distinct()
+                    .forEach(sub -> GrpcUtil.safelyError(sub.listener, apiError));
 
-                        Stream.concat(activeSubscriptions.stream(), pendingSubscriptions.stream()).distinct()
-                                .forEach(sub -> GrpcUtil.safelyError(sub.listener, apiError));
-
-                        activeSubscriptions.clear();
-                        pendingSubscriptions.clear();
-                    }
-                } finally {
-                    runLock.unlock();
-                }
-
-                if (!needsRun.get()) {
-                    return;
-                }
-            }
-        }
-
-        public void scheduleImmediately() {
-            if (needsRun.compareAndSet(false, true) && !runLock.isLocked()) {
-                scheduler.runImmediately(this);
-            }
-        }
-
-        public void scheduleAt(final long nextRunTimeMillis) {
-            scheduler.runAtTime(nextRunTimeMillis, this);
+            activeSubscriptions.clear();
+            pendingSubscriptions.clear();
         }
     }
 
@@ -1018,11 +957,6 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
      */
 
     private void updateSubscriptionsSnapshotAndPropagate() {
-        lastUpdateTime = scheduler.currentTimeMillis();
-        if (log.isDebugEnabled()) {
-            log.debug().append(logPrefix).append("Starting update job at " + lastUpdateTime).endl();
-        }
-
         boolean firstSubscription = false;
         boolean pendingChanges = false;
 
@@ -1265,18 +1199,29 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
 
                 // finally, grab the snapshot and measure elapsed time for next projections
                 long start = System.nanoTime();
-                if (!isStreamTable) {
-                    snapshot = getSnapshot(growingSubscriptions, snapshotColumns, snapshotRowSet,
-                            reverseSnapshotRowSet);
-                } else {
-                    // acquire an empty snapshot to properly align column subscription changes to a UGP step
-                    snapshot = getSnapshot(growingSubscriptions, snapshotColumns, RowSetFactory.empty(),
-                            RowSetFactory.empty());
+                if (updateLock != null) {
+                    // if we are being manually pumped updates, then we need to stop them from happening while
+                    // snapshotting
+                    updateLock.lock();
+                }
+                try {
+                    if (!isStreamTable) {
+                        snapshot = getSnapshot(growingSubscriptions, snapshotColumns, snapshotRowSet,
+                                reverseSnapshotRowSet);
+                    } else {
+                        // acquire an empty snapshot to properly align column subscription changes to a UGP step
+                        snapshot = getSnapshot(growingSubscriptions, snapshotColumns, RowSetFactory.empty(),
+                                RowSetFactory.empty());
 
-                    // in the event that the stream table was not empty; pretend it was
-                    if (!snapshot.rowsAdded.isEmpty()) {
-                        snapshot.rowsAdded.close();
-                        snapshot.rowsAdded = RowSetFactory.empty();
+                        // in the event that the stream table was not empty; pretend it was
+                        if (!snapshot.rowsAdded.isEmpty()) {
+                            snapshot.rowsAdded.close();
+                            snapshot.rowsAdded = RowSetFactory.empty();
+                        }
+                    }
+                } finally {
+                    if (updateLock != null) {
+                        updateLock.unlock();
                     }
                 }
                 long elapsed = System.nanoTime() - start;
@@ -1428,11 +1373,6 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
 
         if (numGrowingSubscriptions > 0) {
             updatePropagationJob.scheduleImmediately();
-        }
-
-        lastUpdateTime = scheduler.currentTimeMillis();
-        if (log.isDebugEnabled()) {
-            log.debug().append(logPrefix).append("Completed Propagation: " + lastUpdateTime);
         }
     }
 
@@ -2071,7 +2011,8 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         @SuppressWarnings("AutoBoxing")
         @Override
         public Boolean usePreviousValues(final long beforeClockValue) {
-            if (!parentIsRefreshing) {
+            // if events are being pumped through us manually then we do not have prev values
+            if (!parentIsRefreshing || updateLock != null) {
                 return false;
             }
 
@@ -2103,14 +2044,14 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
             if (!parentIsRefreshing) {
                 return true;
             }
-            return capturedLastIndexClockStep == getLastIndexClockStep();
+            return updateLock != null || capturedLastIndexClockStep == getLastIndexClockStep();
         }
 
         @Override
         public boolean snapshotCompletedConsistently(final long afterClockValue, final boolean usedPreviousValues) {
             final boolean success;
             synchronized (BarrageMessageProducer.this) {
-                success = snapshotConsistent(afterClockValue, usedPreviousValues);
+                success = updateLock != null || snapshotConsistent(afterClockValue, usedPreviousValues);
 
                 if (!success) {
                     step = -1;

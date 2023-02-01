@@ -3,6 +3,8 @@
  */
 package io.deephaven.web.client.api;
 
+import com.google.gwt.thirdparty.guava.common.io.BaseEncoding;
+import elemental2.core.Global;
 import elemental2.core.JsArray;
 import elemental2.dom.CustomEventInit;
 import elemental2.dom.DomGlobal;
@@ -32,6 +34,7 @@ import io.deephaven.web.client.api.barrage.def.ColumnDefinition;
 import io.deephaven.web.client.api.barrage.def.TableAttributesDefinition;
 import io.deephaven.web.client.api.batch.RequestBatcher;
 import io.deephaven.web.client.api.console.JsVariableChanges;
+import io.deephaven.web.client.api.console.JsVariableDefinition;
 import io.deephaven.web.client.api.filter.FilterCondition;
 import io.deephaven.web.client.api.input.JsInputTable;
 import io.deephaven.web.client.api.lifecycle.HasLifecycle;
@@ -169,6 +172,41 @@ public class JsTable extends HasEventHandling implements HasTableBinding, HasLif
     @JsMethod(namespace = "dh.Table")
     public static Sort reverse() {
         return Sort.reverse();
+    }
+
+    private static native String b64encode(String b) /*-{
+  return window.btoa(b);
+}-*/;
+
+    // TODO (nate): find an appropriate place for this?
+    @JsMethod(namespace = "dh.Table")
+    public static JsVariableDefinition getJsVariableDefinition(JsPropertyMap<Object> definitionObject) {
+        if (definitionObject instanceof JsVariableDefinition) {
+            return (JsVariableDefinition) definitionObject;
+        }
+
+        // type is required
+        if (!definitionObject.has("type")) {
+            throw new IllegalArgumentException("no type field; could not getObject");
+        }
+        String type = definitionObject.getAsAny("type").asString();
+
+        // title is optional
+        String title = null;
+        if (definitionObject.has("title")) {
+            title = definitionObject.getAsAny("title").asString();
+        }
+
+        // must be given the id and not the deprecated name
+        if (definitionObject.has("name")) {
+            throw new IllegalArgumentException("has name but id field required for conversion");
+        } else if (!definitionObject.has("id")) {
+            throw new IllegalArgumentException("no name/id field; could not construct getObject");
+        }
+
+        String id = b64encode(definitionObject.getAsAny("id").asString());
+        boolean disabled = definitionObject.has("disabled");
+        return new JsVariableDefinition(type, title, id, null, disabled);
     }
 
     @JsMethod
@@ -1066,7 +1104,7 @@ public class JsTable extends HasEventHandling implements HasTableBinding, HasLif
 
     /**
      * Seek the row matching the data provided
-     * 
+     *
      * @param startingRow Row to start the seek from
      * @param column Column to seek for value on
      * @param valueType Type of value provided

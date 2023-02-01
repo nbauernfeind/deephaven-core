@@ -5,6 +5,8 @@ package io.deephaven.io.logger;
 
 import io.deephaven.io.log.LogLevel;
 import io.deephaven.io.streams.SimpleByteBufferSink;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -29,16 +31,45 @@ public class LogBufferOutputStream extends OutputStream {
     }
 
     @Override
+    public void write(@NotNull byte[] b) throws IOException {
+        write(b, 0, b.length);
+    }
+
+    @Override
+    public void write(@NotNull byte[] b, int off, int len) throws IOException {
+        ByteBuffer innerBuffer = buffer.ensureSpace(len);
+        for (int ii = 0; ii < len; ++ii) {
+            byte theByte = b[off + ii];
+            innerBuffer.put(theByte);
+            // note that flushing only occurs when a newline is written; we do not override flush
+            if (theByte == '\n' || buffer.getBuffer().position() >= maxBufferSize) {
+                record();
+                innerBuffer = buffer.ensureSpace(len - ii - 1);
+            }
+        }
+    }
+
+    @Override
     public synchronized void write(int b) throws IOException {
         buffer.ensureSpace(1).put((byte) b);
+        // note that flushing only occurs when a newline is written; we do not override flush
         if ((byte) b == '\n' || buffer.getBuffer().position() >= maxBufferSize) {
             record();
         }
     }
 
+    @Override
+    public void flush() throws IOException {
+        record();
+    }
+
     private void record() {
         final ByteBuffer out = buffer.getBuffer();
         out.flip();
+        if (out.remaining() == 0) {
+            out.clear();
+            return;
+        }
 
         next.setLevel(level);
         next.setData(out);

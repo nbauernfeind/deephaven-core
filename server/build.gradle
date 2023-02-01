@@ -7,6 +7,7 @@ dependencies {
     implementation project(':authentication')
     implementation project(':authorization')
     implementation project(':engine-table')
+    implementation project(':extensions-barrage')
     implementation project(':extensions-csv')
     implementation project(':extensions-parquet-table')
     implementation project(':extensions-jdbc')

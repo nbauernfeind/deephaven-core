@@ -15,14 +15,20 @@ public class JsVariableDefinition {
     private final String description;
     private final String applicationId;
     private final String applicationName;
+    private final boolean disabled;
 
-    public JsVariableDefinition(String type, String title, String id, String description) {
+    public JsVariableDefinition(String type, String id) {
+        this(type, null, id, null, false);
+    }
+
+    public JsVariableDefinition(String type, String title, String id, String description, boolean disabled) {
         this.type = type;
         this.title = title == null ? JS_UNAVAILABLE : title;
         this.id = id;
         this.description = description == null ? JS_UNAVAILABLE : description;
         this.applicationId = "scope";
         this.applicationName = "";
+        this.disabled = disabled;
     }
 
     public JsVariableDefinition(FieldInfo field) {
@@ -32,6 +38,7 @@ public class JsVariableDefinition {
         this.description = field.getFieldDescription();
         this.applicationId = field.getApplicationId();
         this.applicationName = field.getApplicationName();
+        this.disabled = false;
     }
 
     @JsProperty
@@ -68,5 +75,10 @@ public class JsVariableDefinition {
     @JsProperty
     public String getApplicationName() {
         return applicationName;
+    }
+
+    @JsProperty
+    public boolean isDisabled() {
+        return disabled;
     }
 }
