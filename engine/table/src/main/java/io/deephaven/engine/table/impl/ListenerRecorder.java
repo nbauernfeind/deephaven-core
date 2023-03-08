@@ -4,6 +4,7 @@
 package io.deephaven.engine.table.impl;
 
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.liveness.LivenessManager;
 import io.deephaven.engine.rowset.RowSet;
 import io.deephaven.engine.rowset.RowSetFactory;
@@ -11,7 +12,7 @@ import io.deephaven.engine.rowset.RowSetShiftData;
 import io.deephaven.engine.table.ModifiedColumnSet;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.TableUpdate;
-import io.deephaven.engine.updategraph.LogicalClock;
+import io.deephaven.engine.updategraph.UpdateContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,7 +62,7 @@ public class ListenerRecorder extends InstrumentedTableUpdateListener {
     @Override
     public void onUpdate(final TableUpdate upstream) {
         this.update = upstream.acquire();
-        final long currentStep = LogicalClock.DEFAULT.currentStep();
+        final long currentStep = UpdateContext.logicalClock().currentStep();
         Assert.lt(this.notificationStep, "this.notificationStep", currentStep, "currentStep");
         this.notificationStep = currentStep;
 
@@ -75,7 +76,7 @@ public class ListenerRecorder extends InstrumentedTableUpdateListener {
 
     @Override
     protected void onFailureInternal(@NotNull final Throwable originalException, @Nullable final Entry sourceEntry) {
-        this.notificationStep = LogicalClock.DEFAULT.currentStep();
+        this.notificationStep = UpdateContext.logicalClock().currentStep();
         if (mergedListener == null) {
             throw new IllegalStateException("Merged listener not set");
         }
@@ -94,7 +95,7 @@ public class ListenerRecorder extends InstrumentedTableUpdateListener {
     }
 
     public boolean recordedVariablesAreValid() {
-        return notificationStep == LogicalClock.DEFAULT.currentStep();
+        return notificationStep == UpdateContext.logicalClock().currentStep();
     }
 
     public void setMergedListener(MergedListener mergedListener) {

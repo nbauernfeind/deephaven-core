@@ -36,15 +36,16 @@ public class StreamTableTools {
      * @return an append-only in-memory table representing all data encountered in the stream
      */
     public static Table streamToAppendOnlyTable(final Table streamTable) {
+        streamTable.checkUpdateContextConsistency();
+
         return QueryPerformanceRecorder.withNugget("streamToAppendOnlyTable", () -> {
             if (!isStream(streamTable)) {
                 throw new IllegalArgumentException("Input is not a stream table!");
             }
 
-            final BaseTable baseStreamTable = (BaseTable) streamTable.coalesce();
+            final BaseTable<?> baseStreamTable = (BaseTable<?>) streamTable.coalesce();
 
-            final SwapListener swapListener =
-                    baseStreamTable.createSwapListenerIfRefreshing(SwapListener::new);
+            final SwapListener swapListener = baseStreamTable.createSwapListenerIfRefreshing(SwapListener::new);
             // stream tables must tick
             Assert.neqNull(swapListener, "swapListener");
 

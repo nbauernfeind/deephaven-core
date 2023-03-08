@@ -11,7 +11,7 @@ import io.deephaven.engine.rowset.TrackingWritableRowSet;
 import io.deephaven.engine.table.ModifiedColumnSet;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.testutil.TstUtils;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.table.impl.sources.RedirectedColumnSource;
 import io.deephaven.engine.table.impl.util.*;
@@ -112,10 +112,10 @@ public class StreamTableOperationsTest {
                             ? RowSetFactory.empty()
                             : RowSetFactory.fromRange(0, refreshSize - 1);
 
-            UpdateGraphProcessor.DEFAULT.startCycleForUnitTests();
+            UpdateContext.updateGraphProcessor().startCycleForUnitTests();
             try {
                 final RowSet finalNormalLastInserted = normalLastInserted;
-                UpdateGraphProcessor.DEFAULT.refreshUpdateSourceForUnitTests(() -> {
+                UpdateContext.updateGraphProcessor().refreshUpdateSourceForUnitTests(() -> {
                     if (normalStepInserted.isNonempty() || finalNormalLastInserted.isNonempty()) {
                         normal.getRowSet().writableCast().update(normalStepInserted, finalNormalLastInserted);
                         normal.notifyListeners(new TableUpdateImpl(normalStepInserted.copy(), finalNormalLastInserted,
@@ -123,7 +123,7 @@ public class StreamTableOperationsTest {
                     }
                 });
                 final RowSet finalStreamLastInserted = streamLastInserted;
-                UpdateGraphProcessor.DEFAULT.refreshUpdateSourceForUnitTests(() -> {
+                UpdateContext.updateGraphProcessor().refreshUpdateSourceForUnitTests(() -> {
                     if (streamStepInserted.isNonempty() || finalStreamLastInserted.isNonempty()) {
                         if (streamInternalRowSet != null) {
                             streamInternalRowSet.clear();
@@ -136,7 +136,7 @@ public class StreamTableOperationsTest {
                     }
                 });
             } finally {
-                UpdateGraphProcessor.DEFAULT.completeCycleForUnitTests();
+                UpdateContext.updateGraphProcessor().completeCycleForUnitTests();
             }
             try {
                 TstUtils.assertTableEquals(expected, streamExpected);

@@ -14,8 +14,6 @@ import io.deephaven.engine.table.ColumnDefinition;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.TableDefinition;
 import io.deephaven.engine.table.WritableColumnSource;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
-import io.deephaven.engine.util.TableTools;
 import io.deephaven.engine.util.config.InputTableStatusListener;
 import io.deephaven.engine.util.config.MutableInputTable;
 import io.deephaven.engine.table.impl.QueryTable;
@@ -50,7 +48,7 @@ abstract class BaseArrayBackedMutableTable extends UpdatableTable {
     private final Map<String, Object[]> enumValues;
 
     private String description = getDefaultDescription();
-    private Runnable onPendingChange = () -> UpdateGraphProcessor.DEFAULT.requestRefresh();
+    private Runnable onPendingChange = () -> updateContext.getUpdateGraphProcessor().requestRefresh();
 
     long nextRow = 0;
     private long pendingProcessed = -1L;
@@ -107,7 +105,7 @@ abstract class BaseArrayBackedMutableTable extends UpdatableTable {
         });
         result.getRowSet().writableCast().insert(builder.build());
         result.getRowSet().writableCast().initializePreviousValue();
-        UpdateGraphProcessor.DEFAULT.addSource(result);
+        result.getUpdateContext().getUpdateGraphProcessor().addSource(result);
     }
 
     public BaseArrayBackedMutableTable setDescription(String newDescription) {
@@ -123,8 +121,9 @@ abstract class BaseArrayBackedMutableTable extends UpdatableTable {
      */
     @TestUseOnly
     void setOnPendingChange(final Runnable onPendingChange) {
-        this.onPendingChange =
-                onPendingChange == null ? () -> UpdateGraphProcessor.DEFAULT.requestRefresh() : onPendingChange;
+        this.onPendingChange = onPendingChange == null
+                ? () -> updateContext.getUpdateGraphProcessor().requestRefresh()
+                : onPendingChange;
     }
 
     private void processPending(RowSetChangeRecorder rowSetChangeRecorder) {
@@ -283,7 +282,7 @@ abstract class BaseArrayBackedMutableTable extends UpdatableTable {
         }
 
         void waitForSequence(long sequence) {
-            if (UpdateGraphProcessor.DEFAULT.exclusiveLock().isHeldByCurrentThread()) {
+            if (updateContext.getExclusiveLock().isHeldByCurrentThread()) {
                 // We're holding the lock. currentTable had better be refreshing. Wait on its UGP condition
                 // in order to allow updates.
                 while (processedSequence < sequence) {
@@ -310,7 +309,7 @@ abstract class BaseArrayBackedMutableTable extends UpdatableTable {
                 InputTableStatusListener listener) {
             Assert.neqNull(defaultValues, "defaultValues");
             if (defaultValues.isRefreshing()) {
-                UpdateGraphProcessor.DEFAULT.checkInitiateTableOperation();
+                updateContext.checkInitiateTableOperation();
             }
 
             final List<ColumnDefinition<?>> columnDefinitions = getTableDefinition().getColumns();

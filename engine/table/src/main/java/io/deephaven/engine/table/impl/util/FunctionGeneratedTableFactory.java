@@ -6,7 +6,6 @@ package io.deephaven.engine.table.impl.util;
 import io.deephaven.base.Function;
 import io.deephaven.engine.rowset.*;
 import io.deephaven.engine.table.*;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.engine.table.impl.QueryTable;
 import io.deephaven.engine.table.impl.BaseTable;
 import io.deephaven.engine.table.impl.sources.*;
@@ -135,7 +134,7 @@ public class FunctionGeneratedTableFactory {
             if (refreshIntervalMs >= 0) {
                 setRefreshing(true);
                 if (refreshIntervalMs > 0) {
-                    UpdateGraphProcessor.DEFAULT.addSource(this);
+                    updateContext.getUpdateGraphProcessor().addSource(this);
                 }
             }
         }
@@ -180,7 +179,7 @@ public class FunctionGeneratedTableFactory {
         public void destroy() {
             super.destroy();
             if (refreshIntervalMs > 0) {
-                UpdateGraphProcessor.DEFAULT.removeSource(this);
+                updateContext.getUpdateGraphProcessor().removeSource(this);
             }
         }
     }

@@ -11,7 +11,7 @@ import io.deephaven.engine.rowset.TrackingWritableRowSet;
 import io.deephaven.engine.table.ModifiedColumnSet;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.testutil.TstUtils;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.engine.util.SortedBy;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.table.impl.sources.RedirectedColumnSource;
@@ -114,9 +114,9 @@ public class StreamTableAggregationTest {
                             ? RowSetFactory.empty()
                             : RowSetFactory.fromRange(0, refreshSize - 1);
 
-            UpdateGraphProcessor.DEFAULT.startCycleForUnitTests();
+            UpdateContext.updateGraphProcessor().startCycleForUnitTests();
             try {
-                UpdateGraphProcessor.DEFAULT.refreshUpdateSourceForUnitTests(() -> {
+                UpdateContext.updateGraphProcessor().refreshUpdateSourceForUnitTests(() -> {
                     if (normalStepInserted.isNonempty()) {
                         normal.getRowSet().writableCast().insert(normalStepInserted);
                         normal.notifyListeners(
@@ -126,7 +126,7 @@ public class StreamTableAggregationTest {
                     }
                 });
                 final RowSet finalStreamLastInserted = streamLastInserted;
-                UpdateGraphProcessor.DEFAULT.refreshUpdateSourceForUnitTests(() -> {
+                UpdateContext.updateGraphProcessor().refreshUpdateSourceForUnitTests(() -> {
                     if (streamStepInserted.isNonempty() || finalStreamLastInserted.isNonempty()) {
                         if (streamInternalRowSet != null) {
                             streamInternalRowSet.clear();
@@ -140,7 +140,7 @@ public class StreamTableAggregationTest {
                     }
                 });
             } finally {
-                UpdateGraphProcessor.DEFAULT.completeCycleForUnitTests();
+                UpdateContext.updateGraphProcessor().completeCycleForUnitTests();
             }
             try {
                 TstUtils.assertTableEquals(expected, addOnlyExpected);

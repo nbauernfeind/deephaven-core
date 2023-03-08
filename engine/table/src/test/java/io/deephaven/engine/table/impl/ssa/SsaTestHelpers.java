@@ -7,7 +7,7 @@ import io.deephaven.engine.table.Table;
 import io.deephaven.engine.testutil.generator.SortedDoubleGenerator;
 import io.deephaven.engine.testutil.generator.SortedIntGenerator;
 import io.deephaven.engine.testutil.generator.SortedLongGenerator;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.engine.table.impl.QueryTable;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,7 +82,7 @@ public class SsaTestHelpers {
 
     public static Table prepareTestTableForObject(QueryTable table) {
         // an update might be faster, but updateView ensures we break when object equality is not the same as ==
-        return UpdateGraphProcessor.DEFAULT.sharedLock()
+        return UpdateContext.updateGraphProcessor().sharedLock()
                 .computeLocked(() -> table.updateView("Value=String.format(`%06d`, Value)"));
     }
 

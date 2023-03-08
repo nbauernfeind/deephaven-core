@@ -4,6 +4,7 @@
 package io.deephaven.server.barrage;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.rpc.Code;
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
@@ -30,7 +31,7 @@ import io.deephaven.engine.table.impl.util.ShiftInversionHelper;
 import io.deephaven.engine.table.impl.util.UpdateCoalescer;
 import io.deephaven.engine.updategraph.DynamicNode;
 import io.deephaven.engine.updategraph.LogicalClock;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.extensions.barrage.BarragePerformanceLog;
 import io.deephaven.extensions.barrage.BarrageStreamGenerator;
 import io.deephaven.extensions.barrage.BarrageSubscriptionOptions;
@@ -40,6 +41,7 @@ import io.deephaven.extensions.barrage.util.GrpcUtil;
 import io.deephaven.extensions.barrage.util.StreamReader;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
+import io.deephaven.proto.util.Exceptions;
 import io.deephaven.server.util.Scheduler;
 import io.deephaven.time.DateTime;
 import io.deephaven.util.SafeCloseable;
@@ -113,12 +115,12 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
 
         @AssistedFactory
         public interface Factory<MessageView> {
-            Operation<MessageView> create(BaseTable parent, long updateIntervalMs);
+            Operation<MessageView> create(BaseTable<?> parent, long updateIntervalMs);
         }
 
         private final Scheduler scheduler;
         private final BarrageStreamGenerator.Factory<MessageView> streamGeneratorFactory;
-        private final BaseTable parent;
+        private final BaseTable<?> parent;
         private final long updateIntervalMs;
         private final Runnable onGetSnapshot;
 
@@ -126,7 +128,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         public Operation(
                 final Scheduler scheduler,
                 final BarrageStreamGenerator.Factory<MessageView> streamGeneratorFactory,
-                @Assisted final BaseTable parent,
+                @Assisted final BaseTable<?> parent,
                 @Assisted final long updateIntervalMs) {
             this(scheduler, streamGeneratorFactory, parent, updateIntervalMs, null);
         }
@@ -135,7 +137,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         public Operation(
                 final Scheduler scheduler,
                 final BarrageStreamGenerator.Factory<MessageView> streamGeneratorFactory,
-                final BaseTable parent,
+                final BaseTable<?> parent,
                 final long updateIntervalMs,
                 @Nullable final Runnable onGetSnapshot) {
             this.scheduler = scheduler;
@@ -299,7 +301,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
 
     public BarrageMessageProducer(final Scheduler scheduler,
             final BarrageStreamGenerator.Factory<MessageView> streamGeneratorFactory,
-            final BaseTable parent,
+            final BaseTable<?> parent,
             final long updateIntervalMs,
             final Runnable onGetSnapshot) {
         this.logPrefix = "BarrageMessageProducer(" + Integer.toHexString(System.identityHashCode(this)) + "): ";
@@ -581,9 +583,9 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         @Override
         public void onUpdate(final TableUpdate upstream) {
             synchronized (BarrageMessageProducer.this) {
-                if (lastIndexClockStep >= LogicalClock.DEFAULT.currentStep()) {
+                if (lastIndexClockStep >= UpdateContext.logicalClock().currentStep()) {
                     throw new IllegalStateException(logPrefix + "lastIndexClockStep=" + lastIndexClockStep
-                            + " >= notification on " + LogicalClock.DEFAULT.currentStep());
+                            + " >= notification on " + UpdateContext.logicalClock().currentStep());
                 }
 
                 final boolean shouldEnqueueDelta = !activeSubscriptions.isEmpty();
@@ -596,7 +598,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
                 parentTableSize = parent.size();
 
                 // mark when the last indices are from, so that terminal notifications can make use of them if required
-                lastIndexClockStep = LogicalClock.DEFAULT.currentStep();
+                lastIndexClockStep = UpdateContext.logicalClock().currentStep();
                 if (log.isDebugEnabled()) {
                     try (final RowSet prevRowSet = parent.getRowSet().copyPrev()) {
                         log.debug().append(logPrefix)
@@ -798,7 +800,8 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         }
 
         if (log.isDebugEnabled()) {
-            log.debug().append(logPrefix).append("step=").append(LogicalClock.DEFAULT.currentStep())
+            log.debug().append(logPrefix).append("step=")
+                    .append(UpdateContext.logicalClock().currentStep())
                     .append(", upstream=").append(upstream).append(", activeSubscriptions=")
                     .append(activeSubscriptions.size())
                     .append(", numFullSubscriptions=").append(numFullSubscriptions)
@@ -877,11 +880,11 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
 
         if (log.isDebugEnabled()) {
             log.debug().append(logPrefix).append("update accumulation complete for step=")
-                    .append(LogicalClock.DEFAULT.currentStep()).endl();
+                    .append(UpdateContext.logicalClock().currentStep()).endl();
         }
 
-        pendingDeltas.add(new Delta(LogicalClock.DEFAULT.currentStep(), deltaColumnOffset, upstream, addsToRecord,
-                modsToRecord, (BitSet) activeColumns.clone(), modifiedColumns));
+        pendingDeltas.add(new Delta(UpdateContext.logicalClock().currentStep(), deltaColumnOffset,
+                upstream, addsToRecord, modsToRecord, (BitSet) activeColumns.clone(), modifiedColumns));
     }
 
     private void schedulePropagation() {
@@ -1286,7 +1289,8 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
                     // very simplistic logic to take the last snapshot and extrapolate max number of rows that will
                     // not exceed the target UGP processing time percentage
                     long targetNanos = (long) (TARGET_SNAPSHOT_PERCENTAGE
-                            * UpdateGraphProcessor.DEFAULT.getTargetCycleDurationMillis() * 1000000);
+                            * parent.getUpdateContext().getUpdateGraphProcessor().getTargetCycleDurationMillis()
+                            * 1000000);
 
                     long nanosPerCell = elapsed / (snapshot.rowsIncluded.size() * columnCount);
 
@@ -2152,7 +2156,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
     }
 
     @Override
-    protected void destroy() {
+    protected synchronized void destroy() {
         super.destroy();
         if (stats != null) {
             stats.stop();

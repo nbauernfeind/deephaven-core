@@ -28,7 +28,7 @@ import io.deephaven.engine.table.impl.TableUpdateImpl;
 import io.deephaven.engine.table.impl.partitioned.PartitionedTableImpl;
 import io.deephaven.engine.table.impl.sources.ArrayBackedColumnSource;
 import io.deephaven.engine.table.impl.sources.ring.RingTableTools;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.engine.updategraph.UpdateSourceCombiner;
 import io.deephaven.engine.updategraph.UpdateSourceRegistrar;
 import io.deephaven.kafka.KafkaTools.TableType.Append;
@@ -1325,7 +1325,7 @@ public class KafkaTools {
 
         @Override
         public UpdateSourceRegistrar getSourceRegistrar() {
-            return UpdateGraphProcessor.DEFAULT;
+            return UpdateContext.updateGraphProcessor();
         }
 
         @Override
@@ -1612,8 +1612,8 @@ public class KafkaTools {
             @NotNull final Produce.KeyOrValueSpec valueSpec,
             final boolean lastByKeyColumns) {
         if (table.isRefreshing()
-                && !UpdateGraphProcessor.DEFAULT.exclusiveLock().isHeldByCurrentThread()
-                && !UpdateGraphProcessor.DEFAULT.sharedLock().isHeldByCurrentThread()) {
+                && !UpdateContext.exclusiveLock().isHeldByCurrentThread()
+                && !UpdateContext.sharedLock().isHeldByCurrentThread()) {
             throw new KafkaPublisherException(
                     "Calling thread must hold an exclusive or shared UpdateGraphProcessor lock to publish live sources");
         }
@@ -1731,7 +1731,7 @@ public class KafkaTools {
                     (WritableColumnSource<Table>) table().getColumnSource(CONSTITUENT_COLUMN_NAME, Table.class);
             manage(refreshCombiner);
             refreshCombiner.addSource(this);
-            UpdateGraphProcessor.DEFAULT.addSource(refreshCombiner);
+            table().getUpdateContext().getUpdateGraphProcessor().addSource(refreshCombiner);
         }
 
         @Override

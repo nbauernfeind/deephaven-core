@@ -212,8 +212,8 @@ class RightIncrementalChunkedCrossJoinStateManager
         this.tableHashPivot = tableSize;
         // endmixin rehash
 
-        overflowKeySources = new WritableColumnSource[keyColumnCount];
-        keySources = new WritableColumnSource[keyColumnCount];
+        overflowKeySources = new ArrayBackedColumnSource[keyColumnCount];
+        keySources = new ArrayBackedColumnSource[keyColumnCount];
 
         keyChunkTypes = new ChunkType[keyColumnCount];
         chunkHashers = new ChunkHasher[keyColumnCount];

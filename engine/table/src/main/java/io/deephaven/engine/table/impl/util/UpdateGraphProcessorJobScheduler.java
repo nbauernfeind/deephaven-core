@@ -4,9 +4,8 @@ import io.deephaven.base.log.LogOutput;
 import io.deephaven.base.log.LogOutputAppendable;
 import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.table.impl.perf.BasePerformanceEntry;
-import io.deephaven.engine.table.impl.util.JobScheduler;
 import io.deephaven.engine.updategraph.AbstractNotification;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.io.log.impl.LogOutputStringImpl;
 import io.deephaven.util.process.ProcessEnvironment;
 
@@ -17,11 +16,12 @@ public class UpdateGraphProcessorJobScheduler implements JobScheduler {
 
     @Override
     public void submit(
+            final UpdateContext updateContext,
             final ExecutionContext executionContext,
             final Runnable runnable,
             final LogOutputAppendable description,
             final Consumer<Exception> onError) {
-        UpdateGraphProcessor.DEFAULT.addNotification(new AbstractNotification(false) {
+        UpdateContext.updateGraphProcessor().addNotification(new AbstractNotification(false) {
             @Override
             public boolean canExecute(long step) {
                 return true;
@@ -32,7 +32,11 @@ public class UpdateGraphProcessorJobScheduler implements JobScheduler {
                 final BasePerformanceEntry baseEntry = new BasePerformanceEntry();
                 baseEntry.onBaseEntryStart();
                 try {
-                    runnable.run();
+                    if (executionContext != null) {
+                        executionContext.apply(runnable);
+                    } else {
+                        runnable.run();
+                    }
                 } catch (Exception e) {
                     onError.accept(e);
                 } catch (Error e) {
@@ -52,11 +56,6 @@ public class UpdateGraphProcessorJobScheduler implements JobScheduler {
                 return output.append("{Notification(").append(System.identityHashCode(this)).append(" for ")
                         .append(description).append("}");
             }
-
-            @Override
-            public ExecutionContext getExecutionContext() {
-                return executionContext;
-            }
         });
     }
 
@@ -67,6 +66,6 @@ public class UpdateGraphProcessorJobScheduler implements JobScheduler {
 
     @Override
     public int threadCount() {
-        return UpdateGraphProcessor.DEFAULT.getUpdateThreads();
+        return UpdateContext.updateGraphProcessor().getUpdateThreads();
     }
 }

@@ -12,7 +12,7 @@ import io.deephaven.configuration.Configuration;
 import io.deephaven.datastructures.util.CollectionUtil;
 import io.deephaven.engine.rowset.*;
 import io.deephaven.engine.table.SharedContext;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
+import io.deephaven.engine.updategraph.*;
 import io.deephaven.engine.table.impl.sources.ReinterpretUtils;
 import io.deephaven.engine.table.impl.util.*;
 import io.deephaven.io.log.LogEntry;
@@ -20,8 +20,6 @@ import io.deephaven.engine.table.ColumnDefinition;
 import io.deephaven.engine.exceptions.CancellationException;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.TableDefinition;
-import io.deephaven.engine.updategraph.NotificationQueue;
-import io.deephaven.engine.updategraph.WaitNotification;
 import io.deephaven.time.DateTime;
 import io.deephaven.util.datastructures.LongSizedDataStructure;
 import io.deephaven.engine.liveness.LivenessManager;
@@ -30,7 +28,6 @@ import io.deephaven.engine.liveness.LivenessScopeStack;
 import io.deephaven.engine.table.impl.BaseTable;
 import io.deephaven.engine.table.impl.NotificationStepSource;
 import io.deephaven.engine.table.ColumnSource;
-import io.deephaven.engine.updategraph.LogicalClock;
 import io.deephaven.chunk.*;
 import io.deephaven.util.SafeCloseable;
 import io.deephaven.UncheckedDeephavenException;
@@ -230,7 +227,7 @@ public class ConstructSnapshot {
             }
             if (!clockConsistent(
                     activeConcurrentAttempt.beforeClockValue,
-                    lastObservedClockValue = LogicalClock.DEFAULT.currentValue(),
+                    lastObservedClockValue = UpdateContext.logicalClock().currentValue(),
                     activeConcurrentAttempt.usingPreviousValues)) {
                 return true;
             }
@@ -276,7 +273,7 @@ public class ConstructSnapshot {
                     || WaitNotification.waitForSatisfaction(beforeStep, dependency)) {
                 return;
             }
-            lastObservedClockValue = LogicalClock.DEFAULT.currentValue();
+            lastObservedClockValue = UpdateContext.logicalClock().currentValue();
             // Blow up if we've detected a step change
             if (LogicalClock.getStep(lastObservedClockValue) != beforeStep) {
                 throw new SnapshotInconsistentException();
@@ -316,8 +313,8 @@ public class ConstructSnapshot {
          * @return Whether this thread currently holds a lock on the UGP
          */
         private boolean locked() {
-            return UpdateGraphProcessor.DEFAULT.sharedLock().isHeldByCurrentThread()
-                    || UpdateGraphProcessor.DEFAULT.exclusiveLock().isHeldByCurrentThread();
+            return UpdateContext.sharedLock().isHeldByCurrentThread()
+                    || UpdateContext.exclusiveLock().isHeldByCurrentThread();
         }
 
         /**
@@ -327,7 +324,7 @@ public class ConstructSnapshot {
             if (locked()) {
                 return;
             }
-            UpdateGraphProcessor.DEFAULT.sharedLock().lock();
+            UpdateContext.sharedLock().lock();
             acquiredLock = true;
         }
 
@@ -336,7 +333,7 @@ public class ConstructSnapshot {
          */
         private void maybeReleaseLock() {
             if (acquiredLock && concurrentSnapshotDepth == 0 && lockedSnapshotDepth == 0) {
-                UpdateGraphProcessor.DEFAULT.sharedLock().unlock();
+                UpdateContext.sharedLock().unlock();
                 acquiredLock = false;
             }
         }
@@ -431,7 +428,7 @@ public class ConstructSnapshot {
      * @return a snapshot of the entire base table.
      */
     public static InitialSnapshot constructInitialSnapshot(final Object logIdentityObject,
-            @NotNull final BaseTable table) {
+            @NotNull final BaseTable<?> table) {
         return constructInitialSnapshot(logIdentityObject, table, null, null);
     }
 
@@ -447,7 +444,7 @@ public class ConstructSnapshot {
      * @return a snapshot of the entire base table.
      */
     public static InitialSnapshot constructInitialSnapshot(final Object logIdentityObject,
-            @NotNull final BaseTable table,
+            @NotNull final BaseTable<?> table,
             @Nullable final BitSet columnsToSerialize,
             @Nullable final RowSet keysToSnapshot) {
         return constructInitialSnapshot(logIdentityObject, table, columnsToSerialize, keysToSnapshot,
@@ -455,18 +452,21 @@ public class ConstructSnapshot {
     }
 
     static InitialSnapshot constructInitialSnapshot(final Object logIdentityObject,
-            @NotNull final BaseTable table,
+            @NotNull final BaseTable<?> table,
             @Nullable final BitSet columnsToSerialize,
             @Nullable final RowSet keysToSnapshot,
             @NotNull final SnapshotControl control) {
-        final InitialSnapshot snapshot = new InitialSnapshot();
+        try (final SafeCloseable ignored = table.getUpdateContext().open()) {
+            final InitialSnapshot snapshot = new InitialSnapshot();
 
-        final SnapshotFunction doSnapshot = (usePrev, beforeClockValue) -> serializeAllTable(usePrev, snapshot, table,
-                logIdentityObject, columnsToSerialize, keysToSnapshot);
+            final SnapshotFunction doSnapshot =
+                    (usePrev, beforeClockValue) -> serializeAllTable(usePrev, snapshot, table,
+                            logIdentityObject, columnsToSerialize, keysToSnapshot);
 
-        snapshot.step = callDataSnapshotFunction(System.identityHashCode(logIdentityObject), control, doSnapshot);
+            snapshot.step = callDataSnapshotFunction(System.identityHashCode(logIdentityObject), control, doSnapshot);
 
-        return snapshot;
+            return snapshot;
+        }
     }
 
     /**
@@ -481,7 +481,7 @@ public class ConstructSnapshot {
      * @return a snapshot of the entire base table.
      */
     public static InitialSnapshot constructInitialSnapshotInPositionSpace(final Object logIdentityObject,
-            @NotNull final BaseTable table,
+            @NotNull final BaseTable<?> table,
             @Nullable final BitSet columnsToSerialize,
             @Nullable final RowSet positionsToSnapshot) {
         return constructInitialSnapshotInPositionSpace(logIdentityObject, table, columnsToSerialize,
@@ -489,7 +489,7 @@ public class ConstructSnapshot {
     }
 
     static InitialSnapshot constructInitialSnapshotInPositionSpace(final Object logIdentityObject,
-            @NotNull final BaseTable table,
+            @NotNull final BaseTable<?> table,
             @Nullable final BitSet columnsToSerialize,
             @Nullable final RowSet positionsToSnapshot,
             @NotNull final SnapshotControl control) {
@@ -521,8 +521,7 @@ public class ConstructSnapshot {
      * @param table the table to snapshot.
      * @return a snapshot of the entire base table.
      */
-    public static BarrageMessage constructBackplaneSnapshot(final Object logIdentityObject,
-            final BaseTable table) {
+    public static BarrageMessage constructBackplaneSnapshot(final Object logIdentityObject, final BaseTable<?> table) {
         return constructBackplaneSnapshotInPositionSpace(logIdentityObject, table, null, null, null);
     }
 
@@ -538,7 +537,7 @@ public class ConstructSnapshot {
      * @return a snapshot of the entire base table.
      */
     public static BarrageMessage constructBackplaneSnapshotInPositionSpace(final Object logIdentityObject,
-            final BaseTable table,
+            final BaseTable<?> table,
             @Nullable final BitSet columnsToSerialize,
             @Nullable final RowSequence positionsToSnapshot,
             @Nullable final RowSequence reversePositionsToSnapshot) {
@@ -560,48 +559,50 @@ public class ConstructSnapshot {
      * @return a snapshot of the entire base table.
      */
     public static BarrageMessage constructBackplaneSnapshotInPositionSpace(final Object logIdentityObject,
-            @NotNull final BaseTable table,
+            @NotNull final BaseTable<?> table,
             @Nullable final BitSet columnsToSerialize,
             @Nullable final RowSequence positionsToSnapshot,
             @Nullable final RowSequence reversePositionsToSnapshot,
             @NotNull final SnapshotControl control) {
+        try (final SafeCloseable ignored1 = table.getUpdateContext().open()) {
+            final BarrageMessage snapshot = new BarrageMessage();
+            snapshot.isSnapshot = true;
+            snapshot.shifted = RowSetShiftData.EMPTY;
 
-        final BarrageMessage snapshot = new BarrageMessage();
-        snapshot.isSnapshot = true;
-        snapshot.shifted = RowSetShiftData.EMPTY;
-
-        final SnapshotFunction doSnapshot = (usePrev, beforeClockValue) -> {
-            final RowSet keysToSnapshot;
-            if (positionsToSnapshot == null && reversePositionsToSnapshot == null) {
-                keysToSnapshot = null;
-            } else {
-                final RowSet rowSetToUse = usePrev ? table.getRowSet().copyPrev() : table.getRowSet();
-                try (final SafeCloseable ignored = usePrev ? rowSetToUse : null) {
-                    final WritableRowSet forwardKeys =
-                            positionsToSnapshot == null ? null : rowSetToUse.subSetForPositions(positionsToSnapshot);
-                    final RowSet reverseKeys = reversePositionsToSnapshot == null ? null
-                            : rowSetToUse.subSetForReversePositions(reversePositionsToSnapshot);
-                    if (forwardKeys != null) {
-                        if (reverseKeys != null) {
-                            forwardKeys.insert(reverseKeys);
-                            reverseKeys.close();
+            final SnapshotFunction doSnapshot = (usePrev, beforeClockValue) -> {
+                final RowSet keysToSnapshot;
+                if (positionsToSnapshot == null && reversePositionsToSnapshot == null) {
+                    keysToSnapshot = null;
+                } else {
+                    final RowSet rowSetToUse = usePrev ? table.getRowSet().copyPrev() : table.getRowSet();
+                    try (final SafeCloseable ignored = usePrev ? rowSetToUse : null) {
+                        final WritableRowSet forwardKeys =
+                                positionsToSnapshot == null ? null
+                                        : rowSetToUse.subSetForPositions(positionsToSnapshot);
+                        final RowSet reverseKeys = reversePositionsToSnapshot == null ? null
+                                : rowSetToUse.subSetForReversePositions(reversePositionsToSnapshot);
+                        if (forwardKeys != null) {
+                            if (reverseKeys != null) {
+                                forwardKeys.insert(reverseKeys);
+                                reverseKeys.close();
+                            }
+                            keysToSnapshot = forwardKeys;
+                        } else {
+                            keysToSnapshot = reverseKeys;
                         }
-                        keysToSnapshot = forwardKeys;
-                    } else {
-                        keysToSnapshot = reverseKeys;
                     }
                 }
-            }
-            try (final RowSet ignored = keysToSnapshot) {
-                return serializeAllTable(usePrev, snapshot, table, logIdentityObject, columnsToSerialize,
-                        keysToSnapshot);
-            }
-        };
+                try (final RowSet ignored = keysToSnapshot) {
+                    return serializeAllTable(usePrev, snapshot, table, logIdentityObject, columnsToSerialize,
+                            keysToSnapshot);
+                }
+            };
 
-        snapshot.step = callDataSnapshotFunction(System.identityHashCode(logIdentityObject), control, doSnapshot);
-        snapshot.firstSeq = snapshot.lastSeq = snapshot.step;
+            snapshot.step = callDataSnapshotFunction(System.identityHashCode(logIdentityObject), control, doSnapshot);
+            snapshot.firstSeq = snapshot.lastSeq = snapshot.step;
 
-        return snapshot;
+            return snapshot;
+        }
     }
 
     /**
@@ -613,18 +614,27 @@ public class ConstructSnapshot {
      * @return list of the resulting {@link InitialSnapshot}s
      */
     public static List<InitialSnapshot> constructInitialSnapshots(final Object logIdentityObject,
-            final BaseTable... tables) {
-        final List<InitialSnapshot> snapshots = new ArrayList<>();
+            final BaseTable<?>... tables) {
+        if (tables.length == 0) {
+            return Collections.emptyList();
+        }
 
-        final NotificationObliviousMultipleSourceSnapshotControl snapshotControl =
-                new NotificationObliviousMultipleSourceSnapshotControl(tables);
+        try (final SafeCloseable ignored = tables[0].getUpdateContext().open()) {
+            // it's fine that we will check this first table twice
+            tables[0].checkUpdateContextConsistency(tables);
 
-        final SnapshotFunction doSnapshot =
-                (usePrev, beforeClockValue) -> serializeAllTables(usePrev, snapshots, tables, logIdentityObject);
+            final List<InitialSnapshot> snapshots = new ArrayList<>();
 
-        callDataSnapshotFunction(System.identityHashCode(logIdentityObject), snapshotControl, doSnapshot);
+            final NotificationObliviousMultipleSourceSnapshotControl snapshotControl =
+                    new NotificationObliviousMultipleSourceSnapshotControl(tables);
 
-        return snapshots;
+            final SnapshotFunction doSnapshot =
+                    (usePrev, beforeClockValue) -> serializeAllTables(usePrev, snapshots, tables, logIdentityObject);
+
+            callDataSnapshotFunction(System.identityHashCode(logIdentityObject), snapshotControl, doSnapshot);
+
+            return snapshots;
+        }
     }
 
     @FunctionalInterface
@@ -947,7 +957,7 @@ public class ConstructSnapshot {
                         .toArray(NotificationStepSource[]::new);
                 if (notYetSatisfied.length > 0
                         && !WaitNotification.waitForSatisfaction(beforeStep, notYetSatisfied)
-                        && LogicalClock.DEFAULT.currentStep() != beforeStep) {
+                        && UpdateContext.logicalClock().currentStep() != beforeStep) {
                     // If we missed a step change, we've already failed, request a do-over.
                     return null;
                 }
@@ -1001,7 +1011,7 @@ public class ConstructSnapshot {
                         .toArray(NotificationStepSource[]::new);
                 if (notYetSatisfied.length > 0
                         && !WaitNotification.waitForSatisfaction(beforeStep, notYetSatisfied)
-                        && LogicalClock.DEFAULT.currentStep() != beforeStep) {
+                        && UpdateContext.logicalClock().currentStep() != beforeStep) {
                     // If we missed a step change, we've already failed, request a do-over.
                     return null;
                 }
@@ -1063,7 +1073,7 @@ public class ConstructSnapshot {
         final LivenessManager initialLivenessManager = LivenessScopeStack.peek();
         while (numConcurrentAttempts < MAX_CONCURRENT_ATTEMPTS && !state.locked()) {
             ++numConcurrentAttempts;
-            final long beforeClockValue = LogicalClock.DEFAULT.currentValue();
+            final long beforeClockValue = UpdateContext.logicalClock().currentValue();
             final long attemptStart = System.currentTimeMillis();
 
             final Boolean previousValuesRequested = control.usePreviousValues(beforeClockValue);
@@ -1074,9 +1084,11 @@ public class ConstructSnapshot {
             // noinspection AutoUnboxing
             final boolean usePrev = previousValuesRequested;
             if (LogicalClock.getState(beforeClockValue) == LogicalClock.State.Idle && usePrev) {
+                // noinspection ThrowableNotThrown
                 Assert.statementNeverExecuted("Previous values requested while not updating: " + beforeClockValue);
             }
-            if (UpdateGraphProcessor.DEFAULT.isRefreshThread() && usePrev) {
+            if (UpdateContext.updateGraphProcessor().isRefreshThread() && usePrev) {
+                // noinspection ThrowableNotThrown
                 Assert.statementNeverExecuted("Previous values requested from a run thread: " + beforeClockValue);
             }
 
@@ -1096,7 +1108,7 @@ public class ConstructSnapshot {
                         log.debug().append(logPrefix).append(" Disallowed UGP-less Snapshot Function took ")
                                 .append(System.currentTimeMillis() - attemptStart).append("ms")
                                 .append(", beforeClockValue=").append(beforeClockValue)
-                                .append(", afterClockValue=").append(LogicalClock.DEFAULT.currentValue())
+                                .append(", afterClockValue=").append(UpdateContext.logicalClock().currentValue())
                                 .append(", usePrev=").append(usePrev)
                                 .endl();
                     }
@@ -1108,7 +1120,7 @@ public class ConstructSnapshot {
                     state.endConcurrentSnapshot(startObject);
                 }
 
-                final long afterClockValue = LogicalClock.DEFAULT.currentValue();
+                final long afterClockValue = UpdateContext.logicalClock().currentValue();
                 try {
                     snapshotSuccessful = clockConsistent(beforeClockValue, afterClockValue, usePrev)
                             && control.snapshotCompletedConsistently(afterClockValue, usePrev);
@@ -1182,7 +1194,7 @@ public class ConstructSnapshot {
             }
             state.startLockedSnapshot();
             try {
-                final long beforeClockValue = LogicalClock.DEFAULT.currentValue();
+                final long beforeClockValue = UpdateContext.logicalClock().currentValue();
 
                 final Boolean previousValuesRequested = control.usePreviousValues(beforeClockValue);
                 if (!Boolean.FALSE.equals(previousValuesRequested)) {
@@ -1195,7 +1207,7 @@ public class ConstructSnapshot {
                 functionSuccessful = function.call(false, beforeClockValue);
                 Assert.assertion(functionSuccessful, "functionSuccessful");
 
-                final long afterClockValue = LogicalClock.DEFAULT.currentValue();
+                final long afterClockValue = UpdateContext.logicalClock().currentValue();
 
                 Assert.eq(beforeClockValue, "beforeClockValue", afterClockValue, "afterClockValue");
 
@@ -1241,10 +1253,12 @@ public class ConstructSnapshot {
      */
     public static boolean serializeAllTable(boolean usePrev,
             InitialSnapshot snapshot,
-            BaseTable table,
+            BaseTable<?> table,
             Object logIdentityObject,
             BitSet columnsToSerialize,
             RowSet keysToSnapshot) {
+        table.checkUpdateContextConsistency();
+        // noinspection resource
         snapshot.rowSet = (usePrev ? table.getRowSet().copyPrev() : table.getRowSet()).copy();
 
         if (keysToSnapshot != null) {
@@ -1255,7 +1269,7 @@ public class ConstructSnapshot {
 
         LongSizedDataStructure.intSize("construct snapshot", snapshot.rowsIncluded.size());
 
-        final Map<String, ? extends ColumnSource> sourceMap = table.getColumnSourceMap();
+        final Map<String, ? extends ColumnSource<?>> sourceMap = table.getColumnSourceMap();
         final String[] columnSources = sourceMap.keySet().toArray(CollectionUtil.ZERO_LENGTH_STRING_ARRAY);
 
         snapshot.dataColumns = new Object[columnSources.length];
@@ -1312,10 +1326,11 @@ public class ConstructSnapshot {
      */
     public static boolean serializeAllTable(final boolean usePrev,
             final BarrageMessage snapshot,
-            final BaseTable table,
+            final BaseTable<?> table,
             final Object logIdentityObject,
             final BitSet columnsToSerialize,
             final RowSet keysToSnapshot) {
+        table.checkUpdateContextConsistency();
 
         snapshot.rowsAdded = (usePrev ? table.getRowSet().copyPrev() : table.getRowSet()).copy();
         snapshot.rowsRemoved = RowSetFactory.empty();
@@ -1330,7 +1345,7 @@ public class ConstructSnapshot {
             snapshot.rowsIncluded = snapshot.rowsAdded.copy();
         }
 
-        final Map<String, ? extends ColumnSource> sourceMap = table.getColumnSourceMap();
+        final Map<String, ? extends ColumnSource<?>> sourceMap = table.getColumnSourceMap();
         final String[] columnSources = sourceMap.keySet().toArray(CollectionUtil.ZERO_LENGTH_STRING_ARRAY);
 
         try (final SharedContext sharedContext =
@@ -1387,11 +1402,11 @@ public class ConstructSnapshot {
         return true;
     }
 
-    private static boolean serializeAllTables(boolean usePrev, List<InitialSnapshot> snapshots, BaseTable[] tables,
+    private static boolean serializeAllTables(boolean usePrev, List<InitialSnapshot> snapshots, BaseTable<?>[] tables,
             Object logIdentityObject) {
         snapshots.clear();
 
-        for (final BaseTable table : tables) {
+        for (final BaseTable<?> table : tables) {
             final InitialSnapshot snapshot = new InitialSnapshot();
             snapshots.add(snapshot);
             if (!serializeAllTable(usePrev, snapshot, table, logIdentityObject, null, null)) {
@@ -1428,24 +1443,6 @@ public class ConstructSnapshot {
 
             }
             return resultArray;
-        }
-    }
-
-    private static <T> WritableChunk<Values> getSnapshotDataAsChunk(final ColumnSource<T> columnSource,
-            final SharedContext sharedContext, final RowSet rowSet, final boolean usePrev) {
-        final ColumnSource<?> sourceToUse = ReinterpretUtils.maybeConvertToPrimitive(columnSource);
-        final int size = rowSet.intSize();
-        try (final ColumnSource.FillContext context = sharedContext != null
-                ? sourceToUse.makeFillContext(size, sharedContext)
-                : sourceToUse.makeFillContext(size)) {
-            final ChunkType chunkType = sourceToUse.getChunkType();
-            final WritableChunk<Values> result = chunkType.makeWritableChunk(size);
-            if (usePrev) {
-                sourceToUse.fillPrevChunk(context, result, rowSet);
-            } else {
-                sourceToUse.fillChunk(context, result, rowSet);
-            }
-            return result;
         }
     }
 

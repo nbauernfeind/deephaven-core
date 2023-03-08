@@ -10,6 +10,7 @@ import io.deephaven.engine.context.QueryScope;
 import io.deephaven.engine.liveness.LivenessReferent;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.updategraph.DynamicNode;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.engine.util.ScriptSession;
 import io.deephaven.extensions.barrage.util.GrpcUtil;
@@ -59,7 +60,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
         // there is no mechanism to wait for a scope variable to resolve; require that the scope variable exists now
         final String scopeName = nameForDescriptor(descriptor, logId);
 
-        final Flight.FlightInfo flightInfo = UpdateGraphProcessor.DEFAULT.sharedLock().computeLocked(() -> {
+        final Flight.FlightInfo flightInfo = UpdateContext.sharedLock().computeLocked(() -> {
             final ScriptSession gss = scriptSessionProvider.get();
             Object scopeVar = gss.getVariable(scopeName, null);
             if (scopeVar == null) {
@@ -103,7 +104,7 @@ public class ScopeTicketResolver extends TicketResolverBase {
     private <T> SessionState.ExportObject<T> resolve(
             @Nullable final SessionState session, final String scopeName, final String logId) {
         // fetch the variable from the scope right now
-        T export = UpdateGraphProcessor.DEFAULT.sharedLock().computeLocked(() -> {
+        T export = UpdateContext.sharedLock().computeLocked(() -> {
             final ScriptSession gss = scriptSessionProvider.get();
             T scopeVar = null;
             try {

@@ -197,8 +197,8 @@ class StaticChunkedCrossJoinStateManager
         this.tableHashPivot = tableSize;
         // endmixin rehash
 
-        overflowKeySources = new WritableColumnSource[keyColumnCount];
-        keySources = new WritableColumnSource[keyColumnCount];
+        overflowKeySources = new ArrayBackedColumnSource[keyColumnCount];
+        keySources = new ArrayBackedColumnSource[keyColumnCount];
 
         keyChunkTypes = new ChunkType[keyColumnCount];
         chunkHashers = new ChunkHasher[keyColumnCount];
@@ -1327,7 +1327,7 @@ class StaticChunkedCrossJoinStateManager
     private static void fillKeys(WritableColumnSource<?>[] keySources, ColumnSource.FillContext[] fillContexts, WritableChunk<Values>[] keyChunks, WritableLongChunk<RowKeys> keyIndices) {
         for (int ii = 0; ii < keySources.length; ++ii) {
             //noinspection unchecked
-            ((FillUnordered<Values>)keySources[ii]).fillChunkUnordered(fillContexts[ii], keyChunks[ii], keyIndices);
+            ((FillUnordered<Values>) keySources[ii]).fillChunkUnordered(fillContexts[ii], keyChunks[ii], keyIndices);
         }
     }
 

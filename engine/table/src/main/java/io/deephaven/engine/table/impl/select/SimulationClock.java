@@ -6,8 +6,8 @@ package io.deephaven.engine.table.impl.select;
 import io.deephaven.base.clock.Clock;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.base.verify.Require;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.time.DateTimeUtils;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.time.DateTime;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,7 +31,8 @@ public class SimulationClock implements Clock {
     }
 
     private final AtomicReference<State> state = new AtomicReference<>(State.NOT_STARTED);
-    private final Condition ugpCondition = UpdateGraphProcessor.DEFAULT.exclusiveLock().newCondition();
+    private final UpdateContext updateContext = UpdateContext.get();
+    private final Condition ugpCondition = updateContext.getExclusiveLock().newCondition();
 
     private DateTime now;
 
@@ -105,12 +106,12 @@ public class SimulationClock implements Clock {
      */
     public void start(final boolean maxSpeed) {
         if (maxSpeed) {
-            UpdateGraphProcessor.DEFAULT.setTargetCycleDurationMillis(0);
+            updateContext.getUpdateGraphProcessor().setTargetCycleDurationMillis(0);
         }
         if (!state.compareAndSet(State.NOT_STARTED, State.STARTED)) {
             throw new IllegalStateException(this + " already started");
         }
-        UpdateGraphProcessor.DEFAULT.addSource(refreshTask);
+        updateContext.getUpdateGraphProcessor().addSource(refreshTask);
     }
 
     /**
@@ -121,8 +122,8 @@ public class SimulationClock implements Clock {
         if (now.getNanos() == endTime.getNanos()) {
             Assert.assertion(state.compareAndSet(State.STARTED, State.DONE),
                     "state.compareAndSet(State.STARTED, State.DONE)");
-            UpdateGraphProcessor.DEFAULT.removeSource(refreshTask);
-            UpdateGraphProcessor.DEFAULT.requestSignal(ugpCondition);
+            updateContext.getUpdateGraphProcessor().removeSource(refreshTask);
+            updateContext.getUpdateGraphProcessor().requestSignal(ugpCondition);
             return; // This return is not strictly necessary, but it seems clearer this way.
         }
         final DateTime incremented = DateTimeUtils.plus(now, stepNanos);
@@ -143,7 +144,7 @@ public class SimulationClock implements Clock {
      */
     public void awaitDoneUninterruptibly() {
         while (!done()) {
-            UpdateGraphProcessor.DEFAULT.exclusiveLock().doLocked(ugpCondition::awaitUninterruptibly);
+            updateContext.getExclusiveLock().doLocked(ugpCondition::awaitUninterruptibly);
         }
     }
 
@@ -152,7 +153,7 @@ public class SimulationClock implements Clock {
      */
     public void awaitDone() throws InterruptedException {
         while (!done()) {
-            UpdateGraphProcessor.DEFAULT.exclusiveLock().doLocked(ugpCondition::await);
+            updateContext.getExclusiveLock().doLocked(ugpCondition::await);
         }
     }
 }

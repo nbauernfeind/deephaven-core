@@ -101,7 +101,7 @@ public abstract class ReferenceCounted implements LogOutputAppendable, Serializa
                 : "not reference counted";
     }
 
-    private int getCurrentReferenceCount() {
+    public int getCurrentReferenceCount() {
         return referenceCount;
     }
 

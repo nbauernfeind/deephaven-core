@@ -46,11 +46,11 @@ import io.deephaven.engine.table.impl.util.JobScheduler;
 import io.deephaven.engine.table.impl.util.OperationInitializationPoolJobScheduler;
 import io.deephaven.engine.table.impl.util.FieldUtils;
 import io.deephaven.engine.updategraph.DynamicNode;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.engine.util.*;
 import io.deephaven.engine.util.systemicmarking.SystemicObject;
 import io.deephaven.qst.table.AggregateAllTable;
 import io.deephaven.vector.Vector;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.engine.updategraph.NotificationQueue;
 import io.deephaven.time.DateTime;
 import io.deephaven.engine.table.impl.perf.QueryPerformanceRecorder;
@@ -471,6 +471,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public PartitionedTable partitionBy(final boolean dropKeys, final String... keyColumnNames) {
+        checkUpdateContextConsistency();
         if (isStream()) {
             throw streamUnsupported("partitionBy");
         }
@@ -494,6 +495,7 @@ public class QueryTable extends BaseTable<QueryTable> {
     @Override
     public PartitionedTable partitionedAggBy(final Collection<? extends Aggregation> aggregations,
             final boolean preserveEmpty, @Nullable final Table initialGroups, final String... keyColumnNames) {
+        checkUpdateContextConsistency();
         if (isStream()) {
             throw streamUnsupported("partitionedAggBy");
         }
@@ -523,6 +525,7 @@ public class QueryTable extends BaseTable<QueryTable> {
     @Override
     public RollupTable rollup(final Collection<? extends Aggregation> aggregations, final boolean includeConstituents,
             final Collection<? extends ColumnName> groupByColumns) {
+        checkUpdateContextConsistency();
         if (isStream() && includeConstituents) {
             throw streamUnsupported("rollup with included constituents");
         }
@@ -532,6 +535,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public TreeTable tree(String idColumn, String parentColumn) {
+        checkUpdateContextConsistency();
         if (isStream()) {
             throw streamUnsupported("tree");
         }
@@ -541,6 +545,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table slice(final long firstPositionInclusive, final long lastPositionExclusive) {
+        checkUpdateContextConsistency();
         if (firstPositionInclusive == lastPositionExclusive) {
             return getSubTable(RowSetFactory.empty().toTracking());
         }
@@ -549,26 +554,31 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table head(final long size) {
+        checkUpdateContextConsistency();
         return slice(0, Require.geqZero(size, "size"));
     }
 
     @Override
     public Table tail(final long size) {
+        checkUpdateContextConsistency();
         return slice(-Require.geqZero(size, "size"), 0);
     }
 
     @Override
     public Table headPct(final double percent) {
+        checkUpdateContextConsistency();
         return getResult(SliceLikeOperation.headPct(this, percent));
     }
 
     @Override
     public Table tailPct(final double percent) {
+        checkUpdateContextConsistency();
         return getResult(SliceLikeOperation.tailPct(this, percent));
     }
 
     @Override
     public Table exactJoin(Table table, MatchPair[] columnsToMatch, MatchPair[] columnsToAdd) {
+        checkUpdateContextConsistency(table);
         return QueryPerformanceRecorder.withNugget(
                 "exactJoin(" + table + "," + Arrays.toString(columnsToMatch) + "," + Arrays.toString(columnsToMatch)
                         + ")",
@@ -582,6 +592,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table aggAllBy(AggSpec spec, ColumnName... groupByColumns) {
+        checkUpdateContextConsistency();
         for (ColumnName name : AggSpecColumnReferences.of(spec)) {
             if (!hasColumns(name.name())) {
                 throw new IllegalArgumentException(
@@ -613,6 +624,7 @@ public class QueryTable extends BaseTable<QueryTable> {
             final boolean preserveEmpty,
             final Table initialGroups,
             final Collection<? extends ColumnName> groupByColumns) {
+        checkUpdateContextConsistency(initialGroups);
         if (aggregations.isEmpty()) {
             throw new IllegalArgumentException(
                     "aggBy must have at least one aggregation, none specified. groupByColumns="
@@ -641,6 +653,7 @@ public class QueryTable extends BaseTable<QueryTable> {
             final boolean preserveEmpty,
             @Nullable final Table initialGroups,
             @NotNull final Collection<? extends ColumnName> groupByColumns) {
+        checkUpdateContextConsistency();
         final String description = "aggregation(" + aggregationContextFactory
                 + ", " + groupByColumns + ")";
         return QueryPerformanceRecorder.withNugget(description, sizeForInstrumentation(),
@@ -655,12 +668,14 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table headBy(long nRows, String... groupByColumns) {
+        checkUpdateContextConsistency();
         return QueryPerformanceRecorder.withNugget("headBy(" + nRows + ", " + Arrays.toString(groupByColumns) + ")",
                 sizeForInstrumentation(), () -> headOrTailBy(nRows, true, groupByColumns));
     }
 
     @Override
     public Table tailBy(long nRows, String... groupByColumns) {
+        checkUpdateContextConsistency();
         return QueryPerformanceRecorder.withNugget("tailBy(" + nRows + ", " + Arrays.toString(groupByColumns) + ")",
                 sizeForInstrumentation(), () -> headOrTailBy(nRows, false, groupByColumns));
     }
@@ -740,6 +755,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table moveColumns(int index, boolean moveToEnd, String... columnsToMove) {
+        checkUpdateContextConsistency();
         // Get the current columns
         final List<String> currentColumns = getDefinition().getColumnNames();
 
@@ -787,6 +803,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table dateTimeColumnAsNanos(String dateTimeColumnName, String nanosColumnName) {
+        checkUpdateContextConsistency();
         return viewOrUpdateView(Flavor.UpdateView,
                 new ReinterpretedColumn<>(dateTimeColumnName, DateTime.class, nanosColumnName, long.class));
     }
@@ -945,6 +962,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table where(final Collection<? extends Filter> filters) {
+        checkUpdateContextConsistency();
         return whereInternal(WhereFilter.from(filters));
     }
 
@@ -1062,11 +1080,13 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table whereIn(Table rightTable, Collection<? extends JoinMatch> columnsToMatch) {
+        checkUpdateContextConsistency(rightTable);
         return whereInInternal(rightTable, true, MatchPair.fromMatches(columnsToMatch));
     }
 
     @Override
     public Table whereNotIn(Table rightTable, Collection<? extends JoinMatch> columnsToMatch) {
+        checkUpdateContextConsistency(rightTable);
         return whereInInternal(rightTable, false, MatchPair.fromMatches(columnsToMatch));
     }
 
@@ -1100,6 +1120,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table flatten() {
+        checkUpdateContextConsistency();
         if (!isFlat() && !isRefreshing() && rowSet.size() - 1 == rowSet.lastRowKey()) {
             // We're already flat, and we'll never update; so we can just return ourselves, after setting ourselves flat
             setFlat();
@@ -1137,6 +1158,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table select(Collection<? extends Selectable> columns) {
+        checkUpdateContextConsistency();
         return selectInternal(SelectColumn.from(columns));
     }
 
@@ -1155,6 +1177,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table update(final Collection<? extends Selectable> newColumns) {
+        checkUpdateContextConsistency();
         return selectOrUpdate(Flavor.Update, SelectColumn.from(newColumns));
     }
 
@@ -1341,6 +1364,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table view(final Collection<? extends Selectable> viewColumns) {
+        checkUpdateContextConsistency();
         if (viewColumns == null || viewColumns.isEmpty()) {
             if (isRefreshing()) {
                 manageWithCurrentScope();
@@ -1352,6 +1376,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table updateView(final Collection<? extends Selectable> viewColumns) {
+        checkUpdateContextConsistency();
         return viewOrUpdateView(Flavor.UpdateView, SelectColumn.from(viewColumns));
     }
 
@@ -1453,6 +1478,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table lazyUpdate(final Collection<? extends Selectable> newColumns) {
+        checkUpdateContextConsistency();
         final SelectColumn[] selectColumns = SelectColumn.from(newColumns);
         return QueryPerformanceRecorder.withNugget("lazyUpdate(" + selectColumnString(selectColumns) + ")",
                 sizeForInstrumentation(), () -> {
@@ -1477,6 +1503,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table dropColumns(String... columnNames) {
+        checkUpdateContextConsistency();
         return memoizeResult(MemoizedOperationKey.dropColumns(columnNames), () -> QueryPerformanceRecorder
                 .withNugget("dropColumns(" + Arrays.toString(columnNames) + ")", sizeForInstrumentation(), () -> {
                     final Mutable<Table> result = new MutableObject<>();
@@ -1544,6 +1571,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table renameColumns(MatchPair... pairs) {
+        checkUpdateContextConsistency();
         return QueryPerformanceRecorder.withNugget("renameColumns(" + matchString(pairs) + ")",
                 sizeForInstrumentation(), () -> {
                     if (pairs == null || pairs.length == 0) {
@@ -1614,6 +1642,7 @@ public class QueryTable extends BaseTable<QueryTable> {
     @Override
     public Table aj(final Table rightTable, final MatchPair[] columnsToMatch, final MatchPair[] columnsToAdd,
             AsOfMatchRule asOfMatchRule) {
+        checkUpdateContextConsistency(rightTable);
         if (rightTable == null) {
             throw new IllegalArgumentException("aj() requires a non-null right hand side table.");
         }
@@ -1627,6 +1656,7 @@ public class QueryTable extends BaseTable<QueryTable> {
     @Override
     public Table raj(final Table rightTable, final MatchPair[] columnsToMatch, final MatchPair[] columnsToAdd,
             AsOfMatchRule asOfMatchRule) {
+        checkUpdateContextConsistency(rightTable);
         if (rightTable == null) {
             throw new IllegalArgumentException("raj() requires a non-null right hand side table.");
         }
@@ -1702,6 +1732,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table naturalJoin(final Table rightTable, final MatchPair[] columnsToMatch, MatchPair[] columnsToAdd) {
+        checkUpdateContextConsistency(rightTable);
         return QueryPerformanceRecorder.withNugget(
                 "naturalJoin(" + matchString(columnsToMatch) + ", " + matchString(columnsToAdd) + ")",
                 () -> naturalJoinInternal(rightTable, columnsToMatch, columnsToAdd, false));
@@ -1745,6 +1776,7 @@ public class QueryTable extends BaseTable<QueryTable> {
     @Override
     public Table join(final Table rightTableCandidate, MatchPair[] columnsToMatch, MatchPair[] columnsToAdd,
             int numRightBitsToReserve) {
+        checkUpdateContextConsistency(rightTableCandidate);
         return memoizeResult(
                 MemoizedOperationKey.crossJoin(rightTableCandidate, columnsToMatch, columnsToAdd,
                         numRightBitsToReserve),
@@ -2128,12 +2160,14 @@ public class QueryTable extends BaseTable<QueryTable> {
     @Override
     public Table snapshot() {
         // TODO(deephaven-core#3271): Make snapshot() concurrent
+        checkUpdateContextConsistency();
         return QueryPerformanceRecorder.withNugget("snapshot()", sizeForInstrumentation(),
                 () -> ((QueryTable) TableTools.emptyTable(1)).snapshotInternal(this, true));
     }
 
     @Override
     public Table snapshotWhen(Table trigger, SnapshotWhenOptions options) {
+        checkUpdateContextConsistency(trigger);
         final boolean initial = options.has(Flag.INITIAL);
         final boolean incremental = options.has(Flag.INCREMENTAL);
         final boolean history = options.has(Flag.HISTORY);
@@ -2197,6 +2231,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table sort(Collection<SortColumn> columnsToSortBy) {
+        checkUpdateContextConsistency();
         final SortPair[] sortPairs = SortPair.from(columnsToSortBy);
         if (sortPairs.length == 0) {
             if (isRefreshing()) {
@@ -2244,12 +2279,14 @@ public class QueryTable extends BaseTable<QueryTable> {
      */
     @Override
     public Table reverse() {
+        checkUpdateContextConsistency();
         return getResult(new ReverseOperation(this));
     }
 
 
     @Override
     public Table ungroup(boolean nullFill, Collection<? extends ColumnName> columnsToUngroup) {
+        checkUpdateContextConsistency();
         final String[] columnsToUngroupBy;
         if (columnsToUngroup.isEmpty()) {
             columnsToUngroupBy = getDefinition()
@@ -2860,6 +2897,7 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     @Override
     public Table selectDistinct(Collection<? extends Selectable> columns) {
+        checkUpdateContextConsistency();
         return QueryPerformanceRecorder.withNugget("selectDistinct(" + columns + ")",
                 sizeForInstrumentation(),
                 () -> {
@@ -2908,6 +2946,7 @@ public class QueryTable extends BaseTable<QueryTable> {
      */
     @Override
     public QueryTable getSubTable(@NotNull final TrackingRowSet rowSet) {
+        checkUpdateContextConsistency();
         return getSubTable(rowSet, null, null, CollectionUtil.ZERO_LENGTH_OBJECT_ARRAY);
     }
 
@@ -2937,6 +2976,7 @@ public class QueryTable extends BaseTable<QueryTable> {
             @Nullable final ModifiedColumnSet resultModifiedColumnSet,
             @Nullable final Map<String, Object> attributes,
             @NotNull final Object... parents) {
+        checkUpdateContextConsistency();
         // There is no checkInitiateOperation check here, because partitionBy calls it internally and the RowSet
         // results are not updated internally, but rather externally.
         final QueryTable result = new QueryTable(definition, rowSet, columns, resultModifiedColumnSet, attributes);
@@ -2954,10 +2994,12 @@ public class QueryTable extends BaseTable<QueryTable> {
      */
     @Override
     public QueryTable copy() {
+        checkUpdateContextConsistency();
         return copy(StandardOptions.COPY_ALL);
     }
 
     public QueryTable copy(Predicate<String> shouldCopy) {
+        checkUpdateContextConsistency();
         return copy(definition, shouldCopy);
     }
 
@@ -2977,6 +3019,7 @@ public class QueryTable extends BaseTable<QueryTable> {
     }
 
     public QueryTable copy(TableDefinition definition, Predicate<String> shouldCopy) {
+        checkUpdateContextConsistency();
         return QueryPerformanceRecorder.withNugget("copy()", sizeForInstrumentation(), () -> {
             final Mutable<QueryTable> result = new MutableObject<>();
 
@@ -3042,6 +3085,7 @@ public class QueryTable extends BaseTable<QueryTable> {
     public Table updateBy(@NotNull final UpdateByControl control,
             @NotNull final Collection<? extends UpdateByOperation> ops,
             @NotNull final Collection<? extends ColumnName> byColumns) {
+        checkUpdateContextConsistency();
         return QueryPerformanceRecorder.withNugget("updateBy()", sizeForInstrumentation(),
                 () -> UpdateBy.updateBy(this, ops, byColumns, control));
     }
@@ -3295,13 +3339,13 @@ public class QueryTable extends BaseTable<QueryTable> {
 
     private void checkInitiateOperation() {
         if (isRefreshing()) {
-            UpdateGraphProcessor.DEFAULT.checkInitiateTableOperation();
+            updateContext.getUpdateGraphProcessor().checkInitiateTableOperation();
         }
     }
 
     static void checkInitiateOperation(Table other) {
         if (other.isRefreshing()) {
-            UpdateGraphProcessor.DEFAULT.checkInitiateTableOperation();
+            UpdateContext.get().getUpdateGraphProcessor().checkInitiateTableOperation();
         }
     }
 
@@ -3315,6 +3359,7 @@ public class QueryTable extends BaseTable<QueryTable> {
     }
 
     public Table wouldMatch(WouldMatchPair... matchers) {
+        checkUpdateContextConsistency();
         return getResult(new WouldMatchOperation(this, matchers));
     }
 }

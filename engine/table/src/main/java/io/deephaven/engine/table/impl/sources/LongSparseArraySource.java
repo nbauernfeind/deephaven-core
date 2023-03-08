@@ -29,10 +29,10 @@ import io.deephaven.engine.rowset.chunkattributes.OrderedRowKeys;
 import io.deephaven.engine.rowset.RowSet;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.table.impl.MutableColumnSourceGetDefaults;
-import io.deephaven.engine.updategraph.LogicalClock;
 import io.deephaven.engine.updategraph.UpdateCommitter;
 import io.deephaven.engine.table.impl.sources.sparse.LongOneOrN;
 import io.deephaven.engine.rowset.RowSequence;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.util.SoftRecycler;
 import gnu.trove.list.array.TLongArrayList;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -77,9 +77,9 @@ public class LongSparseArraySource extends SparseArrayColumnSource<Long>
     protected transient UpdateCommitter<LongSparseArraySource> prevFlusher = null;
 
     /**
-     * If ensure previous has been called, we need not check previous values when filling.
+     * If prepareForParallelPopulation has been called, we need not check previous values when filling.
      */
-    private transient long ensurePreviousClockCycle = -1;
+    private transient long prepareForParallelPopulationClockCycle = -1;
 
     /**
      * Our previous page table could be very sparse, and we do not want to read through millions of nulls to find out
@@ -394,8 +394,7 @@ public class LongSparseArraySource extends SparseArrayColumnSource<Long>
      * record values), returns null.
     */
     final long [] shouldRecordPrevious(final long key) {
-        // prevFlusher == null means we are not tracking previous values yet (or maybe ever)
-        if (prevFlusher == null) {
+        if (!shouldTrackPrevious()) {
             return null;
         }
         // If we want to track previous values, we make sure we are registered with the UpdateGraphProcessor.
@@ -422,11 +421,11 @@ public class LongSparseArraySource extends SparseArrayColumnSource<Long>
 
     @Override
     public void prepareForParallelPopulation(final RowSet changedRows) {
-        final long currentStep = LogicalClock.DEFAULT.currentStep();
-        if (ensurePreviousClockCycle == currentStep) {
-            throw new IllegalStateException("May not call ensurePrevious twice on one clock cycle!");
+        final long currentStep = UpdateContext.logicalClock().currentStep();
+        if (prepareForParallelPopulationClockCycle == currentStep) {
+            throw new IllegalStateException("May not call prepareForParallelPopulation twice on one clock cycle!");
         }
-        ensurePreviousClockCycle = currentStep;
+        prepareForParallelPopulationClockCycle = currentStep;
 
         if (changedRows.isEmpty()) {
             return;
@@ -827,7 +826,7 @@ public class LongSparseArraySource extends SparseArrayColumnSource<Long>
         // endregion chunkDecl
         final LongChunk<OrderedRowKeyRanges> ranges = rowSequence.asRowKeyRangesChunk();
 
-        final boolean trackPrevious = prevFlusher != null && ensurePreviousClockCycle != LogicalClock.DEFAULT.currentStep();
+        final boolean trackPrevious = shouldTrackPrevious();
 
         if (trackPrevious) {
             prevFlusher.maybeActivate();
@@ -898,7 +897,7 @@ public class LongSparseArraySource extends SparseArrayColumnSource<Long>
         // endregion chunkDecl
         final LongChunk<OrderedRowKeyRanges> ranges = rowSequence.asRowKeyRangesChunk();
 
-        final boolean trackPrevious = prevFlusher != null && ensurePreviousClockCycle != LogicalClock.DEFAULT.currentStep();
+        final boolean trackPrevious = shouldTrackPrevious();
 
         if (trackPrevious) {
             prevFlusher.maybeActivate();
@@ -960,6 +959,14 @@ public class LongSparseArraySource extends SparseArrayColumnSource<Long>
     }
     // endregion fillFromChunkByRanges
 
+    private boolean shouldTrackPrevious() {
+        // prevFlusher == null means we are not tracking previous values yet (or maybe ever).
+        // If prepareForParallelPopulation was called on this cycle, it's assumed that all previous values have already
+        // been recorded.
+        return prevFlusher != null &&
+                prepareForParallelPopulationClockCycle != UpdateContext.logicalClock().currentStep();
+    }
+
     // region fillFromChunkByKeys
     @Override
     /* TYPE_MIXIN */ void fillFromChunkByKeys(
@@ -974,7 +981,7 @@ public class LongSparseArraySource extends SparseArrayColumnSource<Long>
         // endregion chunkDecl
         final LongChunk<OrderedRowKeys> keys = rowSequence.asRowKeyChunk();
 
-        final boolean trackPrevious = prevFlusher != null && ensurePreviousClockCycle != LogicalClock.DEFAULT.currentStep();;
+        final boolean trackPrevious = shouldTrackPrevious();;
 
         if (trackPrevious) {
             prevFlusher.maybeActivate();
@@ -1036,7 +1043,7 @@ public class LongSparseArraySource extends SparseArrayColumnSource<Long>
         // endregion chunkDecl
         final LongChunk<OrderedRowKeys> keys = rowSequence.asRowKeyChunk();
 
-        final boolean trackPrevious = prevFlusher != null && ensurePreviousClockCycle != LogicalClock.DEFAULT.currentStep();;
+        final boolean trackPrevious = shouldTrackPrevious();;
 
         if (trackPrevious) {
             prevFlusher.maybeActivate();
@@ -1232,7 +1239,7 @@ public class LongSparseArraySource extends SparseArrayColumnSource<Long>
         final LongChunk<? extends Values> chunk = src.asLongChunk();
         // endregion chunkDecl
 
-        final boolean trackPrevious = prevFlusher != null && ensurePreviousClockCycle != LogicalClock.DEFAULT.currentStep();;
+        final boolean trackPrevious = shouldTrackPrevious();;
 
         if (trackPrevious) {
             prevFlusher.maybeActivate();
@@ -1291,7 +1298,7 @@ public class LongSparseArraySource extends SparseArrayColumnSource<Long>
         final ObjectChunk<R, ? extends Values> chunk = src.asObjectChunk();
         // endregion chunkDecl
 
-        final boolean trackPrevious = prevFlusher != null && ensurePreviousClockCycle != LogicalClock.DEFAULT.currentStep();;
+        final boolean trackPrevious = shouldTrackPrevious();;
 
         if (trackPrevious) {
             prevFlusher.maybeActivate();

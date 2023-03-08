@@ -22,7 +22,6 @@ import io.deephaven.engine.table.TableDefinition;
 import io.deephaven.engine.table.impl.BaseTable;
 import io.deephaven.engine.table.impl.remote.ConstructSnapshot;
 import io.deephaven.engine.table.impl.util.BarrageMessage;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.extensions.barrage.BarragePerformanceLog;
 import io.deephaven.extensions.barrage.BarrageSnapshotOptions;
 import io.deephaven.extensions.barrage.BarrageStreamGenerator;
@@ -597,7 +596,7 @@ public class BarrageUtil {
 
     public static void createAndSendStaticSnapshot(
             BarrageStreamGenerator.Factory<BarrageStreamGeneratorImpl.View> streamGeneratorFactory,
-            BaseTable table,
+            BaseTable<?> table,
             BitSet columns,
             RowSet viewport,
             boolean reverseViewport,
@@ -671,7 +670,7 @@ public class BarrageUtil {
                         // number of rows that will not exceed the target UGP processing time
                         // percentage
                         long targetNanos = (long) (TARGET_SNAPSHOT_PERCENTAGE
-                                * UpdateGraphProcessor.DEFAULT.getTargetCycleDurationMillis()
+                                * table.getUpdateContext().getUpdateGraphProcessor().getTargetCycleDurationMillis()
                                 * 1000000);
 
                         long nanosPerCell = elapsed / (msg.rowsIncluded.size() * columnCount);
@@ -695,7 +694,7 @@ public class BarrageUtil {
 
     public static void createAndSendSnapshot(
             BarrageStreamGenerator.Factory<BarrageStreamGeneratorImpl.View> streamGeneratorFactory,
-            BaseTable table,
+            BaseTable<?> table,
             BitSet columns, RowSet viewport, boolean reverseViewport,
             BarrageSnapshotOptions snapshotRequestOptions,
             StreamObserver<BarrageStreamGeneratorImpl.View> listener,

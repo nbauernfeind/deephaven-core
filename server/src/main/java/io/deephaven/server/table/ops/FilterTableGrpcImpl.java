@@ -53,7 +53,7 @@ public class FilterTableGrpcImpl extends GrpcTableOperation<FilterTableRequest> 
                 .toArray(WhereFilter[]::new);
 
         // execute the filters
-        return sourceTable.where(whereFilters);
+        return sourceTable.getUpdateContext().apply(() -> sourceTable.where(whereFilters));
     }
 
     @NotNull

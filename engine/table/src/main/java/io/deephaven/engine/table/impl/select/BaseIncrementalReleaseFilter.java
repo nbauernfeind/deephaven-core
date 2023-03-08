@@ -7,9 +7,8 @@ import io.deephaven.base.verify.Assert;
 import io.deephaven.engine.rowset.WritableRowSet;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.TableDefinition;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.engine.rowset.RowSet;
-import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.QueryConstants;
 import io.deephaven.util.annotations.ScriptApi;
 
@@ -73,7 +72,7 @@ public abstract class BaseIncrementalReleaseFilter extends WhereFilterLivenessAr
 
     private void addToUpdateGraphProcessor() {
         if (!addedToUpdateGraphProcessor) {
-            UpdateGraphProcessor.DEFAULT.addSource(this);
+            updateContext.getUpdateGraphProcessor().addSource(this);
             addedToUpdateGraphProcessor = true;
         }
     }
@@ -95,7 +94,7 @@ public abstract class BaseIncrementalReleaseFilter extends WhereFilterLivenessAr
         if (fullSet.size() <= releasedSize) {
             onReleaseAll();
             releasedSize = fullSet.size();
-            UpdateGraphProcessor.DEFAULT.removeSource(this);
+            updateContext.getUpdateGraphProcessor().removeSource(this);
             listener = null;
         }
 
@@ -118,14 +117,14 @@ public abstract class BaseIncrementalReleaseFilter extends WhereFilterLivenessAr
      */
     @ScriptApi
     public void waitForCompletion() throws InterruptedException {
-        if (UpdateGraphProcessor.DEFAULT.isRefreshThread()) {
+        if (updateContext.getUpdateGraphProcessor().isRefreshThread()) {
             throw new IllegalStateException(
                     "Can not wait for completion while on UpdateGraphProcessor refresh thread, updates would block.");
         }
         if (releaseAllNanos != QueryConstants.NULL_LONG) {
             return;
         }
-        UpdateGraphProcessor.DEFAULT.exclusiveLock().doLocked(() -> {
+        updateContext.getUpdateGraphProcessor().exclusiveLock().doLocked(() -> {
             while (releaseAllNanos == QueryConstants.NULL_LONG) {
                 // this only works because we will never actually filter out a row from the result; in the general
                 // WhereFilter case, the result table may not update. We could await on the source table, but
@@ -139,7 +138,7 @@ public abstract class BaseIncrementalReleaseFilter extends WhereFilterLivenessAr
      */
     @ScriptApi
     public void waitForCompletion(long timeoutMillis) throws InterruptedException {
-        if (UpdateGraphProcessor.DEFAULT.isRefreshThread()) {
+        if (updateContext.getUpdateGraphProcessor().isRefreshThread()) {
             throw new IllegalStateException(
                     "Can not wait for completion while on UpdateGraphProcessor refresh thread, updates would block.");
         }
@@ -147,7 +146,7 @@ public abstract class BaseIncrementalReleaseFilter extends WhereFilterLivenessAr
             return;
         }
         final long end = System.currentTimeMillis() + timeoutMillis;
-        UpdateGraphProcessor.DEFAULT.exclusiveLock().doLocked(() -> {
+        updateContext.getUpdateGraphProcessor().exclusiveLock().doLocked(() -> {
             while (releaseAllNanos == QueryConstants.NULL_LONG) {
                 // this only works because we will never actually filter out a row from the result; in the general
                 // WhereFilter case, the result table may not update. We could await on the source table, but
@@ -235,6 +234,6 @@ public abstract class BaseIncrementalReleaseFilter extends WhereFilterLivenessAr
     @Override
     protected void destroy() {
         super.destroy();
-        UpdateGraphProcessor.DEFAULT.removeSource(this);
+        updateContext.getUpdateGraphProcessor().removeSource(this);
     }
 }

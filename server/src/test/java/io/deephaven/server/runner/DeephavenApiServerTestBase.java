@@ -5,9 +5,8 @@ package io.deephaven.server.runner;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import io.deephaven.engine.liveness.LivenessScope;
-import io.deephaven.engine.liveness.LivenessScopeStack;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
+import io.deephaven.engine.testutil.junit4.EngineCleanup;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.io.logger.LogBuffer;
 import io.deephaven.io.logger.LogBufferGlobal;
 import io.deephaven.proto.DeephavenChannel;
@@ -17,7 +16,6 @@ import io.deephaven.server.auth.CommunityAuthorizationProvider;
 import io.deephaven.server.config.ServerConfig;
 import io.deephaven.server.console.NoConsoleSessionModule;
 import io.deephaven.server.log.LogModule;
-import io.deephaven.util.SafeCloseable;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.testing.GrpcCleanupRule;
@@ -72,15 +70,17 @@ public abstract class DeephavenApiServerTestBase {
     @Rule
     public final GrpcCleanupRule grpcCleanup = new GrpcCleanupRule();
 
+    @Rule
+    public final EngineCleanup framework = new EngineCleanup();
+
     private TestComponent serverComponent;
     private LogBuffer logBuffer;
     private DeephavenApiServer server;
-    private SafeCloseable scopeCloseable;
 
     @Before
     public void setUp() throws Exception {
-        UpdateGraphProcessor.DEFAULT.enableUnitTestMode();
-        UpdateGraphProcessor.DEFAULT.resetForUnitTests(false);
+        UpdateContext.updateGraphProcessor().enableUnitTestMode();
+        UpdateContext.updateGraphProcessor().resetForUnitTests(false);
 
         logBuffer = new LogBuffer(128);
         LogBufferGlobal.setInstance(logBuffer);
@@ -100,13 +100,10 @@ public abstract class DeephavenApiServerTestBase {
 
         server = serverComponent.getServer();
         server.startForUnitTests();
-
-        scopeCloseable = LivenessScopeStack.open(new LivenessScope(true), true);
     }
 
     @After
     public void tearDown() throws Exception {
-        scopeCloseable.close();
 
         try {
             server.server().stopWithTimeout(5, TimeUnit.SECONDS);
@@ -114,6 +111,8 @@ public abstract class DeephavenApiServerTestBase {
         } finally {
             LogBufferGlobal.clear(logBuffer);
         }
+
+        UpdateContext.updateGraphProcessor().resetForUnitTests(true);
     }
 
     public DeephavenApiServer server() {

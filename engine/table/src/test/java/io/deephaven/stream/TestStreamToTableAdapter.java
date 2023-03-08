@@ -10,8 +10,8 @@ import io.deephaven.engine.rowset.RowSetShiftData;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.TableDefinition;
 import io.deephaven.engine.testutil.TstUtils;
+import io.deephaven.engine.updategraph.UpdateContext;
 import io.deephaven.time.DateTimeUtils;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.time.DateTime;
 import io.deephaven.engine.util.TableTools;
 import io.deephaven.engine.table.ModifiedColumnSet;
@@ -32,13 +32,13 @@ import static io.deephaven.engine.util.TableTools.*;
 public class TestStreamToTableAdapter {
     @Before
     public void setUp() throws Exception {
-        UpdateGraphProcessor.DEFAULT.enableUnitTestMode();
-        UpdateGraphProcessor.DEFAULT.resetForUnitTests(false);
+        UpdateContext.updateGraphProcessor().enableUnitTestMode();
+        UpdateContext.updateGraphProcessor().resetForUnitTests(false);
     }
 
     @After
     public void tearDown() throws Exception {
-        UpdateGraphProcessor.DEFAULT.resetForUnitTests(true);
+        UpdateContext.updateGraphProcessor().resetForUnitTests(true);
     }
 
     @Test
@@ -51,14 +51,15 @@ public class TestStreamToTableAdapter {
         final StreamPublisher streamPublisher = new DummyStreamPublisher();
 
         final StreamToTableAdapter adapter =
-                new StreamToTableAdapter(tableDefinition, streamPublisher, UpdateGraphProcessor.DEFAULT, "test");
+                new StreamToTableAdapter(tableDefinition, streamPublisher, UpdateContext.updateGraphProcessor(),
+                        "test");
         final Table result = adapter.table();
         TstUtils.assertTableEquals(empty, result);
 
         final SimpleListener listener = new SimpleListener(result);
         result.addUpdateListener(listener);
 
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(0, listener.getCount());
 
@@ -87,7 +88,7 @@ public class TestStreamToTableAdapter {
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(0, listener.getCount());
 
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(1, listener.getCount());
         TestCase.assertEquals(RowSetFactory.flat(2), listener.getUpdate().added());
         TestCase.assertEquals(RowSetFactory.empty(), listener.getUpdate().removed());
@@ -100,7 +101,7 @@ public class TestStreamToTableAdapter {
         TstUtils.assertTableEquals(expect1, result);
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
 
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(1, listener.getCount());
@@ -111,15 +112,15 @@ public class TestStreamToTableAdapter {
         TestCase.assertEquals(ModifiedColumnSet.EMPTY, listener.getUpdate().modifiedColumnSet());
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(0, listener.getCount());
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(0, listener.getCount());
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(0, listener.getCount());
 
         chunks[0] = woc = WritableObjectChunk.makeWritableChunk(2);
@@ -158,7 +159,7 @@ public class TestStreamToTableAdapter {
         adapter.accept(chunks);
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(1, listener.getCount());
         TestCase.assertEquals(RowSetFactory.flat(4), listener.getUpdate().added());
         TestCase.assertEquals(RowSetFactory.empty(), listener.getUpdate().removed());
@@ -189,7 +190,7 @@ public class TestStreamToTableAdapter {
         adapter.accept(chunks);
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(1, listener.getCount());
         TestCase.assertEquals(RowSetFactory.flat(2), listener.getUpdate().added());
         TestCase.assertEquals(RowSetFactory.flat(4), listener.getUpdate().removed());
@@ -202,7 +203,7 @@ public class TestStreamToTableAdapter {
         TstUtils.assertTableEquals(expect3, result);
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(1, listener.getCount());
         TestCase.assertEquals(RowSetFactory.empty(), listener.getUpdate().added());
@@ -212,7 +213,7 @@ public class TestStreamToTableAdapter {
         TestCase.assertEquals(ModifiedColumnSet.EMPTY, listener.getUpdate().modifiedColumnSet());
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(0, listener.getCount());
         TstUtils.assertTableEquals(empty, result);
     }
@@ -227,14 +228,15 @@ public class TestStreamToTableAdapter {
         final StreamPublisher streamPublisher = new DummyStreamPublisher();
 
         final StreamToTableAdapter adapter =
-                new StreamToTableAdapter(tableDefinition, streamPublisher, UpdateGraphProcessor.DEFAULT, "test");
+                new StreamToTableAdapter(tableDefinition, streamPublisher, UpdateContext.updateGraphProcessor(),
+                        "test");
         final Table result = adapter.table();
         TstUtils.assertTableEquals(empty, result);
 
         final SimpleListener listener = new SimpleListener(result);
         result.addUpdateListener(listener);
 
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(0, listener.getCount());
 
@@ -263,7 +265,7 @@ public class TestStreamToTableAdapter {
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(0, listener.getCount());
 
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(1, listener.getCount());
         TestCase.assertEquals(RowSetFactory.flat(3), listener.getUpdate().added());
         TestCase.assertEquals(RowSetFactory.empty(), listener.getUpdate().removed());
@@ -276,7 +278,7 @@ public class TestStreamToTableAdapter {
         TstUtils.assertTableEquals(expect1, result);
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
 
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(1, listener.getCount());
@@ -297,14 +299,15 @@ public class TestStreamToTableAdapter {
         final StreamPublisher streamPublisher = new DummyStreamPublisher();
 
         final StreamToTableAdapter adapter =
-                new StreamToTableAdapter(tableDefinition, streamPublisher, UpdateGraphProcessor.DEFAULT, "test");
+                new StreamToTableAdapter(tableDefinition, streamPublisher, UpdateContext.updateGraphProcessor(),
+                        "test");
         final Table result = adapter.table();
         TstUtils.assertTableEquals(empty, result);
 
         final SimpleListener listener = new SimpleListener(result);
         result.addUpdateListener(listener);
 
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(0, listener.getCount());
 
@@ -323,7 +326,7 @@ public class TestStreamToTableAdapter {
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(0, listener.getCount());
 
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(1, listener.getCount());
         TestCase.assertEquals(RowSetFactory.flat(2), listener.getUpdate().added());
         TestCase.assertEquals(RowSetFactory.empty(), listener.getUpdate().removed());
@@ -337,7 +340,7 @@ public class TestStreamToTableAdapter {
         TstUtils.assertTableEquals(expect1, result);
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
 
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(1, listener.getCount());
@@ -356,14 +359,15 @@ public class TestStreamToTableAdapter {
         final StreamPublisher streamPublisher = new DummyStreamPublisher();
 
         final StreamToTableAdapter adapter =
-                new StreamToTableAdapter(tableDefinition, streamPublisher, UpdateGraphProcessor.DEFAULT, "test");
+                new StreamToTableAdapter(tableDefinition, streamPublisher, UpdateContext.updateGraphProcessor(),
+                        "test");
         final Table result = adapter.table();
         TstUtils.assertTableEquals(empty, result);
 
         final SimpleListener listener = new SimpleListener(result);
         result.addUpdateListener(listener);
 
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(0, listener.getCount());
 
@@ -391,7 +395,7 @@ public class TestStreamToTableAdapter {
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(0, listener.getCount());
 
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(1, listener.getCount());
         TestCase.assertEquals(RowSetFactory.flat(4048), listener.getUpdate().added());
         TestCase.assertEquals(RowSetFactory.empty(), listener.getUpdate().removed());
@@ -403,7 +407,7 @@ public class TestStreamToTableAdapter {
         TstUtils.assertTableEquals(expect1, result);
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
 
         TstUtils.assertTableEquals(empty, result);
         TestCase.assertEquals(1, listener.getCount());
@@ -414,11 +418,11 @@ public class TestStreamToTableAdapter {
         TestCase.assertEquals(ModifiedColumnSet.EMPTY, listener.getUpdate().modifiedColumnSet());
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(0, listener.getCount());
 
         listener.reset();
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertEquals(0, listener.getCount());
     }
 
@@ -430,7 +434,8 @@ public class TestStreamToTableAdapter {
         final DummyStreamPublisher streamPublisher = new DummyStreamPublisher();
 
         final StreamToTableAdapter adapter =
-                new StreamToTableAdapter(tableDefinition, streamPublisher, UpdateGraphProcessor.DEFAULT, "test");
+                new StreamToTableAdapter(tableDefinition, streamPublisher, UpdateContext.updateGraphProcessor(),
+                        "test");
         final Table result = adapter.table();
 
         final MutableBoolean listenerFailed = new MutableBoolean();
@@ -443,7 +448,7 @@ public class TestStreamToTableAdapter {
         result.addUpdateListener(listener);
 
         streamPublisher.fail = true;
-        UpdateGraphProcessor.DEFAULT.runWithinUnitTestCycle(adapter::run);
+        UpdateContext.updateGraphProcessor().runWithinUnitTestCycle(adapter::run);
         TestCase.assertTrue(listenerFailed.booleanValue());
     }
 

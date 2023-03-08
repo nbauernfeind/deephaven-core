@@ -76,8 +76,8 @@ public final class UpdateByGrpcImpl extends GrpcTableOperation<UpdateByRequest> 
                 request.getOperationsList().stream().map(UpdateByGrpcImpl::adaptOperation).collect(Collectors.toList());
         final List<ColumnName> groupByColumns =
                 request.getGroupByColumnsList().stream().map(ColumnName::of).collect(Collectors.toList());
-        return control == null ? parent.updateBy(operations, groupByColumns)
-                : parent.updateBy(control, operations, groupByColumns);
+        return parent.getUpdateContext().apply(() -> control == null ? parent.updateBy(operations, groupByColumns)
+                : parent.updateBy(control, operations, groupByColumns));
     }
 
     private static UpdateByControl adaptOptions(UpdateByOptions options) {

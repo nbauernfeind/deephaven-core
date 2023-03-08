@@ -13,7 +13,6 @@ import io.deephaven.configuration.Configuration;
 import io.deephaven.engine.rowset.*;
 import io.deephaven.engine.table.*;
 import io.deephaven.engine.table.impl.QueryTable;
-import io.deephaven.engine.table.impl.TableUpdateImpl;
 import io.deephaven.engine.table.impl.perf.PerformanceEntry;
 import io.deephaven.engine.table.impl.perf.UpdatePerformanceTracker;
 import io.deephaven.engine.table.impl.sources.ArrayBackedColumnSource;
@@ -23,10 +22,7 @@ import io.deephaven.engine.table.impl.sources.WritableRedirectedColumnSource;
 import io.deephaven.engine.table.impl.util.BarrageMessage;
 import io.deephaven.engine.table.impl.util.LongColumnSourceWritableRowRedirection;
 import io.deephaven.engine.table.impl.util.WritableRowRedirection;
-import io.deephaven.engine.updategraph.LogicalClock;
-import io.deephaven.engine.updategraph.NotificationQueue;
-import io.deephaven.engine.updategraph.UpdateGraphProcessor;
-import io.deephaven.engine.updategraph.UpdateSourceRegistrar;
+import io.deephaven.engine.updategraph.*;
 import io.deephaven.extensions.barrage.BarragePerformanceLog;
 import io.deephaven.extensions.barrage.BarrageSubscriptionPerformanceLogger;
 import io.deephaven.internal.log.LoggerFactory;
@@ -36,7 +32,6 @@ import io.deephaven.io.logger.Logger;
 import io.deephaven.time.DateTime;
 import io.deephaven.util.annotations.InternalUseOnly;
 import org.HdrHistogram.Histogram;
-import org.apache.commons.lang3.mutable.MutableLong;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -164,7 +159,7 @@ public abstract class BarrageTable extends QueryTable implements BarrageMessage.
         }
 
         // we always start empty, and can be notified this cycle if we are refreshed
-        final long currentClockValue = LogicalClock.DEFAULT.currentValue();
+        final long currentClockValue = UpdateContext.logicalClock().currentValue();
         setLastNotificationStep(LogicalClock.getState(currentClockValue) == LogicalClock.State.Updating
                 ? LogicalClock.getStep(currentClockValue) - 1
                 : LogicalClock.getStep(currentClockValue));
@@ -372,8 +367,8 @@ public abstract class BarrageTable extends QueryTable implements BarrageMessage.
             final TableDefinition tableDefinition,
             final Map<String, Object> attributes,
             final long initialViewPortRows) {
-        return make(UpdateGraphProcessor.DEFAULT, UpdateGraphProcessor.DEFAULT, executorService, tableDefinition,
-                attributes, initialViewPortRows);
+        final UpdateGraphProcessor ugp = UpdateContext.get().getUpdateGraphProcessor();
+        return make(ugp, ugp, executorService, tableDefinition, attributes, initialViewPortRows);
     }
 
     @VisibleForTesting
@@ -462,7 +457,7 @@ public abstract class BarrageTable extends QueryTable implements BarrageMessage.
             processedStep.remove(0);
         }
         processedData.add(snapshotOrDelta.clone());
-        processedStep.add(LogicalClock.DEFAULT.currentStep());
+        processedStep.add(UpdateContext.logicalClock().currentStep());
     }
 
     protected boolean maybeEnablePrevTracking() {
