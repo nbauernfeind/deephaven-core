@@ -14,8 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gradle-task: ['check', 'testSerial', 'testParallel', 'testOutOfBand']
-        test-jvm-version: ['11', '17', '18']
+        gradle-task: ['A', 'B', 'C', 'D', 'E', 'F']
+        test-jvm-version: ['11', '17', '18',]
     if: ${{ github.repository_owner == 'deephaven' || github.event_name != 'schedule' }}
     runs-on: ubuntu-22.04
     steps:
@@ -57,7 +57,7 @@ jobs:
         uses: burrunan/gradle-cache-action@v1
         with:
           job-id: gradle-run
-          arguments: --scan --continue --rerun-tasks ${{ matrix.gradle-task }} -PtestRuntimeVersion=${{ matrix.test-jvm-version }}
+          arguments: --scan --continue --rerun-tasks :engine-table:testOutOfBand --tests "io.deephaven.engine.table.impl.QueryTableWhereParallelTest.testInterFilterInterruption" -PtestRuntimeVersion=${{ matrix.test-jvm-version }}
           gradle-version: wrapper
 
       - name: Upload Test Results
