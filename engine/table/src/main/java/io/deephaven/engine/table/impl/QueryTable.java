@@ -135,7 +135,7 @@ public class QueryTable extends BaseTable<QueryTable> {
              * @param resultListener the listener that should be attached to the parent (or null)
              */
             public Result(@NotNull final T resultNode,
-                    final @Nullable TableUpdateListener resultListener) {
+                    @Nullable final TableUpdateListener resultListener) {
                 this.resultNode = resultNode;
                 this.resultListener = resultListener;
             }
