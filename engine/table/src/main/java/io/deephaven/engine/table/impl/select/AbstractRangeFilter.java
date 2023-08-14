@@ -10,6 +10,7 @@ import io.deephaven.engine.table.impl.SortedColumnsAttribute;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.rowset.RowSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -78,9 +79,14 @@ public abstract class AbstractRangeFilter extends WhereFilterImpl {
         return Collections.emptyList();
     }
 
+    @NotNull
     @Override
-    public WritableRowSet filter(RowSet selection, RowSet fullSet, Table table, boolean usePrev) {
-        final ColumnSource columnSource = table.getColumnSource(columnName);
+    public WritableRowSet filter(
+            @NotNull final RowSet selection,
+            @NotNull final RowSet fullSet,
+            @NotNull final Table table,
+            final boolean usePrev) {
+        final ColumnSource<?> columnSource = table.getColumnSource(columnName);
         final Optional<SortingOrder> orderForColumn = SortedColumnsAttribute.getOrderForColumn(table, columnName);
         if (orderForColumn.isPresent()) {
             // do binary search for value
