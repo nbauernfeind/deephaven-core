@@ -13,9 +13,8 @@
 
   <appender name="LOGBUFFER" class="io.deephaven.logback.LogBufferAppender">
     <encoder>
-      <!-- LogBufferRecord has timestamp and level, so no need to encode -->
-      <!-- todo: should we colorize output for LogBuffer? -->
-      <pattern>%-20.20thread | %-25.25logger{25} | %m</pattern>
+      <!-- LogBufferRecord is directly aimed at a human; present them the raw message -->
+      <pattern>%m</pattern>
     </encoder>
   </appender>
 

@@ -63,7 +63,8 @@ public class JsWidgetExportedObject implements ServerObject {
             });
         } else {
             return this.connection.getObject(
-                    new JsVariableDefinition(ticket.getType(), null, ticket.getTicket().getTicket_asB64(), null));
+                    new JsVariableDefinition(ticket.getType(), null, ticket.getTicket().getTicket_asB64(), null,
+                            false));
         }
     }
 

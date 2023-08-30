@@ -7,6 +7,8 @@ import com.vertispan.tsdefs.annotations.TsName;
 import com.vertispan.tsdefs.annotations.TsTypeRef;
 import com.vertispan.tsdefs.annotations.TsUnion;
 import com.vertispan.tsdefs.annotations.TsUnionMember;
+import com.google.gwt.thirdparty.guava.common.io.BaseEncoding;
+import elemental2.core.Global;
 import elemental2.core.JsArray;
 import elemental2.dom.CustomEventInit;
 import elemental2.dom.DomGlobal;
@@ -44,6 +46,8 @@ import io.deephaven.web.client.api.barrage.def.TableAttributesDefinition;
 import io.deephaven.web.client.api.barrage.stream.ResponseStreamWrapper;
 import io.deephaven.web.client.api.batch.RequestBatcher;
 import io.deephaven.web.client.api.console.JsVariableType;
+import io.deephaven.web.client.api.console.JsVariableChanges;
+import io.deephaven.web.client.api.console.JsVariableDefinition;
 import io.deephaven.web.client.api.filter.FilterCondition;
 import io.deephaven.web.client.api.input.JsInputTable;
 import io.deephaven.web.client.api.lifecycle.HasLifecycle;
@@ -215,7 +219,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
     /**
      * a Sort than can be used to reverse a table. This can be passed into n array in applySort. Note that Tree Tables
      * do not support reverse.
-     * 
+     *
      * @return {@link Sort}
      */
     @JsMethod(namespace = "dh.Table")
@@ -235,6 +239,41 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
         typedTicket.setTicket(state().getHandle().makeTicket());
         typedTicket.setType(JsVariableType.TABLE);
         return typedTicket;
+    }
+
+    private static native String b64encode(String b) /*-{
+  return window.btoa(b);
+}-*/;
+
+    // TODO (nate): find an appropriate place for this?
+    @JsMethod(namespace = "dh.Table")
+    public static JsVariableDefinition getJsVariableDefinition(JsPropertyMap<Object> definitionObject) {
+        if (definitionObject instanceof JsVariableDefinition) {
+            return (JsVariableDefinition) definitionObject;
+        }
+
+        // type is required
+        if (!definitionObject.has("type")) {
+            throw new IllegalArgumentException("no type field; could not getObject");
+        }
+        String type = definitionObject.getAsAny("type").asString();
+
+        // title is optional
+        String title = null;
+        if (definitionObject.has("title")) {
+            title = definitionObject.getAsAny("title").asString();
+        }
+
+        // must be given the id and not the deprecated name
+        if (definitionObject.has("name")) {
+            throw new IllegalArgumentException("has name but id field required for conversion");
+        } else if (!definitionObject.has("id")) {
+            throw new IllegalArgumentException("no name/id field; could not construct getObject");
+        }
+
+        String id = b64encode(definitionObject.getAsAny("id").asString());
+        boolean disabled = definitionObject.has("disabled");
+        return new JsVariableDefinition(type, title, id, null, disabled);
     }
 
     @JsMethod
@@ -316,7 +355,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
     /**
      * True if this table represents a user Input Table (created by InputTable.newInputTable). When true, you may call
      * .inputTable() to add or remove data from the underlying table.
-     * 
+     *
      * @return boolean
      */
     @JsProperty(name = "hasInputTable")
@@ -389,7 +428,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
      * null if no property exists, a string if it is an easily serializable property, or a <b>Promise
      * <Table>
      * </b> that will either resolve with a table or error out if the object can't be passed to JS.
-     * 
+     *
      * @param attributeName
      * @return Object
      */
@@ -434,7 +473,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
      * .setViewport(), you will get only those columns in your ViewportData. <b>Number size</b> The total count of rows
      * in the table. The size can and will change; see the <b>sizechanged</b> event for details. Size will be negative
      * in exceptional cases (eg. the table is uncoalesced, see the <b>isUncoalesced</b> property for details).
-     * 
+     *
      * @return {@link Column} array
      */
     @JsProperty
@@ -452,7 +491,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
      * The total count of rows in the table. The size can and will change; see the <b>sizechanged</b> event for details.
      * Size will be negative in exceptional cases (e.g., the table is uncoalesced; see the <b>isUncoalesced</b>
      * property). for details).
-     * 
+     *
      * @return double
      */
     @JsProperty
@@ -479,7 +518,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
      * not result in any event. <b>Sort[] sort</b> an ordered list of Sorts to apply to the table. To update, call
      * applySort(). Note that this getter will return the new value immediately, even though it may take a little time
      * to update on the server. You may listen for the <b>sortchanged</b> event to know when to update the UI.
-     * 
+     *
      * @return double
      */
     @JsProperty
@@ -496,7 +535,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
      * An ordered list of Sorts to apply to the table. To update, call <b>applySort()</b>. Note that this getter will
      * return the new value immediately, even though it may take a little time to update on the server. You may listen
      * for the <b>sortchanged</b> event to know when to update the UI.
-     * 
+     *
      * @return {@link Sort} array
      */
     @JsProperty
@@ -508,7 +547,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
      * An ordered list of Filters to apply to the table. To update, call applyFilter(). Note that this getter will
      * return the new value immediately, even though it may take a little time to update on the server. You may listen
      * for the <b>filterchanged</b> event to know when to update the UI.
-     * 
+     *
      * @return {@link FilterCondition} array
      */
     @JsProperty
@@ -663,7 +702,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
     /**
      * An ordered list of custom column formulas to add to the table, either adding new columns or replacing existing
      * ones. To update, call <b>applyCustomColumns()</b>.
-     * 
+     *
      * @return {@link CustomColumn} array
      *
      */
@@ -742,7 +781,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
     /**
      * Gets the currently visible viewport. If the current set of operations has not yet resulted in data, it will not
      * resolve until that data is ready.
-     * 
+     *
      * @return Promise of {@link TableData}
      *
      */
@@ -808,7 +847,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
      * a new table containing the distinct tuples of values from the given columns that are present in the original
      * table. This table can be manipulated as any other table. Sorting is often desired as the default sort is the
      * order of appearance of values from the original table.
-     * 
+     *
      * @param columns
      * @return Promise of dh.Table
      */
@@ -832,7 +871,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
 
     /**
      * Creates a new copy of this table, so it can be sorted and filtered separately, and maintain a different viewport.
-     * 
+     *
      * @return Promise of dh.Table
      *
      */
@@ -858,7 +897,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
      * a parameter, or will use the table's default if no parameter is provided, and be updated once per second as
      * necessary. Note that multiple calls to this method will each produce a new TotalsTable which must have close()
      * called on it when not in use.
-     * 
+     *
      * @param config
      * @return Promise of dh.TotalsTable
      */
@@ -873,7 +912,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
 
     /**
      * The default configuration to be used when building a <b>TotalsTable</b> for this table.
-     * 
+     *
      * @return dh.TotalsTableConfig
      */
     @JsMethod
@@ -1044,7 +1083,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
     /**
      * a promise that will resolve to a Totals Table of this table, ignoring any filters. See <b>getTotalsTable()</b>
      * above for more specifics.
-     * 
+     *
      * @param config
      * @return promise of dh.TotalsTable
      */
@@ -1067,7 +1106,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
     /**
      * a promise that will resolve to a new roll-up <b>TreeTable</b> of this table. Multiple calls to this method will
      * each produce a new <b>TreeTable</b> which must have close() called on it when not in use.
-     * 
+     *
      * @param configObject
      * @return Promise of dh.TreeTable
      */
@@ -1103,7 +1142,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
     /**
      * a promise that will resolve to a new `TreeTable` of this table. Multiple calls to this method will each produce a
      * new `TreeTable` which must have close() called on it when not in use.
-     * 
+     *
      * @param configObject
      * @return Promise dh.TreeTable
      */
@@ -1760,7 +1799,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
 
     /**
      * True if this table has been closed.
-     * 
+     *
      * @return boolean
      */
     @JsProperty(name = "isClosed")
@@ -1772,7 +1811,7 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
      * Read-only. True if this table is uncoalesced. Set a viewport or filter on the partition columns to coalesce the
      * table. Check the <b>isPartitionColumn</b> property on the table columns to retrieve the partition columns. Size
      * will be unavailable until table is coalesced.
-     * 
+     *
      * @return boolean
      */
     @JsProperty(name = "isUncoalesced")

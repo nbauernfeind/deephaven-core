@@ -196,6 +196,16 @@ public class ScopeTicketResolver extends TicketResolverBase {
     }
 
     /**
+     * Convenience method to construct a scoped ticket in the form of a string.
+     *
+     * @param name the scoped variable name to convert
+     * @return the flight ticket string for a scope variable with the provided name
+     */
+    public static String ticketStringForName(final String name) {
+        return TICKET_PREFIX + "/" + name;
+    }
+
+    /**
      * Convenience method to convert from a scoped variable name to Flight.FlightDescriptor
      *
      * @param name the scoped variable name to convert

@@ -38,6 +38,7 @@ import io.deephaven.server.util.Scheduler;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 import org.jetbrains.annotations.NotNull;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jpy.PyObject;
 
 import javax.inject.Inject;
@@ -78,19 +79,24 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
     private final Scheduler scheduler;
     private final LogBuffer logBuffer;
     private final Set<CustomCompletion.Factory> customCompletionFactory;
+    private final Provider<ConsoleTableImpl> consoleTableProvider;
 
     @Inject
-    public ConsoleServiceGrpcImpl(final TicketRouter ticketRouter,
+    public ConsoleServiceGrpcImpl(
+            final TicketRouter ticketRouter,
             final SessionService sessionService,
             final Provider<ScriptSession> scriptSessionProvider,
             final Scheduler scheduler,
-            final LogBuffer logBuffer, Set<CustomCompletion.Factory> customCompletionFactory) {
+            final LogBuffer logBuffer,
+            Set<CustomCompletion.Factory> customCompletionFactory,
+            final Provider<ConsoleTableImpl> consoleTableProvider) {
         this.ticketRouter = ticketRouter;
         this.sessionService = sessionService;
         this.scriptSessionProvider = scriptSessionProvider;
         this.scheduler = Objects.requireNonNull(scheduler);
         this.logBuffer = Objects.requireNonNull(logBuffer);
         this.customCompletionFactory = customCompletionFactory;
+        this.consoleTableProvider = consoleTableProvider;
     }
 
     @Override
@@ -164,17 +170,40 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
             throw Exceptions.statusRuntimeException(Code.FAILED_PRECONDITION, "No consoleId supplied");
         }
 
+        final ConsoleTableImpl.InputEntry inputEntry = consoleTableProvider.get().newInputEntry(request.getCode());
+
         SessionState.ExportObject<ScriptSession> exportedConsole =
                 ticketRouter.resolve(session, consoleId, "consoleId");
+
+        // don't wait for the serial queue to set the request language
+        session.nonExport()
+                .require(exportedConsole)
+                .submit(() -> {
+                    ScriptSession scriptSession = exportedConsole.get();
+                    inputEntry.setLanguage(scriptSession.scriptType());
+                    inputEntry.scheduleUpdate();
+                });
+
         session.nonExport()
                 .requiresSerialQueue()
                 .require(exportedConsole)
                 .onError(responseObserver)
                 .submit(() -> {
                     ScriptSession scriptSession = exportedConsole.get();
+                    // set the language here, too; why not?
+                    inputEntry.setLanguage(scriptSession.scriptType());
+                    inputEntry.onRunStart();
+                    inputEntry.scheduleUpdate();
+
                     ScriptSession.Changes changes = scriptSession.evaluateScript(request.getCode());
                     ExecuteCommandResponse.Builder diff = ExecuteCommandResponse.newBuilder();
                     FieldsChangeUpdate.Builder fieldChanges = FieldsChangeUpdate.newBuilder();
+                    inputEntry.onRunFinish();
+                    inputEntry.setCreatedVars(changes.created);
+                    inputEntry.setUpdatedVars(changes.updated);
+                    inputEntry.setRemovedVars(changes.removed);
+                    inputEntry.scheduleUpdate();
+
                     changes.created.entrySet()
                             .forEach(entry -> fieldChanges.addCreated(makeVariableDefinition(entry)));
                     changes.updated.entrySet()
