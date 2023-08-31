@@ -21,8 +21,6 @@ import io.deephaven.engine.table.impl.sources.FillUnordered;
 import io.deephaven.engine.table.impl.sources.RedirectedColumnSource;
 import io.deephaven.engine.table.impl.util.WritableRowRedirection;
 import io.deephaven.engine.updategraph.LogicalClock;
-import io.deephaven.engine.updategraph.NotificationQueue;
-import io.deephaven.engine.updategraph.UpdateGraph;
 import io.deephaven.engine.updategraph.UpdateSourceRegistrar;
 import io.deephaven.engine.updategraph.impl.PeriodicUpdateGraph;
 import io.deephaven.internal.log.LoggerFactory;
@@ -53,11 +51,6 @@ import java.util.regex.Pattern;
 public class ConsoleTableImpl extends QueryTable implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(ConsoleTableImpl.class);
 
-    /**
-     * This table will try to update much more frequently than a typical LTM table. This simply means that users will
-     * receive terminal output on a much more immediate basis; whether the LTM is busy or even locked.
-     */
-
     // ANSI Controls
     /** everytime the user sends a command we prevent the cursor from reaching it */
     private long baseRow = 0;
@@ -73,9 +66,7 @@ public class ConsoleTableImpl extends QueryTable implements Runnable {
     private final FontState outFontState = new FontState();
     private final FontState errFontState = new FontState();
 
-    // Hooks into the live table monitor for when this object is actually used like a table
     private final UpdateSourceRegistrar registrar;
-    private final NotificationQueue notificationQueue;
     @Nullable
     private final PerformanceEntry refreshEntry;
     private final Scheduler scheduler;
@@ -116,7 +107,7 @@ public class ConsoleTableImpl extends QueryTable implements Runnable {
             final Scheduler scheduler,
             final int numRows,
             final int numCols) {
-        super(RowSetFactory.empty().toTracking(), data.ltmColumns);
+        super(RowSetFactory.empty().toTracking(), data.columnSourceMap);
         getModifiedColumnSetForUpdates().setAllDirty();
 
         this.data = data;
@@ -124,7 +115,6 @@ public class ConsoleTableImpl extends QueryTable implements Runnable {
         this.numCols = numCols;
 
         this.registrar = this.updateGraph;
-        this.notificationQueue = this.updateGraph;
         this.scheduler = scheduler;
 
         refreshEntry = PeriodicUpdateGraph.createUpdatePerformanceEntry(this.updateGraph,
@@ -504,7 +494,6 @@ public class ConsoleTableImpl extends QueryTable implements Runnable {
         try {
             innerIndex = acquireRow();
             outerIndex = nextOuterIndex++;
-            // TODO: shouldn't we free old rows?
             baseRow = Math.max(baseRow, outerIndex + 1 - numRows);
             data.redirectionIndex.put(outerIndex, innerIndex);
         } finally {
@@ -768,10 +757,10 @@ public class ConsoleTableImpl extends QueryTable implements Runnable {
 
     @Override
     public void run() {
-        propagateToLTM();
+        propagateToUpdateGraph();
     }
 
-    private void propagateToLTM() {
+    private void propagateToUpdateGraph() {
         final RowSet added;
         final WritableRowSet modified;
         synchronized (this) {
@@ -789,7 +778,7 @@ public class ConsoleTableImpl extends QueryTable implements Runnable {
         final WritableRowSet rowSet = getRowSet().writableCast();
         rowSet.insert(added);
 
-        // copy data to our LTM table; it's ok if we aren't super consistent (we might coalesce or dupe updates)
+        // copy data to our update graph table; it's ok if we aren't super consistent (we might coalesce or dupe updates)
         try (final RowSet both = added.union(modified);
                 final ChunkSource.FillContext rContext =
                         data.redirectionIndex.makeFillContext(both.intSize(), null);
@@ -988,8 +977,7 @@ public class ConsoleTableImpl extends QueryTable implements Runnable {
 
     private static class TableCreator {
         final public WritableRowRedirection redirectionIndex = WritableRowRedirection.FACTORY.createRowRedirection(8);
-        final public LinkedHashMap<String, ColumnSource<?>> barrageColumns = new LinkedHashMap<>();
-        final public LinkedHashMap<String, ColumnSource<?>> ltmColumns = new LinkedHashMap<>();
+        final public LinkedHashMap<String, ColumnSource<?>> columnSourceMap = new LinkedHashMap<>();
         final public List<ColumnInfo<?>> columns = new ArrayList<>();
 
         public TableCreator() {
@@ -998,8 +986,7 @@ public class ConsoleTableImpl extends QueryTable implements Runnable {
 
         protected <T> ColumnInfo<T> newColumn(final String name, final Class<T> dataType) {
             final ColumnInfo<T> info = new ColumnInfo<>(name, dataType);
-            barrageColumns.put(name, RedirectedColumnSource.maybeRedirect(redirectionIndex, info.values));
-            ltmColumns.put(name, RedirectedColumnSource.maybeRedirect(redirectionIndex, info.ugValues));
+            columnSourceMap.put(name, RedirectedColumnSource.maybeRedirect(redirectionIndex, info.ugValues));
             columns.add(info);
             return info;
         }
