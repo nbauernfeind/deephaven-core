@@ -40,6 +40,7 @@ import io.deephaven.extensions.barrage.util.GrpcUtil;
 import io.deephaven.extensions.barrage.util.StreamReader;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
+import io.deephaven.server.console.ConsoleTableImpl;
 import io.deephaven.server.session.SessionService;
 import io.deephaven.server.util.Scheduler;
 import io.deephaven.util.SafeCloseable;
@@ -329,7 +330,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
         }
 
         this.propagationRowSet = RowSetFactory.empty();
-        this.updateIntervalMs = updateIntervalMs;
+        this.updateIntervalMs = parent instanceof ConsoleTableImpl ? 50 : updateIntervalMs;
         this.onGetSnapshot = onGetSnapshot;
 
         this.parentTableSize = parent.size();
