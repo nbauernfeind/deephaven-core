@@ -1349,7 +1349,7 @@ public class WorkerConnection {
                 }
                 // TODO #188 support minUpdateIntervalMs
                 double serializationOptionsOffset = BarrageSubscriptionOptions
-                        .createBarrageSubscriptionOptions(subscriptionReq, ColumnConversionMode.Stringify, true, 1000,
+                        .createBarrageSubscriptionOptions(subscriptionReq, ColumnConversionMode.Stringify, true, 0,
                                 0, 0);
                 double tableTicketOffset =
                         BarrageSubscriptionRequest.createTicketVector(subscriptionReq, state.getHandle().getTicket());
