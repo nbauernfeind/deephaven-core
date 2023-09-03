@@ -837,28 +837,22 @@ public class SessionState {
                     ExportNotification.State terminalState = ExportNotification.State.DEPENDENCY_FAILED;
 
                     if (errorId == null) {
-                        final String errorDetails;
+                        assignErrorId();
+                        dependentHandle = parent.logIdentity;
+
                         switch (parent.state) {
                             case RELEASED:
                                 terminalState = ExportNotification.State.DEPENDENCY_RELEASED;
-                                errorDetails = "dependency released by user.";
                                 break;
                             case CANCELLED:
                                 terminalState = ExportNotification.State.DEPENDENCY_CANCELLED;
-                                errorDetails = "dependency cancelled by user.";
                                 break;
                             default:
-                                // Note: the other error states should have non-null errorId
-                                errorDetails = "dependency does not have its own error defined " +
+                                final String errorDetails = "dependency does not have its own error defined " +
                                         "and is in an unexpected state: " + parent.state;
+                                log.error().append("Internal Error '").append(errorId).append("' ")
+                                        .append(errorDetails).endl();
                                 break;
-                        }
-
-                        assignErrorId();
-                        dependentHandle = parent.logIdentity;
-                        if (!(caughtException instanceof StatusRuntimeException)) {
-                            log.error().append("Internal Error '").append(errorId).append("' ").append(errorDetails)
-                                    .endl();
                         }
                     }
 
