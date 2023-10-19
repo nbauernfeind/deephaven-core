@@ -95,7 +95,7 @@ public class TestConcurrentInstantiation extends QueryTableTestBase {
         final TreeTable treed = source.tree("Sentinel", "Parent");
         final Callable<Table> callable =
                 () -> (QueryTable) treed.getSource().apply(new TreeTableFilter.Operator((TreeTableImpl) treed,
-                        WhereFilterFactory.getExpressions("Sentinel in 4, 6, 9, 11, 12, 13, 14, 15")));
+                        WhereFilterFactory.getExpressions("Sentinel in 4, 6, 9, 12, 13, 14, 15")));
 
         updateGraph.startCycleForUnitTests(false);
 
@@ -112,10 +112,10 @@ public class TestConcurrentInstantiation extends QueryTableTestBase {
         final Table table2 = pool.submit(callable).get(TIMEOUT_LENGTH, TIMEOUT_UNIT);
         assertTableEquals(rawSorted, table2);
 
+        final Future<Table> future3 = pool.submit(callable);
         source.notifyListeners(i(10), i(), i());
         updateGraph.markSourcesRefreshedForUnitTests();
 
-        final Future<Table> future3 = pool.submit(callable);
         assertTableEquals(rawSorted, table2);
 
         updateGraph.completeCycleForUnitTests();
@@ -140,7 +140,7 @@ public class TestConcurrentInstantiation extends QueryTableTestBase {
         updateGraph.completeCycleForUnitTests();
 
         assertArrayEquals(
-                new int[] {1, 2, 3, 4, 6, 9, 10, 11, 12},
+                new int[] {1, 3, 4, 6, 9},
                 (int[]) DataAccessHelpers.getColumn(rawSorted, "Sentinel").getDirect());
         assertTableEquals(rawSorted, table2);
         assertTableEquals(table2, table3);
