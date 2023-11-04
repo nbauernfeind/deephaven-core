@@ -34,6 +34,7 @@ import io.deephaven.proto.util.Exceptions;
 import io.deephaven.proto.util.ExportTicketHelper;
 import io.deephaven.server.util.Scheduler;
 import io.deephaven.engine.context.ExecutionContext;
+import io.deephaven.util.QueryConstants;
 import io.deephaven.util.SafeCloseable;
 import io.deephaven.util.annotations.VisibleForTesting;
 import io.deephaven.auth.AuthContext;
@@ -216,6 +217,13 @@ public class SessionState {
 
         log.debug().append(logPrefix).append("token, expires at ")
                 .append(MILLIS_FROM_EPOCH_FORMATTER, expiration.deadlineMillis).append(".").endl();
+    }
+
+    /**
+     * @return the session id
+     */
+    public String getSessionId() {
+        return sessionId;
     }
 
     /**
@@ -530,6 +538,9 @@ public class SessionState {
         private final SessionService.ErrorTransformer errorTransformer;
         private final SessionState session;
 
+        /** used to keep track of performance details if caller needs to aggregate across multiple exports */
+        private QueryPerformanceRecorder queryPerformanceRecorder;
+
         /** final result of export */
         private volatile T result;
         private volatile ExportNotification.State state = ExportNotification.State.UNKNOWN;
@@ -617,6 +628,14 @@ public class SessionState {
 
         private boolean isNonExport() {
             return exportId == NON_EXPORT_ID;
+        }
+
+        private synchronized void setQueryPerformanceRecorder(final QueryPerformanceRecorder queryPerformanceRecorder) {
+            if (this.queryPerformanceRecorder != null) {
+                throw new IllegalStateException(
+                        "performance query recorder can only be set once on an exportable object");
+            }
+            this.queryPerformanceRecorder = queryPerformanceRecorder;
         }
 
         /**
@@ -945,15 +964,16 @@ public class SessionState {
             }
 
             boolean shouldLog = false;
-            int evaluationNumber = -1;
             QueryProcessingResults queryProcessingResults = null;
             try (final SafeCloseable ignored1 = session.executionContext.open()) {
                 try (final SafeCloseable ignored2 = LivenessScopeStack.open()) {
-                    queryProcessingResults = new QueryProcessingResults(
-                            QueryPerformanceRecorder.getInstance());
-
-                    evaluationNumber = QueryPerformanceRecorder.getInstance()
-                            .startQuery("session=" + session.sessionId + ",exportId=" + logIdentity);
+                    queryProcessingResults = new QueryProcessingResults(QueryPerformanceRecorder.getInstance());
+                    final int parentEvaluationNumber = queryPerformanceRecorder != null
+                            ? queryPerformanceRecorder.getEvaluationNumber()
+                            : QueryConstants.NULL_INT;
+                    QueryPerformanceRecorder.getInstance().startQuery(
+                            "ExportObject#doWork(session=" + session.sessionId + ",exportId=" + logIdentity + ")",
+                            parentEvaluationNumber);
 
                     try {
                         setResult(capturedExport.call());
@@ -978,32 +998,10 @@ public class SessionState {
                     QueryPerformanceRecorder.resetInstance();
                 }
                 if ((shouldLog || caughtException != null) && queryProcessingResults != null) {
-                    final EngineMetrics memLoggers = EngineMetrics.getInstance();
-                    final QueryPerformanceLogLogger qplLogger = memLoggers.getQplLogger();
-                    final QueryOperationPerformanceLogLogger qoplLogger = memLoggers.getQoplLogger();
-                    try {
-                        final QueryPerformanceNugget nugget = Require.neqNull(
-                                queryProcessingResults.getRecorder().getQueryLevelPerformanceData(),
-                                "queryProcessingResults.getRecorder().getQueryLevelPerformanceData()");
-
-                        // noinspection SynchronizationOnLocalVariableOrMethodParameter
-                        synchronized (qplLogger) {
-                            qplLogger.log(evaluationNumber,
-                                    queryProcessingResults,
-                                    nugget);
-                        }
-                        final List<QueryPerformanceNugget> nuggets =
-                                queryProcessingResults.getRecorder().getOperationLevelPerformanceData();
-                        // noinspection SynchronizationOnLocalVariableOrMethodParameter
-                        synchronized (qoplLogger) {
-                            int opNo = 0;
-                            for (QueryPerformanceNugget n : nuggets) {
-                                qoplLogger.log(opNo++, n);
-                            }
-                        }
-                    } catch (final Exception e) {
-                        log.error().append("Failed to log query performance data: ").append(e).endl();
+                    if (queryPerformanceRecorder != null) {
+                        queryPerformanceRecorder.accumulate(queryProcessingResults.getRecorder());
                     }
+                    EngineMetrics.getInstance().logQueryProcessingResults(queryProcessingResults);
                 }
             }
         }
@@ -1284,6 +1282,19 @@ public class SessionState {
                 // noinspection unchecked
                 this.export = (ExportObject<T>) exportMap.putIfAbsent(exportId, EXPORT_OBJECT_VALUE_FACTORY);
             }
+        }
+
+        /**
+         * Set the performance recorder to aggregate performance data across exports. If set, instrumentation logging is
+         * the responsibility of the caller.
+         *
+         * @param queryPerformanceRecorder the performance recorder to aggregate into
+         * @return this builder
+         */
+        public ExportBuilder<T> queryPerformanceRecorder(
+                @NotNull final QueryPerformanceRecorder queryPerformanceRecorder) {
+            export.setQueryPerformanceRecorder(queryPerformanceRecorder);
+            return this;
         }
 
         /**
