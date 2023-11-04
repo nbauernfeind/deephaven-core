@@ -128,6 +128,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
         }
 
         session.newExport(request.getResultId(), "resultId")
+                .description("ConsoleService#startConsole")
                 .onError(responseObserver)
                 .submit(() -> {
                     final ScriptSession scriptSession = new DelegatingScriptSession(scriptSessionProvider.get());
@@ -167,25 +168,33 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
         SessionState.ExportObject<ScriptSession> exportedConsole =
                 ticketRouter.resolve(session, consoleId, "consoleId");
         session.nonExport()
+                .description("ConsoleService#executeCommand")
                 .requiresSerialQueue()
                 .require(exportedConsole)
                 .onError(responseObserver)
                 .submit(() -> {
-                    ScriptSession scriptSession = exportedConsole.get();
-                    ScriptSession.Changes changes = scriptSession.evaluateScript(request.getCode());
-                    ExecuteCommandResponse.Builder diff = ExecuteCommandResponse.newBuilder();
-                    FieldsChangeUpdate.Builder fieldChanges = FieldsChangeUpdate.newBuilder();
-                    changes.created.entrySet()
-                            .forEach(entry -> fieldChanges.addCreated(makeVariableDefinition(entry)));
-                    changes.updated.entrySet()
-                            .forEach(entry -> fieldChanges.addUpdated(makeVariableDefinition(entry)));
-                    changes.removed.entrySet()
-                            .forEach(entry -> fieldChanges.addRemoved(makeVariableDefinition(entry)));
-                    if (changes.error != null) {
-                        diff.setErrorMessage(Throwables.getStackTraceAsString(changes.error));
-                        log.error().append("Error running script: ").append(changes.error).endl();
+                    // since we are on the serial queue, we can safely stash our session id someplace accessible
+                    SessionService.CURRENT_SESSION_ID = session.getSessionId();
+
+                    try {
+                        ScriptSession scriptSession = exportedConsole.get();
+                        ScriptSession.Changes changes = scriptSession.evaluateScript(request.getCode());
+                        ExecuteCommandResponse.Builder diff = ExecuteCommandResponse.newBuilder();
+                        FieldsChangeUpdate.Builder fieldChanges = FieldsChangeUpdate.newBuilder();
+                        changes.created.entrySet()
+                                .forEach(entry -> fieldChanges.addCreated(makeVariableDefinition(entry)));
+                        changes.updated.entrySet()
+                                .forEach(entry -> fieldChanges.addUpdated(makeVariableDefinition(entry)));
+                        changes.removed.entrySet()
+                                .forEach(entry -> fieldChanges.addRemoved(makeVariableDefinition(entry)));
+                        if (changes.error != null) {
+                            diff.setErrorMessage(Throwables.getStackTraceAsString(changes.error));
+                            log.error().append("Error running script: ").append(changes.error).endl();
+                        }
+                        safelyComplete(responseObserver, diff.setChanges(fieldChanges).build());
+                    } finally {
+                        SessionService.CURRENT_SESSION_ID = "NO SESSION IN USE";
                     }
-                    safelyComplete(responseObserver, diff.setChanges(fieldChanges).build());
                 });
     }
 
@@ -244,6 +253,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
         final SessionState.ExportObject<ScriptSession> exportedConsole;
 
         ExportBuilder<?> exportBuilder = session.nonExport()
+                .description("ConsoleService#bindTableToVariable")
                 .requiresSerialQueue()
                 .onError(responseObserver);
 

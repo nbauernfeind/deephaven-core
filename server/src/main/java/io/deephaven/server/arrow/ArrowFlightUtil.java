@@ -79,6 +79,7 @@ public class ArrowFlightUtil {
 
         final long queueStartTm = System.nanoTime();
         session.nonExport()
+                .description("FlightService#DoGet")
                 .require(export)
                 .onError(observer)
                 .submit(() -> {
@@ -153,6 +154,7 @@ public class ArrowFlightUtil {
                     flightDescriptor = mi.descriptor;
                     resultExportBuilder = ticketRouter
                             .<Table>publish(session, mi.descriptor, "Flight.Descriptor", null)
+                            .description("ArrowFlight#DoPut")
                             .onError(observer);
                 }
             }
@@ -486,6 +488,7 @@ public class ArrowFlightUtil {
 
                     final long queueStartTm = System.nanoTime();
                     session.nonExport()
+                            .description("FlightService#DoExchange(snapshot)")
                             .require(parent)
                             .onError(listener)
                             .submit(() -> {
@@ -628,6 +631,7 @@ public class ArrowFlightUtil {
 
                     synchronized (this) {
                         onExportResolvedContinuation = session.nonExport()
+                                .description("FlightService#DoExchange(subscription)")
                                 .require(parent)
                                 .onErrorHandler(DoExchangeMarshaller.this::onError)
                                 .submit(() -> onExportResolved(parent));

@@ -175,6 +175,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
 
         if (session != null) {
             session.nonExport()
+                    .description("FlightService#getFlightInfo")
                     .require(export)
                     .onError(responseObserver)
                     .submit(() -> {
@@ -209,6 +210,7 @@ public class FlightServiceGrpcImpl extends FlightServiceGrpc.FlightServiceImplBa
 
         if (session != null) {
             session.nonExport()
+                    .description("FlightService#getSchema")
                     .require(export)
                     .onError(responseObserver)
                     .submit(() -> {

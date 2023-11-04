@@ -112,7 +112,7 @@ public class SessionStateTest {
         final CountingLivenessReferent export = new CountingLivenessReferent();
         final SessionState.ExportObject<Object> exportObj;
         try (final SafeCloseable ignored = LivenessScopeStack.open()) {
-            exportObj = session.newServerSideExport(export);
+            exportObj = session.newServerSideExport(export, "test");
         }
 
         // better have ref count
@@ -164,7 +164,7 @@ public class SessionStateTest {
         final CountingLivenessReferent export = new CountingLivenessReferent();
         final SessionState.ExportObject<Object> exportObj;
         try (final SafeCloseable ignored = LivenessScopeStack.open()) {
-            exportObj = session.newServerSideExport(export);
+            exportObj = session.newServerSideExport(export, "test");
         }
 
         // better have ref count
@@ -587,7 +587,7 @@ public class SessionStateTest {
     @Test
     public void testExpiredServerSideExport() {
         final CountingLivenessReferent export = new CountingLivenessReferent();
-        final SessionState.ExportObject<Object> exportObj = session.newServerSideExport(export);
+        final SessionState.ExportObject<Object> exportObj = session.newServerSideExport(export, "test");
         session.onExpired();
         expectException(StatusRuntimeException.class, exportObj::get);
     }
@@ -595,7 +595,7 @@ public class SessionStateTest {
     @Test
     public void testExpiresBeforeExport() {
         session.onExpired();
-        expectException(StatusRuntimeException.class, () -> session.newServerSideExport(new Object()));
+        expectException(StatusRuntimeException.class, () -> session.newServerSideExport(new Object(), "test"));
         expectException(StatusRuntimeException.class, () -> session.nonExport());
         expectException(StatusRuntimeException.class, () -> session.newExport(nextExportId++));
         expectException(StatusRuntimeException.class, () -> session.getExport(nextExportId++));
@@ -827,7 +827,7 @@ public class SessionStateTest {
         session.updateExpiration(
                 new SessionService.TokenExpiration(UUID.randomUUID(), scheduler.currentTimeMillis(), session));
         Assert.eqNull(session.getExpiration(), "session.getExpiration()"); // already expired
-        expectException(StatusRuntimeException.class, () -> session.newServerSideExport(new Object()));
+        expectException(StatusRuntimeException.class, () -> session.newServerSideExport(new Object(), "test"));
         expectException(StatusRuntimeException.class, () -> session.nonExport());
         expectException(StatusRuntimeException.class, () -> session.newExport(nextExportId++));
         expectException(StatusRuntimeException.class, () -> session.getExport(nextExportId++));
@@ -1382,9 +1382,9 @@ public class SessionStateTest {
     @Test
     public void testExportListenerServerSideExports() {
         final QueueingExportListener listener = new QueueingExportListener();
-        final SessionState.ExportObject<SessionState> e1 = session.newServerSideExport(session);
+        final SessionState.ExportObject<SessionState> e1 = session.newServerSideExport(session, "test");
         session.addExportListener(listener);
-        final SessionState.ExportObject<SessionState> e2 = session.newServerSideExport(session);
+        final SessionState.ExportObject<SessionState> e2 = session.newServerSideExport(session, "test");
 
         listener.validateIsRefreshComplete(1);
         listener.validateNotificationQueue(e1, EXPORTED);

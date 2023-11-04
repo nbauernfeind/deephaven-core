@@ -59,6 +59,7 @@ public class PartitionedTableServiceGrpcImpl extends PartitionedTableServiceGrpc
                 ticketRouter.resolve(session, request.getTableId(), "tableId");
 
         session.newExport(request.getResultId(), "resultId")
+                .description("PartitionedTableService#partitionBy")
                 .require(targetTable)
                 .onError(responseObserver)
                 .submit(() -> {
@@ -81,6 +82,7 @@ public class PartitionedTableServiceGrpcImpl extends PartitionedTableServiceGrpc
                 ticketRouter.resolve(session, request.getPartitionedTable(), "partitionedTable");
 
         session.newExport(request.getResultId(), "resultId")
+                .description("PartitionedTableService#merge")
                 .require(partitionedTable)
                 .onError(responseObserver)
                 .submit(() -> {
@@ -113,6 +115,7 @@ public class PartitionedTableServiceGrpcImpl extends PartitionedTableServiceGrpc
                 ticketRouter.resolve(session, request.getKeyTableTicket(), "keyTableTicket");
 
         session.newExport(request.getResultId(), "resultId")
+                .description("PartitionedTableService#getTable")
                 .require(partitionedTable, keys)
                 .onError(responseObserver)
                 .submit(() -> {
