@@ -1,6 +1,11 @@
 /**
  * Copyright (c) 2016-2023 Deephaven Data Labs and Patent Pending
  */
+/*
+ * ---------------------------------------------------------------------------------------------------------------------
+ * AUTO-GENERATED CLASS - DO NOT EDIT MANUALLY - for any changes edit InstantVectorTransfer and regenerate
+ * ---------------------------------------------------------------------------------------------------------------------
+ */
 package io.deephaven.parquet.table.transfer;
 
 import io.deephaven.engine.primitive.iterator.CloseableIterator;
@@ -14,7 +19,7 @@ import java.nio.IntBuffer;
 import java.time.LocalDate;
 
 final class DateVectorTransfer extends PrimitiveVectorTransfer<ObjectVector<LocalDate>, IntBuffer> {
-
+    // We encode LocalDate as primitive ints
     DateVectorTransfer(@NotNull final ColumnSource<?> columnSource, @NotNull final RowSequence tableRowSet,
             final int targetPageSizeInBytes) {
         super(columnSource, tableRowSet, targetPageSizeInBytes / Integer.BYTES, targetPageSizeInBytes,
@@ -29,7 +34,6 @@ final class DateVectorTransfer extends PrimitiveVectorTransfer<ObjectVector<Loca
     @Override
     void copyToBuffer(@NotNull final EncodedData<ObjectVector<LocalDate>> data) {
         try (final CloseableIterator<LocalDate> dataIterator = data.encodedValues.iterator()) {
-            // Store the number of days from the Unix epoch, 1 January 1970
             dataIterator.forEachRemaining((LocalDate t) -> buffer.put(DateTimeUtils.epochDaysAsInt(t)));
         }
     }

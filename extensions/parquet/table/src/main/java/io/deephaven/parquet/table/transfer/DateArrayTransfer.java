@@ -1,6 +1,11 @@
 /**
  * Copyright (c) 2016-2023 Deephaven Data Labs and Patent Pending
  */
+/*
+ * ---------------------------------------------------------------------------------------------------------------------
+ * AUTO-GENERATED CLASS - DO NOT EDIT MANUALLY - for any changes edit InstantArrayTransfer and regenerate
+ * ---------------------------------------------------------------------------------------------------------------------
+ */
 package io.deephaven.parquet.table.transfer;
 
 import io.deephaven.engine.rowset.RowSequence;
@@ -12,7 +17,7 @@ import java.nio.IntBuffer;
 import java.time.LocalDate;
 
 final class DateArrayTransfer extends PrimitiveArrayAndVectorTransfer<LocalDate[], LocalDate[], IntBuffer> {
-
+    // We encode LocalDate as primitive ints
     DateArrayTransfer(@NotNull final ColumnSource<?> columnSource, @NotNull final RowSequence tableRowSet,
             final int targetPageSizeInBytes) {
         super(columnSource, tableRowSet, targetPageSizeInBytes / Integer.BYTES, targetPageSizeInBytes,
@@ -32,7 +37,6 @@ final class DateArrayTransfer extends PrimitiveArrayAndVectorTransfer<LocalDate[
     @Override
     void copyToBuffer(@NotNull final EncodedData<LocalDate[]> data) {
         for (final LocalDate t : data.encodedValues) {
-            // Store the number of days from the Unix epoch, 1 January 1970
             buffer.put(DateTimeUtils.epochDaysAsInt(t));
         }
     }
