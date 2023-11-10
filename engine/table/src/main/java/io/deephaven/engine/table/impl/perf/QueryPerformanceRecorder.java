@@ -9,6 +9,7 @@ import io.deephaven.datastructures.util.CollectionUtil;
 import io.deephaven.chunk.util.pools.ChunkPoolInstrumentation;
 import io.deephaven.engine.updategraph.UpdateGraphLock;
 import io.deephaven.util.QueryConstants;
+import io.deephaven.util.annotations.FinalDefault;
 import io.deephaven.util.function.ThrowingRunnable;
 import io.deephaven.util.function.ThrowingSupplier;
 import io.deephaven.util.profiling.ThreadProfiler;
@@ -19,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import static io.deephaven.engine.table.impl.lang.QueryLanguageFunctionUtils.minus;
@@ -32,19 +32,17 @@ public abstract class QueryPerformanceRecorder {
 
     public static final String UNINSTRUMENTED_CODE_DESCRIPTION = "Uninstrumented code";
 
-    private static final String[] packageFilters;
-
-    protected static final AtomicLong queriesProcessed = new AtomicLong(0);
+    private static final String[] PACKAGE_FILTERS;
 
     static final QueryPerformanceRecorder DUMMY_RECORDER = new DummyQueryPerformanceRecorder();
 
     /** thread local is package private to enable query resumption */
-    static final ThreadLocal<QueryPerformanceRecorder> theLocal =
-            ThreadLocal.withInitial(() -> DUMMY_RECORDER);
+    static final ThreadLocal<QueryPerformanceRecorder> THE_LOCAL = ThreadLocal.withInitial(() -> DUMMY_RECORDER);
     private static final ThreadLocal<MutableLong> poolAllocatedBytes = ThreadLocal.withInitial(
-            () -> new MutableLong(ThreadProfiler.DEFAULT.memoryProfilingAvailable() ? 0L
+            () -> new MutableLong(ThreadProfiler.DEFAULT.memoryProfilingAvailable()
+                    ? 0L
                     : io.deephaven.util.QueryConstants.NULL_LONG));
-    private static final ThreadLocal<String> cachedCallsite = new ThreadLocal<>();
+    private static final ThreadLocal<String> CACHED_CALLSITE = new ThreadLocal<>();
 
     static {
         final Configuration config = Configuration.getInstance();
@@ -67,25 +65,28 @@ public abstract class QueryPerformanceRecorder {
             throw new UncheckedIOException("Error reading file " + propVal, e);
         }
 
-        packageFilters = filters.toArray(CollectionUtil.ZERO_LENGTH_STRING_ARRAY);
+        PACKAGE_FILTERS = filters.toArray(CollectionUtil.ZERO_LENGTH_STRING_ARRAY);
     }
 
     public static QueryPerformanceRecorder getInstance() {
-        return theLocal.get();
+        return THE_LOCAL.get();
     }
 
     public static void resetInstance() {
         // clear interrupted - because this is a good place to do it - no cancellation exception here though
         // noinspection ResultOfMethodCallIgnored
         Thread.interrupted();
-        theLocal.remove();
+        THE_LOCAL.remove();
     }
 
     /**
      * @param name the nugget name
      * @return A new QueryPerformanceNugget to encapsulate user query operations. done() must be called on the nugget.
      */
-    public abstract QueryPerformanceNugget getNugget(@NotNull String name);
+    @FinalDefault
+    public final QueryPerformanceNugget getNugget(@NotNull String name) {
+        return getNugget(name, QueryConstants.NULL_LONG);
+    }
 
     /**
      * @param name the nugget name
@@ -187,7 +188,7 @@ public abstract class QueryPerformanceRecorder {
     }
 
     public static String getCallerLine() {
-        String callerLineCandidate = cachedCallsite.get();
+        String callerLineCandidate = CACHED_CALLSITE.get();
 
         if (callerLineCandidate == null) {
             final StackTraceElement[] stack = (new Exception()).getStackTrace();
@@ -196,7 +197,7 @@ public abstract class QueryPerformanceRecorder {
 
                 if (className.startsWith("io.deephaven.engine.util.GroovyDeephavenSession")) {
                     callerLineCandidate = "Groovy Script";
-                } else if (Arrays.stream(packageFilters).noneMatch(className::startsWith)) {
+                } else if (Arrays.stream(PACKAGE_FILTERS).noneMatch(className::startsWith)) {
                     callerLineCandidate = stack[i].getFileName() + ":" + stack[i].getLineNumber();
                 }
             }
@@ -392,8 +393,8 @@ public abstract class QueryPerformanceRecorder {
      * @return true if successfully set, false otherwise/
      */
     public static boolean setCallsite(String callsite) {
-        if (cachedCallsite.get() == null) {
-            cachedCallsite.set(callsite);
+        if (CACHED_CALLSITE.get() == null) {
+            CACHED_CALLSITE.set(callsite);
             return true;
         }
 
@@ -415,8 +416,8 @@ public abstract class QueryPerformanceRecorder {
     public static boolean setCallsite() {
         // This is very similar to the other getCallsite, but we don't want to invoke getCallerLine() unless we
         // really need to.
-        if (cachedCallsite.get() == null) {
-            cachedCallsite.set(getCallerLine());
+        if (CACHED_CALLSITE.get() == null) {
+            CACHED_CALLSITE.set(getCallerLine());
             return true;
         }
 
@@ -427,7 +428,7 @@ public abstract class QueryPerformanceRecorder {
      * Clear any previously set callsite. See {@link #setCallsite(String)}
      */
     public static void clearCallsite() {
-        cachedCallsite.remove();
+        CACHED_CALLSITE.remove();
     }
 
     /**
@@ -450,11 +451,6 @@ public abstract class QueryPerformanceRecorder {
      * Dummy recorder for use when no recorder is installed.
      */
     private static class DummyQueryPerformanceRecorder extends QueryPerformanceRecorder {
-
-        @Override
-        public QueryPerformanceNugget getNugget(@NotNull final String name) {
-            return QueryPerformanceNugget.DUMMY_NUGGET;
-        }
 
         @Override
         public QueryPerformanceNugget getNugget(@NotNull final String name, long inputSize) {

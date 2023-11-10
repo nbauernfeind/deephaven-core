@@ -153,7 +153,12 @@ final class TableServiceAsyncImpl {
         @Override
         public TableHandle get(long timeout, TimeUnit unit)
                 throws InterruptedException, ExecutionException, TimeoutException {
-            return future.get(timeout, unit);
+            try {
+                return future.get(timeout, unit);
+            } catch (TimeoutException toe) {
+                System.out.println("fudge");
+                throw toe;
+            }
         }
     }
 }

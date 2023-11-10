@@ -11,6 +11,7 @@ import io.deephaven.util.QueryConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Query performance instrumentation implementation. Manages a hierarchy of {@link QueryPerformanceNugget} instances.
@@ -19,6 +20,8 @@ import java.util.*;
  * suspended and resumed on another thread.
  */
 public class QueryPerformanceRecorderImpl extends QueryPerformanceRecorder {
+
+    private static final AtomicLong QUERIES_PROCESSED = new AtomicLong(0);
 
     private final QueryPerformanceNugget queryNugget;
     private final QueryPerformanceNugget.Factory nuggetFactory;
@@ -37,7 +40,7 @@ public class QueryPerformanceRecorderImpl extends QueryPerformanceRecorder {
     public QueryPerformanceRecorderImpl(
             @NotNull final String description,
             @NotNull final QueryPerformanceNugget.Factory nuggetFactory) {
-        this(nuggetFactory.createForQuery(queriesProcessed.getAndIncrement(), description), nuggetFactory);
+        this(nuggetFactory.createForQuery(QUERIES_PROCESSED.getAndIncrement(), description), nuggetFactory);
     }
 
     /**
@@ -52,7 +55,7 @@ public class QueryPerformanceRecorderImpl extends QueryPerformanceRecorder {
             @NotNull final QueryPerformanceRecorderImpl parent,
             @NotNull final QueryPerformanceNugget.Factory nuggetFactory) {
         this(nuggetFactory.createForSubQuery(
-                parent.queryNugget, queriesProcessed.getAndIncrement(), description), nuggetFactory);
+                parent.queryNugget, QUERIES_PROCESSED.getAndIncrement(), description), nuggetFactory);
     }
 
     /**
@@ -68,7 +71,7 @@ public class QueryPerformanceRecorderImpl extends QueryPerformanceRecorder {
         startCatchAll();
         Assert.eqTrue(QueryPerformanceRecorder.getInstance() == DUMMY_RECORDER,
                 "QueryPerformanceRecorder.getInstance() == DUMMY_RECORDER");
-        QueryPerformanceRecorder.theLocal.set(this);
+        QueryPerformanceRecorder.THE_LOCAL.set(this);
     }
 
     /**
@@ -155,7 +158,7 @@ public class QueryPerformanceRecorderImpl extends QueryPerformanceRecorder {
         if (threadLocalInstance != DUMMY_RECORDER) {
             throw new IllegalStateException("Can't resume a query while another query is in operation");
         }
-        QueryPerformanceRecorder.theLocal.set(this);
+        QueryPerformanceRecorder.THE_LOCAL.set(this);
 
         queryNugget.onBaseEntryStart();
         state = QueryState.RUNNING;
@@ -185,17 +188,10 @@ public class QueryPerformanceRecorderImpl extends QueryPerformanceRecorder {
 
     /**
      * @param name the nugget name
-     * @return A new QueryPerformanceNugget to encapsulate user query operations. done() must be called on the nugget.
-     */
-    public QueryPerformanceNugget getNugget(@NotNull final String name) {
-        return getNugget(name, QueryConstants.NULL_LONG);
-    }
-
-    /**
-     * @param name the nugget name
      * @param inputSize the nugget's input size
      * @return A new QueryPerformanceNugget to encapsulate user query operations. done() must be called on the nugget.
      */
+    @Override
     public synchronized QueryPerformanceNugget getNugget(@NotNull final String name, final long inputSize) {
         Assert.eq(state, "state", QueryState.RUNNING, "QueryState.RUNNING");
         if (Thread.interrupted()) {
@@ -239,8 +235,7 @@ public class QueryPerformanceRecorderImpl extends QueryPerformanceRecorder {
         if (shouldLog) {
             // It is entirely possible, with parallelization, that this nugget should be logged while the outer nugget
             // has a wall clock time less than the threshold for logging. If we ever want to log this nugget, we must
-            // log
-            // all of its parents as well regardless of the shouldLogNugget call result.
+            // log all of its parents as well regardless of the shouldLogNugget call result.
             if (!userNuggetStack.isEmpty()) {
                 userNuggetStack.getLast().setShouldLogThisAndStackParents();
             }

@@ -6,6 +6,7 @@ package io.deephaven.client;
 import io.deephaven.client.impl.Session;
 import io.deephaven.server.runner.DeephavenApiServerTestBase;
 import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import org.junit.After;
 import org.junit.Before;
 
@@ -22,7 +23,8 @@ public abstract class DeephavenSessionTestBase extends DeephavenApiServerTestBas
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        ManagedChannel channel = channelBuilder().build();
+//        ManagedChannel channel = channelBuilder().build();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 10000).usePlaintext().build();
         register(channel);
         sessionScheduler = Executors.newScheduledThreadPool(2);
         session = DaggerDeephavenSessionRoot.create().factoryBuilder().managedChannel(channel)

@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -30,6 +31,23 @@ public class TableServiceAsyncTest extends DeephavenSessionTestBase {
             checkSucceeded(handle);
         }
     }
+
+    @Test
+    public void runChainInLoop() throws Exception {
+        try {
+            for (int i = 0; i < 1000; ++i) {
+                if (i % 10 == 0) {
+                    System.out.println("Running iteration " + i);
+                }
+                if (i > 0) setUp();
+                longChainAsyncExportOnlyLast();
+                if (i != 999) tearDown();
+            }
+        } catch (TimeoutException toe) {
+            while(true) Thread.sleep(1000);
+        }
+    }
+
 
     @Test(timeout = 20000)
     public void longChainAsyncExportAll() throws ExecutionException, InterruptedException, TimeoutException {
@@ -88,13 +106,14 @@ public class TableServiceAsyncTest extends DeephavenSessionTestBase {
     }
 
     private static List<TableSpec> createLongChain(int numColumns, int numRows) {
+        final String rnd = new Random().nextInt(100000) + "";
         final List<TableSpec> longChain = new ArrayList<>(numColumns);
         for (int i = 0; i < numColumns; ++i) {
             if (i == 0) {
-                longChain.add(TableSpec.empty(numRows).view("I_0=ii"));
+                longChain.add(TableSpec.empty(numRows).view("I_" + rnd + "_0=ii"));
             } else {
                 final TableSpec prev = longChain.get(i - 1);
-                longChain.add(prev.updateView("I_" + i + " = 1 + I_" + (i - 1)));
+                longChain.add(prev.updateView("I_" + rnd + "_" + i + " = 1 + I_" + rnd + "_" + (i - 1)));
             }
         }
         return longChain;
