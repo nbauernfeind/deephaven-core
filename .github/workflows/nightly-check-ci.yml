@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gradle-task: ['check']
+        gradle-task: [':java-client-session-dagger:test']
         test-jvm-version: ['11', '17', '21']
         run: [0, 1, 2, 3, 4, 5, 6, 7]
     if: ${{ github.repository_owner == 'deephaven' || github.event_name != 'schedule' }}
