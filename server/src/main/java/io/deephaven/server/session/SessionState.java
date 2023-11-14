@@ -8,8 +8,10 @@ import com.google.rpc.Code;
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
+import io.deephaven.auth.AuthContext;
 import io.deephaven.base.reference.WeakSimpleReference;
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.liveness.LivenessArtifact;
 import io.deephaven.engine.liveness.LivenessReferent;
 import io.deephaven.engine.liveness.LivenessScopeStack;
@@ -29,11 +31,10 @@ import io.deephaven.proto.backplane.grpc.Ticket;
 import io.deephaven.proto.flight.util.FlightExportTicketHelper;
 import io.deephaven.proto.util.Exceptions;
 import io.deephaven.proto.util.ExportTicketHelper;
+import io.deephaven.server.grpc_api_app.GrpcApiApplication;
 import io.deephaven.server.util.Scheduler;
-import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.util.SafeCloseable;
 import io.deephaven.util.annotations.VisibleForTesting;
-import io.deephaven.auth.AuthContext;
 import io.deephaven.util.datastructures.SimpleReferenceManager;
 import io.deephaven.util.process.ProcessEnvironment;
 import io.grpc.StatusRuntimeException;
@@ -55,6 +56,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static io.deephaven.base.log.LogOutput.MILLIS_FROM_EPOCH_FORMATTER;
 import static io.deephaven.extensions.barrage.util.GrpcUtil.safelyComplete;
@@ -88,8 +90,18 @@ import static io.deephaven.extensions.barrage.util.GrpcUtil.safelyError;
  * </ul>
  */
 public class SessionState {
+    public interface Listener {
+        void onExportObjectStateChange(
+                String sessionId, String exportId, String description, ExportNotification.State state, boolean isLive,
+                boolean isNonExport, List<String> remainingParents);
+    }
+
+    public static Listener LISTENER = null;
+
     // Some work items will be dependent on other exports, but do not export anything themselves.
     public static final int NON_EXPORT_ID = 0;
+
+    private static final String EXPORT_DESCRIPTION_NOT_SET = "{no description set}";
 
     @AssistedFactory
     public interface Factory {
@@ -100,11 +112,14 @@ public class SessionState {
      * Wrap an object in an ExportObject to make it conform to the session export API.
      *
      * @param export the object to wrap
+     * @param description a terse description of the export
      * @param <T> the type of the object
      * @return a sessionless export object
      */
-    public static <T> ExportObject<T> wrapAsExport(final T export) {
-        return new ExportObject<>(export);
+    public static <T> ExportObject<T> wrapAsExport(final T export, final String description) {
+        ExportObject<T> exportObject = new ExportObject<>(export);
+        exportObject.setDescription(description);
+        return exportObject;
     }
 
     /**
@@ -234,7 +249,7 @@ public class SessionState {
     }
 
     /**
-     * @return whether or not this session is expired
+     * @return whether this session is expired
      */
     public boolean isExpired() {
         final SessionService.TokenExpiration currToken = expiration;
@@ -342,10 +357,11 @@ public class SessionState {
      * known in advance by the requesting client.
      *
      * @param export the result of the export
+     * @param description a terse description of the export
      * @param <T> the export type
      * @return the ExportObject for this item for ease of access to the export
      */
-    public <T> ExportObject<T> newServerSideExport(final T export) {
+    public <T> ExportObject<T> newServerSideExport(final T export, final String description) {
         if (isExpired()) {
             throw Exceptions.statusRuntimeException(Code.UNAUTHENTICATED, "session has expired");
         }
@@ -355,6 +371,7 @@ public class SessionState {
         // noinspection unchecked
         final ExportObject<T> result = (ExportObject<T>) exportMap.putIfAbsent(exportId, EXPORT_OBJECT_VALUE_FACTORY);
         result.setResult(export);
+        result.setDescription(description);
         return result;
     }
 
@@ -548,6 +565,9 @@ public class SessionState {
         /** Indicates whether this export has already been well defined. This prevents export object reuse. */
         private boolean hasHadWorkSet = false;
 
+        /** a terse description of the export to aid in client-side debugging */
+        private String description = EXPORT_DESCRIPTION_NOT_SET;
+
         /** This indicates whether or not this export should use the serial execution queue. */
         private boolean requiresSerialQueue;
 
@@ -663,6 +683,19 @@ public class SessionState {
                     entry.nl().append('\t').append(parent.logIdentity).append(" is ").append(parent.getState().name());
                 }
                 entry.endl();
+            }
+        }
+
+        /**
+         * Sets the description of the export. The description is to aid in debugging and is visible on the
+         * {@link GrpcApiApplication#getBlinkTable()} stream table.
+         *
+         * @param description a terse description of the export
+         */
+        private synchronized void setDescription(final String description) {
+            if (description != null) {
+                this.description = description;
+                updateStreamListener();
             }
         }
 
@@ -820,6 +853,7 @@ public class SessionState {
             }
             this.state = state;
 
+            updateStreamListener();
             // Send an export notification before possibly notifying children of our state change.
             if (exportId != NON_EXPORT_ID) {
                 log.debug().append(session.logPrefix).append("export '").append(logIdentity)
@@ -880,6 +914,23 @@ public class SessionState {
             }
         }
 
+        private void updateStreamListener() {
+            Assert.holdsLock(this, "must hold lock to export object");
+            if (LISTENER == null) {
+                return;
+            }
+            final boolean isLive = tryRetainReference();
+            List<String> parentIds = parents.stream()
+                    .map(p -> p.logIdentity)
+                    .collect(Collectors.toList());
+            final String sessionId = session == null ? "session-less" : session.sessionId;
+            LISTENER.onExportObjectStateChange(
+                    sessionId, logIdentity, description, state, isLive, isNonExport(), parentIds);
+            if (isLive) {
+                dropReference();
+            }
+        }
+
         /**
          * Decrements parent counter and kicks off the export if that was the last dependency.
          *
@@ -933,6 +984,9 @@ public class SessionState {
 
             final int newDepCount = DEPENDENT_COUNT_UPDATER.decrementAndGet(this);
             if (newDepCount > 0) {
+                synchronized (this) {
+                    updateStreamListener();
+                }
                 return; // either more dependencies to wait for or this export has already failed
             }
             Assert.eqZero(newDepCount, "newDepCount");
@@ -1099,7 +1153,9 @@ public class SessionState {
                 }
                 setState(ExportNotification.State.RELEASED);
             } else if (!isExportStateTerminal(state)) {
-                session.nonExport().require(this).submit(this::release);
+                session.nonExport()
+                        .description("SessionState#release")
+                        .require(this).submit(this::release);
             }
         }
 
@@ -1128,6 +1184,7 @@ public class SessionState {
             if (!(caughtException instanceof StatusRuntimeException)) {
                 caughtException = null;
             }
+            updateStreamListener();
         }
 
         /**
@@ -1267,7 +1324,7 @@ public class SessionState {
             notify(ExportNotification.newBuilder()
                     .setTicket(ExportTicketHelper.wrapExportIdInTicket(NON_EXPORT_ID))
                     .setExportState(ExportNotification.State.EXPORTED)
-                    .setContext("run is complete")
+                    .setContext("export listener refresh is complete")
                     .build());
             log.debug().append(logPrefix).append("run complete for listener ").append(id).endl();
         }
@@ -1454,6 +1511,11 @@ public class SessionState {
             });
         }
 
+        public ExportBuilder<T> description(final String description) {
+            export.setDescription(description);
+            return this;
+        }
+
         /**
          * Invoke this method to set the onSuccess handler to be notified if this export succeeds. Only one success
          * handler may be set. Exactly one of the onError and onSuccess handlers will be invoked.
@@ -1532,6 +1594,16 @@ public class SessionState {
          */
         public int getExportId() {
             return exportId;
+        }
+
+        public void setStateToPublishing() {
+            synchronized (export) {
+                if (export.getState() != ExportNotification.State.UNKNOWN) {
+                    throw new IllegalStateException(
+                            "cannot set state to publishing, state is already: " + export.getState());
+                }
+                export.setState(ExportNotification.State.PUBLISHING);
+            }
         }
     }
 

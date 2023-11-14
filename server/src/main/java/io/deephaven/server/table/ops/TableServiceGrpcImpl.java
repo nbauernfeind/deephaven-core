@@ -644,6 +644,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
             }
 
             session.nonExport()
+                    .description("TableService#getExportedTableCreationResponse")
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(export)
                     .onError(responseObserver)
@@ -684,11 +685,12 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
             throw Exceptions.statusRuntimeException(Code.FAILED_PRECONDITION, "No result ticket supplied");
         }
 
-        final String description = "TableService#" + op.name() + "(session=" + session.getSessionId() + ", resultId="
+        final String opDescription = getOpDescription(op);
+        final String queryDescription = opDescription + "(session=" + session.getSessionId() + ", resultId="
                 + ticketRouter.getLogNameFor(resultId, "TableServiceGrpcImpl") + ")";
 
         final QueryPerformanceRecorder queryPerformanceRecorder = QueryPerformanceRecorder.newQuery(
-                description, QueryPerformanceNugget.DEFAULT_FACTORY);
+                queryDescription, QueryPerformanceNugget.DEFAULT_FACTORY);
 
         try (final SafeCloseable ignored = queryPerformanceRecorder.startQuery()) {
             operation.validateRequest(request);
@@ -698,6 +700,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
                     .collect(Collectors.toList());
 
             session.newExport(resultId, "resultId")
+                    .description(opDescription)
                     .require(dependencies)
                     .onError(responseObserver)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
@@ -749,6 +752,10 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
         }
     }
 
+    private static String getOpDescription(final BatchTableRequest.Operation.OpCase op) {
+        return "TableService#" + op.name();
+    }
+
     private <T> BatchExportBuilder<T> createBatchExportBuilder(
             @NotNull final SessionState session,
             @NotNull final QueryPerformanceRecorder queryPerformanceRecorder,
@@ -760,7 +767,8 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
         final Ticket resultId = operation.getResultTicket(request);
         final ExportBuilder<Table> exportBuilder =
                 resultId.getTicket().isEmpty() ? session.nonExport() : session.newExport(resultId, "resultId");
-        exportBuilder.queryPerformanceRecorder(queryPerformanceRecorder, true);
+        exportBuilder.queryPerformanceRecorder(queryPerformanceRecorder, true)
+                .description(getOpDescription(op.getOpCase()));
         return new BatchExportBuilder<>(operation, request, exportBuilder);
     }
 

@@ -183,6 +183,7 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
             }
 
             session.newExport(request.getResultId(), "resultId")
+                    .description("SessionService#exportFromTicket")
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(source)
                     .onError(responseObserver)

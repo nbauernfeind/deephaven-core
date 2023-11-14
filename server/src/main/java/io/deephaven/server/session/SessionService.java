@@ -41,6 +41,9 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class SessionService {
+    // This is set and unset via ConsoleSericeGrpcImpl#executeCommand under the serial executor.
+    public static volatile String CURRENT_SESSION_ID;
+
     private static final Logger log = LoggerFactory.getLogger(SessionService.class);
 
     /**
