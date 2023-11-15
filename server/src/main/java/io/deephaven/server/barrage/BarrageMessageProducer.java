@@ -2202,7 +2202,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
 
         @Override
         public UpdateGraph getUpdateGraph() {
-            return parent.getUpdateGraph();
+            return parent.isRefreshing() ? parent.getUpdateGraph() : null;
         }
     }
 
