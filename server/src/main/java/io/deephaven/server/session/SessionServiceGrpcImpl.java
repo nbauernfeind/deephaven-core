@@ -183,7 +183,7 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
             }
 
             session.newExport(request.getResultId(), "resultId")
-                    .description("SessionService#exportFromTicket")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(source)
                     .onError(responseObserver)
@@ -232,6 +232,7 @@ public class SessionServiceGrpcImpl extends SessionServiceGrpc.SessionServiceImp
                 // when publish is complete, complete the gRPC request
                 GrpcUtil.safelyComplete(responseObserver, PublishResponse.getDefaultInstance());
             })
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(source)
                     .onError(responseObserver)

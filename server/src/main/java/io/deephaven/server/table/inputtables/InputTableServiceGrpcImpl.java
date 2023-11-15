@@ -60,7 +60,6 @@ public class InputTableServiceGrpcImpl extends InputTableServiceGrpc.InputTableS
         final QueryPerformanceRecorder queryPerformanceRecorder = QueryPerformanceRecorder.newQuery(
                 description, QueryPerformanceNugget.DEFAULT_FACTORY);
 
-
         try (final SafeCloseable ignored1 = queryPerformanceRecorder.startQuery()) {
             final String targetName = ticketRouter.getLogNameFor(request.getInputTable(), "inputTable");
             final SessionState.ExportObject<Table> targetTable;
@@ -77,7 +76,7 @@ public class InputTableServiceGrpcImpl extends InputTableServiceGrpc.InputTableS
             }
 
             session.nonExport()
-                    .description("InputTableServiceGrpcImpl#addTableToInputTable")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .requiresSerialQueue()
                     .onError(responseObserver)
@@ -143,7 +142,7 @@ public class InputTableServiceGrpcImpl extends InputTableServiceGrpc.InputTableS
             }
 
             session.nonExport()
-                    .description("InputTableServiceGrpcImpl#deleteTableFromInputTable")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .requiresSerialQueue()
                     .onError(responseObserver)

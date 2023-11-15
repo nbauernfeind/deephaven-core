@@ -98,6 +98,7 @@ public class ExportTicketResolver extends TicketResolverBase {
         toPublish.setStateToPublishing();
         if (onPublish != null) {
             session.nonExport()
+                    .description("ExportTicketResolver#onPublish")
                     .require(toPublish.getExport())
                     .submit(onPublish);
         }
@@ -115,6 +116,7 @@ public class ExportTicketResolver extends TicketResolverBase {
         toPublish.setStateToPublishing();
         if (onPublish != null) {
             session.nonExport()
+                    .description("ExportTicketResolver#onPublish")
                     .require(toPublish.getExport())
                     .submit(onPublish);
         }

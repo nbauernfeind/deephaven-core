@@ -89,6 +89,7 @@ public class ObjectServiceGrpcImpl extends ObjectServiceGrpc.ObjectServiceImplBa
 
             public void run() {
                 session.nonExport()
+                        .description("ObjectServiceGrpcImpl#SendMessageObserver#EnqueuedStreamOperation")
                         .onErrorHandler(SendMessageObserver.this::onError)
                         .require(requirements)
                         .submit(() -> {
@@ -275,7 +276,7 @@ public class ObjectServiceGrpcImpl extends ObjectServiceGrpc.ObjectServiceImplBa
             }
 
             session.nonExport()
-                    .description("ObjectService#fetchObject")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(object)
                     .onError(responseObserver)

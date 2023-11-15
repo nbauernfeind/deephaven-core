@@ -483,6 +483,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
             }
 
             session.nonExport()
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(exportedTable)
                     .onError(responseObserver)
@@ -644,7 +645,7 @@ public class TableServiceGrpcImpl extends TableServiceGrpc.TableServiceImplBase 
             }
 
             session.nonExport()
-                    .description("TableService#getExportedTableCreationResponse")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(export)
                     .onError(responseObserver)

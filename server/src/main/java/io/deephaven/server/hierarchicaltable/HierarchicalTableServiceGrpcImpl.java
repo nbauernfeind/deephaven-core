@@ -91,6 +91,7 @@ public class HierarchicalTableServiceGrpcImpl extends HierarchicalTableServiceGr
             }
 
             session.newExport(request.getResultRollupTableId(), "rollup.resultRollupTableId")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(sourceTableExport)
                     .onError(responseObserver)
@@ -148,6 +149,7 @@ public class HierarchicalTableServiceGrpcImpl extends HierarchicalTableServiceGr
             }
 
             session.newExport(request.getResultTreeTableId(), "tree.resultTreeTableId")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(sourceTableExport)
                     .onError(responseObserver)
@@ -211,6 +213,7 @@ public class HierarchicalTableServiceGrpcImpl extends HierarchicalTableServiceGr
             }
 
             session.newExport(request.getResultHierarchicalTableId(), "apply.resultHierarchicalTableId")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(inputHierarchicalTableExport)
                     .onError(responseObserver)
@@ -404,6 +407,7 @@ public class HierarchicalTableServiceGrpcImpl extends HierarchicalTableServiceGr
             }
 
             resultExportBuilder
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .onError(responseObserver)
                     .submit(() -> {
@@ -498,6 +502,7 @@ public class HierarchicalTableServiceGrpcImpl extends HierarchicalTableServiceGr
             }
 
             session.newExport(request.getResultTableId(), "exportSource.resultTableId")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(hierarchicalTableExport)
                     .onError(responseObserver)

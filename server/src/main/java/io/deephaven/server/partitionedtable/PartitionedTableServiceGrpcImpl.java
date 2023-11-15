@@ -74,7 +74,7 @@ public class PartitionedTableServiceGrpcImpl extends PartitionedTableServiceGrpc
             }
 
             session.newExport(request.getResultId(), "partition.resultId")
-                    .description("PartitionedTableService#partitionBy")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(targetTable)
                     .onError(responseObserver)
@@ -110,7 +110,7 @@ public class PartitionedTableServiceGrpcImpl extends PartitionedTableServiceGrpc
             }
 
             session.newExport(request.getResultId(), "resultId")
-                    .description("PartitionedTableService#merge")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(partitionedTable)
                     .onError(responseObserver)
@@ -161,7 +161,7 @@ public class PartitionedTableServiceGrpcImpl extends PartitionedTableServiceGrpc
             }
 
             session.newExport(request.getResultId(), "resultId")
-                    .description("PartitionedTableService#getTable")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(partitionedTable, keys)
                     .onError(responseObserver)

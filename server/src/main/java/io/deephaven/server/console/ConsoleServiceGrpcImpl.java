@@ -182,7 +182,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
             }
 
             session.nonExport()
-                    .description("ConsoleService#executeCommand")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .requiresSerialQueue()
                     .require(exportedConsole)
@@ -275,7 +275,7 @@ public class ConsoleServiceGrpcImpl extends ConsoleServiceGrpc.ConsoleServiceImp
             final SessionState.ExportObject<ScriptSession> exportedConsole;
 
             ExportBuilder<?> exportBuilder = session.nonExport()
-                    .description("ConsoleService#bindTableToVariable")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .requiresSerialQueue()
                     .onError(responseObserver);

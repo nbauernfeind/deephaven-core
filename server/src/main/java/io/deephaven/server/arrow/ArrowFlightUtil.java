@@ -91,7 +91,7 @@ public class ArrowFlightUtil {
 
             final long queueStartTm = System.nanoTime();
             session.nonExport()
-                    .description("FlightService#DoGet")
+                    .description(description)
                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                     .require(export)
                     .onError(observer)
@@ -514,7 +514,7 @@ public class ArrowFlightUtil {
 
                         final long queueStartTm = System.nanoTime();
                         session.nonExport()
-                                .description("FlightService#DoExchange(snapshot)")
+                                .description(description)
                                 .queryPerformanceRecorder(queryPerformanceRecorder, false)
                                 .require(parent)
                                 .onError(listener)
@@ -673,7 +673,7 @@ public class ArrowFlightUtil {
 
                         synchronized (this) {
                             onExportResolvedContinuation = session.nonExport()
-                                    .description("FlightService#DoExchange(subscription)")
+                                    .description(description)
                                     .queryPerformanceRecorder(queryPerformanceRecorder, false)
                                     .require(parent)
                                     .onErrorHandler(DoExchangeMarshaller.this::onError)
