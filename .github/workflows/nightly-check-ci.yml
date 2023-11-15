@@ -14,14 +14,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gradle-task: ['check', 'testSerial', 'testParallel', 'testOutOfBand']
+        gradle-task: ['engine-table:testOutOfBand']
         test-jvm-version: ['11', '17', '21']
+        run: [0, 1, 2, 3, 4, 5, 6, 7]
     if: ${{ github.repository_owner == 'deephaven' || github.event_name != 'schedule' }}
     runs-on: ubuntu-22.04
     concurrency:
-      group: ${{ matrix.gradle-task }}-${{ matrix.test-jvm-version }}-${{ github.workflow }}-${{ github.ref }}
+      group: ${{ matrix.gradle-task }}-${{ matrix.test-jvm-version }}-${{ matrix.run }}-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     steps:
+      - uses: actions/checkout@v2
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        with:
+          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+          limit-access-to-actor: true
+          ## limits ssh access and adds the ssh public keys of the listed GitHub users
+          limit-access-to-users: nbauernfeind
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -67,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: nightly-${{ matrix.gradle-task }}-java${{ matrix.test-jvm-version }}-ci-results
+          name: nightly-${{ matrix.gradle-task }}-java${{ matrix.test-jvm-version }}--ci-results
           path: |
             **/build/test-results/**
             **/build/reports/tests/**
