@@ -18,6 +18,7 @@ import io.deephaven.parquet.base.ColumnChunkReader;
 import io.deephaven.parquet.base.ColumnPageReader;
 import io.deephaven.util.SafeCloseable;
 import io.deephaven.vector.Vector;
+import org.apache.parquet.column.statistics.Statistics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -154,8 +155,16 @@ public abstract class ColumnChunkPageStore<ATTR extends Any>
         return toPage.getChunkType();
     }
 
+    public boolean hasStatistics() {
+        return columnChunkReader.hasStatistics();
+    }
+
+    public <T extends Comparable<T>, S extends Statistics<T>> S getStatistics() {
+        return columnChunkReader.getStatistics();
+    }
+
     /**
-     * These implementations don't use the FillContext parameter, so we're create a helper method to ignore it.
+     * These implementations don't use the FillContext parameter, so we create a helper method to ignore it.
      */
     @NotNull
     public ChunkPage<ATTR> getPageContaining(final long row) {
@@ -171,4 +180,8 @@ public abstract class ColumnChunkPageStore<ATTR extends Any>
 
     @Override
     public void close() {}
+
+    public <T> T convertSingleValue(@NotNull final Object toConvert) {
+        return toPage.convertSingleResult(toConvert);
+    }
 }

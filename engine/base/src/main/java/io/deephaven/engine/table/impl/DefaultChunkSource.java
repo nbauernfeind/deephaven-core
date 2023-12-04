@@ -72,7 +72,7 @@ public interface DefaultChunkSource<ATTR extends Any> extends ChunkSource<ATTR> 
         default ChunkSource<ATTR> getPrevSource() {
             final ChunkSource.WithPrev<ATTR> chunkSource = this;
 
-            return new ChunkSource<ATTR>() {
+            return new ChunkSource<>() {
                 @Override
                 public ChunkType getChunkType() {
                     return chunkSource.getChunkType();

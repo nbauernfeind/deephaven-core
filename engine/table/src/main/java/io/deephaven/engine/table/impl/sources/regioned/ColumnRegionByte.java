@@ -3,9 +3,14 @@
  */
 package io.deephaven.engine.table.impl.sources.regioned;
 
-import io.deephaven.chunk.attributes.Any;
 import io.deephaven.chunk.ChunkType;
 import io.deephaven.chunk.WritableChunk;
+import io.deephaven.chunk.attributes.Any;
+import io.deephaven.engine.rowset.RowSequence;
+import io.deephaven.engine.rowset.RowSet;
+import io.deephaven.engine.rowset.RowSetFactory;
+import io.deephaven.engine.rowset.WritableRowSet;
+import io.deephaven.engine.table.impl.locations.ColumnLocation;
 import io.deephaven.util.QueryConstants;
 import io.deephaven.util.annotations.FinalDefault;
 import org.jetbrains.annotations.NotNull;
@@ -82,6 +87,23 @@ public interface ColumnRegionByte<ATTR extends Any> extends ColumnRegion<ATTR> {
             Arrays.fill(destination, destinationOffset, destinationOffset + length, QueryConstants.NULL_BYTE);
             return destination;
         }
+
+        @Override
+        public WritableRowSet match(
+                final boolean invertMatch,
+                final boolean usePrev,
+                final boolean caseInsensitive,
+                @NotNull final RowSequence rowSequence,
+                final Object... sortedKeys) {
+            final boolean nullMatched = sortedKeys.length > 0
+                    && (sortedKeys[0] == null || sortedKeys[0].equals(QueryConstants.NULL_BYTE_BOXED));
+            if (nullMatched && !invertMatch || !nullMatched && invertMatch) {
+                try (final RowSet rowSet = rowSequence.asRowSet()) {
+                    return rowSet.copy();
+                }
+            }
+            return RowSetFactory.empty();
+        }
     }
 
     final class Constant<ATTR extends Any>
@@ -112,14 +134,52 @@ public interface ColumnRegionByte<ATTR extends Any> extends ColumnRegion<ATTR> {
             Arrays.fill(destination, destinationOffset, destinationOffset + length, value);
             return destination;
         }
+
+        @Override
+        public ColumnLocation getLocation() {
+            return null;
+        }
+
+        @Override
+        public boolean supportsMatching() {
+            return true;
+        }
+
+        @Override
+        public WritableRowSet match(
+                final boolean invertMatch,
+                final boolean usePrev,
+                final boolean caseInsensitive,
+                @NotNull final RowSequence rowSequence,
+                final Object... sortedKeys) {
+            boolean valueMatches = arrayContainsValue(sortedKeys);
+            if (valueMatches && !invertMatch || !valueMatches && invertMatch) {
+                try (final RowSet rowSet = rowSequence.asRowSet()) {
+                    return rowSet.copy();
+                }
+            }
+
+            return RowSetFactory.empty();
+        }
+
+        private boolean arrayContainsValue(final Object[] sortedKeys) {
+            if (value == QueryConstants.NULL_BYTE && sortedKeys.length > 0
+                    && (sortedKeys[0] == null || sortedKeys[0] == QueryConstants.NULL_BYTE_BOXED)) {
+                return true;
+            }
+            return Arrays.binarySearch(sortedKeys,  value) >= 0;
+        }
     }
 
     final class StaticPageStore<ATTR extends Any>
             extends RegionedPageStore.Static<ATTR, ATTR, ColumnRegionByte<ATTR>>
             implements ColumnRegionByte<ATTR> {
 
-        public StaticPageStore(@NotNull final Parameters parameters, @NotNull final ColumnRegionByte<ATTR>[] regions) {
-            super(parameters, regions);
+        public StaticPageStore(
+                @NotNull final Parameters parameters,
+                @NotNull final ColumnRegionByte<ATTR>[] regions,
+                @NotNull final ColumnLocation location) {
+            super(parameters, regions, location);
         }
 
         @Override
@@ -142,6 +202,16 @@ public interface ColumnRegionByte<ATTR extends Any> extends ColumnRegion<ATTR> {
         @Override
         public byte[] getBytes(final long firstElementIndex, @NotNull final byte[] destination, final int destinationOffset, final int length) {
             return lookupRegion(firstElementIndex).getBytes(firstElementIndex, destination, destinationOffset, length);
+        }
+
+        @Override
+        public WritableRowSet match(
+                final boolean invertMatch,
+                final boolean usePrev, boolean caseInsensitive,
+                @NotNull final RowSequence rowSequence,
+                final Object... sortedKeys) {
+            // where is the data stored here?
+            throw new UnsupportedOperationException("TODO NATE NOCOMMIT");
         }
     }
 }

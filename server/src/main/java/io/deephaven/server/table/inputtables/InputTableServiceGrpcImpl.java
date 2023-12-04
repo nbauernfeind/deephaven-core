@@ -6,8 +6,8 @@ package io.deephaven.server.table.inputtables;
 import com.google.rpc.Code;
 import io.deephaven.auth.codegen.impl.InputTableServiceContextualAuthWiring;
 import io.deephaven.engine.context.ExecutionContext;
+import io.deephaven.engine.exceptions.IncompatibleTableDefinitionException;
 import io.deephaven.engine.table.Table;
-import io.deephaven.engine.table.TableDefinition;
 import io.deephaven.engine.table.impl.perf.QueryPerformanceNugget;
 import io.deephaven.engine.table.impl.perf.QueryPerformanceRecorder;
 import io.deephaven.engine.util.config.MutableInputTable;
@@ -83,6 +83,14 @@ public class InputTableServiceGrpcImpl extends InputTableServiceGrpc.InputTableS
                         MutableInputTable mutableInputTable = (MutableInputTable) inputTable;
                         Table tableToAdd = tableToAddExport.get();
 
+                        // validate that the columns are compatible
+                        try {
+                            mutableInputTable.validateAddOrModify(tableToAdd);
+                        } catch (IncompatibleTableDefinitionException exception) {
+                            throw Exceptions.statusRuntimeException(Code.INVALID_ARGUMENT,
+                                    "Provided tables's columns are not compatible: " + exception.getMessage());
+                        }
+
                         authWiring.checkPermissionAddTableToInputTable(
                                 ExecutionContext.getContext().getAuthContext(), request,
                                 List.of(targetTable.get(), tableToAdd));
@@ -90,7 +98,7 @@ public class InputTableServiceGrpcImpl extends InputTableServiceGrpc.InputTableS
                         // validate that the columns are compatible
                         try {
                             mutableInputTable.validateAddOrModify(tableToAdd);
-                        } catch (TableDefinition.IncompatibleTableDefinitionException exception) {
+                        } catch (IncompatibleTableDefinitionException exception) {
                             throw Exceptions.statusRuntimeException(Code.INVALID_ARGUMENT,
                                     "Provided tables's columns are not compatible: " + exception.getMessage());
                         }
@@ -140,6 +148,16 @@ public class InputTableServiceGrpcImpl extends InputTableServiceGrpc.InputTableS
 
                         MutableInputTable mutableInputTable = (MutableInputTable) inputTable;
                         Table tableToRemove = tableToRemoveExport.get();
+                        // validate that the columns are compatible
+                        try {
+                            mutableInputTable.validateDelete(tableToRemove);
+                        } catch (IncompatibleTableDefinitionException exception) {
+                            throw Exceptions.statusRuntimeException(Code.INVALID_ARGUMENT,
+                                    "Provided tables's columns are not compatible: " + exception.getMessage());
+                        } catch (UnsupportedOperationException exception) {
+                            throw Exceptions.statusRuntimeException(Code.INVALID_ARGUMENT,
+                                    "Provided input table does not support delete.");
+                        }
 
                         authWiring.checkPermissionDeleteTableFromInputTable(
                                 ExecutionContext.getContext().getAuthContext(), request,
@@ -148,7 +166,7 @@ public class InputTableServiceGrpcImpl extends InputTableServiceGrpc.InputTableS
                         // validate that the columns are compatible
                         try {
                             mutableInputTable.validateDelete(tableToRemove);
-                        } catch (TableDefinition.IncompatibleTableDefinitionException exception) {
+                        } catch (IncompatibleTableDefinitionException exception) {
                             throw Exceptions.statusRuntimeException(Code.INVALID_ARGUMENT,
                                     "Provided tables's columns are not compatible: " + exception.getMessage());
                         } catch (UnsupportedOperationException exception) {
