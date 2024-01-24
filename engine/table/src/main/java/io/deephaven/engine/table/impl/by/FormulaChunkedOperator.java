@@ -95,8 +95,8 @@ class FormulaChunkedOperator implements IterativeChunkedAggregationOperator {
             final ColumnDefinition<?> inputColumnDefinition = ColumnDefinition
                     .fromGenericType(inputColumnName, inputColumnSource.getType(),
                             inputColumnSource.getComponentType());
+            // TODO NATE NOCOMMIT: can we aggregate compilation requests here?
             formulaColumn.initDef(Collections.singletonMap(inputColumnName, inputColumnDefinition));
-            // noinspection unchecked
             resultColumns[ci] = ArrayBackedColumnSource.getMemoryColumnSource(0, formulaColumn.getReturnedType());
         }
     }

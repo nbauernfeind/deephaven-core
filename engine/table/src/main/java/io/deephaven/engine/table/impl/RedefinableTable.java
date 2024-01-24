@@ -5,10 +5,13 @@ package io.deephaven.engine.table.impl;
 
 import io.deephaven.api.Selectable;
 import io.deephaven.api.Pair;
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.table.ColumnDefinition;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.TableDefinition;
+import io.deephaven.engine.table.impl.perf.QueryPerformanceRecorder;
 import io.deephaven.engine.table.impl.select.*;
+import io.deephaven.util.SafeCloseable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -49,8 +52,10 @@ public abstract class RedefinableTable<IMPL_TYPE extends RedefinableTable<IMPL_T
         final Map<String, ColumnDefinition<?>> resultColumnsExternal = new LinkedHashMap<>();
         final Map<String, ColumnDefinition<?>> allColumns = new HashMap<>(definition.getColumnNameMap());
         boolean simpleRetain = true;
+
+        final QueryCompiler.BatchRequestProcessor compilationRequests = new QueryCompiler.BatchRequestProcessor();
         for (final SelectColumn selectColumn : columns) {
-            List<String> usedColumnNames = selectColumn.initDef(allColumns);
+            List<String> usedColumnNames = selectColumn.initDef(allColumns, compilationRequests);
             usedColumnNames.addAll(selectColumn.getColumnArrays());
             resultColumnsInternal.addAll(usedColumnNames.stream()
                     .filter(usedColumnName -> !resultColumnsExternal.containsKey(usedColumnName))
@@ -64,6 +69,10 @@ public abstract class RedefinableTable<IMPL_TYPE extends RedefinableTable<IMPL_T
             }
             resultColumnsExternal.put(selectColumn.getName(), columnDef);
             allColumns.put(selectColumn.getName(), columnDef);
+        }
+        try (final SafeCloseable ignored = QueryPerformanceRecorder.getInstance().getCompilationNugget(
+                compilationRequests.getNuggetDescription())) {
+            compilationRequests.compile();
         }
 
         TableDefinition newDefExternal = TableDefinition.of(

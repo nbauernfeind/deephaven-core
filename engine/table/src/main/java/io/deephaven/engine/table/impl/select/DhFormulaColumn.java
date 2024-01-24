@@ -14,7 +14,6 @@ import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.table.impl.MatchPair;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.impl.lang.QueryLanguageParser;
-import io.deephaven.engine.table.impl.perf.QueryPerformanceRecorder;
 import io.deephaven.engine.table.impl.select.codegen.FormulaAnalyzer;
 import io.deephaven.engine.table.impl.select.codegen.JavaKernelBuilder;
 import io.deephaven.engine.table.impl.select.codegen.RichType;
@@ -31,7 +30,6 @@ import io.deephaven.engine.util.caching.C14nUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.time.TimeLiteralReplacedExpression;
-import io.deephaven.util.SafeCloseable;
 import io.deephaven.util.type.TypeUtils;
 import io.deephaven.vector.ObjectVector;
 import io.deephaven.vector.Vector;
@@ -182,7 +180,9 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
     }
 
     @Override
-    public List<String> initDef(Map<String, ColumnDefinition<?>> columnDefinitionMap) {
+    public List<String> initDef(
+            @NotNull final Map<String, ColumnDefinition<?>> columnDefinitionMap,
+            @NotNull final QueryCompiler.RequestProcessor compilationRequestProcessor) {
         if (formulaFactory != null) {
             validateColumnDefinition(columnDefinitionMap);
             return formulaColumnPython != null ? formulaColumnPython.usedColumns : usedColumns;
@@ -214,9 +214,12 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
             throw new FormulaCompilationException("Formula compilation error for: " + formulaString, e);
         }
 
-        formulaFactory = useKernelFormulasProperty
-                ? createKernelFormulaFactory(getFormulaKernelFactory())
-                : createFormulaFactory();
+        if (useKernelFormulasProperty) {
+            // TODO NATE NOCOMMIT: kernel formulas should also use the supplier
+            formulaFactory = createKernelFormulaFactory(getFormulaKernelFactory());
+        } else {
+            compileFormula(compilationRequestProcessor);
+        }
         return formulaColumnPython != null ? formulaColumnPython.usedColumns : usedColumns;
     }
 
@@ -241,6 +244,7 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
                             pyCallableWrapper.getReturnType(), this.analyzedFormula.sourceDescriptor.sources,
                             argumentsChunked,
                             true));
+            // TODO NATE NOCOMMIT: this should be a deferred compilation
             formulaColumnPython.initDef(columnDefinitionMap);
         }
     }
@@ -758,48 +762,43 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
         return formulaShiftColPair;
     }
 
-    private FormulaFactory createFormulaFactory() {
-        final String classBody = generateClassBody();
+    private void compileFormula(@NotNull final QueryCompiler.RequestProcessor compilationRequestProcessor) {
         final String what = "Compile regular formula: " + formulaString;
-        final Class<?> clazz = compileFormula(what, classBody, "Formula");
-        try {
-            return (FormulaFactory) clazz.getField(FORMULA_FACTORY_NAME).get(null);
-        } catch (ReflectiveOperationException e) {
-            throw new FormulaCompilationException("Formula compilation error for: " + what, e);
-        }
-    }
+        final String className = "Formula";
+        final String classBody = generateClassBody();
 
-    @SuppressWarnings("SameParameterValue")
-    private Class<?> compileFormula(final String what, final String classBody, final String className) {
-        // System.out.printf("compileFormula: what is %s. Code is...%n%s%n", what, classBody);
-        try (final SafeCloseable ignored = QueryPerformanceRecorder.getInstance().getCompilationNugget(what)) {
-            // Compilation needs to take place with elevated privileges, but the created object should not have them.
+        final List<Class<?>> paramClasses = new ArrayList<>();
+        final Consumer<Class<?>> addParamClass = (cls) -> {
+            if (cls != null) {
+                paramClasses.add(cls);
+            }
+        };
+        visitFormulaParameters(null,
+                csp -> {
+                    addParamClass.accept(csp.type);
+                    addParamClass.accept(csp.columnDefinition.getComponentType());
+                    return null;
+                },
+                cap -> {
+                    addParamClass.accept(cap.dataType);
+                    addParamClass.accept(cap.columnDefinition.getComponentType());
+                    return null;
+                },
+                p -> {
+                    addParamClass.accept(p.type);
+                    return null;
+                });
 
-            final List<Class<?>> paramClasses = new ArrayList<>();
-            final Consumer<Class<?>> addParamClass = (cls) -> {
-                if (cls != null) {
-                    paramClasses.add(cls);
-                }
-            };
-            visitFormulaParameters(null,
-                    csp -> {
-                        addParamClass.accept(csp.type);
-                        addParamClass.accept(csp.columnDefinition.getComponentType());
-                        return null;
-                    },
-                    cap -> {
-                        addParamClass.accept(cap.dataType);
-                        addParamClass.accept(cap.columnDefinition.getComponentType());
-                        return null;
-                    },
-                    p -> {
-                        addParamClass.accept(p.type);
-                        return null;
-                    });
-            final QueryCompiler compiler = ExecutionContext.getContext().getQueryCompiler();
-            return compiler.compile(className, classBody, QueryCompiler.FORMULA_PREFIX,
-                    QueryScopeParamTypeUtil.expandParameterClasses(paramClasses));
-        }
+        compilationRequestProcessor.submit(new QueryCompiler.Request(
+                formulaString, className, classBody, QueryCompiler.FORMULA_PREFIX,
+                QueryScopeParamTypeUtil.expandParameterClasses(paramClasses),
+                clazz -> {
+                    try {
+                        formulaFactory = (FormulaFactory) clazz.getField(FORMULA_FACTORY_NAME).get(null);
+                    } catch (ReflectiveOperationException e) {
+                        throw new FormulaCompilationException("Formula compilation error for: " + what, e);
+                    }
+                }));
     }
 
     private static class IndexParameter {

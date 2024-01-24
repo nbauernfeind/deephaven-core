@@ -12,6 +12,7 @@ import io.deephaven.api.expression.Function;
 import io.deephaven.api.expression.Method;
 import io.deephaven.api.filter.Filter;
 import io.deephaven.api.literal.Literal;
+import io.deephaven.engine.context.ExecutionContext;
 import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.rowset.TrackingRowSet;
 import io.deephaven.engine.table.ColumnDefinition;
@@ -19,6 +20,7 @@ import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.table.impl.MatchPair;
 import io.deephaven.engine.table.WritableColumnSource;
 import io.deephaven.engine.table.impl.BaseTable;
+import io.deephaven.util.annotations.FinalDefault;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -71,7 +73,8 @@ public interface SelectColumn extends Selectable {
     List<String> initInputs(TrackingRowSet rowSet, Map<String, ? extends ColumnSource<?>> columnsOfInterest);
 
     /**
-     * Initialize any internal column definitions from the provided initial.
+     * Initialize any internal column definitions from the provided initial. Any formulae will be compiled immediately
+     * using the {@link QueryCompiler} in the current {@link ExecutionContext}.
      *
      * @param columnDefinitionMap the starting set of column definitions; valid for this call only
      *
@@ -80,7 +83,28 @@ public interface SelectColumn extends Selectable {
      *          {@link QueryCompiler} usage needs to be resolved within initDef. Implementations must be idempotent.
      *          Implementations that want to hold on to the {@code columnDefinitionMap} must make a defensive copy.
      */
-    List<String> initDef(Map<String, ColumnDefinition<?>> columnDefinitionMap);
+    @FinalDefault
+    default List<String> initDef(@NotNull Map<String, ColumnDefinition<?>> columnDefinitionMap) {
+        return initDef(columnDefinitionMap, request -> {
+            ExecutionContext.getContext().getQueryCompiler().compile(request);
+        });
+    }
+
+    /**
+     * Initialize any internal column definitions from the provided initial. A compilation request consumer is provided
+     * to allow for deferred compilation of expressions that belong to the same query.
+     *
+     * @param columnDefinitionMap the starting set of column definitions; valid for this call only
+     * @param compilationRequestProcessor a consumer to submit compilation requests; valid for this call only
+     *
+     * @return a list of columns on which the result of this is dependent
+     * @apiNote Any {@link io.deephaven.engine.context.QueryLibrary}, {@link io.deephaven.engine.context.QueryScope}, or
+     *          {@link QueryCompiler} usage needs to be resolved within initDef. Implementations must be idempotent.
+     *          Implementations that want to hold on to the {@code columnDefinitionMap} must make a defensive copy.
+     */
+    List<String> initDef(
+            @NotNull Map<String, ColumnDefinition<?>> columnDefinitionMap,
+            @NotNull QueryCompiler.RequestProcessor compilationRequestProcessor);
 
     /**
      * Get the data type stored in the resultant column.

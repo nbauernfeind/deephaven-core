@@ -4,6 +4,7 @@
 package io.deephaven.engine.table.impl.select;
 
 import io.deephaven.base.verify.Require;
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.table.*;
 import io.deephaven.api.util.NameValidator;
 import io.deephaven.engine.table.impl.BaseTable;
@@ -45,7 +46,9 @@ public class SwitchColumn implements SelectColumn {
     }
 
     @Override
-    public List<String> initDef(Map<String, ColumnDefinition<?>> columnDefinitionMap) {
+    public List<String> initDef(
+            @NotNull final Map<String, ColumnDefinition<?>> columnDefinitionMap,
+            @NotNull final QueryCompiler.RequestProcessor compilationRequestProcessor) {
         if (realColumn == null) {
             if (columnDefinitionMap.get(expression) != null) {
                 realColumn = new SourceColumn(expression, columnName);
@@ -53,7 +56,7 @@ public class SwitchColumn implements SelectColumn {
                 realColumn = FormulaColumn.createFormulaColumn(columnName, expression, parser);
             }
         }
-        List<String> usedColumns = realColumn.initDef(columnDefinitionMap);
+        List<String> usedColumns = realColumn.initDef(columnDefinitionMap, compilationRequestProcessor);
         if (realColumn instanceof DhFormulaColumn) {
             FormulaColumnPython formulaColumnPython = ((DhFormulaColumn) realColumn).getFormulaColumnPython();
             realColumn = formulaColumnPython != null ? formulaColumnPython : realColumn;

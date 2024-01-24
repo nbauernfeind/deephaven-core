@@ -6,6 +6,7 @@ package io.deephaven.engine.table.impl.select.analyzers;
 import io.deephaven.base.Pair;
 import io.deephaven.base.log.LogOutputAppendable;
 import io.deephaven.datastructures.util.CollectionUtil;
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.liveness.LivenessNode;
 import io.deephaven.engine.rowset.RowSet;
 import io.deephaven.engine.rowset.RowSetFactory;
@@ -13,6 +14,7 @@ import io.deephaven.engine.rowset.TrackingRowSet;
 import io.deephaven.engine.table.*;
 import io.deephaven.engine.table.impl.MatchPair;
 import io.deephaven.engine.table.impl.QueryTable;
+import io.deephaven.engine.table.impl.perf.QueryPerformanceRecorder;
 import io.deephaven.engine.table.impl.select.FormulaColumn;
 import io.deephaven.engine.table.impl.select.SelectColumn;
 import io.deephaven.engine.table.impl.select.SourceColumn;
@@ -48,11 +50,16 @@ public abstract class SelectAndViewAnalyzer implements LogOutputAppendable {
             final Map<String, ColumnDefinition<?>> parentColumnMap,
             final SelectColumn[] selectColumns) {
         final Map<String, ColumnDefinition<?>> targetColumnMap = new HashMap<>(parentColumnMap);
+        final QueryCompiler.BatchRequestProcessor compilationRequests = new QueryCompiler.BatchRequestProcessor();
         for (SelectColumn column : selectColumns) {
-            column.initDef(targetColumnMap);
+            column.initDef(targetColumnMap, compilationRequests);
             final ColumnDefinition<?> columnDefinition =
                     ColumnDefinition.fromGenericType(column.getName(), column.getReturnedType());
             targetColumnMap.put(column.getName(), columnDefinition);
+        }
+        try (final SafeCloseable ignored = QueryPerformanceRecorder.getInstance().getCompilationNugget(
+                compilationRequests.getNuggetDescription())) {
+            compilationRequests.compile();
         }
     }
 
@@ -89,6 +96,53 @@ public abstract class SelectAndViewAnalyzer implements LogOutputAppendable {
             rowRedirection = null;
         }
 
+        List<SelectColumn> processedCols = new LinkedList<>();
+        List<SelectColumn> remainingCols = null;
+        FormulaColumn shiftColumn = null;
+        boolean shiftColumnHasPositiveOffset = false;
+
+        final HashSet<String> resultColumns = new HashSet<>();
+
+        // First pass to initialize all columns and to compile formulas.
+        final QueryCompiler.BatchRequestProcessor compilationRequests = new QueryCompiler.BatchRequestProcessor();
+        for (Map.Entry<String, ColumnSource<?>> entry : columnSources.entrySet()) {
+            final String name = entry.getKey();
+            final ColumnSource<?> cs = entry.getValue();
+            final ColumnDefinition<?> cd = ColumnDefinition.fromGenericType(name, cs.getType(), cs.getComponentType());
+            columnDefinitions.put(name, cd);
+        }
+
+        for (final SelectColumn sc : selectColumns) {
+            if (remainingCols != null) {
+                remainingCols.add(sc);
+                continue;
+            }
+
+            sc.initDef(columnDefinitions, compilationRequests);
+            // TODO NATE NOCOMMIT: could we be losing component type here?
+            final ColumnDefinition<?> cd = ColumnDefinition.fromGenericType(
+                    sc.getName(), sc.getReturnedType(), sc.getReturnedType().getComponentType());
+            columnDefinitions.put(sc.getName(), cd);
+
+            if (useShiftedColumns && hasConstantArrayAccess(sc)) {
+                remainingCols = new LinkedList<>();
+                shiftColumn = sc instanceof FormulaColumn
+                        ? (FormulaColumn) sc
+                        : (FormulaColumn) ((SwitchColumn) sc).getRealColumn();
+                shiftColumnHasPositiveOffset = hasPositiveOffsetConstantArrayAccess(sc);
+                continue;
+            }
+
+            processedCols.add(sc);
+        }
+
+        // compile all formulas at once
+        try (final SafeCloseable ignored = QueryPerformanceRecorder.getInstance().getCompilationNugget(
+                compilationRequests.getNuggetDescription())) {
+            compilationRequests.compile();
+        }
+
+        // Second pass builds the analyzer and destination columns
         final TrackingRowSet originalRowSet = rowSet;
         boolean flatResult = rowSet.isFlat();
         // if we preserve a column, we set this to false
@@ -98,21 +152,9 @@ public abstract class SelectAndViewAnalyzer implements LogOutputAppendable {
                 && mode == Mode.SELECT_STATIC;
         int numberOfInternallyFlattenedColumns = 0;
 
-        List<SelectColumn> processedCols = new LinkedList<>();
-        List<SelectColumn> remainingCols = null;
-        FormulaColumn shiftColumn = null;
-        boolean shiftColumnHasPositiveOffset = false;
-
-        final HashSet<String> resultColumns = new HashSet<>();
         final HashMap<String, ColumnSource<?>> resultAlias = new HashMap<>();
-        for (final SelectColumn sc : selectColumns) {
-            if (remainingCols != null) {
-                remainingCols.add(sc);
-                continue;
-            }
+        for (final SelectColumn sc : processedCols) {
 
-            analyzer.updateColumnDefinitionsFromTopLayer(columnDefinitions);
-            sc.initDef(columnDefinitions);
             sc.initInputs(rowSet, analyzer.getAllColumnSources());
 
             // When flattening the result, intermediate columns generate results in position space. When we discover
@@ -138,12 +180,8 @@ public abstract class SelectAndViewAnalyzer implements LogOutputAppendable {
             final ModifiedColumnSet mcsBuilder = new ModifiedColumnSet(parentMcs);
 
             if (useShiftedColumns && hasConstantArrayAccess(sc)) {
-                remainingCols = new LinkedList<>();
-                shiftColumn = sc instanceof FormulaColumn
-                        ? (FormulaColumn) sc
-                        : (FormulaColumn) ((SwitchColumn) sc).getRealColumn();
-                shiftColumnHasPositiveOffset = hasPositiveOffsetConstantArrayAccess(sc);
-                continue;
+                // we use the first shifted column to split between processed columns and remaining columns
+                throw new IllegalStateException("Found ShiftedColumn in processed column list");
             }
 
             // shifted columns appear to not be safe for refresh, so we do not validate them until they are rewritten
@@ -151,8 +189,6 @@ public abstract class SelectAndViewAnalyzer implements LogOutputAppendable {
             if (sourceTable.isRefreshing()) {
                 sc.validateSafeForRefresh(sourceTable);
             }
-
-            processedCols.add(sc);
 
             if (hasConstantValue(sc)) {
                 final WritableColumnSource<?> constViewSource =
@@ -177,8 +213,7 @@ public abstract class SelectAndViewAnalyzer implements LogOutputAppendable {
                 if (!sourceIsNew) {
                     if (numberOfInternallyFlattenedColumns > 0) {
                         // we must preserve this column, but have already created an analyzer for the internally
-                        // flattened
-                        // column, therefore must start over without permitting internal flattening
+                        // flattened column, therefore must start over without permitting internal flattening
                         return create(sourceTable, mode, columnSources, originalRowSet, parentMcs, publishTheseSources,
                                 useShiftedColumns, false, selectColumns);
                     } else {
@@ -265,6 +300,7 @@ public abstract class SelectAndViewAnalyzer implements LogOutputAppendable {
                     throw new UnsupportedOperationException("Unsupported case " + mode);
             }
         }
+
         return new SelectAndViewAnalyzerWrapper(analyzer, shiftColumn, shiftColumnHasPositiveOffset, remainingCols,
                 processedCols);
     }
@@ -521,8 +557,6 @@ public abstract class SelectAndViewAnalyzer implements LogOutputAppendable {
     abstract Map<String, Set<String>> calcDependsOnRecurse(boolean forcePublishAllResources);
 
     public abstract SelectAndViewAnalyzer getInner();
-
-    public abstract void updateColumnDefinitionsFromTopLayer(Map<String, ColumnDefinition<?>> columnDefinitions);
 
     public abstract void startTrackingPrev();
 

@@ -4,6 +4,7 @@
 package io.deephaven.engine.table.impl.select;
 
 import io.deephaven.base.verify.Require;
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.table.*;
 import io.deephaven.api.util.NameValidator;
 import io.deephaven.engine.table.impl.MatchPair;
@@ -19,7 +20,6 @@ import io.deephaven.chunk.WritableChunk;
 import io.deephaven.engine.table.impl.chunkfillers.ChunkFiller;
 import io.deephaven.engine.rowset.RowSequence;
 import io.deephaven.engine.rowset.TrackingRowSet;
-import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -94,7 +94,9 @@ public class MultiSourceFunctionalColumn<D> implements SelectColumn {
     }
 
     @Override
-    public List<String> initDef(Map<String, ColumnDefinition<?>> columnDefinitionMap) {
+    public List<String> initDef(
+            @NotNull final Map<String, ColumnDefinition<?>> columnDefinitionMap,
+            @NotNull final QueryCompiler.RequestProcessor compilationRequestProcessor) {
         NoSuchColumnException.throwIf(columnDefinitionMap.keySet(), sourceNames);
         return getColumns();
     }

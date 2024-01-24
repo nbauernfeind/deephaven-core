@@ -3,6 +3,7 @@
  */
 package io.deephaven.engine.table.impl.select;
 
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.table.*;
 import io.deephaven.engine.table.impl.MatchPair;
 import io.deephaven.engine.table.impl.sources.*;
@@ -32,7 +33,9 @@ public class NullSelectColumn<T> implements SelectColumn {
     }
 
     @Override
-    public List<String> initDef(final Map<String, ColumnDefinition<?>> columnDefinitionMap) {
+    public List<String> initDef(
+            @NotNull final Map<String, ColumnDefinition<?>> columnDefinitionMap,
+            @NotNull final QueryCompiler.RequestProcessor compilationRequestProcessor) {
         return Collections.emptyList();
     }
 

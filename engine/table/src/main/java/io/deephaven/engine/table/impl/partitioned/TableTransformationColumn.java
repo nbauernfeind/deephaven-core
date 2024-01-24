@@ -9,6 +9,7 @@ import io.deephaven.chunk.WritableChunk;
 import io.deephaven.chunk.WritableObjectChunk;
 import io.deephaven.chunk.attributes.Values;
 import io.deephaven.engine.context.ExecutionContext;
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.rowset.RowSequence;
 import io.deephaven.engine.rowset.TrackingRowSet;
 import io.deephaven.engine.table.*;
@@ -52,7 +53,9 @@ public class TableTransformationColumn extends BaseTableTransformationColumn {
     }
 
     @Override
-    public List<String> initDef(@NotNull final Map<String, ColumnDefinition<?>> columnDefinitionMap) {
+    public List<String> initDef(
+            @NotNull final Map<String, ColumnDefinition<?>> columnDefinitionMap,
+            @NotNull final QueryCompiler.RequestProcessor compilationRequestProcessor) {
         validateInputColumnDefinition(inputOutputColumnName, columnDefinitionMap);
         return getColumns();
     }

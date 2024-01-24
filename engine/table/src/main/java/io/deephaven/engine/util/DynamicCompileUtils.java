@@ -53,7 +53,8 @@ public class DynamicCompileUtils {
         classBody.append("}\n");
 
         final Class<?> partitionClass = ExecutionContext.getContext().getQueryCompiler()
-                .compile("Function", classBody.toString(), QueryCompiler.FORMULA_PREFIX);
+                .compile("Compile Simple Function: " + code, "Function", classBody.toString(),
+                        QueryCompiler.FORMULA_PREFIX);
 
         try {
             // noinspection unchecked
@@ -72,7 +73,8 @@ public class DynamicCompileUtils {
         classBody.append("}\n");
 
         final Class<?> partitionClass = ExecutionContext.getContext().getQueryCompiler()
-                .compile("Function", classBody.toString(), QueryCompiler.FORMULA_PREFIX);
+                .compile("Compile Return Class: " + object, "Function", classBody.toString(),
+                        QueryCompiler.FORMULA_PREFIX);
 
         try {
             // noinspection unchecked

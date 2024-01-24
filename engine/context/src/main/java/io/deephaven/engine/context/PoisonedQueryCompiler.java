@@ -5,7 +5,6 @@ package io.deephaven.engine.context;
 
 import io.deephaven.util.ExecutionContextRegistrationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Map;
@@ -31,8 +30,7 @@ public class PoisonedQueryCompiler extends QueryCompiler {
     }
 
     @Override
-    public Class<?> compile(@NotNull String className, @NotNull String classBody, @NotNull String packageNameRoot,
-            @Nullable StringBuilder codeLog, @NotNull Map<String, Class<?>> parameterClasses) {
-        return fail();
+    public void compile(@NotNull final QueryCompiler.Request request) {
+        fail();
     }
 }

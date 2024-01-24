@@ -174,7 +174,7 @@ public class TestQueryCompiler {
             startMillis = 0;
         }
         ExecutionContext.getContext().getQueryCompiler()
-                .compile(className, CLASS_CODE, "io.deephaven.temp");
+                .compile("Test Compile", className, CLASS_CODE, "io.deephaven.temp");
         if (printDetails) {
             final long endMillis = System.currentTimeMillis();
             System.out.println(printMillis(endMillis) + ": Thread 0 ending compile: (" + (endMillis - startMillis)
@@ -202,7 +202,7 @@ public class TestQueryCompiler {
 
         StringBuilder codeLog = new StringBuilder();
         final Class<?> clazz1 = ExecutionContext.getContext().getQueryCompiler()
-                .compile("Test", program1Text, "com.deephaven.test", codeLog, Collections.emptyMap());
+                .compile("Test Compile", "Test", program1Text, "com.deephaven.test", codeLog, Collections.emptyMap());
         final Method m1 = clazz1.getMethod("main", String[].class);
         Object[] args1 = new Object[] {new String[] {"hello", "there"}};
         m1.invoke(null, args1);
@@ -225,7 +225,7 @@ public class TestQueryCompiler {
                 StringBuilder codeLog = new StringBuilder();
                 try {
                     final Class<?> clazz1 = ExecutionContext.getContext().getQueryCompiler()
-                            .compile("Test", program1Text, "com.deephaven.test", codeLog,
+                            .compile("Test Compile", "Test", program1Text, "com.deephaven.test", codeLog,
                                     Collections.emptyMap());
                     final Method m1 = clazz1.getMethod("main", String[].class);
                     Object[] args1 = new Object[] {new String[] {"hello", "there"}};

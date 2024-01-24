@@ -281,6 +281,8 @@ abstract class BaseNodeOperationsRecorder<TYPE> {
             // custom columns in the future. For now, we've plumbed absolute column value sorting via naming
             // conventions. Note that we simply avoid telling the client about these columns when sending schemas, so we
             // have no need to drop them post-sort.
+
+            // TODO NATE NOCOMMIT: can we aggregate formula compilation requests here?
             return sortColumns.stream()
                     .map(sc -> sc.column().name())
                     .filter(AbsoluteSortColumnConventions::isAbsoluteColumnName)

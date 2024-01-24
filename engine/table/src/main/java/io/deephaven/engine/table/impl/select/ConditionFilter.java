@@ -382,35 +382,35 @@ public class ConditionFilter extends AbstractConditionFilter {
             TimeLiteralReplacedExpression timeConversionResult,
             QueryLanguageParser.Result result) {
         final StringBuilder classBody = getClassBody(tableDefinition, timeConversionResult, result);
-        if (classBody == null)
+        if (classBody == null) {
             return;
-        try (final SafeCloseable ignored = QueryPerformanceRecorder.getInstance().getCompilationNugget(formula)) {
-            final List<Class<?>> paramClasses = new ArrayList<>();
-            final Consumer<Class<?>> addParamClass = (cls) -> {
-                if (cls != null) {
-                    paramClasses.add(cls);
-                }
-            };
-            for (String usedColumn : usedColumns) {
-                usedColumn = outerToInnerNames.getOrDefault(usedColumn, usedColumn);
-                final ColumnDefinition<?> column = tableDefinition.getColumn(usedColumn);
-                addParamClass.accept(column.getDataType());
-                addParamClass.accept(column.getComponentType());
-            }
-            for (String usedColumn : usedColumnArrays) {
-                usedColumn = outerToInnerNames.getOrDefault(usedColumn, usedColumn);
-                final ColumnDefinition<?> column = tableDefinition.getColumn(usedColumn);
-                addParamClass.accept(column.getDataType());
-                addParamClass.accept(column.getComponentType());
-            }
-            for (final QueryScopeParam<?> param : params) {
-                addParamClass.accept(QueryScopeParamTypeUtil.getDeclaredClass(param.getValue()));
-            }
-
-            filterKernelClass = ExecutionContext.getContext().getQueryCompiler()
-                    .compile("GeneratedFilterKernel", this.classBody = classBody.toString(),
-                            QueryCompiler.FORMULA_PREFIX, QueryScopeParamTypeUtil.expandParameterClasses(paramClasses));
         }
+
+        final List<Class<?>> paramClasses = new ArrayList<>();
+        final Consumer<Class<?>> addParamClass = (cls) -> {
+            if (cls != null) {
+                paramClasses.add(cls);
+            }
+        };
+        for (String usedColumn : usedColumns) {
+            usedColumn = outerToInnerNames.getOrDefault(usedColumn, usedColumn);
+            final ColumnDefinition<?> column = tableDefinition.getColumn(usedColumn);
+            addParamClass.accept(column.getDataType());
+            addParamClass.accept(column.getComponentType());
+        }
+        for (String usedColumn : usedColumnArrays) {
+            usedColumn = outerToInnerNames.getOrDefault(usedColumn, usedColumn);
+            final ColumnDefinition<?> column = tableDefinition.getColumn(usedColumn);
+            addParamClass.accept(column.getDataType());
+            addParamClass.accept(column.getComponentType());
+        }
+        for (final QueryScopeParam<?> param : params) {
+            addParamClass.accept(QueryScopeParamTypeUtil.getDeclaredClass(param.getValue()));
+        }
+
+        filterKernelClass = ExecutionContext.getContext().getQueryCompiler().compile(
+                formula, "GeneratedFilterKernel", this.classBody = classBody.toString(),
+                QueryCompiler.FORMULA_PREFIX, QueryScopeParamTypeUtil.expandParameterClasses(paramClasses));
     }
 
     @Nullable

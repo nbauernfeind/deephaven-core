@@ -3,6 +3,7 @@
  */
 package io.deephaven.engine.table.impl.select.python;
 
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.table.ColumnDefinition;
 import io.deephaven.engine.context.QueryScopeParam;
 import io.deephaven.vector.Vector;
@@ -11,6 +12,7 @@ import io.deephaven.engine.table.impl.select.SelectColumn;
 import io.deephaven.engine.table.impl.select.formula.FormulaKernel;
 import io.deephaven.engine.table.impl.select.formula.FormulaKernelFactory;
 import io.deephaven.engine.table.impl.select.formula.FormulaSourceDescriptor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,7 +41,9 @@ public class FormulaColumnPython extends AbstractFormulaColumn implements Formul
     }
 
     @Override
-    public final List<String> initDef(Map<String, ColumnDefinition<?>> columnDefinitionMap) {
+    public final List<String> initDef(
+            @NotNull final Map<String, ColumnDefinition<?>> columnDefinitionMap,
+            @NotNull final QueryCompiler.RequestProcessor compilationRequestProcessor) {
         if (formulaFactory != null) {
             validateColumnDefinition(columnDefinitionMap);
         } else {

@@ -5,6 +5,7 @@ package io.deephaven.engine.table.impl.select;
 
 import io.deephaven.api.JoinAddition;
 import io.deephaven.base.verify.Assert;
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.table.*;
 import io.deephaven.engine.table.impl.MatchPair;
 import io.deephaven.engine.table.impl.sources.InMemoryColumnSource;
@@ -61,7 +62,9 @@ public class SourceColumn implements SelectColumn {
     }
 
     @Override
-    public List<String> initDef(Map<String, ColumnDefinition<?>> columnDefinitionMap) {
+    public List<String> initDef(
+            @NotNull final Map<String, ColumnDefinition<?>> columnDefinitionMap,
+            @NotNull final QueryCompiler.RequestProcessor compilationRequestProcessor) {
         sourceDefinition = columnDefinitionMap.get(sourceName);
         if (sourceDefinition == null) {
             throw new NoSuchColumnException(columnDefinitionMap.keySet(), sourceName);

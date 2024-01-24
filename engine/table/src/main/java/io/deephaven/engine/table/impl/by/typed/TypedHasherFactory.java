@@ -566,7 +566,8 @@ public class TypedHasherFactory {
         final String javaString =
                 Arrays.stream(javaStrings).filter(s -> !s.startsWith("package ")).collect(Collectors.joining("\n"));
 
-        final Class<?> clazz = ExecutionContext.getContext().getQueryCompiler().compile(className, javaString,
+        final Class<?> clazz = ExecutionContext.getContext().getQueryCompiler().compile(
+                "Compile TypedHasherFactory: " + className, className, javaString,
                 "io.deephaven.engine.table.impl.by.typed." + hasherConfig.packageMiddle + ".gen");
         if (!hasherConfig.baseClass.isAssignableFrom(clazz)) {
             throw new IllegalStateException("Generated class is not a " + hasherConfig.baseClass.getCanonicalName());

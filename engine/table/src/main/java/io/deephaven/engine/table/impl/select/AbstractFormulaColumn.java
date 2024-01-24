@@ -81,6 +81,9 @@ public abstract class AbstractFormulaColumn implements FormulaColumn {
         if (usedColumns != null) {
             return usedColumns;
         }
+
+        // we'll have to assume that initDef has already been invoked if we could have grouped compilation requests
+        // otherwise this call will compile immediately if necessary
         return initDef(extractDefinitions(columnsOfInterest));
     }
 

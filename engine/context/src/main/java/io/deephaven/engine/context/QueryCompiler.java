@@ -12,6 +12,7 @@ import io.deephaven.datastructures.util.CollectionUtil;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.util.ByteUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +35,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -56,15 +58,17 @@ public class QueryCompiler {
     private static final long CODEGEN_TIMEOUT_MS_DEFAULT = TimeUnit.SECONDS.toMillis(10); // 10 seconds
     private static final String CODEGEN_LOOP_DELAY_PROP = "QueryCompiler.codegen.retry.delay";
     private static final long CODEGEN_LOOP_DELAY_MS_DEFAULT = 100;
-    private static final long codegenTimeoutMs =
+    private static final long CODEGEN_TIMEOUT_MS =
             Configuration.getInstance().getLongWithDefault(CODEGEN_TIMEOUT_PROP, CODEGEN_TIMEOUT_MS_DEFAULT);
-    private static final long codegenLoopDelayMs =
+    private static final long CODEGEN_LOOP_DELAY_MS =
             Configuration.getInstance().getLongWithDefault(CODEGEN_LOOP_DELAY_PROP, CODEGEN_LOOP_DELAY_MS_DEFAULT);
 
-    private static boolean logEnabled = Configuration.getInstance().getBoolean("QueryCompiler.logEnabledDefault");
+    private static boolean LOG_ENABLED = Configuration.getInstance().getBoolean("QueryCompiler.logEnabledDefault");
 
     public static final String FORMULA_PREFIX = "io.deephaven.temp";
     public static final String DYNAMIC_GROOVY_CLASS_PREFIX = "io.deephaven.dynamic";
+
+    public static boolean COMPILE_AS_BATCH = true;
 
     public static QueryCompiler create(File cacheDirectory, ClassLoader classLoader) {
         return new QueryCompiler(cacheDirectory, classLoader, true);
@@ -129,8 +133,8 @@ public class QueryCompiler {
      * @return The value of {@code logEnabled} before calling this method.
      */
     public static boolean setLogEnabled(boolean logEnabled) {
-        boolean original = QueryCompiler.logEnabled;
-        QueryCompiler.logEnabled = logEnabled;
+        boolean original = QueryCompiler.LOG_ENABLED;
+        QueryCompiler.LOG_ENABLED = logEnabled;
         return original;
     }
 
@@ -207,63 +211,102 @@ public class QueryCompiler {
         ucl = new WritableURLClassLoader(ucl.getURLs(), parentClassLoader);
     }
 
-    public final Class<?> compile(String className, String classBody, String packageNameRoot) {
-        return compile(className, classBody, packageNameRoot, null, Collections.emptyMap());
+    public final Class<?> compile(
+            @NotNull final String nuggetDescription,
+            @NotNull final String className,
+            @NotNull final String classBody,
+            @NotNull final String packageNameRoot) {
+        return compile(nuggetDescription, className, classBody, packageNameRoot, null, Collections.emptyMap());
     }
 
-    public final Class<?> compile(String className, String classBody, String packageNameRoot,
-            Map<String, Class<?>> parameterClasses) {
-        return compile(className, classBody, packageNameRoot, null, parameterClasses);
+    public final Class<?> compile(
+            @NotNull final String nuggetDescription,
+            @NotNull final String className,
+            @NotNull final String classBody,
+            @NotNull final String packageNameRoot,
+            @NotNull final Map<String, Class<?>> parameterClasses) {
+        return compile(nuggetDescription, className, classBody, packageNameRoot, null, parameterClasses);
     }
 
-    public final Class<?> compile(String className, String classBody, String packageNameRoot, StringBuilder codeLog) {
-        return compile(className, classBody, packageNameRoot, codeLog, Collections.emptyMap());
+
+    public final Class<?> compile(
+            @NotNull final String nuggetDescription,
+            @NotNull final String className,
+            @NotNull final String classBody,
+            @NotNull final String packageNameRoot,
+            @Nullable final StringBuilder codeLog,
+            @NotNull final Map<String, Class<?>> parameterClasses) {
+        final MutableObject<Class<?>> result = new MutableObject<>();
+        compile(new Request(
+                nuggetDescription, className, classBody, packageNameRoot, codeLog, parameterClasses, result::setValue));
+        return result.getValue();
     }
 
     /**
      * Compile a class.
      *
-     * @param className Class name
-     * @param classBody Class body, before update with "$CLASS_NAME$" replacement and package name prefixing
-     * @param packageNameRoot Package name prefix
-     * @param codeLog Optional "log" for final class code
-     * @param parameterClasses Generic parameters, empty if none required
-     * @return The compiled class
+     * @param request The compilation request
      */
-    public Class<?> compile(@NotNull final String className,
-            @NotNull final String classBody,
-            @NotNull final String packageNameRoot,
-            @Nullable final StringBuilder codeLog,
-            @NotNull final Map<String, Class<?>> parameterClasses) {
-        CompletableFuture<Class<?>> future;
-        final boolean alreadyExists;
+    public void compile(@NotNull final Request request) {
+        compile(new Request[] {request});
+    }
+
+    /**
+     * Compiles all requests.
+     *
+     * @param requests The compilation requests
+     */
+    public void compile(@NotNull final Request[] requests) {
+        if (requests.length == 0) {
+            return;
+        }
+
+        // noinspection unchecked
+        final CompletableFuture<Class<?>>[] allFutures = new CompletableFuture[requests.length];
+
+        final List<Request> newRequests = new ArrayList<>();
+        final List<CompletableFuture<Class<?>>> newFutures = new ArrayList<>();
 
         synchronized (this) {
-            future = knownClasses.get(classBody);
-            if (future != null) {
-                alreadyExists = true;
-            } else {
-                future = new CompletableFuture<>();
-                knownClasses.put(classBody, future);
-                alreadyExists = false;
+            for (int ii = 0; ii < requests.length; ++ii) {
+                final Request request = requests[ii];
+                CompletableFuture<Class<?>> future = knownClasses.get(request.classBody);
+                if (future == null) {
+                    future = new CompletableFuture<>();
+                    knownClasses.put(request.classBody, future);
+
+                    newRequests.add(request);
+                    newFutures.add(future);
+                }
+                allFutures[ii] = future;
             }
         }
 
-        // Someone else has already made the future. I'll just wait for the answer.
-        if (alreadyExists) {
+        /**
+         * @formatter:off
+         * 3. try to resolve CFs without compiling; retain next hash to try
+         * 4. compile all remaining with a single compilation task
+         * 5. goto step 3
+         * 6. probably need Consumer<Class<?>> to fit DhFormulaColumn pattern? (other select columns don't need this)
+         * @formatter:on
+         */
+
+        if (!newFutures.isEmpty()) {
+            // It's my job to fulfill the future of these futures.
             try {
-                return future.get();
-            } catch (InterruptedException | ExecutionException error) {
-                throw new UncheckedDeephavenException(error);
+                compileHelper(newRequests, newFutures);
+            } catch (RuntimeException e) {
+                newFutures.forEach(f -> f.completeExceptionally(e));
+                throw e;
             }
         }
 
-        // It's my job to fulfill the future.
         try {
-            return compileHelper(className, classBody, packageNameRoot, codeLog, parameterClasses, future);
-        } catch (RuntimeException e) {
-            future.completeExceptionally(e);
-            throw e;
+            for (int ii = 0; ii < requests.length; ++ii) {
+                requests[ii].onSuccessCallback.accept(allFutures[ii].get());
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            throw new UncheckedDeephavenException(e);
         }
     }
 
@@ -416,89 +459,150 @@ public class QueryCompiler {
         return sb.toString();
     }
 
-    private Class<?> compileHelper(@NotNull final String className,
-            @NotNull final String classBody,
-            @NotNull final String packageNameRoot,
-            @Nullable final StringBuilder codeLog,
-            @NotNull final Map<String, Class<?>> parameterClasses,
-            @NotNull final CompletableFuture<Class<?>> resultFuture) {
+    private void compileHelper(
+            @NotNull final List<Request> requests,
+            @NotNull final List<CompletableFuture<Class<?>>> futures) {
         final MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
             throw new UncheckedDeephavenException("Unable to create SHA-256 hashing digest", e);
         }
-        final String basicHashText =
-                ByteUtils.byteArrToHex(digest.digest(classBody.getBytes(StandardCharsets.UTF_8)));
 
-        for (int pi = 0; pi < MAX_CLASS_COLLISIONS; ++pi) {
-            final String packageNameSuffix = "c_" + basicHashText
-                    + (pi == 0 ? "" : ("p" + pi))
-                    + "v" + JAVA_CLASS_VERSION;
-            final String packageName = (packageNameRoot.isEmpty()
-                    ? packageNameSuffix
-                    : packageNameRoot + (packageNameRoot.endsWith(".") ? "" : ".") + packageNameSuffix);
-            final String fqClassName = packageName + "." + className;
 
-            // Ask the classloader to load an existing class with this name. This might:
-            // 1. Fail to find a class (returning null)
-            // 2. Find a class whose body has the formula we are looking for
-            // 3. Find a class whose body has a different formula (hash collision)
-            Class<?> result = tryLoadClassByFqName(fqClassName, parameterClasses);
-            if (result == null) {
-                // Couldn't find one, so try to create it. This might:
-                // A. succeed
-                // B. Lose a race to another process on the same file system which is compiling the identical formula
-                // C. Lose a race to another process on the same file system compiling a different formula that
-                // happens to have the same hash (same packageName).
-                // However, regardless of A-C, there will be *some* class being found (i.e. tryLoadClassByFqName won't
-                // return null).
-                maybeCreateClass(className, classBody, packageName, fqClassName);
+        final String[] basicHashText = new String[requests.size()];
+        for (int ii = 0; ii < requests.size(); ++ii) {
+            basicHashText[ii] = ByteUtils.byteArrToHex(digest.digest(
+                    requests.get(ii).classBody.getBytes(StandardCharsets.UTF_8)));
+        }
 
-                // We could be running on a screwy filesystem that is slow (e.g. NFS).
-                // If we wrote a file and can't load it ... then give the filesystem some time.
-                result = tryLoadClassByFqName(fqClassName, parameterClasses);
-                try {
-                    final long deadline = System.currentTimeMillis() + codegenTimeoutMs - codegenLoopDelayMs;
-                    while (result == null && System.currentTimeMillis() < deadline) {
-                        Thread.sleep(codegenLoopDelayMs);
-                        result = tryLoadClassByFqName(fqClassName, parameterClasses);
-                    }
-                } catch (InterruptedException ignored) {
-                    // we got interrupted, just quit looping and ignore it.
+        int numCompiled = 0;
+        final int[] next_pi = new int[requests.size()];
+        final boolean[] compiled = new boolean[requests.size()];
+        final String[] packageName = new String[requests.size()];
+        final String[] fqClassName = new String[requests.size()];
+
+        while (numCompiled < requests.size()) {
+            for (int ii = 0; ii < requests.size(); ++ii) {
+                if (compiled[ii]) {
+                    continue;
                 }
 
+                while (true) {
+                    final int pi = next_pi[ii]++;
+
+                    final String packageNameSuffix = "c_" + basicHashText[ii]
+                            + (pi == 0 ? "" : ("p" + pi))
+                            + "v" + JAVA_CLASS_VERSION;
+
+                    final Request request = requests.get(ii);
+                    if (pi >= MAX_CLASS_COLLISIONS) {
+                        throw new IllegalStateException("Found too many collisions for package name root "
+                                + request.packageNameRoot + ", class name=" + request.className + ", class body hash="
+                                + basicHashText[ii] + " - contact Deephaven support!");
+                    }
+
+                    packageName[ii] = request.getPackageName(packageNameSuffix);
+                    fqClassName[ii] = packageName[ii] + "." + request.className;
+
+                    // Ask the classloader to load an existing class with this name. This might:
+                    // 1. Fail to find a class (returning null)
+                    // 2. Find a class whose body has the formula we are looking for
+                    // 3. Find a class whose body has a different formula (hash collision)
+                    Class<?> result = tryLoadClassByFqName(fqClassName[ii], request.parameterClasses);
+                    if (result == null) {
+                        break; // we'll try to compile it
+                    }
+
+                    if (completeIfResultMatchesRequest(packageName[ii], request, futures.get(ii), result)) {
+                        compiled[ii] = true;
+                        ++numCompiled;
+                        break;
+                    }
+                }
+            }
+
+            if (numCompiled == requests.size()) {
+                return;
+            }
+
+            // Couldn't find at least one, so try a round of compilation.
+            final CreateClassHelperRequest[] helperRequests =
+                    new CreateClassHelperRequest[requests.size() - numCompiled];
+            for (int ii = 0, jj = 0; ii < requests.size(); ++ii) {
+                if (!compiled[ii]) {
+                    helperRequests[jj++] = new CreateClassHelperRequest(
+                            requests.get(ii).className, requests.get(ii).classBody, packageName[ii], fqClassName[ii]);
+                }
+            }
+            maybeCreateClass(helperRequests);
+
+            // We could be running on a screwy filesystem that is slow (e.g. NFS). If we wrote a file and can't load it
+            // ... then give the filesystem some time. All requests should use the same deadline.
+            final long deadline = System.currentTimeMillis() + CODEGEN_TIMEOUT_MS - CODEGEN_LOOP_DELAY_MS;
+            for (int ii = 0; ii < requests.size(); ++ii) {
+                if (compiled[ii])
+                    continue;
+                final Request request = requests.get(ii);
+
+                // This request may have:
+                // A. succeeded
+                // B. Lost a race to another process on the same file system which is compiling the identical formula
+                // C. Lost a race to another process on the same file system compiling a different formula that happens
+                // to
+
+                Class<?> result = tryLoadClassByFqName(fqClassName[ii], request.parameterClasses);
+                try {
+                    while (result == null && System.currentTimeMillis() < deadline) {
+                        Thread.sleep(CODEGEN_LOOP_DELAY_MS);
+                        result = tryLoadClassByFqName(fqClassName[ii], request.parameterClasses);
+                    }
+                } catch (final InterruptedException ie) {
+                    throw new UncheckedDeephavenException("Interrupted while waiting for codegen", ie);
+                }
+
+                // However, regardless of A-C, there will be *some* class being found
                 if (result == null) {
                     throw new IllegalStateException("Should have been able to load *some* class here");
                 }
-            }
 
-            final String identifyingFieldValue = loadIdentifyingField(result);
-
-            // If the class we found was indeed the class we were looking for, then complete the future and return it.
-            if (classBody.equals(identifyingFieldValue)) {
-                if (codeLog != null) {
-                    // If the caller wants a textual copy of the code we either made, or just found in the cache.
-                    codeLog.append(makeFinalCode(className, classBody, packageName));
+                if (completeIfResultMatchesRequest(packageName[ii], request, futures.get(ii), result)) {
+                    compiled[ii] = true;
+                    ++numCompiled;
                 }
-                resultFuture.complete(result);
-                synchronized (this) {
-                    // Note we are doing something kind of subtle here. We are removing an entry whose key was matched
-                    // by value equality and replacing it with a value-equal but reference-different string that is a
-                    // static member of the class we just loaded. This should be easier on the garbage collector because
-                    // we are replacing a calculated value with a classloaded value and so in effect we are
-                    // "canonicalizing" the string. This is important because these long strings stay in knownClasses
-                    // forever.
-                    knownClasses.remove(identifyingFieldValue);
-                    knownClasses.put(identifyingFieldValue, resultFuture);
-                }
-                return result;
             }
-            // Try the next hash name
         }
-        throw new IllegalStateException("Found too many collisions for package name root " + packageNameRoot
-                + ", class name=" + className
-                + ", class body hash=" + basicHashText + " - contact Deephaven support!");
+    }
+
+    private boolean completeIfResultMatchesRequest(
+            final String packageName,
+            final Request request,
+            final CompletableFuture<Class<?>> future,
+            final Class<?> result) {
+        final String identifyingFieldValue = loadIdentifyingField(result);
+        if (!request.classBody.equals(identifyingFieldValue)) {
+            return false;
+        }
+
+        // If the class we found was indeed the class we were looking for, then complete the future and return it.
+        if (request.codeLog != null) {
+            // If the caller wants a textual copy of the code we either made, or just found in the cache.
+            request.codeLog.append(makeFinalCode(request.className, request.classBody, packageName));
+        }
+        future.complete(result);
+
+        synchronized (this) {
+            // Note we are doing something kind of subtle here. We are removing an entry whose key was matched
+            // by value equality and replacing it with a value-equal but reference-different string that is a
+            // static member of the class we just loaded. This should be easier on the garbage collector because
+            // we are replacing a calculated value with a classloaded value and so in effect we are
+            // "canonicalizing" the string. This is important because these long strings stay in knownClasses
+            // forever.
+            knownClasses.remove(identifyingFieldValue);
+            knownClasses.put(identifyingFieldValue, future);
+        }
+
+        return true;
     }
 
     private Class<?> tryLoadClassByFqName(String fqClassName, Map<String, Class<?>> parameterClasses) {
@@ -635,22 +739,45 @@ public class QueryCompiler {
         }
     }
 
-    private void maybeCreateClass(String className, String code, String packageName, String fqClassName) {
-        final String finalCode = makeFinalCode(className, code, packageName);
+    private static class CreateClassHelperRequest {
+        final String fqClassName;
+        final String finalCode;
+        final String[] splitPackageName;
 
-        if (logEnabled) {
-            log.info().append("Generating code ").append(finalCode).endl();
+        // String className, String code, String packageName, String fqClassName
+        private CreateClassHelperRequest(
+                @NotNull final String className,
+                @NotNull final String code,
+                @NotNull final String packageName,
+                @NotNull final String fqClassName) {
+            this.fqClassName = fqClassName;
+
+            finalCode = makeFinalCode(className, code, packageName);
+
+            if (LOG_ENABLED) {
+                log.info().append("Generating code ").append(finalCode).endl();
+            }
+
+            splitPackageName = packageName.split("\\.");
+            if (splitPackageName.length == 0) {
+                throw new UncheckedDeephavenException(String.format(
+                        "packageName %s expected to have at least one .", packageName));
+            }
         }
 
-        final File ctxClassDestination = getClassDestination();
-
-        final String[] splitPackageName = packageName.split("\\.");
-        if (splitPackageName.length == 0) {
-            throw new UncheckedDeephavenException(String.format(
-                    "packageName %s expected to have at least one .", packageName));
+        public void ensureDirectories(@NotNull final String rootPath) {
+            final String[] truncatedSplitPackageName = Arrays.copyOf(splitPackageName, splitPackageName.length - 1);
+            final Path rootPathWithPackage = Paths.get(rootPath, truncatedSplitPackageName);
+            final File rpf = rootPathWithPackage.toFile();
+            QueryCompiler.ensureDirectories(rpf, () -> "Couldn't create package directories: " + rootPathWithPackage);
         }
-        final String[] truncatedSplitPackageName = Arrays.copyOf(splitPackageName, splitPackageName.length - 1);
 
+        public JavaSourceFromString makeSource() {
+            return new JavaSourceFromString(fqClassName, finalCode);
+        }
+    }
+
+    private void maybeCreateClass(@NotNull final CreateClassHelperRequest[] requests) {
         // Get the destination root directory (e.g. /tmp/workspace/cache/classes) and populate it with the package
         // directories (e.g. io/deephaven/test) if they are not already there. This will be useful later.
         // Also create a temp directory e.g. /tmp/workspace/cache/classes/temporaryCompilationDirectory12345
@@ -663,19 +790,20 @@ public class QueryCompiler {
         final String rootPathAsString;
         final String tempDirAsString;
         try {
-            rootPathAsString = ctxClassDestination.getAbsolutePath();
-            final Path rootPathWithPackage = Paths.get(rootPathAsString, truncatedSplitPackageName);
-            final File rpf = rootPathWithPackage.toFile();
-            ensureDirectories(rpf, () -> "Couldn't create package directories: " + rootPathWithPackage);
+            rootPathAsString = getClassDestination().getAbsolutePath();
             final Path tempPath =
                     Files.createTempDirectory(Paths.get(rootPathAsString), "temporaryCompilationDirectory");
             tempDirAsString = tempPath.toFile().getAbsolutePath();
+
+            for (final CreateClassHelperRequest request : requests) {
+                request.ensureDirectories(rootPathAsString);
+            }
         } catch (IOException ioe) {
             throw new UncheckedIOException(ioe);
         }
 
         try {
-            maybeCreateClassHelper(fqClassName, finalCode, splitPackageName, rootPathAsString, tempDirAsString);
+            maybeCreateClassHelper(requests, rootPathAsString, tempDirAsString);
         } finally {
             try {
                 FileUtils.deleteRecursively(new File(tempDirAsString));
@@ -685,8 +813,10 @@ public class QueryCompiler {
         }
     }
 
-    private void maybeCreateClassHelper(String fqClassName, String finalCode, String[] splitPackageName,
-            String rootPathAsString, String tempDirAsString) {
+    private void maybeCreateClassHelper(
+            @NotNull final CreateClassHelperRequest[] requests,
+            @NotNull final String rootPathAsString,
+            @NotNull final String tempDirAsString) {
         final StringWriter compilerOutput = new StringWriter();
 
         final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -699,7 +829,7 @@ public class QueryCompiler {
 
         final JavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
-        boolean result = false;
+        boolean result;
         boolean exceptionThrown = false;
         try {
             result = compiler.getTask(compilerOutput,
@@ -707,7 +837,7 @@ public class QueryCompiler {
                     null,
                     compilerOptions,
                     null,
-                    Collections.singletonList(new JavaSourceFromString(fqClassName, finalCode)))
+                    Arrays.stream(requests).map(CreateClassHelperRequest::makeSource).collect(Collectors.toList()))
                     .call();
         } catch (final Throwable err) {
             exceptionThrown = true;
@@ -723,24 +853,28 @@ public class QueryCompiler {
             }
         }
         if (!result) {
-            throw new UncheckedDeephavenException("Error compiling class " + fqClassName + ":\n" + compilerOutput);
+            // TODO NATE NOCOMMIT: use diagnosticListener to capture which class fails
+            throw new UncheckedDeephavenException("Error compiling class (TODO):\n" + compilerOutput);
         }
         // The above has compiled into e.g.
         // /tmp/workspace/cache/classes/temporaryCompilationDirectory12345/io/deephaven/test/cm12862183232603186v52_0/{various
         // class files}
         // We want to atomically move it to e.g.
         // /tmp/workspace/cache/classes/io/deephaven/test/cm12862183232603186v52_0/{various class files}
-        Path srcDir = Paths.get(tempDirAsString, splitPackageName);
-        Path destDir = Paths.get(rootPathAsString, splitPackageName);
-        try {
-            Files.move(srcDir, destDir, StandardCopyOption.ATOMIC_MOVE);
-        } catch (IOException ioe) {
-            // The move might have failed for a variety of bad reasons. However, if the reason was because
-            // we lost the race to some other process, that's a harmless/desirable outcome, and we can ignore
-            // it.
-            if (!Files.exists(destDir)) {
-                throw new UncheckedIOException("Move failed for some reason other than destination already existing",
-                        ioe);
+        for (final CreateClassHelperRequest request : requests) {
+            Path srcDir = Paths.get(tempDirAsString, request.splitPackageName);
+            Path destDir = Paths.get(rootPathAsString, request.splitPackageName);
+            try {
+                Files.move(srcDir, destDir, StandardCopyOption.ATOMIC_MOVE);
+            } catch (IOException ioe) {
+                // The move might have failed for a variety of bad reasons. However, if the reason was because
+                // we lost the race to some other process, that's a harmless/desirable outcome, and we can ignore
+                // it.
+                if (!Files.exists(destDir)) {
+                    throw new UncheckedIOException(
+                            "Move failed for some reason other than destination already existing",
+                            ioe);
+                }
             }
         }
     }
@@ -850,5 +984,155 @@ public class QueryCompiler {
             }
         }
         return javaClasspath;
+    }
+
+    public interface RequestProcessor {
+        /**
+         * Submit a request for compilation. The RequestProcessor is not required to immediately compile this request.
+         *
+         * @param request The request to compile
+         */
+        void submit(Request request);
+    }
+
+    public static class BatchRequestProcessor implements RequestProcessor {
+        final List<Request> requests = new ArrayList<>();
+
+        @Override
+        public void submit(Request request) {
+            requests.add(request);
+        }
+
+        public String getNuggetDescription() {
+            if (requests.size() == 1) {
+                return "Compile: " + requests.get(0).nuggetDescription;
+            }
+            final StringBuilder sb = new StringBuilder();
+            sb.append("Batch Compile ").append(requests.size()).append(" requests:\n");
+            for (final Request request : requests) {
+                sb.append('\t').append(request.nuggetDescription).append('\n');
+            }
+            return sb.toString();
+        }
+
+        public void compile() {
+            if (requests.isEmpty()) {
+                return;
+            }
+
+            ExecutionContext.getContext().getQueryCompiler().compile(requests.toArray(Request[]::new));
+        }
+    }
+
+    public static class Request {
+        // TODO NATE NOCOMMIT: add compilation nugget
+        // try (final SafeCloseable ignored = QueryPerformanceRecorder.getInstance().getCompilationNugget(what)) {
+
+        /** This is the description to add to the query performance recorder nugget for this request. */
+        private final String nuggetDescription;
+
+        /** This is the class name. */
+        private final String className;
+
+        /** This is the class body, before update with "$CLASS_NAME$" replacement and package name prefixing. */
+        private final String classBody;
+
+        /** This is the package name prefix. */
+        private final String packageNameRoot;
+
+        /** Optional "log" for final class code. */
+        private final StringBuilder codeLog;
+
+        /** Generic parameters, empty if none required. */
+        private final Map<String, Class<?>> parameterClasses;
+
+        /** The callback to be invoked when the class is successfully compiled */
+        private final Consumer<Class<?>> onSuccessCallback;
+
+        /**
+         * @param nuggetDescription The description to add to the query performance recorder nugget for this request
+         * @param className Class name
+         * @param classBody Class body, before update with "$CLASS_NAME$" replacement and package name prefixing
+         * @param packageNameRoot Package name prefix
+         * @param onSuccessCallback The callback to be invoked when the class is successfully compiled
+         */
+        public Request(
+                @NotNull final String nuggetDescription,
+                @NotNull final String className,
+                @NotNull final String classBody,
+                @NotNull final String packageNameRoot,
+                @NotNull final Consumer<Class<?>> onSuccessCallback) {
+            this(nuggetDescription, className, classBody, packageNameRoot, null, Collections.emptyMap(),
+                    onSuccessCallback);
+        }
+
+        /**
+         * @param nuggetDescription The description to add to the query performance recorder nugget for this request
+         * @param className Class name
+         * @param classBody Class body, before update with "$CLASS_NAME$" replacement and package name prefixing
+         * @param packageNameRoot Package name prefix
+         * @param parameterClasses Generic parameters, empty if none required
+         * @param onSuccessCallback The callback to be invoked when the class is successfully compiled
+         */
+        public Request(
+                @NotNull final String nuggetDescription,
+                @NotNull final String className,
+                @NotNull final String classBody,
+                @NotNull final String packageNameRoot,
+                @NotNull final Map<String, Class<?>> parameterClasses,
+                @NotNull final Consumer<Class<?>> onSuccessCallback) {
+            this(nuggetDescription, className, classBody, packageNameRoot, null, parameterClasses, onSuccessCallback);
+        }
+
+        /**
+         * @param nuggetDescription The description to add to the query performance recorder nugget for this request
+         * @param className Class name
+         * @param classBody Class body, before update with "$CLASS_NAME$" replacement and package name prefixing
+         * @param packageNameRoot Package name prefix
+         * @param codeLog Optional "log" for final class code
+         * @param onSuccessCallback The callback to be invoked when the class is successfully compiled
+         */
+        public Request(
+                @NotNull final String nuggetDescription,
+                @NotNull final String className,
+                @NotNull final String classBody,
+                @NotNull final String packageNameRoot,
+                @Nullable final StringBuilder codeLog,
+                @NotNull final Consumer<Class<?>> onSuccessCallback) {
+            this(nuggetDescription, className, classBody, packageNameRoot, codeLog, Collections.emptyMap(),
+                    onSuccessCallback);
+        }
+
+        /**
+         * @param nuggetDescription The description to add to the query performance recorder nugget for this request
+         * @param className Class name
+         * @param classBody Class body, before update with "$CLASS_NAME$" replacement and package name prefixing
+         * @param packageNameRoot Package name prefix
+         * @param codeLog Optional "log" for final class code
+         * @param parameterClasses Generic parameters, empty if none required
+         * @param onSuccessCallback The callback to be invoked when the class is successfully compiled
+         */
+        public Request(
+                @NotNull final String nuggetDescription,
+                @NotNull final String className,
+                @NotNull final String classBody,
+                @NotNull final String packageNameRoot,
+                @Nullable final StringBuilder codeLog,
+                @NotNull final Map<String, Class<?>> parameterClasses,
+                @NotNull final Consumer<Class<?>> onSuccessCallback) {
+            this.nuggetDescription = nuggetDescription;
+            this.className = className;
+            this.classBody = classBody;
+            this.packageNameRoot = packageNameRoot;
+            this.codeLog = codeLog;
+            this.parameterClasses = parameterClasses;
+            this.onSuccessCallback = onSuccessCallback;
+        }
+
+        private String getPackageName(final String packageNameSuffix) {
+            return packageNameRoot.isEmpty()
+                    ? packageNameSuffix
+                    : packageNameRoot + (packageNameRoot.endsWith(".") ? "" : ".") + packageNameSuffix;
+        }
     }
 }

@@ -30,8 +30,13 @@ import static io.deephaven.engine.util.IterableUtils.makeCommaSeparatedList;
 public class JavaKernelBuilder {
     private static final String FORMULA_KERNEL_FACTORY_NAME = "__FORMULA_KERNEL_FACTORY";
 
-    public static Result create(String cookedFormulaString, Class<?> returnedType, String timeInstanceVariables,
-            Map<String, RichType> columns, Map<String, Class<?>> arrays, Map<String, Class<?>> params) {
+    public static Result create(
+            String cookedFormulaString,
+            Class<?> returnedType,
+            String timeInstanceVariables,
+            Map<String, RichType> columns,
+            Map<String, Class<?>> arrays,
+            Map<String, Class<?>> params) {
         final JavaKernelBuilder jkf = new JavaKernelBuilder(cookedFormulaString, returnedType, timeInstanceVariables,
                 columns, arrays, params);
         final String classBody = jkf.generateKernelClassBody();
@@ -259,12 +264,8 @@ public class JavaKernelBuilder {
 
     @SuppressWarnings("SameParameterValue")
     private static Class<?> compileFormula(final String what, final String classBody, final String className) {
-        // System.out.printf("compileFormula: formulaString is %s. Code is...%n%s%n", what, classBody);
-        try (final SafeCloseable ignored = QueryPerformanceRecorder.getInstance().getCompilationNugget(what)) {
-            // Compilation needs to take place with elevated privileges, but the created object should not have them.
-            final QueryCompiler compiler = ExecutionContext.getContext().getQueryCompiler();
-            return compiler.compile(className, classBody, QueryCompiler.FORMULA_PREFIX);
-        }
+        final QueryCompiler compiler = ExecutionContext.getContext().getQueryCompiler();
+        return compiler.compile(what, className, classBody, QueryCompiler.FORMULA_PREFIX);
     }
 
 
