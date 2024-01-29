@@ -9,6 +9,7 @@ import io.deephaven.base.Pair;
 import io.deephaven.configuration.Configuration;
 import io.deephaven.configuration.DataDir;
 import io.deephaven.datastructures.util.CollectionUtil;
+import io.deephaven.engine.context.util.SynchronizedJavaFileManager;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.util.ByteUtils;
@@ -46,7 +47,8 @@ import java.util.stream.Stream;
 
 public class QueryCompiler {
     /** A flag to externally disable parallel compilation. */
-    public static boolean DISABLE_PARALLEL_COMPILE = false;
+    public static volatile boolean DISABLE_PARALLEL_COMPILE = false;
+    public static volatile boolean DISABLE_SHARED_COMPILER = false;
 
     private static final Logger log = LoggerFactory.getLogger(QueryCompiler.class);
     /**
@@ -535,24 +537,15 @@ public class QueryCompiler {
             for (int ii = 0, jj = 0; ii < requests.size(); ++ii) {
                 if (!compiled[ii]) {
                     helperRequests[jj++] = new CreateClassHelperRequest(
-                            requests.get(ii).className, requests.get(ii).classBody, packageName[ii], fqClassName[ii]);
+                            ii,
+                            requests.get(ii).className,
+                            requests.get(ii).classBody,
+                            packageName[ii],
+                            fqClassName[ii]);
                 }
             }
 
-            long startTm = System.nanoTime();
-            int parallelismFactor = ForkJoinPool.getCommonPoolParallelism();
-            int requestsPerTask = Math.max(32, (helperRequests.length + parallelismFactor - 1) / parallelismFactor);
-            if (DISABLE_PARALLEL_COMPILE || parallelismFactor == 1 || requestsPerTask >= helperRequests.length) {
-                maybeCreateClass(helperRequests, 0, helperRequests.length);
-            } else {
-                int numTasks = (helperRequests.length + requestsPerTask - 1) / requestsPerTask;
-                IntStream.range(0, numTasks).parallel().forEach(jobId -> {
-                    maybeCreateClass(helperRequests,
-                            jobId * requestsPerTask,
-                            Math.min(helperRequests.length, (jobId + 1) * requestsPerTask));
-                });
-            }
-            log.error().append("Compiled in ").append(Double.toString((System.nanoTime() - startTm)/1e9)).append("s.").endl();
+            maybeCreateClass(helperRequests);
 
             // We could be running on a screwy filesystem that is slow (e.g. NFS). If we wrote a file and can't load it
             // ... then give the filesystem some time. All requests should use the same deadline.
@@ -758,16 +751,18 @@ public class QueryCompiler {
     }
 
     private static class CreateClassHelperRequest {
+        final int requestIndex;
         final String fqClassName;
         final String finalCode;
         final String[] splitPackageName;
 
-        // String className, String code, String packageName, String fqClassName
         private CreateClassHelperRequest(
+                final int requestIndex,
                 @NotNull final String className,
                 @NotNull final String code,
                 @NotNull final String packageName,
                 @NotNull final String fqClassName) {
+            this.requestIndex = requestIndex;
             this.fqClassName = fqClassName;
 
             finalCode = makeFinalCode(className, code, packageName);
@@ -796,9 +791,7 @@ public class QueryCompiler {
     }
 
     private void maybeCreateClass(
-            @NotNull final CreateClassHelperRequest[] requests,
-            final int startInclusive,
-            final int endExclusive) {
+            @NotNull final CreateClassHelperRequest[] requests) {
         // Get the destination root directory (e.g. /tmp/workspace/cache/classes) and populate it with the package
         // directories (e.g. io/deephaven/test) if they are not already there. This will be useful later.
         // Also create a temp directory e.g. /tmp/workspace/cache/classes/temporaryCompilationDirectory12345
@@ -823,18 +816,67 @@ public class QueryCompiler {
             throw new UncheckedIOException(ioe);
         }
 
+        final JavaCompiler compiler;
+        final JavaFileManager fileManager;
+
+        if (!DISABLE_SHARED_COMPILER) {
+            compiler = ToolProvider.getSystemJavaCompiler();
+            if (compiler == null) {
+                throw new UncheckedDeephavenException("No Java compiler provided - are you using a JRE instead of a JDK?");
+            }
+
+            fileManager = new SynchronizedJavaFileManager(
+                    compiler.getStandardFileManager(null, null, null));
+        } else {
+            compiler = null;
+            fileManager = null;
+        }
+
+        boolean exceptionCaught = false;
         try {
-            maybeCreateClassHelper(requests, rootPathAsString, tempDirAsString, startInclusive, endExclusive);
+            long startTm = System.nanoTime();
+            int parallelismFactor = ForkJoinPool.getCommonPoolParallelism();
+            log.warn().append("Compiling with parallelism factor of: ").append(parallelismFactor).endl();
+            int requestsPerTask = Math.max(32, (requests.length + parallelismFactor - 1) / parallelismFactor);
+            if (DISABLE_PARALLEL_COMPILE || parallelismFactor == 1 || requestsPerTask >= requests.length) {
+                maybeCreateClassHelper(compiler, fileManager, requests, rootPathAsString, tempDirAsString,
+                        0, requests.length);
+            } else {
+                int numTasks = (requests.length + requestsPerTask - 1) / requestsPerTask;
+                IntStream.range(0, numTasks).parallel().forEach(jobId -> {
+                    final int startInclusive = jobId * requestsPerTask;
+                    final int endExclusive = Math.min(requests.length, (jobId + 1) * requestsPerTask);
+                    maybeCreateClassHelper(compiler, fileManager, requests, rootPathAsString, tempDirAsString,
+                            startInclusive, endExclusive);
+                });
+            }
+            log.error().append("Compiled in ").append(Double.toString((System.nanoTime() - startTm) / 1e9)).append("s.").endl();
+        } catch (final Throwable t) {
+            exceptionCaught = true;
+            throw t;
         } finally {
             try {
                 FileUtils.deleteRecursively(new File(tempDirAsString));
             } catch (Exception e) {
                 // ignore errors here
             }
+
+            if (fileManager != null) {
+                try {
+                    fileManager.close();
+                } catch (IOException ioe) {
+                    if (!exceptionCaught) {
+                        // noinspection ThrowFromFinallyBlock
+                        throw new UncheckedIOException("Could not close JavaFileManager", ioe);
+                    }
+                }
+            }
         }
     }
 
     private void maybeCreateClassHelper(
+            JavaCompiler compiler,
+            JavaFileManager fileManager,
             @NotNull final CreateClassHelperRequest[] requests,
             @NotNull final String rootPathAsString,
             @NotNull final String tempDirAsString,
@@ -842,38 +884,42 @@ public class QueryCompiler {
             final int endExclusive) {
         final StringWriter compilerOutput = new StringWriter();
 
-        final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        if (compiler == null) {
-            throw new UncheckedDeephavenException("No Java compiler provided - are you using a JRE instead of a JDK?");
+        if (DISABLE_SHARED_COMPILER) {
+            compiler = ToolProvider.getSystemJavaCompiler();
+            if (compiler == null) {
+                throw new UncheckedDeephavenException("No Java compiler provided - are you using a JRE instead of a JDK?");
+            }
+
+            fileManager = compiler.getStandardFileManager(null, null, null);
         }
 
         final String classPathAsString = getClassPath() + File.pathSeparator + getJavaClassPath();
         final List<String> compilerOptions = Arrays.asList("-d", tempDirAsString, "-cp", classPathAsString);
 
-        final JavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-
         boolean result;
         boolean exceptionThrown = false;
         try {
             result = compiler.getTask(compilerOutput,
-                    fileManager,
-                    null,
-                    compilerOptions,
-                    null,
-                    Arrays.stream(requests, startInclusive, endExclusive)
-                            .map(CreateClassHelperRequest::makeSource)
-                            .collect(Collectors.toList()))
+                            fileManager,
+                            diagnostic -> log.error().append("Reporting Error: ").append(diagnostic.toString()).endl(),
+                            compilerOptions,
+                            null,
+                            Arrays.stream(requests, startInclusive, endExclusive)
+                                    .map(CreateClassHelperRequest::makeSource)
+                                    .collect(Collectors.toList()))
                     .call();
-        } catch (final Throwable err) {
+        } catch (final Throwable t) {
             exceptionThrown = true;
-            throw err;
+            throw t;
         } finally {
-            try {
-                fileManager.close();
-            } catch (final IOException ioe) {
-                if (!exceptionThrown) {
-                    // noinspection ThrowFromFinallyBlock
-                    throw new UncheckedIOException("Could not close JavaFileManager", ioe);
+            if (DISABLE_SHARED_COMPILER) {
+                try {
+                    fileManager.close();
+                } catch (IOException ioe) {
+                    if (!exceptionThrown) {
+                        // noinspection ThrowFromFinallyBlock
+                        throw new UncheckedIOException("Could not close JavaFileManager", ioe);
+                    }
                 }
             }
         }
@@ -887,8 +933,8 @@ public class QueryCompiler {
         // We want to atomically move it to e.g.
         // /tmp/workspace/cache/classes/io/deephaven/test/cm12862183232603186v52_0/{various class files}
         Arrays.stream(requests, startInclusive, endExclusive).forEach(request -> {
-            Path srcDir = Paths.get(tempDirAsString, request.splitPackageName);
-            Path destDir = Paths.get(rootPathAsString, request.splitPackageName);
+            final Path srcDir = Paths.get(tempDirAsString, request.splitPackageName);
+            final Path destDir = Paths.get(rootPathAsString, request.splitPackageName);
             try {
                 Files.move(srcDir, destDir, StandardCopyOption.ATOMIC_MOVE);
             } catch (IOException ioe) {
