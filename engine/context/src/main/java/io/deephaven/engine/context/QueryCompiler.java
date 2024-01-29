@@ -33,10 +33,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.jar.Attributes;
@@ -851,12 +848,16 @@ public class QueryCompiler {
                         0, requests.length);
             } else {
                 int numTasks = (requests.length + requestsPerTask - 1) / requestsPerTask;
-                IntStream.range(0, numTasks).parallel().forEach(jobId -> {
+                ForkJoinTask<?>[] tasks = new ForkJoinTask[numTasks];
+                for (int jobId = 0; jobId < numTasks; ++jobId) {
                     final int startInclusive = jobId * requestsPerTask;
                     final int endExclusive = Math.min(requests.length, (jobId + 1) * requestsPerTask);
-                    maybeCreateClassHelper(compiler, fileManager, requests, rootPathAsString, tempDirAsString,
-                            startInclusive, endExclusive);
-                });
+                    tasks[jobId] = ForkJoinPool.commonPool().submit(() -> {
+                        maybeCreateClassHelper(compiler, fileManager, requests, rootPathAsString, tempDirAsString,
+                                startInclusive, endExclusive);
+                    });
+                }
+                Arrays.stream(tasks).forEach(ForkJoinTask::join);
             }
             log.error().append("Compiled in ").append(Double.toString((System.nanoTime() - startTm) / 1e9)).append("s.").endl();
         } catch (final Throwable t) {
