@@ -47,7 +47,8 @@ import java.util.stream.Stream;
 
 public class QueryCompiler {
     /** A flag to externally disable parallel compilation. */
-    public static volatile boolean DISABLE_PARALLEL_COMPILE = false;
+    public static volatile int PARALLELISM_FACTOR = ForkJoinPool.getCommonPoolParallelism();
+    public static volatile int REQUESTS_PER_TASK = 0;
     public static volatile boolean DISABLE_SHARED_COMPILER = false;
 
     private static final Logger log = LoggerFactory.getLogger(QueryCompiler.class);
@@ -835,10 +836,17 @@ public class QueryCompiler {
         boolean exceptionCaught = false;
         try {
             long startTm = System.nanoTime();
-            int parallelismFactor = ForkJoinPool.getCommonPoolParallelism();
-            log.warn().append("Compiling with parallelism factor of: ").append(parallelismFactor).endl();
+            int parallelismFactor;
+            if (REQUESTS_PER_TASK == 0) {
+                parallelismFactor = PARALLELISM_FACTOR;
+            } else {
+                parallelismFactor = (requests.length + REQUESTS_PER_TASK - 1) / REQUESTS_PER_TASK;
+            }
+
             int requestsPerTask = Math.max(32, (requests.length + parallelismFactor - 1) / parallelismFactor);
-            if (DISABLE_PARALLEL_COMPILE || parallelismFactor == 1 || requestsPerTask >= requests.length) {
+            log.error().append("Compiling with parallelismFactor = ").append(parallelismFactor)
+                    .append(" requestsPerTask = ").append(requestsPerTask).endl();
+            if (parallelismFactor == 1 || requestsPerTask >= requests.length) {
                 maybeCreateClassHelper(compiler, fileManager, requests, rootPathAsString, tempDirAsString,
                         0, requests.length);
             } else {
