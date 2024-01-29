@@ -63,7 +63,7 @@ public class QueryCompiler {
     private static final long CODEGEN_LOOP_DELAY_MS =
             Configuration.getInstance().getLongWithDefault(CODEGEN_LOOP_DELAY_PROP, CODEGEN_LOOP_DELAY_MS_DEFAULT);
 
-    private static boolean LOG_ENABLED = Configuration.getInstance().getBoolean("QueryCompiler.logEnabledDefault");
+    private static boolean logEnabled = Configuration.getInstance().getBoolean("QueryCompiler.logEnabledDefault");
 
     public static final String FORMULA_PREFIX = "io.deephaven.temp";
     public static final String DYNAMIC_GROOVY_CLASS_PREFIX = "io.deephaven.dynamic";
@@ -133,8 +133,8 @@ public class QueryCompiler {
      * @return The value of {@code logEnabled} before calling this method.
      */
     public static boolean setLogEnabled(boolean logEnabled) {
-        boolean original = QueryCompiler.LOG_ENABLED;
-        QueryCompiler.LOG_ENABLED = logEnabled;
+        boolean original = QueryCompiler.logEnabled;
+        QueryCompiler.logEnabled = logEnabled;
         return original;
     }
 
@@ -754,7 +754,7 @@ public class QueryCompiler {
 
             finalCode = makeFinalCode(className, code, packageName);
 
-            if (LOG_ENABLED) {
+            if (logEnabled) {
                 log.info().append("Generating code ").append(finalCode).endl();
             }
 
