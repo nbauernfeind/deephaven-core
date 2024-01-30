@@ -45,8 +45,10 @@ public class QueryCompiler {
     /** A flag to externally disable parallel compilation. */
     public static volatile int PARALLELISM_FACTOR = ForkJoinPool.getCommonPoolParallelism();
     public static volatile int REQUESTS_PER_TASK = 0;
+    public static volatile int KOSAK_NUM_THREADS = 16;
+    private static ExecutorService KOSAK_EXECUTOR = Executors.newFixedThreadPool(16);
+    private static int KOSAK_HOWMANY_THREADS_IN_CURRENT_EXECUTOR = 16;
     public static volatile boolean DISABLE_SHARED_COMPILER = false;
-    private static final ExecutorService COMPILER_EXECUTOR = Executors.newFixedThreadPool(4);
 
     private static final Logger log = LoggerFactory.getLogger(QueryCompiler.class);
     /**
@@ -830,32 +832,34 @@ public class QueryCompiler {
             fileManager = null;
         }
 
+        if (KOSAK_EXECUTOR == null || KOSAK_NUM_THREADS != KOSAK_HOWMANY_THREADS_IN_CURRENT_EXECUTOR) {
+            KOSAK_EXECUTOR = Executors.newFixedThreadPool(KOSAK_NUM_THREADS);
+            KOSAK_HOWMANY_THREADS_IN_CURRENT_EXECUTOR = KOSAK_NUM_THREADS;
+        }
+
         boolean exceptionCaught = false;
         try {
             long startTm = System.nanoTime();
-            int parallelismFactor;
-            if (REQUESTS_PER_TASK == 0) {
-                parallelismFactor = PARALLELISM_FACTOR;
+            if (false) {
             } else {
-                parallelismFactor = (requests.length + REQUESTS_PER_TASK - 1) / REQUESTS_PER_TASK;
-            }
-
-            int requestsPerTask = Math.max(32, (requests.length + parallelismFactor - 1) / parallelismFactor);
-            log.error().append("Compiling with parallelismFactor = ").append(parallelismFactor)
-                    .append(" requestsPerTask = ").append(requestsPerTask).endl();
-            if (parallelismFactor == 1 || requestsPerTask >= requests.length) {
-                maybeCreateClassHelper(compiler, fileManager, requests, rootPathAsString, tempDirAsString,
-                        0, requests.length);
-            } else {
-                int numTasks = (requests.length + requestsPerTask - 1) / requestsPerTask;
+                final int numTasks = KOSAK_NUM_THREADS;
+                final int requestsPerTask = requests.length / numTasks;
+                int residual = requests.length % numTasks;
                 final Future<?>[] tasks = new Future[numTasks];
+                int startInclusive = 0;
                 for (int jobId = 0; jobId < numTasks; ++jobId) {
-                    final int startInclusive = jobId * requestsPerTask;
-                    final int endExclusive = Math.min(requests.length, (jobId + 1) * requestsPerTask);
-                    tasks[jobId] = COMPILER_EXECUTOR.submit(() -> {
+                    int endExclusive = startInclusive + requestsPerTask;
+                    if (residual != 0) {
+                        ++endExclusive;
+                        --residual;
+                    }
+                    final int se2 = startInclusive;
+                    final int ee2 = endExclusive;
+                    tasks[jobId] = KOSAK_EXECUTOR.submit(() -> {
                         maybeCreateClassHelper(compiler, fileManager, requests, rootPathAsString, tempDirAsString,
-                                startInclusive, endExclusive);
+                                se2, ee2);
                     });
+                    startInclusive = endExclusive;
                 }
                 for (int jobId = 0; jobId < numTasks; ++jobId) {
                     try {
