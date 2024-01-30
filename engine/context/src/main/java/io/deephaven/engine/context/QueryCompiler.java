@@ -46,7 +46,14 @@ public class QueryCompiler {
     public static volatile int PARALLELISM_FACTOR = ForkJoinPool.getCommonPoolParallelism();
     public static volatile int REQUESTS_PER_TASK = 0;
     public static volatile boolean DISABLE_SHARED_COMPILER = false;
-    private static final ExecutorService COMPILER_EXECUTOR = Executors.newFixedThreadPool(4);
+    private static volatile ExecutorService COMPILER_EXECUTOR = Executors.newFixedThreadPool(4);
+
+    public static void setNumThreads(int numThreads) {
+        if (COMPILER_EXECUTOR != null) {
+            COMPILER_EXECUTOR.shutdownNow();
+        }
+        COMPILER_EXECUTOR = Executors.newFixedThreadPool(numThreads);
+    }
 
     private static final Logger log = LoggerFactory.getLogger(QueryCompiler.class);
     /**
