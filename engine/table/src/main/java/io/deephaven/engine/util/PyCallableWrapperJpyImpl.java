@@ -3,6 +3,8 @@ package io.deephaven.engine.util;
 import io.deephaven.engine.table.impl.select.python.ArgumentsChunked;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
+import org.jpy.PyInputMode;
+import org.jpy.PyLib;
 import org.jpy.PyModule;
 import org.jpy.PyObject;
 
@@ -114,24 +116,47 @@ public class PyCallableWrapperJpyImpl implements PyCallableWrapper {
      * false assumption, then we'll need to make this initialization code 'python restart' proof.
      */
     private static PyObject getNumbaVectorizedFuncType() {
+        if (!PyLib.hasGil()) {
+            throw new IllegalStateException("convertValue must be called with the GIL held");
+        }
         try {
+            log.info().append("Importing numba.np.ufunc.dufunc").endl();
+//            try (final PyObject pyObject = PyModule.executeScript("import numba.np.ufunc.dufunc", PyInputMode.SCRIPT, null, null)) {
+//
+//            }
+            log.info().append("Importing (2) numba.np.ufunc.dufunc").endl();
             return PyModule.importModule("numba.np.ufunc.dufunc").getAttribute("DUFunc");
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
                 log.debug("Numba isn't installed in the Python environment.");
             }
             return null;
+        } finally {
+            log.info().append("Done importing numba.np.ufunc.dufunc").endl();
         }
     }
 
     private static PyObject getNumbaGUVectorizedFuncType() {
+        if (!PyLib.hasGil()) {
+            throw new IllegalStateException("convertValue must be called with the GIL held");
+        }
         try {
+            log.info().append("Importing numba.np.ufunc.gufunc").endl();
+            try (final PyObject pyObject = PyModule.executeScript("print('Hello Colin!!!!')", PyInputMode.SCRIPT, null, null)) {
+
+            }
+            try (final PyObject pyObject = PyModule.executeScript("import numba.np.ufunc.gufunc", PyInputMode.SCRIPT, null, null)) {
+
+            }
+            log.info().append("Importing (2) numba.np.ufunc.gufunc").endl();
             return PyModule.importModule("numba.np.ufunc.gufunc").getAttribute("GUFunc");
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
                 log.debug("Numba isn't installed in the Python environment.");
             }
             return null;
+        } finally {
+            log.info().append("Done importing numba.np.ufunc.gufunc").endl();
         }
     }
 

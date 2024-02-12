@@ -7,15 +7,19 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import io.deephaven.UncheckedDeephavenException;
 import io.deephaven.configuration.Configuration;
+import io.deephaven.internal.log.LoggerFactory;
 import org.jpy.PyDictWrapper;
 import org.jpy.PyLib;
 import org.jpy.PyObject;
+import sun.misc.Unsafe;
 
+import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 public class PythonScopeJpyImpl implements PythonScope<PyObject> {
@@ -81,6 +85,7 @@ public class PythonScopeJpyImpl implements PythonScope<PyObject> {
 
     @Override
     public Object convertValue(PyObject value) {
+        PyLib.Diag.setFlags(PyLib.Diag.getFlags() | PyLib.Diag.F_EXEC);
         if (value.isNone()) {
             return value;
         }
@@ -112,6 +117,7 @@ public class PythonScopeJpyImpl implements PythonScope<PyObject> {
         }
     }
 
+    private static AtomicBoolean allowedToInit = new AtomicBoolean();
     private static Object convertInternal(PyObject pyObject, boolean fromCache) {
         Object ret = pyObject;
         if (pyObject.isList()) {
@@ -119,6 +125,27 @@ public class PythonScopeJpyImpl implements PythonScope<PyObject> {
         } else if (pyObject.isDict()) {
             ret = pyObject.asDict();
         } else if (pyObject.isCallable()) {
+            try {
+                Field f = Unsafe.class.getDeclaredField("theUnsafe");
+                f.setAccessible(true);
+                while (((Unsafe)f.get(null)).shouldBeInitialized(PyCallableWrapperJpyImpl.class)) {
+                    boolean hasGil = PyLib.hasGil();
+                    LoggerFactory.getLogger(PythonScopeJpyImpl.class).error().append("Thread ").append(Thread.currentThread().toString()).append(" has GIL: ").append(hasGil).endl();
+                    if (hasGil && allowedToInit.compareAndSet(false, true)) {
+                        synchronized (PythonScopeJpyImpl.class) {
+                            PyLib.ensureGil(() -> {
+                                PyCallableWrapperJpyImpl.init();
+                                return null;
+                            });
+                        }
+                    } else {
+                        Thread.sleep(100);
+                    }
+                }
+            } catch (NoSuchFieldException | IllegalAccessException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
             ret = new PyCallableWrapperJpyImpl(pyObject);
         } else if (pyObject.isConvertible()) {
             ret = pyObject.getObjectValue();

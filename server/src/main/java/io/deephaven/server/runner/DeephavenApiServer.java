@@ -186,9 +186,9 @@ public class DeephavenApiServer {
         try (SafeCloseable ignored = LivenessScopeStack.open()) {
             scriptSession.observeScopeChanges();
         }
-        scheduler.runAfterDelay(CHECK_SCOPE_CHANGES_INTERVAL_MILLIS, () -> {
-            checkScopeChanges(scriptSession);
-        });
+//        scheduler.runAfterDelay(CHECK_SCOPE_CHANGES_INTERVAL_MILLIS, () -> {
+//            checkScopeChanges(scriptSession);
+//        });
     }
 
     /**
