@@ -4,7 +4,6 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.internal.artifacts.dependencies.DefaultExternalModuleDependency
-import org.gradle.api.plugins.JavaPlatformPlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.internal.Actions
 
@@ -29,7 +28,7 @@ class Classpaths {
 
     static final String JAVA_PARSER_GROUP = 'com.github.javaparser'
     static final String JAVA_PARSER_NAME = 'javaparser-core'
-    static final String JAVA_PARSER_VERSION = '3.23.0'
+    static final String JAVA_PARSER_VERSION = '3.25.8'
     // TODO (core#1163): take advantage of symbol-solver-core
 //    static final String JAVA_PARSER_NAME = 'javaparser-symbol-solver-core'
 
