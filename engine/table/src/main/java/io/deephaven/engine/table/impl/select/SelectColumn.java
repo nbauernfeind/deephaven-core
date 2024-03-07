@@ -6,7 +6,6 @@ package io.deephaven.engine.table.impl.select;
 import io.deephaven.api.ColumnName;
 import io.deephaven.api.RawString;
 import io.deephaven.api.Selectable;
-import io.deephaven.api.Strings;
 import io.deephaven.api.expression.Expression;
 import io.deephaven.api.expression.Function;
 import io.deephaven.api.expression.Method;
@@ -199,32 +198,27 @@ public interface SelectColumn extends Selectable {
 
         @Override
         public SelectColumn visit(Literal rhs) {
-            return makeSelectColumn(Strings.of(rhs));
+            return SelectColumnFactory.getExpression(lhs.name(), rhs);
         }
 
         @Override
         public SelectColumn visit(Filter rhs) {
-            return makeSelectColumn(Strings.of(rhs));
+            return SelectColumnFactory.getExpression(lhs.name(), rhs);
         }
 
         @Override
         public SelectColumn visit(Function rhs) {
-            return makeSelectColumn(Strings.of(rhs));
+            return SelectColumnFactory.getExpression(lhs.name(), rhs);
         }
 
         @Override
         public SelectColumn visit(Method rhs) {
-            return makeSelectColumn(Strings.of(rhs));
+            return SelectColumnFactory.getExpression(lhs.name(), rhs);
         }
 
         @Override
         public SelectColumn visit(RawString rhs) {
-            return makeSelectColumn(Strings.of(rhs));
-        }
-
-        private SelectColumn makeSelectColumn(String rhs) {
-            // TODO(deephaven-core#3740): Remove engine crutch on io.deephaven.api.Strings
-            return SelectColumnFactory.getExpression(String.format("%s=%s", lhs.name(), rhs));
+            return SelectColumnFactory.getExpression(lhs.name(), rhs);
         }
     }
 

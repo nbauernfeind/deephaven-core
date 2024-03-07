@@ -3,6 +3,10 @@
 //
 package io.deephaven.engine.table.impl.select;
 
+import io.deephaven.api.ColumnName;
+import io.deephaven.api.RawString;
+import io.deephaven.api.expression.Expression;
+import io.deephaven.api.expression.Method;
 import io.deephaven.base.Pair;
 import io.deephaven.api.expression.AbstractExpressionFactory;
 import io.deephaven.api.expression.ExpressionParser;
@@ -29,14 +33,15 @@ public class SelectColumnFactory {
 
         /*
          * SwitchColumn will explicitly check if <expression> is a column in the source table first, and use
-         * FormulaColumn#createFormulaColumn(String, String, FormulaParserConfiguration) where appropriate.
+         * FormulaColumn#createFormulaColumn(String, Expression, FormulaParserConfiguration) where appropriate.
          */
         // <ColumnName>=<expression>
         parser.registerFactory(new AbstractExpressionFactory<>(
                 START_PTRN + "(" + ID_PTRN + ")\\s*=\\s*(" + ANYTHING + ")" + END_PTRN) {
             @Override
             public SelectColumn getExpression(String expression, Matcher matcher, Object... args) {
-                return new SwitchColumn(matcher.group(1), matcher.group(2), (FormulaParserConfiguration) args[0]);
+                return new SwitchColumn(matcher.group(1), RawString.of(matcher.group(2)),
+                        (FormulaParserConfiguration) args[0]);
             }
         });
 
@@ -51,6 +56,14 @@ public class SelectColumnFactory {
 
         // If you add more logic here, please kindly update
         // io.deephaven.web.shared.data.CustomColumnDescriptor#extractColumnName
+    }
+
+    public static SelectColumn getExpression(final String destName, final Expression expression) {
+        if (expression instanceof ColumnName) {
+            return new SourceColumn(((ColumnName) expression).name(), destName);
+        } else {
+            return new SwitchColumn(destName, expression, FormulaParserConfiguration.Deephaven);
+        }
     }
 
     public static SelectColumn getExpression(String expression) {

@@ -3,19 +3,24 @@
 //
 package io.deephaven.engine.table.impl.select;
 
+import io.deephaven.api.RawString;
+import io.deephaven.api.expression.Expression;
 import io.deephaven.base.Pair;
 import io.deephaven.engine.table.impl.MatchPair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
 
 public interface FormulaColumn extends SelectColumn {
 
-    static FormulaColumn createFormulaColumn(String columnName, String formulaString,
-            FormulaParserConfiguration parser) {
+    static FormulaColumn createFormulaColumn(
+            @NotNull final String columnName,
+            @NotNull final Expression expression,
+            @NotNull final FormulaParserConfiguration parser) {
         switch (parser) {
             case Deephaven:
-                return new DhFormulaColumn(columnName, formulaString);
+                return new DhFormulaColumn(columnName, expression);
             case Numba:
                 throw new UnsupportedOperationException("Python formula columns must be created from python");
             default:
@@ -23,8 +28,23 @@ public interface FormulaColumn extends SelectColumn {
         }
     }
 
-    static FormulaColumn createFormulaColumn(String columnName, String formulaString) {
+    static FormulaColumn createFormulaColumn(
+            @NotNull final String columnName,
+            @NotNull final String formulaString,
+            @NotNull final FormulaParserConfiguration parser) {
+        return createFormulaColumn(columnName, RawString.of(formulaString), parser);
+    }
+
+    static FormulaColumn createFormulaColumn(
+            @NotNull final String columnName,
+            @NotNull final String formulaString) {
         return createFormulaColumn(columnName, formulaString, FormulaParserConfiguration.parser);
+    }
+
+    static FormulaColumn createFormulaColumn(
+            @NotNull final String columnName,
+            @NotNull final Expression expression) {
+        return createFormulaColumn(columnName, expression, FormulaParserConfiguration.parser);
     }
 
     /**

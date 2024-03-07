@@ -3,6 +3,7 @@
 //
 package io.deephaven.engine.table.impl.select.python;
 
+import io.deephaven.api.literal.Literal;
 import io.deephaven.engine.table.ColumnDefinition;
 import io.deephaven.engine.context.QueryScopeParam;
 import io.deephaven.vector.Vector;
@@ -34,7 +35,7 @@ public class FormulaColumnPython extends AbstractFormulaColumn implements Formul
 
     private FormulaColumnPython(String columnName,
             DeephavenCompatibleFunction dcf) {
-        super(columnName, "<python-formula>");
+        super(columnName, Literal.of("<python-formula>"));
         this.dcf = Objects.requireNonNull(dcf);
     }
 

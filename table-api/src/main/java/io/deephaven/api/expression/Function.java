@@ -6,9 +6,12 @@ package io.deephaven.api.expression;
 import io.deephaven.annotations.BuildableStyle;
 import io.deephaven.api.filter.Filter;
 import io.deephaven.api.filter.FilterNot;
+import org.immutables.value.Value.Default;
 import org.immutables.value.Value.Immutable;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Represents a function call.
@@ -29,6 +32,7 @@ public abstract class Function implements Expression, Filter {
         return builder().name(name).addAllArguments(arguments).build();
     }
 
+
     /**
      * The function name.
      *
@@ -42,6 +46,17 @@ public abstract class Function implements Expression, Filter {
      * @return the arguments
      */
     public abstract List<Expression> arguments();
+
+    @Default
+    public boolean serial() {
+        return false;
+    }
+
+    public abstract Set<String> synchronizeOn();
+
+    public abstract Set<String> respectBarrier();
+
+    public abstract Optional<String> barrier();
 
     @Override
     public final FilterNot<Function> invert() {
@@ -58,7 +73,7 @@ public abstract class Function implements Expression, Filter {
         return visitor.visit(this);
     }
 
-    public interface Builder {
+    public interface Builder extends Filter.BuilderBase<Builder> {
         Builder name(String name);
 
         Builder addArguments(Expression element);

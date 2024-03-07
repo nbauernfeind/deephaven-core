@@ -11,8 +11,7 @@ import io.deephaven.api.expression.Method;
 import io.deephaven.api.literal.Literal;
 import io.deephaven.api.literal.LiteralFilter;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -210,6 +209,23 @@ public interface Filter extends Expression {
 
     <T> T walk(Visitor<T> visitor);
 
+    // TODO NATE NOCOMMIT DO JAVADOC
+    default boolean serial() {
+        return false;
+    }
+
+    default Optional<String> barrier() {
+        return Optional.empty();
+    }
+
+    default Set<String> synchronizeOn() {
+        return Collections.emptySet();
+    }
+
+    default Set<String> respectBarrier() {
+        return Collections.emptySet();
+    }
+
     interface Visitor<T> {
 
         T visit(FilterIsNull isNull);
@@ -233,5 +249,32 @@ public interface Filter extends Expression {
         T visit(boolean literal);
 
         T visit(RawString rawString);
+    }
+
+    interface BuilderBase<B extends BuilderBase<B>> {
+        // TODO NATE NOCOMMIT DO JAVADOC
+        B serial(boolean serial);
+
+        B barrier(String barrier);
+
+        default B synchronize() {
+            return addSynchronizeOn("");
+        }
+
+        default B synchronizeOn(final String groupName) {
+            return addSynchronizeOn(groupName);
+        }
+
+        B addSynchronizeOn(String groupName);
+
+        B addSynchronizeOn(String... groupNames);
+
+        default B respectBarrier(final String barrier) {
+            return addRespectBarrier(barrier);
+        }
+
+        B addRespectBarrier(String respectBarrier);
+
+        B addRespectBarrier(String... respectBarriers);
     }
 }

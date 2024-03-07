@@ -3,6 +3,9 @@
 //
 package io.deephaven.engine.table.impl.select;
 
+import io.deephaven.api.ColumnName;
+import io.deephaven.api.Strings;
+import io.deephaven.api.expression.Expression;
 import io.deephaven.base.verify.Require;
 import io.deephaven.engine.table.*;
 import io.deephaven.api.util.NameValidator;
@@ -19,14 +22,14 @@ import java.util.Map;
 public class SwitchColumn implements SelectColumn {
 
     @NotNull
-    private final String expression;
+    private final Expression expression;
     @NotNull
     private final String columnName;
     private SelectColumn realColumn;
     private final FormulaParserConfiguration parser;
 
 
-    public SwitchColumn(String columnName, String expression, FormulaParserConfiguration parserConfiguration) {
+    public SwitchColumn(String columnName, Expression expression, FormulaParserConfiguration parserConfiguration) {
         this.expression = Require.neqNull(expression, "expression");
         this.columnName = NameValidator.validateColumnName(columnName);
         this.parser = parserConfiguration;
@@ -35,8 +38,8 @@ public class SwitchColumn implements SelectColumn {
     @Override
     public List<String> initInputs(TrackingRowSet rowSet, Map<String, ? extends ColumnSource<?>> columnsOfInterest) {
         if (realColumn == null) {
-            if (columnsOfInterest.get(expression) != null) {
-                realColumn = new SourceColumn(expression, columnName);
+            if (expression instanceof ColumnName) {
+                realColumn = new SourceColumn(((ColumnName) expression).name(), columnName);
             } else {
                 realColumn = FormulaColumn.createFormulaColumn(columnName, expression, parser);
             }
@@ -47,8 +50,8 @@ public class SwitchColumn implements SelectColumn {
     @Override
     public List<String> initDef(Map<String, ColumnDefinition<?>> columnDefinitionMap) {
         if (realColumn == null) {
-            if (columnDefinitionMap.get(expression) != null) {
-                realColumn = new SourceColumn(expression, columnName);
+            if (expression instanceof ColumnName) {
+                realColumn = new SourceColumn(((ColumnName) expression).name(), columnName);
             } else {
                 realColumn = FormulaColumn.createFormulaColumn(columnName, expression, parser);
             }
@@ -95,7 +98,7 @@ public class SwitchColumn implements SelectColumn {
 
     @Override
     public MatchPair getMatchPair() {
-        return new MatchPair(columnName, expression);
+        return new MatchPair(columnName, Strings.of(expression));
     }
 
     @Override

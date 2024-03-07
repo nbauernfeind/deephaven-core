@@ -3,6 +3,14 @@
 //
 package io.deephaven.engine.table.impl.select;
 
+import io.deephaven.api.ColumnName;
+import io.deephaven.api.RawString;
+import io.deephaven.api.Strings;
+import io.deephaven.api.expression.Expression;
+import io.deephaven.api.expression.Function;
+import io.deephaven.api.expression.Method;
+import io.deephaven.api.filter.Filter;
+import io.deephaven.api.literal.Literal;
 import io.deephaven.base.verify.Require;
 import io.deephaven.configuration.Configuration;
 import io.deephaven.engine.table.*;
@@ -33,6 +41,7 @@ public abstract class AbstractFormulaColumn implements FormulaColumn {
             .getBooleanForClassWithDefault(AbstractFormulaColumn.class, "allowUnsafeRefreshingFormulas", false);
 
 
+    protected Expression expression;
     protected String formulaString;
     protected List<String> usedColumns;
 
@@ -51,22 +60,158 @@ public abstract class AbstractFormulaColumn implements FormulaColumn {
     protected boolean usesII; // uses the "ii" variable which is the long position for the row
     protected boolean usesK; // uses the "k" variable which is the long row key into a column source
 
+    private final boolean serial;
+    private final Set<String> synchronizeOn;
+
     /**
      * Create a formula column for the given formula string.
      * <p>
      * The internal formula object is generated on-demand by calling out to the Java compiler.
      *
      * @param columnName the result column name
-     * @param formulaString the formula string to be parsed by the QueryLanguageParser
+     * @param expression the expression to be parsed by the QueryLanguageParser
      */
-    protected AbstractFormulaColumn(String columnName, String formulaString) {
-        this.formulaString = Require.neqNull(formulaString, "formulaString");
+    protected AbstractFormulaColumn(String columnName, Expression expression) {
+        this.expression = Require.neqNull(expression, "expression");
+        this.formulaString = Strings.of(expression);
         this.columnName = NameValidator.validateColumnName(columnName);
+        this.serial = expression.walk(new Expression.Visitor<>() {
+            @Override
+            public Boolean visit(Literal literal) {
+                return false;
+            }
+
+            @Override
+            public Boolean visit(ColumnName columnName) {
+                return false;
+            }
+
+            @Override
+            public Boolean visit(Filter filter) {
+                return filter.serial();
+            }
+
+            @Override
+            public Boolean visit(Function function) {
+                return function.serial();
+            }
+
+            @Override
+            public Boolean visit(Method method) {
+                return method.serial();
+            }
+
+            @Override
+            public Boolean visit(RawString rawString) {
+                return rawString.serial();
+            }
+        });
+        this.synchronizeOn = new HashSet<>();
+        expression.walk(new Expression.Visitor<>() {
+            @Override
+            public Void visit(Literal literal) {
+                return null;
+            }
+
+            @Override
+            public Void visit(ColumnName columnName) {
+                return null;
+            }
+
+            @Override
+            public Void visit(Filter filter) {
+                synchronizeOn.addAll(filter.synchronizeOn());
+                return null;
+            }
+
+            @Override
+            public Void visit(Function function) {
+                synchronizeOn.addAll(function.synchronizeOn());
+                return null;
+            }
+
+            @Override
+            public Void visit(Method method) {
+                synchronizeOn.addAll(method.synchronizeOn());
+                return null;
+            }
+
+            @Override
+            public Void visit(RawString rawString) {
+                synchronizeOn.addAll(rawString.synchronizeOn());
+                return null;
+            }
+        });
+
+        // ensure that no barriers are set
+        expression.walk(new Expression.Visitor<>() {
+            @Override
+            public Void visit(Literal literal) {
+                return null;
+            }
+
+            @Override
+            public Void visit(ColumnName columnName) {
+                return null;
+            }
+
+            @Override
+            public Void visit(Filter filter) {
+                if (filter.barrier().isPresent()) {
+                    throw new IllegalArgumentException("Filter " + filter + " has a barrier set");
+                }
+                if (!filter.respectBarrier().isEmpty()) {
+                    throw new IllegalArgumentException("Filter " + filter + " has a respectBarrier set");
+                }
+                return null;
+            }
+
+            @Override
+            public Void visit(Function function) {
+                if (function.barrier().isPresent()) {
+                    throw new IllegalArgumentException("Function " + function + " has a barrier set");
+                }
+                if (!function.respectBarrier().isEmpty()) {
+                    throw new IllegalArgumentException("Function " + function + " has a respectBarrier set");
+                }
+                return null;
+            }
+
+            @Override
+            public Void visit(Method method) {
+                if (method.barrier().isPresent()) {
+                    throw new IllegalArgumentException("Method " + method + " has a barrier set");
+                }
+                if (!method.respectBarrier().isEmpty()) {
+                    throw new IllegalArgumentException("Method " + method + " has a respectBarrier set");
+                }
+                return null;
+            }
+
+            @Override
+            public Void visit(RawString rawString) {
+                if (rawString.barrier().isPresent()) {
+                    throw new IllegalArgumentException("RawString " + rawString + " has a barrier set");
+                }
+                if (!rawString.respectBarrier().isEmpty()) {
+                    throw new IllegalArgumentException("RawString " + rawString + " has a respectBarrier set");
+                }
+                return null;
+            }
+        });
     }
 
     @Override
     public Class<?> getReturnedType() {
         return returnedType;
+    }
+
+    public boolean serial() {
+        return serial;
+    }
+
+    public Set<String> synchronizeOn() {
+        return synchronizeOn;
     }
 
     @Override

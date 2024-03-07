@@ -3,6 +3,7 @@
 //
 package io.deephaven.engine.table.impl.select;
 
+import io.deephaven.api.expression.Expression;
 import io.deephaven.base.Pair;
 import io.deephaven.chunk.ChunkType;
 import io.deephaven.configuration.Configuration;
@@ -80,10 +81,10 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
      * The internal formula object is generated on-demand by calling out to the Java compiler.
      *
      * @param columnName the result column name
-     * @param formulaString the formula string to be parsed by the QueryLanguageParser
+     * @param expression the expression to be parsed by the QueryLanguageParser
      */
-    DhFormulaColumn(String columnName, String formulaString) {
-        super(columnName, formulaString);
+    DhFormulaColumn(String columnName, Expression expression) {
+        super(columnName, expression);
     }
 
     /**
@@ -736,7 +737,7 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
 
     @Override
     public SelectColumn copy() {
-        final DhFormulaColumn copy = new DhFormulaColumn(columnName, formulaString);
+        final DhFormulaColumn copy = new DhFormulaColumn(columnName, expression);
         if (formulaFactory != null) {
             copy.analyzedFormula = analyzedFormula;
             copy.hasConstantValue = hasConstantValue;
