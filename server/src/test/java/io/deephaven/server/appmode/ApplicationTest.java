@@ -6,6 +6,7 @@ package io.deephaven.server.appmode;
 import io.deephaven.appmode.ApplicationState;
 import io.deephaven.appmode.Field;
 import io.deephaven.engine.context.ExecutionContext;
+import io.deephaven.engine.context.QueryCompilerImpl;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.testutil.junit4.EngineCleanup;
 import io.deephaven.engine.util.AbstractScriptSession;
@@ -54,7 +55,8 @@ public class ApplicationTest {
                 ExecutionContext.getContext().getUpdateGraph(),
                 ExecutionContext.getContext().getOperationInitializer(),
                 NoOp.INSTANCE, null,
-                GroovyDeephavenSession.RunScripts.none());
+                GroovyDeephavenSession.RunScripts.none(),
+                QueryCompilerImpl::createForUnitTests);
         ApplicationState app = ApplicationFactory.create(ApplicationConfigs.testAppDir(), ApplicationConfigs.app01(),
                 session, new NoopStateListener());
         assertThat(app.name()).isEqualTo("My Groovy Application");
@@ -69,7 +71,7 @@ public class ApplicationTest {
         session = new PythonDeephavenSession(
                 ExecutionContext.getDefaultContext().getUpdateGraph(),
                 ExecutionContext.getContext().getOperationInitializer(), ThreadInitializationFactory.NO_OP,
-                NoOp.INSTANCE, null, false,
+                NoOp.INSTANCE, null, false, QueryCompilerImpl::createForUnitTests,
                 PythonEvaluatorJpy.withGlobalCopy());
         ApplicationState app = ApplicationFactory.create(ApplicationConfigs.testAppDir(), ApplicationConfigs.app02(),
                 session, new NoopStateListener());

@@ -78,10 +78,11 @@ public abstract class AbstractScriptSession<S extends AbstractScriptSession.Snap
     protected AbstractScriptSession(
             final UpdateGraph updateGraph,
             final OperationInitializer operationInitializer,
-            final ObjectTypeLookup objectTypeLookup,
-            @Nullable final Listener changeListener) {
+            @Nullable final ObjectTypeLookup objectTypeLookup,
+            @Nullable final Listener changeListener,
+            @NotNull final QueryCompiler.Factory queryCompilerFactory) {
         this(updateGraph, operationInitializer, objectTypeLookup, changeListener, newClassCacheLocation().toFile(),
-                Thread.currentThread().getContextClassLoader());
+                Thread.currentThread().getContextClassLoader(), queryCompilerFactory);
     }
 
     protected AbstractScriptSession(
@@ -90,14 +91,15 @@ public abstract class AbstractScriptSession<S extends AbstractScriptSession.Snap
             final ObjectTypeLookup objectTypeLookup,
             @Nullable final Listener changeListener,
             @NotNull final File classCacheDirectory,
-            @NotNull final ClassLoader parentClassLoader) {
+            @NotNull final ClassLoader parentClassLoader,
+            @NotNull final QueryCompiler.Factory queryCompilerFactory) {
         this.objectTypeLookup = objectTypeLookup;
         this.changeListener = changeListener;
 
         this.classCacheDirectory = classCacheDirectory;
 
         queryScope = new ScriptSessionQueryScope();
-        final QueryCompiler compilerContext = QueryCompilerImpl.create(classCacheDirectory, parentClassLoader);
+        final QueryCompiler compilerContext = queryCompilerFactory.create(classCacheDirectory, parentClassLoader);
 
         executionContext = ExecutionContext.newBuilder()
                 .markSystemic()

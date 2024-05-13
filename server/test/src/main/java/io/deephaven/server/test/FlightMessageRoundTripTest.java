@@ -25,6 +25,7 @@ import io.deephaven.chunk.WritableChunk;
 import io.deephaven.chunk.attributes.Values;
 import io.deephaven.client.impl.*;
 import io.deephaven.engine.context.ExecutionContext;
+import io.deephaven.engine.context.QueryCompilerImpl;
 import io.deephaven.engine.liveness.LivenessScopeStack;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.table.Table;
@@ -39,10 +40,8 @@ import io.deephaven.engine.util.TableTools;
 import io.deephaven.extensions.barrage.BarrageSubscriptionOptions;
 import io.deephaven.extensions.barrage.util.BarrageChunkAppendingMarshaller;
 import io.deephaven.extensions.barrage.util.BarrageUtil;
-import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.LogBuffer;
 import io.deephaven.io.logger.LogBufferGlobal;
-import io.deephaven.io.logger.Logger;
 import io.deephaven.plugin.Registration;
 import io.deephaven.proto.backplane.grpc.SortTableRequest;
 import io.deephaven.proto.backplane.grpc.WrappedAuthenticationRequest;
@@ -139,7 +138,7 @@ public abstract class FlightMessageRoundTripTest {
                 final UpdateGraph updateGraph,
                 final OperationInitializer operationInitializer) {
             return new NoLanguageDeephavenSession(
-                    updateGraph, operationInitializer, "non-script-session");
+                    updateGraph, operationInitializer, QueryCompilerImpl::createForUnitTests, "non-script-session");
         }
 
         @Provides

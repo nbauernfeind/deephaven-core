@@ -7,6 +7,7 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.updategraph.OperationInitializer;
 import io.deephaven.engine.updategraph.UpdateGraph;
 import io.deephaven.engine.updategraph.impl.PeriodicUpdateGraph;
@@ -36,9 +37,11 @@ public class GroovyConsoleSessionModule {
             final ObjectTypeLookup lookup,
             final ScriptSession.Listener listener,
             final RunScripts runScripts,
+            final QueryCompiler.Factory queryCompilerFactory,
             final ScriptSessionCacheInit ignored) {
         try {
-            return GroovyDeephavenSession.of(updateGraph, operationInitializer, lookup, listener, runScripts);
+            return GroovyDeephavenSession.of(updateGraph, operationInitializer, lookup, listener, runScripts,
+                    queryCompilerFactory);
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }

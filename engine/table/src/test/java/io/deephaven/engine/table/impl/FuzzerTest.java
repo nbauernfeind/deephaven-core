@@ -8,6 +8,7 @@ import io.deephaven.base.clock.Clock;
 import io.deephaven.chunk.util.pools.ChunkPoolReleaseTracking;
 import io.deephaven.configuration.Configuration;
 import io.deephaven.engine.context.ExecutionContext;
+import io.deephaven.engine.context.QueryCompilerImpl;
 import io.deephaven.engine.liveness.LivenessScopeStack;
 import io.deephaven.engine.table.PartitionedTable;
 import io.deephaven.engine.table.Table;
@@ -80,7 +81,8 @@ public class FuzzerTest {
                 ExecutionContext.getContext().getUpdateGraph(),
                 ExecutionContext.getContext().getOperationInitializer(),
                 NoOp.INSTANCE,
-                GroovyDeephavenSession.RunScripts.serviceLoader());
+                GroovyDeephavenSession.RunScripts.serviceLoader(),
+                QueryCompilerImpl::createForUnitTests);
         session.getExecutionContext().open();
         return session;
     }

@@ -7,6 +7,7 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.updategraph.OperationInitializer;
 import io.deephaven.engine.updategraph.UpdateGraph;
 import io.deephaven.engine.updategraph.impl.PeriodicUpdateGraph;
@@ -37,12 +38,13 @@ public class PythonConsoleSessionModule {
             final OperationInitializer operationInitializer,
             final ObjectTypeLookup lookup,
             final ScriptSession.Listener listener,
+            final QueryCompiler.Factory queryCompilerFactory,
             final PythonEvaluatorJpy pythonEvaluator,
             final ScriptSessionCacheInit ignored) {
         try {
             return new PythonDeephavenSession(
                     updateGraph, operationInitializer, threadInitializationFactory, lookup, listener,
-                    true, pythonEvaluator);
+                    true, queryCompilerFactory, pythonEvaluator);
         } catch (IOException e) {
             throw new UncheckedIOException("Unable to run python startup scripts", e);
         }

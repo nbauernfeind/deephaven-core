@@ -167,17 +167,20 @@ public class GroovyDeephavenSession extends AbstractScriptSession<GroovySnapshot
     public static GroovyDeephavenSession of(
             final UpdateGraph updateGraph,
             final OperationInitializer operationInitializer,
-            final ObjectTypeLookup objectTypeLookup,
-            final RunScripts runScripts) throws IOException {
-        return GroovyDeephavenSession.of(updateGraph, operationInitializer, objectTypeLookup, null, runScripts);
+            @Nullable final ObjectTypeLookup objectTypeLookup,
+            final RunScripts runScripts,
+            final QueryCompiler.Factory queryCompilerFactory) throws IOException {
+        return GroovyDeephavenSession.of(updateGraph, operationInitializer, objectTypeLookup, null, runScripts,
+                queryCompilerFactory);
     }
 
     public static GroovyDeephavenSession of(
             final UpdateGraph updateGraph,
             final OperationInitializer operationInitializer,
-            ObjectTypeLookup objectTypeLookup,
+            @Nullable final ObjectTypeLookup objectTypeLookup,
             @Nullable final Listener changeListener,
-            final RunScripts runScripts) throws IOException {
+            final RunScripts runScripts,
+            final QueryCompiler.Factory queryCompilerFactory) throws IOException {
 
         final ImportCustomizer consoleImports = new ImportCustomizer();
         final ImportCustomizer loadedGroovyScriptImports = new ImportCustomizer();
@@ -206,8 +209,8 @@ public class GroovyDeephavenSession extends AbstractScriptSession<GroovySnapshot
 
 
         return new GroovyDeephavenSession(updateGraph, operationInitializer, objectTypeLookup, changeListener,
-                runScripts, classCacheDirectory, consoleImports, loadedGroovyScriptImports, bindingBackingMap,
-                groovyShell);
+                runScripts, queryCompilerFactory, classCacheDirectory, consoleImports, loadedGroovyScriptImports,
+                bindingBackingMap, groovyShell);
     }
 
     private GroovyDeephavenSession(
@@ -216,6 +219,7 @@ public class GroovyDeephavenSession extends AbstractScriptSession<GroovySnapshot
             ObjectTypeLookup objectTypeLookup,
             @Nullable final Listener changeListener,
             final RunScripts runScripts,
+            final QueryCompiler.Factory queryCompilerFactory,
             final File classCacheDirectory,
             final ImportCustomizer consoleImports,
             final ImportCustomizer loadedGroovyScriptImports,
@@ -223,7 +227,7 @@ public class GroovyDeephavenSession extends AbstractScriptSession<GroovySnapshot
             final DeephavenGroovyShell groovyShell)
             throws IOException {
         super(updateGraph, operationInitializer, objectTypeLookup, changeListener, classCacheDirectory,
-                groovyShell.getClassLoader());
+                groovyShell.getClassLoader(), queryCompilerFactory);
 
         this.scriptFinder = new ScriptFinder(DEFAULT_SCRIPT_PATH);
 

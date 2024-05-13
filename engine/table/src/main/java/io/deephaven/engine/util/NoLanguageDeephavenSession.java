@@ -3,6 +3,7 @@
 //
 package io.deephaven.engine.util;
 
+import io.deephaven.engine.context.QueryCompiler;
 import io.deephaven.engine.context.QueryScope;
 import io.deephaven.engine.updategraph.OperationInitializer;
 import io.deephaven.engine.updategraph.UpdateGraph;
@@ -24,15 +25,17 @@ public class NoLanguageDeephavenSession extends AbstractScriptSession<AbstractSc
 
     public NoLanguageDeephavenSession(
             final UpdateGraph updateGraph,
-            final OperationInitializer operationInitializer) {
-        this(updateGraph, operationInitializer, SCRIPT_TYPE);
+            final OperationInitializer operationInitializer,
+            final QueryCompiler.Factory queryCompilerFactory) {
+        this(updateGraph, operationInitializer, queryCompilerFactory, SCRIPT_TYPE);
     }
 
     public NoLanguageDeephavenSession(
             final UpdateGraph updateGraph,
             final OperationInitializer operationInitializer,
+            final QueryCompiler.Factory queryCompilerFactory,
             final String scriptType) {
-        super(updateGraph, operationInitializer, null, null);
+        super(updateGraph, operationInitializer, null, null, queryCompilerFactory);
 
         this.scriptType = scriptType;
         variables = Collections.synchronizedMap(new LinkedHashMap<>());

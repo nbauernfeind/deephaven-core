@@ -4,6 +4,7 @@
 package io.deephaven.server.appmode;
 
 import io.deephaven.engine.context.ExecutionContext;
+import io.deephaven.engine.context.QueryCompilerImpl;
 import io.deephaven.engine.context.TestExecutionContext;
 import io.deephaven.engine.testutil.junit4.EngineCleanup;
 import io.deephaven.engine.util.NoLanguageDeephavenSession;
@@ -88,7 +89,8 @@ public class ApplicationServiceGrpcImplTest {
         // trigger a change
         ScriptSession scriptSession = new NoLanguageDeephavenSession(
                 ExecutionContext.getContext().getUpdateGraph(),
-                ExecutionContext.getContext().getOperationInitializer());
+                ExecutionContext.getContext().getOperationInitializer(),
+                QueryCompilerImpl::createForUnitTests);
         scriptSession.getQueryScope().putParam("key", "hello world");
         ScriptSession.Changes changes = new ScriptSession.Changes();
         changes.created.put("key", "Object");

@@ -7,6 +7,8 @@ import io.deephaven.base.FileUtils;
 import io.deephaven.base.verify.Assert;
 import io.deephaven.configuration.Configuration;
 import io.deephaven.engine.context.ExecutionContext;
+import io.deephaven.engine.context.QueryCompiler;
+import io.deephaven.engine.context.QueryCompilerImpl;
 import io.deephaven.engine.exceptions.CancellationException;
 import io.deephaven.engine.context.QueryScope;
 import io.deephaven.engine.updategraph.OperationInitializer;
@@ -69,10 +71,12 @@ public class PythonDeephavenSession extends AbstractScriptSession<PythonSnapshot
      *
      * @param updateGraph the default update graph to install for the repl
      * @param operationInitializer the default operation initializer to install for the repl
+     * @param threadInitializationFactory the function to invoke on any runnables that will be used to start threads
      * @param objectTypeLookup the object type lookup
      * @param listener an optional listener that will be notified whenever the query scope changes
      * @param runInitScripts if init scripts should be executed
-     * @param pythonEvaluator
+     * @param queryCompilerFactory the query compiler factory
+     * @param pythonEvaluator the python evaluator
      * @throws IOException if an IO error occurs running initialization scripts
      */
     public PythonDeephavenSession(
@@ -82,8 +86,9 @@ public class PythonDeephavenSession extends AbstractScriptSession<PythonSnapshot
             final ObjectTypeLookup objectTypeLookup,
             @Nullable final Listener listener,
             final boolean runInitScripts,
+            final QueryCompiler.Factory queryCompilerFactory,
             final PythonEvaluatorJpy pythonEvaluator) throws IOException {
-        super(updateGraph, operationInitializer, objectTypeLookup, listener);
+        super(updateGraph, operationInitializer, objectTypeLookup, listener, queryCompilerFactory);
 
         evaluator = pythonEvaluator;
         scope = pythonEvaluator.getScope();
@@ -117,7 +122,7 @@ public class PythonDeephavenSession extends AbstractScriptSession<PythonSnapshot
             final OperationInitializer operationInitializer,
             final ThreadInitializationFactory threadInitializationFactory,
             final PythonScope<?> scope) {
-        super(updateGraph, operationInitializer, NoOp.INSTANCE, null);
+        super(updateGraph, operationInitializer, NoOp.INSTANCE, null, QueryCompilerImpl::create);
 
         evaluator = null;
         this.scope = (PythonScope<PyObject>) scope;

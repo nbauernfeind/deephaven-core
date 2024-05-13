@@ -8,9 +8,14 @@ import io.deephaven.util.CompletionStageFuture;
 import io.deephaven.util.annotations.FinalDefault;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.concurrent.ExecutionException;
 
 public interface QueryCompiler {
+
+    interface Factory {
+        QueryCompiler create(File cacheDirectory, ClassLoader classLoader);
+    }
 
     /**
      * Compile a class and wait for completion.

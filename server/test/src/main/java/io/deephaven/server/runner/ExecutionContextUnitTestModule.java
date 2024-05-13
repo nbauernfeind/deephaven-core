@@ -6,6 +6,8 @@ package io.deephaven.server.runner;
 import dagger.Module;
 import dagger.Provides;
 import io.deephaven.engine.context.ExecutionContext;
+import io.deephaven.engine.context.QueryCompiler;
+import io.deephaven.engine.context.QueryCompilerImpl;
 import io.deephaven.engine.context.TestExecutionContext;
 import io.deephaven.engine.updategraph.UpdateGraph;
 import io.deephaven.engine.updategraph.impl.PeriodicUpdateGraph;
@@ -22,5 +24,11 @@ public class ExecutionContextUnitTestModule {
                 .numUpdateThreads(PeriodicUpdateGraph.NUM_THREADS_DEFAULT_UPDATE_GRAPH)
                 .existingOrBuild();
         return TestExecutionContext.createForUnitTests().withUpdateGraph(updateGraph);
+    }
+
+    @Provides
+    @Singleton
+    public QueryCompiler.Factory provideQueryCompilerFactory() {
+        return QueryCompilerImpl::createForUnitTests;
     }
 }

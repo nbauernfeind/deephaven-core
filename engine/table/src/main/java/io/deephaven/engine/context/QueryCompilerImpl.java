@@ -117,7 +117,11 @@ public class QueryCompilerImpl implements QueryCompiler, LogOutputAppendable {
         return new QueryCompilerImpl(cacheDirectory, classLoader, true);
     }
 
-    static QueryCompilerImpl createForUnitTests() {
+    public static QueryCompilerImpl createForUnitTests(File cacheDirectory, ClassLoader classLoader) {
+        return createForUnitTests();
+    }
+
+    public static QueryCompilerImpl createForUnitTests() {
         final Path queryCompilerDir = DataDir.get()
                 .resolve("io.deephaven.engine.context.QueryCompiler.createForUnitTests");
         return new QueryCompilerImpl(queryCompilerDir.toFile(), QueryCompilerImpl.class.getClassLoader(), false);
