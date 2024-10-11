@@ -116,7 +116,7 @@ def testPyClient = Docker.registerDockerTask(project, 'testPyClient') {
 
         environmentVariable 'DEEPHAVEN_VERSION', project.version
         runCommand 'pip install .'
-        environmentVariable 'DH_HOST', deephavenDocker.containerName.get()
+        environmentVariable 'DH_HOST', '10.10.1.23'
         environmentVariable 'DH_PORT', '10000'
     }
     parentContainers = [ Docker.registryTask(project, 'python') ]

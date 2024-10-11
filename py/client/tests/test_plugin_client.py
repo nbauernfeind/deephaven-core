@@ -46,27 +46,6 @@ plot3 = Figure().plot_xy(series_name="Random numbers", t=empty_table(30).update(
         plugin_client = self.session.plugin_client(self.session.exportable_objects["plot3"])
         self.assertIsNotNone(plugin_client)
 
-        with self.subTest("Fetchable in the Plugin object"):
-            payload, refs = next(plugin_client.resp_stream)
-            self.assertGreater(len(payload), 0)
-            self.assertGreater(len(refs), 0)
-            ref = refs[0]
-            self.assertEqual(ref.type, "Table")
-            fetched = ref.fetch()
-            self.assertIsNotNone(fetched)
-            self.assertEqual(fetched.size, 30)
-
-            # Publish the fetchable
-            tbl_shared_ticket = SharedTicket.random_ticket()
-            self.session.publish(ref, tbl_shared_ticket)
-
-            # Another session to use the shared fetchable
-            sub_session = Session()
-            sub_table = sub_session.fetch_table(tbl_shared_ticket)
-            self.assertIsNotNone(sub_table)
-            self.assertEqual(sub_table.size, 30)
-            sub_session.close()
-
         with self.subTest("Plugin object"):
             # First fetch the Plugin object, then publish it
             export_plugin_client = self.session.fetch(plugin_client)
@@ -86,6 +65,27 @@ plot3 = Figure().plot_xy(series_name="Random numbers", t=empty_table(30).update(
             self.assertIsNotNone(fetched)
             self.assertEqual(fetched.size, 30)
             sub_plugin_client.close()
+            sub_session.close()
+
+        with self.subTest("Fetchable in the Plugin object"):
+            payload, refs = next(plugin_client.resp_stream)
+            self.assertGreater(len(payload), 0)
+            self.assertGreater(len(refs), 0)
+            ref = refs[0]
+            self.assertEqual(ref.type, "Table")
+            fetched = ref.fetch()
+            self.assertIsNotNone(fetched)
+            self.assertEqual(fetched.size, 30)
+
+            # Publish the fetchable
+            tbl_shared_ticket = SharedTicket.random_ticket()
+            self.session.publish(ref, tbl_shared_ticket)
+
+            # Another session to use the shared fetchable
+            sub_session = Session()
+            sub_table = sub_session.fetch_table(tbl_shared_ticket)
+            self.assertIsNotNone(sub_table)
+            self.assertEqual(sub_table.size, 30)
             sub_session.close()
 
         with self.subTest("released Plugin object"):
