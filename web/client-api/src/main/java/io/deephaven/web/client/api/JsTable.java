@@ -1728,6 +1728,10 @@ public class JsTable extends HasLifecycle implements HasTableBinding, JoinableTa
     }
 
     public void setSize(double s) {
+        if (isUncoalesced()) {
+            return;
+        }
+
         boolean changed = this.size != s;
         if (changed) {
             JsLog.debug("Table ", this, " size changed from ", this.size, " to ", s);
