@@ -43,6 +43,7 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -799,6 +800,10 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
                 .packageNameRoot(QueryCompilerImpl.FORMULA_CLASS_PREFIX)
                 .putAllParameterClasses(QueryScopeParamTypeUtil.expandParameterClasses(paramClasses))
                 .build()).thenApply(clazz -> {
+                    final String tname = Thread.currentThread().toString();
+                    if (seenThreads.add(tname)) {
+                        log.error().append("First time seeing thread: ").append(tname).endl();
+                    }
                     try {
                         return (FormulaFactory) clazz.getField(FORMULA_FACTORY_NAME).get(null);
                     } catch (ReflectiveOperationException e) {
@@ -806,6 +811,7 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
                     }
                 });
     }
+    private static final Set<String> seenThreads = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private static class IndexParameter {
         final String name;
