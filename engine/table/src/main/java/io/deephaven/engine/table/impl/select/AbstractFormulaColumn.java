@@ -261,6 +261,15 @@ public abstract class AbstractFormulaColumn implements FormulaColumn {
             // the future must already be completed or else it is an error
             formulaFactory = formulaFactoryFuture.get(0, TimeUnit.SECONDS);
         } catch (InterruptedException | TimeoutException e) {
+            log.error().append("thenApplyThread pre-get: ").append(thenApplyThread).append(" this thread: ")
+                    .append(Thread.currentThread().toString()).endl();
+            try {
+                formulaFactoryFuture.get();
+            } catch (Error | Exception ee) {
+            }
+            log.error().append("thenApplyThread post-get: ").append(thenApplyThread).append(" this thread: ")
+                    .append(Thread.currentThread().toString()).endl();
+
             throw new IllegalStateException("Formula factory not already compiled!", e);
         } catch (ExecutionException e) {
             throw new UncheckedDeephavenException("Error creating formula factory for " + columnName, e.getCause());
@@ -270,6 +279,7 @@ public abstract class AbstractFormulaColumn implements FormulaColumn {
 
         return formula;
     }
+    protected volatile String thenApplyThread;
 
     @SuppressWarnings("unchecked")
     private static Vector<?> makeAppropriateVectorWrapper(ColumnSource<?> cs, RowSet rowSet) {

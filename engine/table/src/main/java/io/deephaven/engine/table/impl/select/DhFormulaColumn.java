@@ -800,13 +800,13 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
                 .packageNameRoot(QueryCompilerImpl.FORMULA_CLASS_PREFIX)
                 .putAllParameterClasses(QueryScopeParamTypeUtil.expandParameterClasses(paramClasses))
                 .build()).thenApply(clazz -> {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                    }
-                    final String tname = Thread.currentThread().toString();
-                    if (seenThreads.add(tname)) {
-                        log.error().append("First time seeing thread: ").append(tname).endl();
+//                    try {
+//                        Thread.sleep(100);
+//                    } catch (InterruptedException e) {
+//                    }
+                    thenApplyThread = Thread.currentThread().toString();
+                    if (seenThreads.add(thenApplyThread)) {
+                        log.error().append("First time seeing thread: ").append(thenApplyThread).endl();
                     }
                     try {
                         return (FormulaFactory) clazz.getField(FORMULA_FACTORY_NAME).get(null);
