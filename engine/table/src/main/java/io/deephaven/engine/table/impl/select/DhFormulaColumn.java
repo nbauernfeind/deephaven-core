@@ -805,6 +805,7 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
                     } catch (InterruptedException e) {
                     }
                     thenApplyThread = Thread.currentThread().toString();
+                    thenApplyException = new RuntimeException();
 //                    if (seenThreads.add(thenApplyThread)) {
                         log.error().append("seeing thread: ").append(thenApplyThread).endl();
 //                    }

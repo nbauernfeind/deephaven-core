@@ -270,6 +270,8 @@ public abstract class AbstractFormulaColumn implements FormulaColumn {
             log.error().append("thenApplyThread post-get: ").append(thenApplyThread).append(" this thread: ")
                     .append(Thread.currentThread().toString()).endl();
 
+            log.error().append("Stack trace: \n").append(thenApplyException).endl();
+
             throw new IllegalStateException("Formula factory not already compiled!", e);
         } catch (ExecutionException e) {
             throw new UncheckedDeephavenException("Error creating formula factory for " + columnName, e.getCause());
@@ -280,6 +282,7 @@ public abstract class AbstractFormulaColumn implements FormulaColumn {
         return formula;
     }
     protected volatile String thenApplyThread;
+    protected volatile RuntimeException thenApplyException;
 
     @SuppressWarnings("unchecked")
     private static Vector<?> makeAppropriateVectorWrapper(ColumnSource<?> cs, RowSet rowSet) {
