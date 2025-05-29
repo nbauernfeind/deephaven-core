@@ -800,10 +800,10 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
                 .packageNameRoot(QueryCompilerImpl.FORMULA_CLASS_PREFIX)
                 .putAllParameterClasses(QueryScopeParamTypeUtil.expandParameterClasses(paramClasses))
                 .build()).thenApply(clazz -> {
-//                    try {
-//                        Thread.sleep(100);
-//                    } catch (InterruptedException e) {
-//                    }
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                    }
                     thenApplyThread = Thread.currentThread().toString();
                     if (seenThreads.add(thenApplyThread)) {
                         log.error().append("First time seeing thread: ").append(thenApplyThread).endl();
