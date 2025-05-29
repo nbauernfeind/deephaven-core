@@ -805,9 +805,9 @@ public class DhFormulaColumn extends AbstractFormulaColumn {
                     } catch (InterruptedException e) {
                     }
                     thenApplyThread = Thread.currentThread().toString();
-                    if (seenThreads.add(thenApplyThread)) {
-                        log.error().append("First time seeing thread: ").append(thenApplyThread).endl();
-                    }
+//                    if (seenThreads.add(thenApplyThread)) {
+                        log.error().append("seeing thread: ").append(thenApplyThread).endl();
+//                    }
                     try {
                         return (FormulaFactory) clazz.getField(FORMULA_FACTORY_NAME).get(null);
                     } catch (ReflectiveOperationException e) {
