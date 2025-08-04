@@ -777,9 +777,33 @@ public abstract class BaseTable<IMPL_TYPE extends BaseTable<IMPL_TYPE>> extends 
         final boolean currentContainsRemovals;
 
         if (!update.shifted().empty()) {
-            // we cannot perform a cheap rm/add overlapping check when shifts are present, so we'll skip it
+            // it is too expensive to shift rm's into post-shift keyspace, then remove adds and test for overlap
             currentContainsRemovals = false;
         } else {
+            try (final RowSet.RangeIterator rmIter = update.removed().rangeIterator();
+                 final RowSet.RangeIterator adIter = update.added().rangeIterator();
+                 final RowSet.RangeIterator rsIter = getRowSet().rangeIterator()) {
+
+                boolean rmHasNext = rmIter.hasNext();
+                if (rmHasNext) {
+                    rmIter.next();
+                }
+
+                while (rmHasNext) {
+                    boolean addsRemaining = adIter.advance(rmIter.currentRangeStart());
+                    if (addsRemaining && adIter.currentRangeStart() <= rmIter.currentRangeEnd()) {
+                        long a = rmIter.currentRangeStart();
+                        long b = adIter.currentRangeStart();
+                        // does [a, b] overlap with rsIter
+
+                        // skip the entire added range
+                        rmHasNext = rmIter.advance(adIter.currentRangeEnd() + 1);
+                        continue;
+                    }
+                    while (rmIter.)
+                }
+            }
+
             try (final RowSet removedMinusAdded = update.removed().minus(update.added())) {
                 currentContainsRemovals = removedMinusAdded.overlaps(getRowSet());
             }
