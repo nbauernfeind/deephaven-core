@@ -780,33 +780,7 @@ public abstract class BaseTable<IMPL_TYPE extends BaseTable<IMPL_TYPE>> extends 
             // it is too expensive to shift rm's into post-shift keyspace, then remove adds and test for overlap
             currentContainsRemovals = false;
         } else {
-            try (final RowSet.RangeIterator rmIter = update.removed().rangeIterator();
-                 final RowSet.RangeIterator adIter = update.added().rangeIterator();
-                 final RowSet.RangeIterator rsIter = getRowSet().rangeIterator()) {
-
-                boolean rmHasNext = rmIter.hasNext();
-                if (rmHasNext) {
-                    rmIter.next();
-                }
-
-                while (rmHasNext) {
-                    boolean addsRemaining = adIter.advance(rmIter.currentRangeStart());
-                    if (addsRemaining && adIter.currentRangeStart() <= rmIter.currentRangeEnd()) {
-                        long a = rmIter.currentRangeStart();
-                        long b = adIter.currentRangeStart();
-                        // does [a, b] overlap with rsIter
-
-                        // skip the entire added range
-                        rmHasNext = rmIter.advance(adIter.currentRangeEnd() + 1);
-                        continue;
-                    }
-                    while (rmIter.)
-                }
-            }
-
-            try (final RowSet removedMinusAdded = update.removed().minus(update.added())) {
-                currentContainsRemovals = removedMinusAdded.overlaps(getRowSet());
-            }
+            currentContainsRemovals = doesCurrentContainRemovals(update);
         }
 
         if (!previousMissingRemovals && !currentMissingAdds && !currentMissingModifications &&
@@ -883,6 +857,53 @@ public abstract class BaseTable<IMPL_TYPE extends BaseTable<IMPL_TYPE>> extends 
         Assert.assertion(false, "!(previousMissingRemovals || currentMissingAdds || " +
                 "currentMissingModifications || (currentContainsRemovals && shifted.empty()))",
                 indexUpdateErrorMessage);
+    }
+
+    /**
+     * Validate that the current rowset does not include any removed rows unless they were added back in this update.
+     */
+    private boolean doesCurrentContainRemovals(final TableUpdate update) {
+        try (final RowSet.RangeIterator rmIter = update.removed().rangeIterator();
+                final RowSet.RangeIterator adIter = update.added().rangeIterator();
+                final RowSet.RangeIterator rsIter = getRowSet().rangeIterator()) {
+
+            while (rmIter.hasNext()) {
+                rmIter.next();
+                final long rmStart = rmIter.currentRangeStart();
+                final long rmEnd = rmIter.currentRangeEnd();
+
+                // scan through this removed range, slicing out any added pieces
+                long scanStart = rmStart;
+                while (scanStart <= rmEnd) {
+                    // jump the added‐ranges iterator to the first added range that might overlap scanStart
+                    boolean hasAdded = adIter.advance(scanStart);
+
+                    if (hasAdded && adIter.currentRangeStart() <= rmEnd) {
+                        // there's an added range [addStart, addEnd] sitting inside [rmStart, rmEnd]
+                        long addStart = adIter.currentRangeStart();
+                        long addEnd = adIter.currentRangeEnd();
+
+                        // check the pure‐removed chunk [scanStart, addStart−1]
+                        long subEnd = addStart - 1;
+                        if (scanStart <= subEnd && rsIter.advance(scanStart)
+                                && rsIter.currentRangeStart() <= subEnd) {
+                            return true;
+                        }
+
+                        // skip past this added range and continue slicing
+                        scanStart = addEnd + 1;
+                    } else {
+                        // no more added ranges inside [scanStart, rmEnd], so [scanStart, rmEnd] is pure‐removed
+                        if (rsIter.advance(scanStart) && rsIter.currentRangeStart() <= rmEnd) {
+                            return true;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
